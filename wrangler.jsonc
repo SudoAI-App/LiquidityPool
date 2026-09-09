@@ -5,5 +5,11 @@
   "assets": {
     "directory": "./dist/public",
     "not_found_handling": "404-page"
+  },
+  "vars": {
+    "PUBLIC_GA_ID": "G-FSKQB2V5BF",
+    "GA_MEASUREMENT_ID": "G-FSKQB2V5BF",
+    "PUBLIC_CLARITY_ID": "yfnys7eeci",
+    "CLARITY_PROJECT_ID": "yfnys7eeci"
   }
 }

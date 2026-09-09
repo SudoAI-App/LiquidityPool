@@ -2,6 +2,7 @@
 import '../styles/global.css';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
+import Analytics from '../components/Analytics.astro';
 const { title = 'LiquidityPools.app — DeFi Liquidity Research', description = 'Clear, durable research for anyone learning how decentralized liquidity works.', image = '/images/liquiditypool-hero.png', type = 'website', author = 'LiquidityPool Research', noIndex = false } = Astro.props;
 const canonical = new URL(Astro.url.pathname, 'https://liquiditypools.app');
 const organizationSchema = {
@@ -42,6 +43,7 @@ const organizationSchema = {
     <meta name="twitter:image" content={new URL(image, canonical)} />
     <meta name="twitter:image:alt" content={title} />
     <script is:inline type="application/ld+json" set:html={JSON.stringify(organizationSchema)} />
+    <Analytics />
     <slot name="head" />
   </head>
   <body>
