@@ -174,6 +174,7 @@ img { display: block; max-width: 100%; }
 .article-figure { margin: 2.4em 0 2.7em; border: 1px solid var(--line-light); background: #e8eee5; }
 .article-figure img { width: 100%; max-height: 460px; object-fit: cover; }
 .article-figure figcaption { padding: 11px 14px 12px; color: #55705e; font: 400 10px/1.55 var(--mono); letter-spacing: .01em; }
+.article-figure__credit { display: block; margin-top: 3px; color: #78917e; font-size: 9px; text-transform: uppercase; letter-spacing: .05em; }
 .article-content h2 + ul, .article-content h2 + ol { margin-top: 0; }
 .article-content h2#references { margin-top: 3.2em; }
 .article-content h2#references + p { font-size: 13px; line-height: 1.6; }

@@ -17,8 +17,8 @@ This article replaces TVL and volume scoreboards with a measurement stack you ca
 If you need a refresher on why headline TVL misleads, see our background guide: [TVL explained](/guides/tvl-explained). If you want a checklist to evaluate any pool, see: [How to evaluate a liquidity pool](/guides/how-to-evaluate-a-liquidity-pool).
 
 <figure class="article-figure">
-  <img src="/images/guides/onchain-liquidity-metrics.webp" alt="Aerial view of layered desert terrain with flowing natural contours" width="1200" height="1600" loading="lazy" decoding="async" />
-  <figcaption>Natural contours reveal hidden liquidity patterns. Image by <a href="https://www.pexels.com/photo/aerial-view-of-abstract-utah-desert-landscape-30344617/" target="_blank" rel="noreferrer">Vasilis Karkalas</a> under the <a href="https://www.pexels.com/license/" target="_blank" rel="noreferrer">Pexels License</a>.</figcaption>
+  <img src="/images/guides/onchain-liquidity-metrics.webp" alt="A price curve is measured by active depth bars, transaction flow, and reserve imbalance." width="1600" height="1067" loading="lazy" decoding="async" />
+  <figcaption>Depth, flow, and imbalance reveal more than a single TVL figure. <span class="article-figure__credit">Original editorial illustration by LiquidityPools.app.</span></figcaption>
 </figure>
 
 ## Stop ranking pools by TVL and volume

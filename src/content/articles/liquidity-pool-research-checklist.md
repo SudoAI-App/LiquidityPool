@@ -15,8 +15,8 @@ You open your wallet and see a double-digit APY on a USDC/DAI “narrow range”
 This checklist frames one decision: before you supply liquidity or press swap, can you explain—using one concrete example—what the pool will hold after a large move, when your liquidity stops earning fees, who extracts value from your trades, and which risks remain even if the displayed APY is zero or disappears? If not, do not act yet.
 
 <figure class="article-figure">
-  <img src="/images/guides/liquidity-pool-research-checklist.webp" alt="Top-down minimalist workspace with an open notebook, laptop, camera, coffee, and stationery." width="1600" height="1067" loading="lazy" decoding="async" />
-  <figcaption>A quiet desk for careful research. Image by <a href="https://www.pexels.com/photo/open-notebook-on-desk-with-camera-and-cup-of-coffee-8250977/" target="_blank" rel="noreferrer">PNW Production</a> under the <a href="https://www.pexels.com/license/" target="_blank" rel="noreferrer">Pexels License</a>.</figcaption>
+  <img src="/images/guides/liquidity-pool-research-checklist.webp" alt="A pool model is reviewed by an ordered set of visual checks for assets, curve, depth, flow, and controls." width="1600" height="1067" loading="lazy" decoding="async" />
+  <figcaption>A durable review starts with the pool mechanism and its exit conditions. <span class="article-figure__credit">Original editorial illustration by LiquidityPools.app.</span></figcaption>
 </figure>
 
 ## Start from the position, not the APY

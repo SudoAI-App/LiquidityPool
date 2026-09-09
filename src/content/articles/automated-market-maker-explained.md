@@ -15,8 +15,8 @@ You open a pool page and see an attractive spot price and a low fee. You plan a 
 This article explains how AMMs turn balances into executable prices, why fees and price movement drive liquidity-provider returns and risks, and how to evaluate a pool before swapping or supplying capital. If you’ve only seen AMMs described as “decentralized exchanges,” start here and reframe them as a rule plus inventory that continuously trades against you.
 
 <figure class="article-figure">
-  <img src="/images/guides/automated-market-maker-explained.webp" alt="Three golden gears aligned vertically on a black surface" width="1600" height="1064" loading="lazy" decoding="async" />
-  <figcaption>A dark mechanism of interlocking gears. Image by <a href="https://www.pexels.com/photo/round-gears-on-black-surface-3785928/" target="_blank" rel="noreferrer">Miguel Á. Padriñán</a> under the <a href="https://www.pexels.com/license/" target="_blank" rel="noreferrer">Pexels License</a>.</figcaption>
+  <img src="/images/guides/automated-market-maker-explained.webp" alt="An automated market mechanism moves token inventory along a pricing curve." width="1600" height="1067" loading="lazy" decoding="async" />
+  <figcaption>An AMM is an inventory rule with a price curve. <span class="article-figure__credit">Original editorial illustration by LiquidityPools.app.</span></figcaption>
 </figure>
 
 ## An AMM is a pricing rule with inventory, not a price oracle

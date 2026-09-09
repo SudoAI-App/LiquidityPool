@@ -15,8 +15,8 @@ You open a wallet, see a tempting annualized yield on a pool, and consider eithe
 This article focuses on what actually governs quotes and PnL—so you can explain to yourself, before acting, why a given pool is suitable or not.
 
 <figure class="article-figure">
-  <img src="/images/guides/what-is-a-liquidity-pool.webp" alt="Glowing glass sphere covered in droplets on a dark textured surface" width="1600" height="1067" loading="lazy" decoding="async" />
-  <figcaption>A reflective sphere in dark liquid texture. Image by <a href="https://www.pexels.com/photo/glowing-sphere-with-water-droplets-on-black-background-31914587/" target="_blank" rel="noreferrer">Alexas Fotos</a> under the <a href="https://www.pexels.com/license/" target="_blank" rel="noreferrer">Pexels License</a>.</figcaption>
+  <img src="/images/guides/what-is-a-liquidity-pool.webp" alt="Two token reserves connected by a curved automated pricing path." width="1600" height="1067" loading="lazy" decoding="async" />
+  <figcaption>How a pool turns two reserves into a continuous quote. <span class="article-figure__credit">Original editorial illustration by LiquidityPools.app.</span></figcaption>
 </figure>
 
 ## Pools are pricing rules, not token vaults

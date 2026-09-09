@@ -13,8 +13,8 @@ featured: false
 You open a wallet, route to an ETH/USDC pool, and see a quote. If you press swap, you won’t “get the spot price.” You will get whatever the pool’s reserves imply at the moment your trade clears, after the trade has pushed through the curve and after the fee has been applied. The constant product formula is not a slogan for decentralized pricing; it is the execution rule inside the contract. Understanding that rule—what it guarantees inside the pool, and what it cannot guarantee against external markets and block ordering—tells you whether a trade or a liquidity position fits your risk and your timing [1] [2] [3].
 
 <figure class="article-figure">
-  <img src="/images/guides/constant-product-formula.webp" alt="Dark symmetrical curved geometric forms create a layered abstract pattern." width="1600" height="1067" loading="lazy" decoding="async" />
-  <figcaption>Curves tracing liquidity through dark geometry. Image by <a href="https://unsplash.com/photos/symmetrical-abstract-pattern-of-dark-curved-shapes-QRTINALdbq8" target="_blank" rel="noreferrer">Mike Hindle</a> under the <a href="https://unsplash.com/license" target="_blank" rel="noreferrer">Unsplash License</a>.</figcaption>
+  <img src="/images/guides/constant-product-formula.webp" alt="A pricing curve shows trade size moving through changing pool reserves." width="1600" height="1067" loading="lazy" decoding="async" />
+  <figcaption>The curve makes larger trades progressively change execution. <span class="article-figure__credit">Original editorial illustration by LiquidityPools.app.</span></figcaption>
 </figure>
 
 ## The execution rule inside the pool

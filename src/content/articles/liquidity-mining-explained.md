@@ -15,8 +15,8 @@ A stablecoin pool advertises eye‑catching APRs. Total value locked looks massi
 This piece traces that pipeline. We start from what a constant‑function market maker (CFMM) guarantees, then examine how concentrated‑liquidity designs and gauge‑based emissions change outcomes, and finally layer in the execution frictions created by maximal extractable value (MEV). The test is simple: do incentives purchase liquidity at the prices where trades happen, for long enough to matter, or do they rent capital that disappears—or turns inactive—when subsidies change?
 
 <figure class="article-figure">
-  <img src="/images/guides/liquidity-mining-explained.webp" alt="Dark rock surface with branching mineral veins" width="1067" height="1600" loading="lazy" decoding="async" />
-  <figcaption>Incentives emerge through layered liquidity. Image by <a href="https://unsplash.com/photos/dark-rock-surface-with-intricate-white-mineral-veins-GvUPDI7I8N8" target="_blank" rel="noreferrer">Mustafa akın (@msaimakin)</a> under the <a href="https://unsplash.com/license" target="_blank" rel="noreferrer">Unsplash License</a>.</figcaption>
+  <img src="/images/guides/liquidity-mining-explained.webp" alt="A fading reward-emission stream and a separate trade-flow channel feed a liquidity pool." width="1600" height="1067" loading="lazy" decoding="async" />
+  <figcaption>Incentive-funded liquidity and organic market flow are different inputs. <span class="article-figure__credit">Original editorial illustration by LiquidityPools.app.</span></figcaption>
 </figure>
 
 ## The incentive pipeline: from protocol budget to trader execution to LP inventory

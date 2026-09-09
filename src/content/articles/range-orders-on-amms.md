@@ -13,8 +13,8 @@ featured: false
 You are watching a stablecoin pool trade close to parity. You want to “sell if it drifts above $1.001, buy if it dips below $0.999,” and collect some swap fees while waiting. A narrow Uniswap v3 range around the current price seems to match that view. But the moment you mint it, you’re not placing an invisible limit order. You’re entering a bounded liquidity position whose token inventory is continuously transformed as the market walks through your price ticks. Whether that’s useful depends on what you plan to hold at each boundary, how quickly you react after a crossing, and whether the fees you expect plausibly cover your execution, gas, slippage, and ordering risks.
 
 <figure class="article-figure">
-  <img src="/images/guides/range-orders-on-amms.webp" alt="Dark corridor with alternating patches of light and shadow" width="1538" height="1600" loading="lazy" decoding="async" />
-  <figcaption>A corridor shaped by light and shadow. Image by <a href="https://www.pexels.com/photo/corridor-in-shadow-and-light-11570370/" target="_blank" rel="noreferrer">Francesco Ungaro</a> under the <a href="https://www.pexels.com/license/" target="_blank" rel="noreferrer">Pexels License</a>.</figcaption>
+  <img src="/images/guides/range-orders-on-amms.webp" alt="One asset transforms into another as price moves through a bounded corridor." width="1600" height="1067" loading="lazy" decoding="async" />
+  <figcaption>A bounded position can express a conditional exchange range. <span class="article-figure__credit">Original editorial illustration by LiquidityPools.app.</span></figcaption>
 </figure>
 
 ## What a “range order” is in Uniswap v3 mechanics

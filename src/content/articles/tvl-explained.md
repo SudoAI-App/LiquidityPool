@@ -17,8 +17,8 @@ Or consider an analyst celebrating a sudden rise in a protocol’s TVL during a 
 The practical reading of TVL is mechanical. Ask: what tokens are actually deposited, whether they’re counted once, which prices translate balances into dollars, and whether that capital is usable at your transaction size and time horizon. This article walks through that checklist with concrete scenarios, so the number on a dashboard becomes evidence—not a mirage.
 
 <figure class="article-figure">
-  <img src="/images/guides/tvl-explained.webp" alt="Symmetrical dark geometric architecture with layered illuminated forms" width="1600" height="1600" loading="lazy" decoding="async" />
-  <figcaption>Layered architecture for financial data. Image by <a href="https://unsplash.com/photos/abstract-architecture-against-a-dark-background-4NtZ0yU50lY" target="_blank" rel="noreferrer">Mike Hindle</a> under the <a href="https://unsplash.com/license" target="_blank" rel="noreferrer">Unsplash License</a>.</figcaption>
+  <img src="/images/guides/tvl-explained.webp" alt="A large pool reservoir and a narrow active channel distinguish total value from usable depth." width="1600" height="1067" loading="lazy" decoding="async" />
+  <figcaption>Headline value and executable depth are not the same measurement. <span class="article-figure__credit">Original editorial illustration by LiquidityPools.app.</span></figcaption>
 </figure>
 
 ## TVL is a valuation snapshot, not a score

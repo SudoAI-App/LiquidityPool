@@ -15,8 +15,8 @@ You open a stablecoin dashboard and see a pool quoting 1.0001 with tiny slippage
 A stablecoin pool is a conditional risk-transfer mechanism. Near parity, the curve delivers tight execution and fee income. When a coin trades below its target, the same curve reassigns inventory to whoever stands in the way—often liquidity providers—while execution paths become sensitive to transaction ordering. Treat the peg, pool price, and APY as separate moving parts, not safety guarantees.
 
 <figure class="article-figure">
-  <img src="/images/guides/stablecoin-liquidity-pools.webp" alt="Seven smooth stones balanced in a vertical stack against a softly blurred background." width="1067" height="1600" loading="lazy" decoding="async" />
-  <figcaption>Balance at the heart of liquidity. Image by <a href="https://unsplash.com/photos/selective-focus-photography-of-balance-stones-c1EbdHnxMdk" target="_blank" rel="noreferrer">Photoholgic</a> under the <a href="https://unsplash.com/license" target="_blank" rel="noreferrer">Unsplash License</a>.</figcaption>
+  <img src="/images/guides/stablecoin-liquidity-pools.webp" alt="Two reserve vessels connect through a flat channel that bends as one side becomes imbalanced." width="1600" height="1067" loading="lazy" decoding="async" />
+  <figcaption>Stable-asset curves are efficient near balance and defensive under stress. <span class="article-figure__credit">Original editorial illustration by LiquidityPools.app.</span></figcaption>
 </figure>
 
 ## What an AMM really promises: inventory rules, not a dollar floor

@@ -13,8 +13,8 @@ featured: false
 Picture a volatile token rallying hard against ETH. You’ve provided liquidity to that token/ETH pool. Swaps are flowing, fees are accruing—and your inventory is quietly rotating away from the winner. That sequence is not a bug of “passive” yield; it is the core of delegated, rule-based market making. The AMM’s invariant decides how your inventory is rebalanced; the market’s path decides whether you are earning fees while moving into or out of the asset that just moved; and your chosen range or curve decides whether you keep earning at all when price migrates. This piece translates those mechanics into position-management questions you can answer before depositing.
 
 <figure class="article-figure">
-  <img src="/images/guides/market-making-on-amms.webp" alt="Dark blue geometric forms with glowing angular edges" width="1600" height="1067" loading="lazy" decoding="async" />
-  <figcaption>Kinetic geometry for automated market flow. Image by <a href="https://unsplash.com/photos/abstract-geometric-shapes-with-blue-lighting-9HCg3LzAIms" target="_blank" rel="noreferrer">Steve A Johnson</a> under the <a href="https://unsplash.com/license" target="_blank" rel="noreferrer">Unsplash License</a>.</figcaption>
+  <img src="/images/guides/market-making-on-amms.webp" alt="A liquidity provider inventory cabinet connects to an AMM curve and a fee collection path." width="1600" height="1067" loading="lazy" decoding="async" />
+  <figcaption>AMM liquidity provision is inventory management with fee compensation. <span class="article-figure__credit">Original editorial illustration by LiquidityPools.app.</span></figcaption>
 </figure>
 
 ## You are market making by rule, not chasing APR

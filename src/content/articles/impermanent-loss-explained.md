@@ -15,8 +15,8 @@ You add a 50/50 ETH–USDC position and ETH rallies while trades keep your posit
 This article frames impermanent loss (IL) as a mechanism-and-benchmark problem. It explains how AMM rebalancing changes inventory, how concentrated ranges introduce inactivity risk, and why your decision turns on whether fee income and range choices compensate for exposure and operational costs relative to your actual alternative. Throughout, we use concrete, observable scenarios and cite the limited evidence available.
 
 <figure class="article-figure">
-  <img src="/images/guides/impermanent-loss-explained.webp" alt="Dark abstract composition of distorted green and black lines" width="1600" height="900" loading="lazy" decoding="async" />
-  <figcaption>When balance bends, exposure shifts. Image by <a href="https://unsplash.com/photos/abstract-pattern-of-distorted-lines-and-shapes-4-6ffBBvtUs" target="_blank" rel="noreferrer">Logan Voss</a> under the <a href="https://unsplash.com/license" target="_blank" rel="noreferrer">Unsplash License</a>.</figcaption>
+  <img src="/images/guides/impermanent-loss-explained.webp" alt="A balanced pool evolves into an uneven inventory while a hold-only basket preserves its original mix." width="1600" height="1067" loading="lazy" decoding="async" />
+  <figcaption>Pool rebalancing changes inventory relative to simply holding. <span class="article-figure__credit">Original editorial illustration by LiquidityPools.app.</span></figcaption>
 </figure>
 
 ## What impermanent loss measures—and what it doesn’t

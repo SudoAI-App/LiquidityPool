@@ -13,8 +13,8 @@ featured: true
 Suppose you are considering a USDC/DAI position around $1, or a tight ETH/USDC band you intend to “babysit.” The useful question is not “What’s the APR?” It’s: When is your capital actually active, how does inventory convert as price travels, what costs and risks come with your chosen range, and what rule will you follow to withdraw or rebalance? Concentrated liquidity is a programmable, inventory-rebalancing market-making stance—not passive yield on idle assets [1] [2].
 
 <figure class="article-figure">
-  <img src="/images/guides/concentrated-liquidity-explained.webp" alt="Dark blue and black liquid forms flowing in concentrated swirls" width="1067" height="1600" loading="lazy" decoding="async" />
-  <figcaption>Liquid flow narrowed into focus. Image by <a href="https://unsplash.com/photos/abstract-swirling-blue-and-black-liquid-patterns-7atSeaN_Ir0" target="_blank" rel="noreferrer">Logan Voss</a> under the <a href="https://unsplash.com/license" target="_blank" rel="noreferrer">Unsplash License</a>.</figcaption>
+  <img src="/images/guides/concentrated-liquidity-explained.webp" alt="Dense liquidity bars sit between two range boundaries along a price curve." width="1600" height="1067" loading="lazy" decoding="async" />
+  <figcaption>Capital can be dense in one range and inactive outside it. <span class="article-figure__credit">Original editorial illustration by LiquidityPools.app.</span></figcaption>
 </figure>
 
 ## The position is a range-bound market maker

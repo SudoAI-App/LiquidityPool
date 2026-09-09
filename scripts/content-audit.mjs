@@ -36,8 +36,10 @@ for (const file of readdirSync(articlesDir).filter((name) => name.endsWith('.md'
   if (internalLinks < 2) errors.push(`${slug}: only ${internalLinks} internal guide links`);
   if (headings < 5) errors.push(`${slug}: only ${headings} H2 sections`);
   if (!hasFigure) errors.push(`${slug}: missing attributed internal figure`);
+  if (!body.includes('Original editorial illustration by LiquidityPools.app.')) errors.push(`${slug}: missing original illustration credit`);
   if (!existsSync(image)) errors.push(`${slug}: missing ${image}`);
   if (/^# /m.test(body)) errors.push(`${slug}: duplicate Markdown H1`);
+  if (/pexels\.com|unsplash\.com/i.test(body)) errors.push(`${slug}: contains retired generic-stock visual attribution`);
 
   for (const phrase of prohibitedPhrases) {
     if (body.toLowerCase().includes(phrase)) errors.push(`${slug}: contains generic phrase “${phrase}”`);

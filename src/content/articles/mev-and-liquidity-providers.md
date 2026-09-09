@@ -15,8 +15,8 @@ You watch a thin token pair on-chain. A large market order hits the public mempo
 The right mental model is not “passive yield.” A liquidity provider position is a continuously repriced inventory. Its realized outcome depends on the bonding curve you underwrite, the trades and arbitrage it invites, and the ordering of transactions that determine execution. Fees can offset those forces—or not—depending on the path.
 
 <figure class="article-figure">
-  <img src="/images/guides/mev-and-liquidity-providers.webp" alt="Red and white light trails stream past dark city buildings at night." width="1600" height="900" loading="lazy" decoding="async" />
-  <figcaption>Fast-moving liquidity through a city network. Image by <a href="https://unsplash.com/photos/light-trails-on-a-highway-at-night-in-a-city-weudSNqEzGI" target="_blank" rel="noreferrer">Benjamin Chambon</a> under the <a href="https://unsplash.com/license" target="_blank" rel="noreferrer">Unsplash License</a>.</figcaption>
+  <img src="/images/guides/mev-and-liquidity-providers.webp" alt="Three transactions move through a public lane around an AMM curve in sandwich-style order." width="1600" height="1067" loading="lazy" decoding="async" />
+  <figcaption>Transaction ordering can change the execution around a visible swap. <span class="article-figure__credit">Original editorial illustration by LiquidityPools.app.</span></figcaption>
 </figure>
 
 ## Your inventory rides a curve, not a forecast

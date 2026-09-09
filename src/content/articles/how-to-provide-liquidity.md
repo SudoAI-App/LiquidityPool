@@ -13,8 +13,8 @@ featured: true
 You are about to add ETH and a stablecoin to a Uniswap pool. The interface asks for a fee tier and a price range. Before you click approve, pause and translate the UI into what the contract will do with your assets. Providing liquidity is not passive deposit-taking; it is selecting how your capital participates in an automated pricing rule, and over which prices that rule will use your assets.
 
 <figure class="article-figure">
-  <img src="/images/guides/how-to-provide-liquidity.webp" alt="Glowing geometric wireframe structures and light beams against a dark blue background." width="1600" height="1200" loading="lazy" decoding="async" />
-  <figcaption>Abstract geometry for connected financial systems. Image by <a href="https://unsplash.com/photos/geometric-shape-digital-wallpaper-oyXis2kALVg" target="_blank" rel="noreferrer">fabio (@fabioha)</a> under the <a href="https://unsplash.com/license" target="_blank" rel="noreferrer">Unsplash License</a>.</figcaption>
+  <img src="/images/guides/how-to-provide-liquidity.webp" alt="Two assets enter a pool through a chosen active price range and produce a position receipt." width="1600" height="1067" loading="lazy" decoding="async" />
+  <figcaption>Providing liquidity means choosing a pool, assets, and active range. <span class="article-figure__credit">Original editorial illustration by LiquidityPools.app.</span></figcaption>
 </figure>
 
 ## Start from the pricing rule: the invariant and your active region

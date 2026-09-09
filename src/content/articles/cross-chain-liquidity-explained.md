@@ -15,8 +15,8 @@ You open a bridge aggregator. The quote looks great: low fee, fast delivery. But
 This is the core mistake many users make with cross-chain: treating “bridge” as one product with a uniform risk model. Cross-chain liquidity is not a single pool spanning every network. It’s a set of mechanisms—each with distinct capital flows, dependencies, and failure modes—that can fragment liquidity and risk across chains and contracts [1] [2].
 
 <figure class="article-figure">
-  <img src="/images/guides/cross-chain-liquidity-explained.webp" alt="Blue glowing lines intersect to form a dense abstract network structure." width="1029" height="1600" loading="lazy" decoding="async" />
-  <figcaption>A luminous web of connected pathways. Image by <a href="https://unsplash.com/photos/abstract-blue-glowing-network-structure-DAu-JmEakCU" target="_blank" rel="noreferrer">Valery Rabchenyuk</a> under the <a href="https://unsplash.com/license" target="_blank" rel="noreferrer">Unsplash License</a>.</figcaption>
+  <img src="/images/guides/cross-chain-liquidity-explained.webp" alt="Separate reserve pools on islands connect through a central token bridge mechanism." width="1600" height="1067" loading="lazy" decoding="async" />
+  <figcaption>Bridges connect liquidity while introducing fragmentation and dependencies. <span class="article-figure__credit">Original editorial illustration by LiquidityPools.app.</span></figcaption>
 </figure>
 
 ## There is no single cross-chain pool

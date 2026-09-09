@@ -15,8 +15,8 @@ A reader opens a DEX interface and sees a pool advertising double-digit fees. Th
 This article maps the claim structure behind common LP tokens, follows two concrete scenarios through to redemption, and ends with a checklist you can apply before committing capital.
 
 <figure class="article-figure">
-  <img src="/images/guides/liquidity-pool-tokens.webp" alt="Glass jar of coins with a small green plant" width="1600" height="1068" loading="lazy" decoding="async" />
-  <figcaption>A living ledger of pooled value. Image by <a href="https://unsplash.com/photos/a-glass-jar-filled-with-coins-and-a-plant-joqWSI9u_XM" target="_blank" rel="noreferrer">Towfiqu barbhuiya</a> under the <a href="https://unsplash.com/license" target="_blank" rel="noreferrer">Unsplash License</a>.</figcaption>
+  <img src="/images/guides/liquidity-pool-tokens.webp" alt="A pool-share token is linked to a two-sided reserve vault." width="1600" height="1067" loading="lazy" decoding="async" />
+  <figcaption>A pool token is a changing claim on pooled reserves. <span class="article-figure__credit">Original editorial illustration by LiquidityPools.app.</span></figcaption>
 </figure>
 
 ## Why the “deposit receipt” metaphor breaks down

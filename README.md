@@ -67,7 +67,7 @@ The static production output is written to `dist/public`. The project has been v
 
 Guide content lives in `src/content/articles/`. Each Markdown article contains title, description, category, publication date, review date, author, reading time, keyword theme, and featured status in frontmatter. The guide pages and XML sitemap are generated statically during the build.
 
-Article visuals are stored under `public/images/guides/`; the original source pages and licenses are tracked in [`ASSET-SOURCES.md`](./ASSET-SOURCES.md). Run `pnpm content:audit` before publishing to enforce the launch-library quality floor: a source list, internal links, a visual, review metadata, five substantive sections, and at least 1,300 words per guide.
+Article visuals are stored under `public/images/guides/`. The library uses original, mechanism-led editorial illustrations rather than generic crypto imagery: each visual explains the pool behavior addressed by its guide. The visual brief and asset record are tracked in [`VISUAL-SYSTEM.md`](./VISUAL-SYSTEM.md) and [`ASSET-SOURCES.md`](./ASSET-SOURCES.md). Run `pnpm content:audit` before publishing to enforce the launch-library quality floor: a source list, internal links, a visual, review metadata, five substantive sections, and at least 1,300 words per guide.
 
 The launch SEO strategy and the full 20-article plan are documented in [`SEO-LAUNCH-PLAN.md`](./SEO-LAUNCH-PLAN.md).
 

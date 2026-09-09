@@ -15,8 +15,8 @@ You open a DEX, see a headline APR on a pool you recognize, and your cursor drif
 This article gives you a five-part framework: pricing mechanism, active-liquidity design, fee economics, execution/MEV exposure, and the governance/dependency stack. We apply it to two concrete but common situations: a volatile ETH/USDC position on Uniswap v3, and a stable-asset pool on Curve during a depeg scare. Along the way, we’ll highlight where models are useful—and precisely where they stop being enough.
 
 <figure class="article-figure">
-  <img src="/images/guides/how-to-evaluate-a-liquidity-pool.webp" alt="Symmetrical white architectural fins framing a dark geometric center." width="1600" height="1600" loading="lazy" decoding="async" />
-  <figcaption>A measured view of market structure. Image by <a href="https://unsplash.com/photos/abstract-architecture-against-a-dark-background-4NtZ0yU50lY" target="_blank" rel="noreferrer">Mike Hindle</a> under the <a href="https://unsplash.com/license" target="_blank" rel="noreferrer">Unsplash License</a>.</figcaption>
+  <img src="/images/guides/how-to-evaluate-a-liquidity-pool.webp" alt="A central pool is examined by connected instruments for assets, depth, fees, incentives, and controls." width="1600" height="1067" loading="lazy" decoding="async" />
+  <figcaption>A pool deserves a mechanism-by-mechanism review before capital is committed. <span class="article-figure__credit">Original editorial illustration by LiquidityPools.app.</span></figcaption>
 </figure>
 
 ## Start with the trade, not the APR

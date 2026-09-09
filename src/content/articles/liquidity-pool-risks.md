@@ -15,8 +15,8 @@ You see an eye-catching fee APR on an ETH/USDC pool and consider a tight range n
 This piece builds a mechanism-first checklist using three common pool archetypes—constant-product, concentrated liquidity, and stable-swap—and the oracle paths that increasingly tie them to other protocols. The goal is to decide whether a specific liquidity position is being paid for the risk it actually carries.
 
 <figure class="article-figure">
-  <img src="/images/guides/liquidity-pool-risks.webp" alt="Intricate white cracks across black glass" width="1600" height="1067" loading="lazy" decoding="async" />
-  <figcaption>Fragility spreads through the pool. Image by <a href="https://www.pexels.com/photo/intricately-cracked-glass-on-black-background-30798595/" target="_blank" rel="noreferrer">Lars H Knudsen</a> under the <a href="https://www.pexels.com/license/" target="_blank" rel="noreferrer">Pexels License</a>.</figcaption>
+  <img src="/images/guides/liquidity-pool-risks.webp" alt="A central liquidity pool is exposed to separate asset, contract, depth, and incentive risk paths." width="1600" height="1067" loading="lazy" decoding="async" />
+  <figcaption>Pool risk is layered: assets, code, liquidity conditions, and incentives. <span class="article-figure__credit">Original editorial illustration by LiquidityPools.app.</span></figcaption>
 </figure>
 
 ## Start with the mechanism, not the APR

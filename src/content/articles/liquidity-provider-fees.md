@@ -15,8 +15,8 @@ You open an AMM interface, see a tempting APR next to a pool, and consider depos
 This article traces the cash flow from a trader’s swap to your position-level accrual, then shows how to evaluate fee income against the counterfactual of simply holding the assets. We use Uniswap v2 and v3/v4 for mechanics, and Curve for a governance-linked fee flow.
 
 <figure class="article-figure">
-  <img src="/images/guides/liquidity-provider-fees.webp" alt="Abstract flowing liquid-metal surface with reflective ridges and dark shadows" width="1600" height="1182" loading="lazy" decoding="async" />
-  <figcaption>Flowing value across a reflective surface. Image by <a href="https://unsplash.com/photos/abstract-liquid-metal-reflective-surface-JEqyIGOyvA8" target="_blank" rel="noreferrer">MARIOLA GROBELSKA (@mariolagr)</a> under the <a href="https://unsplash.com/license" target="_blank" rel="noreferrer">Unsplash License</a>.</figcaption>
+  <img src="/images/guides/liquidity-provider-fees.webp" alt="Swap flow moves through an active liquidity range while a smaller fee stream accumulates separately." width="1600" height="1067" loading="lazy" decoding="async" />
+  <figcaption>Fees accrue from eligible active flow, not from a fixed yield source. <span class="article-figure__credit">Original editorial illustration by LiquidityPools.app.</span></figcaption>
 </figure>
 
 ## From a trader’s swap to your wallet: the fee path

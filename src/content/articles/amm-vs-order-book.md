@@ -15,8 +15,8 @@ You’re choosing how to execute a real trade, not writing a textbook: swap a vo
 Automated market makers quote continuously through an algorithm (an invariant). Order books make liquidity conditional: only posted orders at specific prices exist, prioritized by queue. Before you click, decide whether you want an always-available algorithmic quote or the option to define a limit price and take queue risk—and verify the venue’s active liquidity, not its headline TVL or displayed depth.
 
 <figure class="article-figure">
-  <img src="/images/guides/amm-vs-order-book.webp" alt="Black-and-white intersecting metal beams form a dense geometric structure." width="1600" height="1068" loading="lazy" decoding="async" />
-  <figcaption>Contrasting geometry for two trading architectures. Image by <a href="https://www.pexels.com/photo/abstract-geometric-structure-in-black-and-white-29789541/" target="_blank" rel="noreferrer">Vladimir Srajber</a> under the <a href="https://www.pexels.com/license/" target="_blank" rel="noreferrer">Pexels License</a>.</figcaption>
+  <img src="/images/guides/amm-vs-order-book.webp" alt="A continuous AMM curve is contrasted with discrete stacked order-book levels." width="1600" height="1067" loading="lazy" decoding="async" />
+  <figcaption>Continuous pool pricing and discrete order levels solve different problems. <span class="article-figure__credit">Original editorial illustration by LiquidityPools.app.</span></figcaption>
 </figure>
 
 ## How each design turns liquidity into price
