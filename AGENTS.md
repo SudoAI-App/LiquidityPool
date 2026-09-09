@@ -33,3 +33,19 @@ pnpm content:audit
 - **站点地图同步**：新增或修改路由时，需确保 [`src/pages/sitemap.xml.ts`](./src/pages/sitemap.xml.ts) 与 `sitemap-index.xml` 同步覆盖，保持全站 URL 100% 可被检索。
 - **AI 搜寻开放**：保持 `robots.txt.ts` 对主流 AI 爬虫（GPTBot, ClaudeBot, PerplexityBot 等）的放行规则。
 - **全网即时推送**：部署后通过 `pnpm indexnow` 广播全量路由。
+
+---
+
+## 4. 数据分析与度量规范 (Analytics & Measurement Protocol)
+
+- **服务与资产 ID**（托管于 `sudoai.dev@gmail.com` 统一组织下）：
+  - **Google Analytics 4 (GA4)**: `G-FSKQB2V5BF`（Property: `liquiditypools.app`, Stream ID: `15747985913`）
+  - **Microsoft Clarity**: `yfnys7eeci`（Project: `LiquidityPools`）
+- **环境变量配置**（Cloudflare 后台与本地构建）：
+  - `PUBLIC_GA_ID` / `GA_MEASUREMENT_ID`: `G-FSKQB2V5BF`
+  - `PUBLIC_CLARITY_ID` / `CLARITY_PROJECT_ID`: `yfnys7eeci`
+- **隐私合规底线**：
+  - 强制开启 IP 匿名化 (`anonymize_ip: true`)。
+  - 严禁启用 Google Signals 及跨站广告重定向 (`allow_google_signals: false`, `allow_ad_personalization_signals: false`)。
+  - 保持组件在 `src/components/Analytics.astro` 独立封装，由 `BaseLayout.astro` 引入。
+
