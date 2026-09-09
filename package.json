@@ -9,7 +9,9 @@
     "build": "astro build",
     "preview": "astro preview --host 0.0.0.0",
     "check": "astro check",
-    "content:audit": "node scripts/content-audit.mjs"
+    "content:audit": "node scripts/content-audit.mjs",
+    "indexnow": "node scripts/indexnow-submit.mjs",
+    "deploy": "astro build && wrangler deploy"
   },
   "devDependencies": {
     "@astrojs/check": "0.9.10",
