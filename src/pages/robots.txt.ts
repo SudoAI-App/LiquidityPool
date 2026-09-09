@@ -21,6 +21,7 @@ Allow: /
 User-agent: Google-Extended
 Allow: /
 
+Sitemap: https://liquiditypools.app/sitemap.xml
 Sitemap: https://liquiditypools.app/sitemap-index.xml
 `;
   return new Response(content, { headers: { 'Content-Type': 'text/plain; charset=utf-8' } });
