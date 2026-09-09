@@ -5,7 +5,15 @@ import Footer from '../components/Footer.astro';
 const { title = 'LiquidityPools.app — DeFi Liquidity Research', description = 'Clear, durable research for anyone learning how decentralized liquidity works.', image = '/images/liquiditypool-hero.png', type = 'website', author = 'LiquidityPool Research', noIndex = false } = Astro.props;
 const canonical = new URL(Astro.url.pathname, 'https://liquiditypools.app');
 const organizationSchema = {
-  '@context': 'https://schema.org', '@type': 'Organization', name: 'LiquidityPools.app', url: 'https://liquiditypools.app', description: 'Independent educational research about DeFi liquidity pools.', logo: 'https://liquiditypools.app/favicon.svg'
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  name: 'LiquidityPools.app',
+  url: 'https://liquiditypools.app',
+  description: 'Independent educational research about DeFi liquidity pools.',
+  logo: 'https://liquiditypools.app/favicon.svg',
+  sameAs: [
+    'https://github.com/SudoAI-App/LiquidityPool'
+  ]
 };
 ---
 <!doctype html>
