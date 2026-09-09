@@ -1,5 +1,5 @@
 {
-  "name": "LiquidityPool.app",
+  "name": "LiquidityPools.app",
   "short_name": "LiquidityPool",
   "start_url": "/",
   "display": "standalone",

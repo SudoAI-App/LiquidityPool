@@ -2,6 +2,7 @@
   "name": "liquiditypool-app",
   "version": "1.0.0",
   "type": "module",
+  "packageManager": "pnpm@10.11.1",
   "private": true,
   "scripts": {
     "dev": "astro dev --host 0.0.0.0",

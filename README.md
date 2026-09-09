@@ -1,4 +1,4 @@
-# LiquidityPool.app
+# LiquidityPools.app
 
 A modern, SEO-first Astro editorial publication focused on decentralized-finance liquidity. The site is designed as a durable research library rather than a price-prediction or trading interface.
 
@@ -35,4 +35,4 @@ The launch SEO strategy and the full 20-article plan are documented in [`SEO-LAU
 
 ## Deployment
 
-The output is compatible with Cloudflare Workers static assets. Before deploying, create or confirm a Cloudflare Worker and bind the `liquiditypool.app` custom domain to the Worker route. Do not store Cloudflare credentials in this repository.
+The output is compatible with Cloudflare Workers static assets. Before deploying, create or confirm a Cloudflare Worker and bind the `liquiditypools.app` custom domain to the Worker route. Do not store Cloudflare credentials in this repository.

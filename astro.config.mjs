@@ -2,7 +2,7 @@ import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
 
 export default defineConfig({
-  site: 'https://liquiditypool.app',
+  site: 'https://liquiditypools.app',
   output: 'static',
   outDir: './dist/public',
   integrations: [sitemap()],
