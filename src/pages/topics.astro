@@ -1,0 +1,14 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { categories, categoryArticles } from '../lib/articles';
+const copy: Record<string, string> = {
+  'Foundations': 'The vocabulary and first principles behind liquidity pools, AMMs, LP tokens, and TVL. Start here if you want the mental model before the market commentary.',
+  'LP Mechanics': 'A liquidity position is a set of rules, not a passive deposit. Learn how fees, ranges, curves, and stable pools shape the result.',
+  'Risk & Research': 'Every pool expresses a collection of risks. These guides help distinguish price exposure, protocol exposure, incentive risk, and execution conditions.',
+  'Advanced': 'Move from individual positions to market structure: liquidity incentives, cross-chain routing, onchain metrics, and AMM market making.'
+};
+---
+<BaseLayout title="Research Tracks — LiquidityPool.app" description="Explore the LiquidityPool.app research tracks: foundations, LP mechanics, risk research, and advanced DeFi liquidity.">
+  <section class="page-hero"><div class="container"><div class="eyebrow eyebrow--mint">Research tracks</div><h1 class="page-title">A library should have a point of view.</h1><p>These tracks are not categories for their own sake. They are a reading order designed to turn scattered DeFi concepts into a usable model.</p></div></section>
+  <section class="section section--ink"><div class="container"><div class="topic-grid">{categories.map((category, index) => <section class="topic-card"><div class="eyebrow eyebrow--mint">0{index + 1} / {category}</div><h2>{category}</h2><p>{copy[category]}</p><ul>{categoryArticles(category).map((article) => <li><a href={'/guides/' + article.slug}>{article.title} <span aria-hidden="true">↗</span></a></li>)}</ul></section>)}</div></div></section>
+</BaseLayout>

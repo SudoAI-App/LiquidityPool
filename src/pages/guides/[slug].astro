@@ -1,0 +1,19 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { articles, articleBySlug } from '../../lib/articles';
+export function getStaticPaths() { return articles.map((article) => ({ params: { slug: article.slug } })); }
+const article = articleBySlug(Astro.params.slug!);
+if (!article) throw new Error('Article not found');
+const Content = article.Content;
+const related = articles.filter((item) => item.category === article.category && item.slug !== article.slug).slice(0, 3);
+const articleSchema = {
+  '@context': 'https://schema.org', '@type': 'Article', headline: article.title, description: article.description,
+  datePublished: article.date, dateModified: article.date, mainEntityOfPage: 'https://liquiditypool.app/guides/' + article.slug,
+  author: { '@type': 'Organization', name: 'LiquidityPool Research' }, publisher: { '@type': 'Organization', name: 'LiquidityPool.app', url: 'https://liquiditypool.app' }, keywords: article.keywords
+};
+---
+<BaseLayout title={article.title + ' — LiquidityPool.app'} description={article.description} type="article" image={article.category === 'Risk & Research' ? '/images/liquiditypool-risk.png' : '/images/liquiditypool-hero.png'}>
+  <Fragment slot="head"><script is:inline type="application/ld+json" set:html={JSON.stringify(articleSchema)} /></Fragment>
+  <section class="article-hero"><div class="container article-hero__grid"><div><div class="eyebrow eyebrow--mint">{article.category}</div><h1>{article.title}</h1><p class="dek">{article.description}</p></div><div class="article-meta"><div>Published<strong>{new Date(article.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</strong></div><div>Reading time<strong>{article.readTime}</strong></div><div>By<strong>LiquidityPool Research</strong></div></div></div></section>
+  <article class="container article-layout"><aside class="article-rail"><div><h2>In this guide</h2><p>A mechanism-first walkthrough of the concepts, trade-offs, and questions that matter.</p></div><div><h2>Related reading</h2>{related.map((item) => <a href={'/guides/' + item.slug}>{item.title}</a>)}</div></aside><div class="article-content"><Content /><div class="article-end"><h2 class="display">Keep the model, not just the answer.</h2><p>Every liquidity position has a context. Continue through the <a href="/guides"><strong>full research library</strong></a> to connect this idea with the mechanism, risks, and market conditions around it.</p></div></div><aside class="article-rail"><div><h2>Editorial note</h2><p>This guide is educational and general in nature. It is not investment, legal, tax, or financial advice.</p></div></aside></article>
+</BaseLayout>

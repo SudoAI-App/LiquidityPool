@@ -1,0 +1,43 @@
+---
+import '../styles/global.css';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+const { title = 'LiquidityPool.app — DeFi Liquidity Research', description = 'Clear, durable research for anyone learning how decentralized liquidity works.', image = '/images/liquiditypool-hero.png', type = 'website', noIndex = false } = Astro.props;
+const canonical = new URL(Astro.url.pathname, 'https://liquiditypool.app');
+const organizationSchema = {
+  '@context': 'https://schema.org', '@type': 'Organization', name: 'LiquidityPool.app', url: 'https://liquiditypool.app', description: 'Independent educational research about DeFi liquidity pools.', logo: 'https://liquiditypool.app/favicon.svg'
+};
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#0a130f" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="canonical" href={canonical} />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="robots" content={noIndex ? 'noindex,nofollow' : 'index,follow,max-image-preview:large'} />
+    <meta property="og:type" content={type} />
+    <meta property="og:site_name" content="LiquidityPool.app" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={new URL(image, canonical)} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={new URL(image, canonical)} />
+    <script is:inline type="application/ld+json" set:html={JSON.stringify(organizationSchema)} />
+    <slot name="head" />
+  </head>
+  <body>
+    <div class="site-shell">
+      <Header currentPath={Astro.url.pathname} />
+      <main><slot /></main>
+      <Footer />
+    </div>
+  </body>
+</html>

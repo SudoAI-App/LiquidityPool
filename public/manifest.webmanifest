@@ -1,0 +1,15 @@
+{
+  "name": "LiquidityPool.app",
+  "short_name": "LiquidityPool",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a130f",
+  "theme_color": "#0a130f",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}

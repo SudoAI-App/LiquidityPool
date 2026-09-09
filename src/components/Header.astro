@@ -1,0 +1,18 @@
+---
+const { currentPath = '/' } = Astro.props;
+const nav = [
+  { href: '/guides', label: 'Guides' },
+  { href: '/topics', label: 'Topics' },
+  { href: '/about', label: 'About' }
+];
+---
+<header class="site-header">
+  <div class="container nav-wrap">
+    <a class="brand" href="/" aria-label="LiquidityPool.app home"><span class="brand-mark" aria-hidden="true"></span><span>LiquidityPool<span style="color:var(--mint)">.app</span></span></a>
+    <nav class="nav-links" aria-label="Main navigation">
+      {nav.map((item) => <a href={item.href} aria-current={currentPath === item.href ? 'page' : undefined}>{item.label}</a>)}
+    </nav>
+    <a class="nav-cta" href="/guides">Browse the library <span aria-hidden="true">↗</span></a>
+    <a class="mobile-nav" href="/guides">Library ↗</a>
+  </div>
+</header>
