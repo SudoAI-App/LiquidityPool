@@ -6,14 +6,27 @@ const article = articleBySlug(Astro.params.slug!);
 if (!article) throw new Error('Article not found');
 const Content = article.Content;
 const related = articles.filter((item) => item.category === article.category && item.slug !== article.slug).slice(0, 3);
+const articleImage = '/images/guides/' + article.slug + '.webp';
+const reviewedDate = article.lastReviewed ?? article.date;
 const articleSchema = {
   '@context': 'https://schema.org', '@type': 'Article', headline: article.title, description: article.description,
-  datePublished: article.date, dateModified: article.date, mainEntityOfPage: 'https://liquiditypool.app/guides/' + article.slug,
-  author: { '@type': 'Organization', name: 'LiquidityPool Research' }, publisher: { '@type': 'Organization', name: 'LiquidityPool.app', url: 'https://liquiditypool.app' }, keywords: article.keywords
+  datePublished: article.date, dateModified: reviewedDate, mainEntityOfPage: 'https://liquiditypool.app/guides/' + article.slug,
+  image: 'https://liquiditypool.app' + articleImage,
+  author: { '@type': 'Organization', name: article.author ?? 'LiquidityPool Research', url: 'https://liquiditypool.app/about' },
+  publisher: { '@type': 'Organization', name: 'LiquidityPool.app', url: 'https://liquiditypool.app', logo: { '@type': 'ImageObject', url: 'https://liquiditypool.app/favicon.svg' } },
+  articleSection: article.category, keywords: article.keywords,
+  isAccessibleForFree: true
+};
+const breadcrumbSchema = {
+  '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://liquiditypool.app/' },
+    { '@type': 'ListItem', position: 2, name: 'Guides', item: 'https://liquiditypool.app/guides/' },
+    { '@type': 'ListItem', position: 3, name: article.title, item: 'https://liquiditypool.app/guides/' + article.slug }
+  ]
 };
 ---
-<BaseLayout title={article.title + ' — LiquidityPool.app'} description={article.description} type="article" image={article.category === 'Risk & Research' ? '/images/liquiditypool-risk.png' : '/images/liquiditypool-hero.png'}>
-  <Fragment slot="head"><script is:inline type="application/ld+json" set:html={JSON.stringify(articleSchema)} /></Fragment>
-  <section class="article-hero"><div class="container article-hero__grid"><div><div class="eyebrow eyebrow--mint">{article.category}</div><h1>{article.title}</h1><p class="dek">{article.description}</p></div><div class="article-meta"><div>Published<strong>{new Date(article.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</strong></div><div>Reading time<strong>{article.readTime}</strong></div><div>By<strong>LiquidityPool Research</strong></div></div></div></section>
-  <article class="container article-layout"><aside class="article-rail"><div><h2>In this guide</h2><p>A mechanism-first walkthrough of the concepts, trade-offs, and questions that matter.</p></div><div><h2>Related reading</h2>{related.map((item) => <a href={'/guides/' + item.slug}>{item.title}</a>)}</div></aside><div class="article-content"><Content /><div class="article-end"><h2 class="display">Keep the model, not just the answer.</h2><p>Every liquidity position has a context. Continue through the <a href="/guides"><strong>full research library</strong></a> to connect this idea with the mechanism, risks, and market conditions around it.</p></div></div><aside class="article-rail"><div><h2>Editorial note</h2><p>This guide is educational and general in nature. It is not investment, legal, tax, or financial advice.</p></div></aside></article>
+<BaseLayout title={article.title + ' — LiquidityPool.app'} description={article.description} type="article" image={articleImage} author={article.author ?? 'LiquidityPool Research'}>
+  <Fragment slot="head"><script is:inline type="application/ld+json" set:html={JSON.stringify(articleSchema)} /><script is:inline type="application/ld+json" set:html={JSON.stringify(breadcrumbSchema)} /></Fragment>
+  <section class="article-hero"><div class="container article-hero__grid"><div><div class="eyebrow eyebrow--mint">{article.category}</div><h1>{article.title}</h1><p class="dek">{article.description}</p></div><div class="article-meta"><div>Published<strong>{new Date(article.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</strong></div><div>Last reviewed<strong>{new Date(reviewedDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</strong></div><div>By<strong>{article.author ?? 'LiquidityPool Research'}</strong></div><div>Reading time<strong>{article.readTime}</strong></div></div></div></section>
+  <article class="container article-layout"><aside class="article-rail"><div><h2>Research standard</h2><p>Mechanism first. Material claims are sourced. Outcomes remain conditional.</p></div><div><h2>Related reading</h2>{related.map((item) => <a href={'/guides/' + item.slug}>{item.title}</a>)}</div></aside><div class="article-content"><Content /><div class="article-end"><h2 class="display">Keep the model, not just the answer.</h2><p>Every liquidity position has a context. Continue through the <a href="/guides"><strong>full research library</strong></a> to connect this idea with the mechanism, risks, and market conditions around it.</p></div></div><aside class="article-rail"><div><h2>Editorial note</h2><p>This guide is educational and general in nature. It is not investment, legal, tax, or financial advice.</p></div><div><h2>Method</h2><p><a href="/about">How LiquidityPool sources, reviews, and updates its work.</a></p></div></aside></article>
 </BaseLayout>

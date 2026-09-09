@@ -4,6 +4,8 @@ export type Article = {
   description: string;
   category: string;
   date: string;
+  lastReviewed?: string;
+  author?: string;
   readTime: string;
   keywords: string;
   featured?: boolean;

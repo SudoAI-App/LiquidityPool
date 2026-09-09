@@ -2,7 +2,7 @@
 import '../styles/global.css';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
-const { title = 'LiquidityPool.app — DeFi Liquidity Research', description = 'Clear, durable research for anyone learning how decentralized liquidity works.', image = '/images/liquiditypool-hero.png', type = 'website', noIndex = false } = Astro.props;
+const { title = 'LiquidityPool.app — DeFi Liquidity Research', description = 'Clear, durable research for anyone learning how decentralized liquidity works.', image = '/images/liquiditypool-hero.png', type = 'website', author = 'LiquidityPool Research', noIndex = false } = Astro.props;
 const canonical = new URL(Astro.url.pathname, 'https://liquiditypool.app');
 const organizationSchema = {
   '@context': 'https://schema.org', '@type': 'Organization', name: 'LiquidityPool.app', url: 'https://liquiditypool.app', description: 'Independent educational research about DeFi liquidity pools.', logo: 'https://liquiditypool.app/favicon.svg'
@@ -19,6 +19,7 @@ const organizationSchema = {
     <link rel="canonical" href={canonical} />
     <title>{title}</title>
     <meta name="description" content={description} />
+    <meta name="author" content={author} />
     <meta name="robots" content={noIndex ? 'noindex,nofollow' : 'index,follow,max-image-preview:large'} />
     <meta property="og:type" content={type} />
     <meta property="og:site_name" content="LiquidityPool.app" />
@@ -26,10 +27,12 @@ const organizationSchema = {
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
     <meta property="og:image" content={new URL(image, canonical)} />
+    <meta property="og:image:alt" content={title} />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={new URL(image, canonical)} />
+    <meta name="twitter:image:alt" content={title} />
     <script is:inline type="application/ld+json" set:html={JSON.stringify(organizationSchema)} />
     <slot name="head" />
   </head>
