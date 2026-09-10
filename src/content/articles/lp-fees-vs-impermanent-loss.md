@@ -35,19 +35,25 @@ Both lines are measurable. Neither is described by the annual percentage rate sh
 
 Gross fee income over a period is straightforward:
 
-$$F = f \times V_{\text{routed}} \times s$$
+$$
+F = f \times V_{\text{routed}} \times s
+$$
 
 where $f$ is the fee tier, $V_{\text{routed}}$ is the volume that actually executes against your liquidity, and $s$ is your share of the active liquidity while in range. Note that routed volume, not headline pool volume, is the correct input: aggregators split orders across venues and tiers, and a position that is out of range receives none of it.
 
 The other side is the value the pool hands to arbitrageurs when its quote is stale. For a constant-product pool tracking an external reference price, the loss-versus-rebalancing rate is approximately [4]:
 
-$$\text{LVR rate} \approx \frac{\sigma^2}{8}$$
+$$
+\text{LVR rate} \approx \frac{\sigma^2}{8}
+$$
 
 per unit of time, where $\sigma$ is the annualised volatility of the pair. The quadratic term is the whole story. Doubling volatility quadruples the drag while roughly doubling, at best, the volume that pays you for it.
 
 The break-even condition is therefore:
 
-$$f \times \text{turnover} \geq \frac{\sigma^2}{8}$$
+$$
+f \times \text{turnover} \geq \frac{\sigma^2}{8}
+$$
 
 where turnover is daily routed volume divided by the liquidity backing it. This inequality, not the advertised yield, is the test.
 

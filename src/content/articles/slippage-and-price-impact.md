@@ -35,11 +35,15 @@ Separating them changes how you size orders, how you set tolerances, and how muc
 
 For a constant-product pool with reserves $x$ and $y$, a trade of size $\Delta x$ returns:
 
-$$\Delta y = \frac{y \cdot \Delta x}{x + \Delta x}$$
+$$
+\Delta y = \frac{y \cdot \Delta x}{x + \Delta x}
+$$
 
 The marginal price before the trade is $P = y/x$, but the average price you actually receive is $\Delta y / \Delta x$, which is strictly worse. Expressed as a fraction of the pool's base reserve, the impact for a buy is approximately:
 
-$$\text{impact} \approx \frac{\Delta x / x}{1 + \Delta x / x}$$
+$$
+\text{impact} \approx \frac{\Delta x / x}{1 + \Delta x / x}
+$$
 
 Trading 1% of the reserve costs roughly 1% in price; trading 10% costs roughly 9%; trading 50% costs 33%. The relationship is convex, which is why splitting large orders across pools reduces total cost even when each pool has the same nominal depth.
 

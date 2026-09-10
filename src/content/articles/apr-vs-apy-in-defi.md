@@ -35,11 +35,15 @@ Reading these numbers correctly is a mechanical exercise, and it is the cheapest
 
 APR is a simple rate. APY includes an assumption that returns are periodically realised and redeposited:
 
-$$\text{APY} = \left(1 + \frac{\text{APR}}{n}\right)^n - 1$$
+$$
+\text{APY} = \left(1 + \frac{\text{APR}}{n}\right)^n - 1
+$$
 
 where $n$ is the number of compounding periods per year. Inverting it:
 
-$$\text{APR} = n\left[(1 + \text{APY})^{1/n} - 1\right]$$
+$$
+\text{APR} = n\left[(1 + \text{APY})^{1/n} - 1\right]
+$$
 
 For a 20% APR:
 
@@ -62,7 +66,9 @@ Crucially, compounding in a liquidity pool is not automatic. Fees accrue as clai
 
 Most interfaces compute pool APR as:
 
-$$\text{APR} = \frac{\text{fees over window}}{\text{liquidity supplying them}} \times \frac{365}{\text{window in days}}$$
+$$
+\text{APR} = \frac{\text{fees over window}}{\text{liquidity supplying them}} \times \frac{365}{\text{window in days}}
+$$
 
 Three sensitivities follow immediately.
 

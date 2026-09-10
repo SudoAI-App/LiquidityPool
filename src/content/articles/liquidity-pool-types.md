@@ -61,7 +61,9 @@ See [Concentrated Liquidity Explained](/guides/concentrated-liquidity-explained/
 
 StableSwap-style invariants blend constant-sum and constant-product behaviour through an amplification coefficient $A$ [3]:
 
-$$A n^n \sum x_i + D = A D n^n + \frac{D^{n+1}}{n^n \prod x_i}$$
+$$
+A n^n \sum x_i + D = A D n^n + \frac{D^{n+1}}{n^n \prod x_i}
+$$
 
 Near balance the curve is almost flat, so large trades clear with minimal slippage. As reserves skew, the curve steepens toward constant-product behaviour.
 
@@ -78,7 +80,9 @@ The tail behaviour is examined in [Stablecoin Liquidity Pools: Peg Defense, Yiel
 
 Constant-mean invariants generalise the two-asset product to arbitrary weights:
 
-$$\prod_i B_i^{w_i} = k, \qquad \sum_i w_i = 1$$
+$$
+\prod_i B_i^{w_i} = k, \qquad \sum_i w_i = 1
+$$
 
 An 80/20 pool holds most of its value in one asset while still quoting both. For a given price move, less of the portfolio rotates, so divergence is smaller than in a 50/50 pool, and the position retains more directional exposure to the heavy asset.
 

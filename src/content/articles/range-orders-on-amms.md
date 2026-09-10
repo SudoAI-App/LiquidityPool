@@ -134,7 +134,7 @@ To monitor range order fill status and automate immediate withdrawals:
 Traders frequently use range orders on pegged assets (e.g., DAI/USDC or crvUSD/USDC) around the $[0.9990, 1.0010]$ corridor. If a stablecoin dips to \$0.9980 due to temporary liquidity strain, placing a single-sided range order between $[0.9985, 0.9995]$ effectively bids for the discounted asset. If the peg recovers to $1.0000$, the position completely converts into quote currency plus accumulated fees [2]. However, if the discount represents a structural insolvency rather than a transitory liquidity shock, the range order is completely filled with the defaulting token, crystallizing catastrophic loss.
 
 ### Scenario B: Phased Treasury Liquidation
-DAOs and decentralized treasuries often utilize wide range orders to execute programmatic token diversifications. By placing a single-sided governance token position over a wide band (e.g., $[$10.00, $15.00$]), the treasury acts as an on-chain automated seller. As external demand absorbs token inventory, the DAO accumulates USDC with zero price impact slippage, earning trading fees throughout the execution horizon [1].
+DAOs and decentralized treasuries often utilize wide range orders to execute programmatic token diversifications. By placing a single-sided governance token position over a wide band (e.g., \$10.00 to \$15.00), the treasury acts as an on-chain automated seller. As external demand absorbs token inventory, the DAO accumulates USDC with zero price impact slippage, earning trading fees throughout the execution horizon [1].
 
 ## Pre-Deployment Verification Checklist for Range Orders
 

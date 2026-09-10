@@ -37,7 +37,9 @@ The construction is deliberately clean. Build a portfolio that holds exactly the
 
 That difference is LVR. For a constant-product pool tracking a reference price with volatility $\sigma$, the instantaneous rate is [4]:
 
-$$\ell = \frac{\sigma^2}{8}$$
+$$
+\ell = \frac{\sigma^2}{8}
+$$
 
 per unit of time, expressed as a fraction of pool value. The result generalises: for any constant-function market maker, the rate depends on the curvature of the invariant and the variance of the reference price. Flatter curves near the operating point, such as amplified stable curves, produce lower LVR while the peg holds and much higher exposure when it breaks.
 

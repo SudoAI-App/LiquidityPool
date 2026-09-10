@@ -27,7 +27,7 @@ In modern AMM architectures, fee models have transitioned from static pool-wide 
 </figure>
 
 > **Desk Field Note from Marcus Vance:**
-> *"LPs must understand the distinction between nominal fee volume and net economic fee capture. If an AMM processes $50M in daily volume, but $40M of that volume represents toxic cross-DEX arbitrageurs backrunning CEX quotes, the pool is capturing fees at the expense of permanent inventory decay. High volume is only profitable if the ratio of uninformed retail flow to toxic arbitrage flow is sufficiently high."*
+> *"LPs must understand the distinction between nominal fee volume and net economic fee capture. If an AMM processes \$50M in daily volume, but \$40M of that volume represents toxic cross-DEX arbitrageurs backrunning CEX quotes, the pool is capturing fees at the expense of permanent inventory decay. High volume is only profitable if the ratio of uninformed retail flow to toxic arbitrage flow is sufficiently high."*
 
 ## From a Trader’s Swap to Your Wallet: The Fee Path
 
@@ -118,7 +118,9 @@ When analyzing a Curve pool, distinguish between **organic fee APR** (sustainabl
 
 To evaluate whether your LP fees genuinely compensate for market making, compare performance against the **Loss-Versus-Rebalancing (LVR)** benchmark [5]:
 
-$$\text{Net Performance} = \text{Gross Fee Revenue} - \text{LVR} - \text{Gas Overhead}$$
+$$
+\text{Net Performance} = \text{Gross Fee Revenue} - \text{LVR} - \text{Gas Overhead}
+$$
 
 Where:
 - **Gross Fee Revenue** is the sum of all swap fees captured while active.
