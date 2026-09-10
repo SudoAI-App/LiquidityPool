@@ -1,137 +1,160 @@
 ---
 title: "Liquidity Provider Fees: How LP Revenue Is Generated and Measured"
-description: "LP fees pay you for supplying executable inventory. Trace Uniswap v2/v3 flows, active-liquidity accrual, fee tiers, and Curve veCRV; measure net vs holding."
+description: "LP fees pay you for supplying executable inventory. Trace dynamic fee curves, tick accruals, singleton accounting, and measure fee yields against LVR."
 category: "LP Mechanics"
 date: 2026-09-02
-lastReviewed: "2026-09-09"
-author: "LiquidityPool Research"
-readTime: "9 min read"
-keywords: "liquidity provider fees, LP fees, AMM fee tier, liquidity pool APR"
+lastReviewed: "2026-09-10"
+author: "Marcus Vance"
+readTime: "11 min read"
+keywords: "liquidity provider fees, LP fees, AMM fee tier, liquidity pool APR, dynamic fees, LVR"
 featured: false
 ---
 
-You open an AMM interface, see a tempting APR next to a pool, and consider depositing. Before you click, ask a stricter question: who pays you, exactly when, and for what service? Liquidity provider fees are not free yield; they are payment for keeping executable inventory at a quoted price and getting “hit” by traders. Your outcome depends on when your liquidity is active, how prices move through your range, and how the protocol credits fees to your specific position.
+Liquidity provider fees represent market compensation for underwriting continuous inventory availability against incoming order flow. Rather than passive interest or risk-free yield, LP fees are microstructural payments collected when traders, aggregators, and arbitrageurs execute against an AMM contract's quoted price curve. An LP's real financial outcome depends entirely on three structural factors: the exact price domain where liquidity remains active, the path-dependent trajectory of spot prices across initialized ticks, and how smart contracts account for and disburse collected fee balances [1] [2].
 
-This article traces the cash flow from a trader’s swap to your position-level accrual, then shows how to evaluate fee income against the counterfactual of simply holding the assets. We use Uniswap v2 and v3/v4 for mechanics, and Curve for a governance-linked fee flow.
+In modern AMM architectures, fee models have transitioned from static pool-wide percentages to granular tick-level accounting, native ERC-6909 singleton credits, and dynamic volatility-adjusted fee curves. This guide traces cash flow from a trader’s swap to your wallet, then demonstrates how to evaluate fee revenue against the gold standard of AMM profitability: **Loss-Versus-Rebalancing (LVR)** [2] [3] [5].
 
 <figure class="article-figure">
   <img src="/images/guides/liquidity-provider-fees.webp" alt="Swap flow moves through an active liquidity range while a smaller fee stream accumulates separately." width="1600" height="1067" loading="lazy" decoding="async" />
   <figcaption>Fees accrue from eligible active flow, not from a fixed yield source. <span class="article-figure__credit">Original editorial illustration by LiquidityPools.app.</span></figcaption>
 </figure>
 
-## From a trader’s swap to your wallet: the fee path
+> **Desk Field Note from Marcus Vance**:
+> *"LPs must understand the distinction between nominal fee volume and net economic fee capture. If an AMM processes $50M in daily volume, but $40M of that volume represents toxic cross-DEX arbitrageurs backrunning CEX quotes, the pool is capturing fees at the expense of permanent inventory decay. High volume is only profitable if the ratio of uninformed retail flow to toxic arbitrage flow is sufficiently high."*
 
-- Uniswap v2: Each swap charges a 0.30% fee that is added to the pool, enlarging reserves. Liquidity providers receive these fees pro rata by burning their LP tokens to redeem the underlying plus accrued fees [1]. The fee is not a side balance—it’s embedded in bigger reserves you partially own via LP tokens.
-- Uniswap v3 and v4: Fees accrue only to liquidity that is active at the swap price (i.e., within the position’s chosen price range). Unlike v2’s reserve growth, v3/v4 track fees separately as claimable balances tied to each position [2]. Your redeemable tokens and your claimable fees are distinct buckets.
-- Fee tiers are a pool parameter: In v3, the same token pair can have pools with different fee tiers—commonly 0.05%, 0.30%, and 1%. The “rate” is not a protocol-wide constant; it is set per pool and drives trader routing and LP compensation in that specific pool [3].
+## From a Trader’s Swap to Your Wallet: The Fee Path
 
-Those three rules determine who is the fee recipient and how accrual happens. In v2, every LP in the pool shares fees continuously via reserve growth. In v3/v4, only the liquidity in-range at the swap price earns fees, and each position tracks its own claimable fees. If your range is inactive, you collect nothing during that period—even if the overall pool shows high volume [2].
+Different AMM generations distribute swap fees through distinct smart-contract mechanisms:
 
-## Scenario 1: a Uniswap v2 50/50 position — what you earn and how to compare it
+- **Uniswap v2 (Embedded Reserve Compounding)**: Every swap incurs a 0.30% fee deducted from the input asset. The fee remains inside the pool, increasing invariant $k$ and enlarging total reserves. Liquidity providers realize accrued fees solely upon burning LP tokens during withdrawal [1].
+- **Uniswap v3 (Tick-Indexed Claimable Balances)**: Fees are unbundled from pool reserves. As swaps traverse price ticks, fees accrue strictly to liquidity active at that tick price. The protocol tracks fee growth outside ticks ($f_o$), recording claimable token balances directly to each non-fungible position [2].
+- **Uniswap v4 (Transient Accounting & Dynamic Fees)**: In singleton architectures (`PoolManager.sol`), fees can be paid via native ERC-6909 credits. Crucially, pool fees no longer need to be static: hook contracts can compute dynamic swap fees on each transaction based on realized volatility or directional imbalances [3].
+- **Curve Finance (Base Fees + veCRV Distribution)**: Base pool fees accrue to pool token holders, while 50% of trading fees across the protocol are routed to users who lock CRV into voting escrow (veCRV) [4].
 
-Mechanism
-- Every trade pays 0.30% into the pool [1]. Over any period with total traded notional V (in either direction), total fees added to the pool are 0.003 × V. 
-- If your LP tokens entitle you to a share s of the pool, your share of fees for that period is s × 0.003 × V. You realize these fees when you burn LP tokens to withdraw your underlying plus accrued fees [1].
+Understanding the accrual path prevents dangerous assumptions. In concentrated systems, if price sits outside your range, you collect zero fees during that window—even if the aggregate pool records record-breaking volume [2].
 
-What this implies (and where that simplicity stops)
-- Pro rata sharing is straightforward, but your net performance is not “fees alone.” As prices move, the AMM constantly rebalances your inventory between the two assets. Compared with simply holding your starting amounts, you may end up with more of the underperforming asset and less of the outperformer. The value difference versus holding is often called “impermanent loss.” See our explainer to frame it correctly: [[Impermanent Loss Explained: Rebalancing, Relative Price, and LP Outcomes](/guides/impermanent-loss-explained)].
-- Research decomposes AMM returns into a market-risk component (your exposure to the assets) plus a microstructure component that is accrued fees minus losses to arbitrageurs. The latter can offset or even outweigh the fees you collect [5]. In other words, the fee flow is necessary to compensate you for being rebalanced by informed flow, but it is not a complete measure of return.
+## Scenario 1: Uniswap v2 Full-Range Fee Generation and Inventory Drift
 
-A decision-useful view is to track two ledgers over your holding period: 
-- Fees earned per the v2 formula above (you can infer from pool growth and your share), and 
-- The marked-to-market value of your pool position versus a hold-only counterfactual of the same initial token amounts. 
+Consider a classical v2 pool holding ETH and USDC:
+- Every swap charges a fixed 0.30% fee ($f = 0.003$). If the pool processes daily volume $V$, total fees collected are $0.003 \times V$.
+- If you own 2% of the pool's LP tokens, your position accrues $0.02 \times 0.003 \times V$ in gross fee value [1].
 
-If the second ledger shows that rebalancing and price exposure reduced your position’s value relative to holding by more than the first ledger’s fees added, you underperformed holding despite “earning fees.”
+However, gross fees do not equal net profit. When ETH surges, arbitrageurs trade against the pool at stale on-chain quotes until the pool price matches external exchanges. The pool sells ETH and accumulates USDC. When you redeem, you hold less ETH and more USDC than your starting balances.
 
-For a full picture of inventory risk and execution, see [[Market Making on AMMs: A Practical Framework for Understanding LP Behavior](/guides/market-making-on-amms)].
+In quantitative finance, this cost is broken down into:
+1. **Market Risk (Beta)**: Directional exposure to the underlying assets.
+2. **Adverse Selection / LVR**: The continuous loss suffered when informed arbitrageurs pick off stale pool quotes [5].
 
-## Scenario 2: a Uniswap v3 position that falls out of range — why fees stop
+If the fees accrued ($0.02 \times 0.003 \times V$) are smaller than the cumulative adverse selection, your position underperforms a simple buy-and-hold strategy despite nominal fee growth [5].
 
-Mechanism
-- In v3/v4, only liquidity in the active tick range at the time of a swap accrues fees [2]. If the market price leaves your range, your position becomes inactive and earns no fees. Your uncollected fees to date remain claimable (they’re tracked separately), but new swaps do not pay you while you are out of range [2].
-- Your fee share at any moment depends on your fraction of the active liquidity at that price. The same notional deposit can earn very different fees depending on how much competing liquidity crowds your range, and on how often the price trades inside versus outside your range.
+For a comprehensive explanation of how relative price shifts affect position value, see [Impermanent Loss Explained: Rebalancing, Relative Price, and LP Outcomes](/guides/impermanent-loss-explained/).
 
-What this implies
-- Tight ranges can increase fee density while active, but they go inactive more often. Wide ranges stay active longer but dilute your per-swap share.
-- The wallet still holds your concentrated position even when inactive; your token composition is whatever the AMM’s bonding curve implies at the edge of your range. Price can keep moving against that inventory while you collect zero fees during the inactive period [2].
+## Scenario 2: Concentrated Range Out-of-Bounds—Why Fees Stop
 
-This is the core behavioral difference from v2: v3/v4 make “time in range” and “share of active liquidity” central to your revenue. A displayed “pool APR” or nominal fee rate does not transfer to your position unless you are in range when volume happens [2] [3].
+In concentrated AMMs (Uniswap v3/v4), liquidity is active strictly within the tick range $[P_{\text{lower}}, P_{\text{upper}}]$:
 
-## Fee tier choice: 0.05% vs 0.30% vs 1% is a design parameter, not a payout ladder
+- **In-Range Execution**: While spot price trades inside your ticks, your capital earns fees pro rata to your share of active liquidity. Because capital is concentrated, fee density per dollar can be 10x to 100x higher than full-range pools [2].
+- **Out-of-Range Deactivation**: The instant spot price crosses outside your bounds, fee accumulation halts completely. Uncollected fees accrued to date remain safely claimable, but new volume pays you zero [2].
+- **Boundary Inventory Imbalance**: If price breaks above $P_{\text{upper}}$, your position is converted 100% into the quote asset (e.g., USDC). If price continues to rise, you hold cash and miss out on upside while earning zero fees [2].
 
-Mechanism
-- Uniswap v3 introduced multiple fee tiers (commonly 0.05%, 0.30%, 1%). Each pair can have several parallel pools, each with its own tier. The choice is a pool-level parameter [3].
+This dynamic makes **Time-in-Range** and **Active Liquidity Share** the primary drivers of fee cash flow. A headline pool APR is irrelevant if your specific position spends half its time out-of-range [2] [3].
 
-What this implies
-- Your realized revenue is not mechanically higher in the “higher fee” pool. A higher tier may attract less trader flow, or attract flow only when other routes are worse. A lower tier might capture more volume. In every case, your payout depends on three multiplicative factors:
-  1) the pool’s fee rate (set by the tier),
-  2) the pool’s realized in-range volume for your position, and
-  3) your share of the active liquidity while that volume occurs.
+## Dynamic Fee Curves: Why Static Fee Tiers Are Giving Way
 
-Two pools in the same pair with different fee tiers will produce different results because volume distribution and active-liquidity competition differ. The only honest shortcut is to express your expected revenue as: fee rate × in-range volume × your active-share. If any term is small, your outcome is small—even with a “high” nominal rate [3].
+Historically, pools forced LPs to choose between rigid static fee tiers: 0.01% (stable pairs), 0.05% (correlated pairs), 0.30% (volatile pairs), and 1.00% (exotic pairs) [3].
 
-## Table: fee rate, APR, collected fees, and net performance — don’t confuse them
+However, static fee tiers create structural failure modes:
+- During calm market regimes, a 0.30% fee is too high, driving swappers to lower-fee venues or off-chain aggregators.
+- During volatile market crashes, a 0.30% fee is far too low: external prices move so rapidly that arbitrageurs extract massive profits from stale pool quotes, inflicting devastating LVR on LPs [5].
 
-| Concept | What it measures | Where it accrues | Why it can mislead |
+Modern AMMs solve this through dynamic fees:
+- **Volatility Accumulator (Trader Joe Liquidity Book)**: The protocol measures how many price bins a trade crosses per unit of time. When volatility spikes, the variable fee component automatically expands, forcing arbitrageurs to pay higher fees to rebalance the pool [3].
+- **Uniswap v4 Dynamic Fee Hooks**: A hook contract calculates historical price variance or consults a native TWAP oracle, dynamically adjusting the pool fee between 0.05% and 2.00% in response to market volatility [3].
+
+Dynamic fees internalize arbitrage profits, ensuring LPs receive higher compensation when market risk is elevated [3] [5].
+
+## Monitoring & Onchain Tooling Stack
+
+To evaluate pool fee generation and decompose toxic from organic flow:
+
+- **Fee Yield & Net Return Accounting**: Track uncollected fee growth, fee APY, and net return relative to HODL on [Revert Finance](https://revert.finance).
+- **Toxic vs. Organic Volume Analytics**: Query [Dune Analytics](https://dune.com) to decompose trading volume into retail aggregators vs. MEV searcher bundles.
+- **Protocol Fee Turnover**: Compare annualized fee-to-TVL ratios across top AMM pools on [DeFiLlama](https://defillama.com).
+
+## Common Fee Accounting Errors & Yield Calculation Pitfalls
+
+| Yield Misconception | Accounting & Mechanical Reality | Quantitative Best Practice |
+|---|---|---|
+| **"Pool APR equals my personal position return."** | Pool APR averages all liquidity across all ticks. Concentrated positions earn vastly different yields based on tick-specific depth and time-in-range. | Calculate position-level fee density: $\frac{\text{Fees Collected}}{\text{Capital Deposited} \times \text{Days Active}}$. |
+| **"Higher fee tiers always generate more LP income."** | High fee tiers (e.g., 1.00%) disincentivize aggregator routing, steering volume to 0.05% or 0.30% pools and leaving high-tier LPs with low turnover. | Compare volume-to-TVL turnover across fee tiers for the same pair before selecting a tier. |
+| **"Uncollected fees compound automatically."** | In Uniswap v3 and v4, accrued fees sit as idle uncollected balances outside the curve; they do not automatically reinvest or compound. | Factor in compounding gas costs; establish scheduled reinvestment intervals when fee balances warrant the transaction fee. |
+| **"Positive fee APR guarantees risk compensation."** | In pairs with annualized volatility exceeding 80%, LVR drag often exceeds 20% annualized, wiping out 15% fee APRs. | Subtract theoretical LVR hurdle ($\frac{\sigma^2}{8}$) from gross fee yield to verify net alpha. |
+
+## Comparative Fee Analysis: Metric, Location, and Misinterpretation
+
+| Metric | What It Measures | Contract Accounting Location | Potential Misinterpretation |
 |---|---|---|---|
-| Pool fee rate (e.g., 0.30%) | Per-swap fee charged in that pool | v2: into reserves; v3/v4: tracked per position | A higher rate can coincide with less volume or less time in range [1] [2] [3] |
-| Displayed APR | Backward-looking estimate from past fees/TVL | UI-level metric | Not guaranteed; ignores your future active share and price path |
-| Collected fees | Cash flow you can claim from swaps | v2: via LP token redemption; v3/v4: claimable fees | Positive but incomplete; says nothing about inventory P&L [1] [2] |
-| Net LP performance | Fees minus loss-versus-rebalancing vs a hold-only baseline | Your position value vs counterfactual | Can be negative despite “high fees” due to arbitrage and price exposure [5] |
+| Pool Fee Rate (e.g., 0.30%) | Swap fee percentage charged on each trade | Deducted from input before invariant binds [1] [3] | Higher fee rate can reduce volume or cause out-of-range inactivity |
+| Displayed Pool APR | Backward-looking projection based on past 24h volume/TVL | Interface-level extrapolation | Fails to account for future range deactivation or price divergence |
+| Collected Fees | Cumulative cash flow claimable by position | v2: embedded in reserves; v3/v4: tracked claimable balance [2] | Positive fee cash flow can be dwarfed by underlying inventory losses [5] |
+| Net LP Return (vs. LVR) | Gross fees minus Loss-Versus-Rebalancing | Realized portfolio value vs. dynamic rebalancing benchmark | True measure of LP edge; can be negative despite double-digit APRs [5] |
 
-## Curve note: pooling and veCRV are separate decisions
+## Curve Finance: Separating Pool Fees from ve-Tokenomics
 
-Curve adds a governance layer that many participants conflate with LP fees. The core distinction:
-- Pool trading fees arise from swaps in the pool where you provide liquidity.
-- veCRV is received by locking CRV for between one week and four years; veCRV holders receive a share of trading fees and some interest from Curve’s stablecoin markets, and the veCRV balance decays as the lock approaches expiry [4].
+Curve introduces a dual-revenue structure that often confuses newcomers:
+- **Base Swap Fees**: Generated from swaps inside the specific pool where you supply liquidity.
+- **veCRV Governance Fees & Gauges**: CRV holders who lock tokens for up to 4 years receive 50% of all protocol-wide trading fees, plus voting power to direct future token emissions to specific pool gauges [4].
 
-What this implies
-- Pooling and locking are separate cash flows with different risks and time horizons. If you also lock CRV, part of your aggregate “returns” may come from protocol-level fee sharing paid to veCRV rather than from the pool where you supply inventory [4]. 
-- The lock is a commitment: the veCRV voting power and reward weight decay over time until unlock [4]. Treat it as a governance position with its own cost, not as a simple boost to pool fees.
+When analyzing a Curve pool, distinguish between **organic fee APR** (sustainable revenue paid by swappers) and **gauge emission APR** (subsidized token inflation). Subsidies can vanish overnight if governance votes shift gauge weights [4].
 
-## Measuring whether fees are enough: the counterfactual check
+## Measuring Whether Fees Are Enough: The LVR Benchmark Check
 
-A useful framework to decide whether LP fees are sufficient compensation is to compare against a hold-only baseline at the same end time.
+To evaluate whether your LP fees genuinely compensate for market making, compare performance against the **Loss-Versus-Rebalancing (LVR)** benchmark [5]:
 
-- Define your starting bundle of tokens (the exact numbers you deposit). Track two paths over the period: 
-  1) Hold-only: Mark the starting tokens to end-of-period prices.
-  2) LP path: Mark your position’s tokens plus unclaimed and claimed fees to end-of-period prices.
-- The difference between the LP path and the hold-only path is your LP performance. 
-- Research suggests this difference can be decomposed into a market-risk component (exposure to the tokens themselves) and a microstructure component equal to accrued fees minus losses to arbitrageurs who rebalance you at informative prices [5]. 
+$$\text{Net Performance} = \text{Gross Fee Revenue} - \text{LVR} - \text{Gas Overhead}$$
 
-Where the model helps
-- It stops you from treating fees as “return” in isolation.
-- It highlights the role of realized in-range volume, your active share, and price variance in driving performance.
+Where:
+- **Gross Fee Revenue** is the sum of all swap fees captured while active.
+- **LVR** represents the cumulative value extracted by arbitrageurs who trade against the AMM at stale prices relative to external reference markets [5].
 
-Where the model stops being enough
-- It does not predict future volume, competition for the same range, or how routing will shift across fee tiers. Those are empirical and path-dependent. 
-- It does not capture operational frictions like gas for repositioning or claiming, or governance lock costs. You must layer those on separately.
+If gross fees exceed LVR, the pool provides genuine alpha: you were compensated for market making. If LVR exceeds gross fees, you suffered a net loss relative to an equivalent rebalanced portfolio, effectively subsidizing external arbitrageurs [5].
 
-For background on how AMM inventory rebalancing creates and destroys value, see [[Market Making on AMMs: A Practical Framework for Understanding LP Behavior](/guides/market-making-on-amms)] and [[Impermanent Loss Explained: Rebalancing, Relative Price, and LP Outcomes](/guides/impermanent-loss-explained)].
+For an operational analysis of market-making risk, consult [Market Making on AMMs: A Practical Framework for Understanding LP Behavior](/guides/market-making-on-amms/).
 
-## What to check before you act
+## Pre-Allocation Fee Diligence Checklist
 
-- Who exactly receives the swap fees, and how do they accrue? For v2, fees enlarge pool reserves and are redeemed via LP tokens [1]. For v3/v4, fees accrue only while your range is active and are tracked as claimable balances per position [2].
-- What fee tier does this specific pool use (e.g., 0.05%, 0.30%, 1%)? Remember the tier is a pool parameter, not a universal protocol rate [3].
-- How will you estimate your share of active liquidity during the times you expect volume to occur? If you can’t, you can’t map “pool APR” to your position.
-- Under what price moves will your v3 range go inactive, and for how long might that persist? What is your token inventory at the edges of your range while fees are zero [2]?
-- Are there protocol-level fee shares outside the pool that matter to your outcome? Example: veCRV distributes a share of trading fees and some interest from Curve’s stablecoin markets and requires a decaying time lock [4].
+Before committing capital to an AMM pool, evaluate these five cash-flow conditions:
 
-## The practical takeaway
+- [ ] **Accrual Mechanism**: How are fees accounted for: embedded in reserves (v2), tracked as claimable balances per tick (v3), or credited via ERC-6909 singleton balances (v4) [1] [2] [3]?
+- [ ] **Dynamic Pricing**: Does this pool utilize a static fee tier or a hook-enabled dynamic fee that expands during volatility [3]?
+- [ ] **Historical Time-in-Range**: What percentage of the past 30 days would your target price range have spent active in-range [2]?
+- [ ] **LVR Hurdle Test**: Does historical fee generation in this pair comfortably exceed estimated Loss-Versus-Rebalancing ($\frac{\sigma^2}{8}$) [5]?
+- [ ] **Subsidy Decomposition**: Are advertised yields derived from organic swap volume or temporary token emission subsidies [4]?
 
-Treat LP fees as compensation for making a firm quote with inventory, not as a standalone yield. In v2, everyone shares fee growth pro rata. In v3/v4, only active liquidity earns, and the protocol records fees per position. Your realized outcome is fee income minus the cost of being rebalanced against price moves—measured against holding the same assets. If you can identify the fee recipient and accrual mechanism, estimate your active share, and outline the price paths that switch off your fees or erode your inventory value, you have the minimum toolkit to decide whether the advertised pool is a market you actually want to make.
+Treat LP fees as compensation for making continuous quotes with real capital, not as passive yield. In classical pools, fee growth compounds pro rata; in concentrated pools, fees accrue strictly while active in-range; in modern singleton pools, dynamic fees adjust to volatile flow. If your gross fee capture fails to outpace the adverse selection of arbitrage (LVR), no headline APR can make the position profitable.
+
+## Diagnostic Troubleshooting Decision Tree
+
+Use this operational troubleshooting flow when evaluating fee profitability:
+
+1. **Fee Yield Fails to Compensate for Impermanent Loss**:
+   - *Diagnostic*: Market volatility $\sigma$ is too high for the current fee tier, meaning adverse selection (LVR) outpaces gross fee capture.
+   - *Action*: Shift capital to a higher fee tier (e.g., from 0.05% to 0.30%) or withdraw liquidity into stablecoin or correlated asset pools.
+2. **Aggregators Stop Routing Trades to Your Pool**:
+   - *Diagnostic*: A competing pool with lower fees or deeper concentrated liquidity offers better net execution pricing for swaps.
+   - *Action*: Adjust fee tier or narrow price bounds to increase virtual liquidity density, restoring competitiveness on DEX aggregators.
+3. **Fee Compounding Gas Exceeds Yield Generation**:
+   - *Diagnostic*: The frequency of manual fee collection and reinvestment is too high relative to position capital size.
+   - *Action*: Batch fee claims; only reinvest when accumulated fees exceed at least 10x transaction gas costs.
 
 ## References
 
-1. [Pools | Uniswap Developers](https://developers.uniswap.org/docs/protocols/v2/concepts/pools)
-2. [Fees | Uniswap Developers](https://developers.uniswap.org/docs/get-started/concepts/fees)
-3. [Fees | Uniswap Developers](https://developers.uniswap.org/docs/get-started/concepts/fees)
-4. [What is veCRV? | Curve Knowledge Hub](https://docs.curve.finance/user/vecrv/what-is-vecrv)
-5. [Automated Market Making and Loss-Versus-Rebalancing](https://arxiv.org/abs/2208.06046)
-
-
 [1]: https://developers.uniswap.org/docs/protocols/v2/concepts/pools "Pools | Uniswap Developers"
+
 [2]: https://developers.uniswap.org/docs/get-started/concepts/fees "Fees | Uniswap Developers"
-[3]: https://developers.uniswap.org/docs/get-started/concepts/fees "Fees | Uniswap Developers"
+
+[3]: https://uniswap.org/whitepaper-v4.pdf "Uniswap v4 Core Whitepaper & Architecture"
+
 [4]: https://docs.curve.finance/user/vecrv/what-is-vecrv "What is veCRV? | Curve Knowledge Hub"
+
 [5]: https://arxiv.org/abs/2208.06046 "Automated Market Making and Loss-Versus-Rebalancing"

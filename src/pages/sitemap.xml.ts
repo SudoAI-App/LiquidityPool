@@ -5,17 +5,17 @@ export const GET: APIRoute = () => {
   const baseUrl = 'https://liquiditypools.app';
 
   const staticPages = [
-    { url: `${baseUrl}/`, priority: '1.0', changefreq: 'daily', lastmod: '2026-09-09' },
-    { url: `${baseUrl}/guides/`, priority: '0.9', changefreq: 'daily', lastmod: '2026-09-09' },
-    { url: `${baseUrl}/topics/`, priority: '0.8', changefreq: 'weekly', lastmod: '2026-09-09' },
-    { url: `${baseUrl}/about/`, priority: '0.6', changefreq: 'monthly', lastmod: '2026-09-09' },
+    { url: `${baseUrl}/`, priority: '1.0', changefreq: 'daily', lastmod: '2026-09-10' },
+    { url: `${baseUrl}/guides/`, priority: '0.9', changefreq: 'daily', lastmod: '2026-09-10' },
+    { url: `${baseUrl}/topics/`, priority: '0.8', changefreq: 'weekly', lastmod: '2026-09-10' },
+    { url: `${baseUrl}/about/`, priority: '0.6', changefreq: 'monthly', lastmod: '2026-09-10' },
   ];
 
   const articlePages = articles.map((article) => ({
     url: `${baseUrl}/guides/${article.slug}/`,
     priority: '0.8',
     changefreq: 'weekly',
-    lastmod: article.date || '2026-09-09',
+    lastmod: article.lastReviewed || article.date || '2026-09-10',
   }));
 
   const allUrls = [...staticPages, ...articlePages];

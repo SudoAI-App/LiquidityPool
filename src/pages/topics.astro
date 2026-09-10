@@ -7,8 +7,39 @@ const copy: Record<string, string> = {
   'Risk & Research': 'Every pool expresses a collection of risks. These guides help distinguish price exposure, protocol exposure, incentive risk, and execution conditions.',
   'Advanced': 'Move from individual positions to market structure: liquidity incentives, cross-chain routing, onchain metrics, and AMM market making.'
 };
+const breadcrumbSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://liquiditypools.app/' },
+    { '@type': 'ListItem', position: 2, name: 'Topics', item: 'https://liquiditypools.app/topics/' }
+  ]
+};
+const collectionSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'CollectionPage',
+  name: 'DeFi Liquidity Research Tracks — LiquidityPools.app',
+  url: 'https://liquiditypools.app/topics/',
+  description: 'Structured research tracks covering foundations, LP mechanics, risk research, and advanced market microstructure.',
+  hasPart: categories.map((category) => ({
+    '@type': 'ItemList',
+    name: category,
+    description: copy[category],
+    numberOfItems: categoryArticles(category).length,
+    itemListElement: categoryArticles(category).map((art, idx) => ({
+      '@type': 'ListItem',
+      position: idx + 1,
+      name: art.title,
+      url: `https://liquiditypools.app/guides/${art.slug}/`
+    }))
+  }))
+};
 ---
 <BaseLayout title="Research Tracks — LiquidityPools.app" description="Explore the LiquidityPools.app research tracks: foundations, LP mechanics, risk research, and advanced DeFi liquidity.">
+  <Fragment slot="head">
+    <script is:inline type="application/ld+json" set:html={JSON.stringify(collectionSchema)} />
+    <script is:inline type="application/ld+json" set:html={JSON.stringify(breadcrumbSchema)} />
+  </Fragment>
   <section class="page-hero"><div class="container"><div class="eyebrow eyebrow--mint">Research tracks</div><h1 class="page-title">A library should have a point of view.</h1><p>These tracks are not categories for their own sake. They are a reading order designed to turn scattered DeFi concepts into a usable model.</p></div></section>
-  <section class="section section--ink"><div class="container"><div class="topic-grid">{categories.map((category, index) => <section class="topic-card"><div class="eyebrow eyebrow--mint">0{index + 1} / {category}</div><h2>{category}</h2><p>{copy[category]}</p><ul>{categoryArticles(category).map((article) => <li><a href={'/guides/' + article.slug}>{article.title} <span aria-hidden="true">↗</span></a></li>)}</ul></section>)}</div></div></section>
+  <section class="section section--ink"><div class="container"><div class="topic-grid">{categories.map((category, index) => <section class="topic-card"><div class="eyebrow eyebrow--mint">0{index + 1} / {category} · {categoryArticles(category).length} Guides</div><h2>{category}</h2><p>{copy[category]}</p><ul>{categoryArticles(category).map((article) => <li><a href={'/guides/' + article.slug + '/'}>{article.title} <span aria-hidden="true">↗</span></a></li>)}</ul></section>)}</div></div></section>
 </BaseLayout>

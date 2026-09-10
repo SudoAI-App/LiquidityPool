@@ -1,9 +1,9 @@
 ---
 const { article } = Astro.props;
 ---
-<a href={'/guides/' + article.slug} class="article-card">
+<a href={'/guides/' + article.slug + '/'} class="article-card">
   <div class="article-card__top"><span>{article.category}</span><span>{article.readTime}</span></div>
   <h3>{article.title}</h3>
   <p>{article.description}</p>
-  <div class="article-card__footer"><span>Read guide</span><span class="arrow" aria-hidden="true">↗</span></div>
+  <div class="article-card__footer"><span>{article.author ? `By ${article.author}` : 'Read guide'}</span><span class="arrow" aria-hidden="true">↗</span></div>
 </a>

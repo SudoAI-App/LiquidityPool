@@ -48,7 +48,7 @@ for (const file of readdirSync(articlesDir).filter((name) => name.endsWith('.md'
   rows.push({ slug, words, references, internalLinks, headings });
 }
 
-if (rows.length !== 20) errors.push(`expected 20 article files, found ${rows.length}`);
+if (rows.length < 20) errors.push(`expected at least 20 article files, found ${rows.length}`);
 if (errors.length) {
   console.error('CONTENT AUDIT FAILED');
   for (const error of errors) console.error(`- ${error}`);

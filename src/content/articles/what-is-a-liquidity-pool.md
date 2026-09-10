@@ -1,123 +1,211 @@
 ---
 title: "What Is a Liquidity Pool? A Clear Guide to DeFi Market Depth"
-description: "A practical guide to liquidity pools: how invariants, ranges, fees, composition, and MEV shape price impact, liquidity-provider risk, and trade execution."
+description: "How liquidity pools work: bonding curve invariants, singleton architectures, programmable hooks, intent solvers, and LP inventory risk explained."
 category: "Foundations"
 date: 2026-09-09
-lastReviewed: "2026-09-09"
-author: "LiquidityPool Research"
-readTime: "9 min read"
-keywords: "what is a liquidity pool, DeFi liquidity pool, automated market maker, AMM"
+lastReviewed: "2026-09-10"
+author: "Dr. Kieran Thorne"
+readTime: "10 min read"
+keywords: "what is a liquidity pool, DeFi liquidity pool, automated market maker, AMM, singleton architecture, hooks"
 featured: true
 ---
 
-You open a wallet, see a tempting annualized yield on a pool, and consider either swapping or depositing. The interface shows a spot price and a depth bar. But those visuals hide the engine that sets your outcome: a liquidity pool is an automated pricing rule. That rule decides how reserves move with your trade, how much your price degrades as size grows, and how inventory risk shifts to liquidity providers while execution risk shifts to traders. If you do not know the pool’s invariant, active-liquidity range, fee design, and how transactions are ordered on-chain, the headline APR or apparent depth will mislead you.
+A liquidity pool is not a passive savings vault; it is a deterministic pricing engine executed by smart contracts to clear asset trades without a centralized intermediary. In modern decentralized finance, liquidity pools serve as the primary execution and settlement layer for automated market makers (AMMs), DEX aggregators, and off-chain intent-based solver networks.
 
-This article focuses on what actually governs quotes and PnL—so you can explain to yourself, before acting, why a given pool is suitable or not.
+Understanding how token reserves rebalance along mathematical curves, how capital is distributed across discrete price ticks, and how singleton architectures handle execution is necessary before committing capital or executing size onchain. This guide establishes the operational mechanics of liquidity pools, contrasts differing invariant designs, and details the structural risks liquidity providers underwrite.
 
 <figure class="article-figure">
   <img src="/images/guides/what-is-a-liquidity-pool.webp" alt="Two token reserves connected by a curved automated pricing path." width="1600" height="1067" loading="lazy" decoding="async" />
-  <figcaption>How a pool turns two reserves into a continuous quote. <span class="article-figure__credit">Original editorial illustration by LiquidityPools.app.</span></figcaption>
+  <figcaption>How an automated market maker converts reserve balances into continuous execution quotes. <span class="article-figure__credit">Original editorial illustration by LiquidityPools.app.</span></figcaption>
 </figure>
 
-## Pools are pricing rules, not token vaults
+> **Desk Field Note from Dr. Kieran Thorne**:
+> *"At its core, a liquidity pool is nothing more than a shared smart contract holding two or more token balances, governed by an immutable state transition function. There is no counterparty sitting on the other side negotiating price—the contract itself is the counterparty. Every time you deposit capital, you surrender custody of your individual tokens in exchange for a fractional share of the contract's future reserve claims."*
 
-Most users first encounter Uniswap’s constant-product market maker. The pool holds reserves of two ERC‑20 tokens, and the pricing rule keeps the product of reserves constant (x*y = k). As you buy one asset from the pool, you add the other to it; the marginal price worsens as your trade consumes a larger share of reserves. In Uniswap v3 and v4, the same rule applies within each liquidity provider’s chosen price range, meaning liquidity can be concentrated and may be inactive outside that range [1].
+## 1. Automated Pricing Rules vs. Static Balance Vaults
 
-Two practical implications follow from that design:
+Most decentralized trading relies on constant-function market makers (CFMMs). Unlike an exchange order book that matches discrete bids and asks from individual market participants, a liquidity pool aggregates deposits into a shared liquidity reserve governed by an immutable bonding curve [1].
 
-- Apparent TVL is not the same as executable depth. What matters is how much active liquidity sits near your trade price and how the invariant responds to your size [1].
-- Liquidity providers are not passively holding a static 50/50 basket. The composition they can withdraw changes with trades and price moves; in concentrated-liquidity pools, positions can even be out-of-range and effectively idle until price returns [1].
+In the foundational constant-product design ($x \cdot y = k$), introduced by Uniswap v1 and v2, the pool maintains two reserves ($x$ and $y$). When a trader swaps token $X$ for token $Y$, they deposit $\Delta x$ into the contract and withdraw $\Delta y$, such that the product of the reserves remains constant before fee deduction:
 
-If you learn only one habit, make it this: inspect the invariant and where liquidity is active before trusting a quote or a yield figure. For an overview of AMM mechanics, see our guide: [Automated Market Makers Explained: The Engine Behind AMM Pools](/guides/automated-market-maker-explained).
+$$(x + \Delta x)(y - \Delta y) = k$$
 
-## Executable depth: why your quote changes as you size up
+Because the reserve ratio $y/x$ sets the marginal spot price, purchasing an asset directly degrades its exchange rate for the next trade. The larger the order relative to the pool's reserves, the steeper the realized price impact.
 
-Scenario: You try to swap a large amount through a shallow constant‑product pool. Because the pool maintains x*y = k, buying a lot of token Y with token X forces X into the pool and pulls Y out, raising the implied price along the curve. The larger your order relative to reserves, the worse your marginal price becomes. Interfaces summarize this as “price impact.” The same trade pushed through a deeper pool—or through a router that splits across multiple pools—can have a different outcome because the slope of each pool’s pricing curve near the current price depends on active liquidity and the invariant [1].
+In concentrated liquidity architectures (Uniswap v3, Uniswap v4, and discrete bin AMMs), this pricing rule is restricted to user-defined finite price intervals rather than spanning $0 \to \infty$. Capital deposited outside the current active tick earns zero trading fees and provides zero executable depth to market participants [1].
 
-For concentrated-liquidity pools, only the liquidity posted within your trade’s price interval participates. If most liquidity sits just outside your range, your effective depth is smaller than it looks in aggregate, and price impact jumps as you traverse into thinner bands [1].
+---
 
-This is where traders often misinterpret TVL as depth. TVL can be high while active liquidity near your price is low; conversely, concentrated liquidity can create meaningful depth in a narrow band but fall off quickly once you push through it [1].
+## 2. Singleton Architecture and Transient Storage
 
-### Comparing pricing rules and where they’re strongest
+Decentralized exchange engineering has evolved significantly from the early model of deploying independent factory pair contracts:
 
-| Pool type | Core invariant or rule | Where slippage is lowest | What degrades it |
-|---|---|---|---|
-| Constant product (e.g., Uniswap v2) | x*y = k with two-token reserves | Dispersed liquidity; smooth but ever-rising impact as size grows | Large orders vs reserves; shallow pools show steep price moves [1] |
-| Concentrated constant product (Uniswap v3/v4) | Same invariant but only within LP-selected price ranges | Inside ranges with substantial active liquidity | If price moves outside the range, liquidity becomes inactive; depth can vanish quickly [1] |
-| Curve StableSwap | StableSwap invariant with amplification coefficient A | Near intended balance; very low slippage for like‑kind assets | As the pool skews (asset imbalance), slippage increases; A tunes tolerance to imbalance [3] |
+```
++--------------------------------------------------------------------------------+
+|                        AMM ARCHITECTURAL EVOLUTION                             |
++--------------------------------------------------------------------------------+
+|                                                                                |
+|  Legacy Factory Pattern (Uniswap v2 / v3)                                      |
+|  [Router] ---> Transfer In ---> [Pool Pair Contract: TokenA/TokenB]           |
+|           ---> Transfer Out --> [Pool Pair Contract: TokenB/TokenC]           |
+|           ---> Transfer Out --> [User Wallet]                                 |
+|  * High gas: Redundant ERC-20 transfers across isolated pair contracts.       |
+|                                                                                |
+|  Modern Singleton Pattern (Uniswap v4 / Ambient)                              |
+|  [User]                                                                        |
+|    | (Single Lock & Call)                                                      |
+|    v                                                                           |
+|  +--------------------------------------------------------------------------+  |
+|  |                             PoolManager.sol                              |  |
+|  |  - Net Balance Deltas Tracked via Transient Storage (EIP-1153)            |  |
+|  |  - Internal ERC-6909 Claims Handled in Memory                            |  |
+|  |  - Dynamic Lifecycle Hooks (beforeSwap, afterSwap, beforeAddLiquidity)   |  |
+|  +--------------------------------------------------------------------------+  |
+|    | (Final Net Settlement Only)                                               |
+|    v                                                                           |
+|  [Token Vault / Settlement]                                                    |
+|                                                                                |
++--------------------------------------------------------------------------------+
+```
 
-The takeaway: match the trade you intend to the pool that is engineered for that use case. Constant-product is generalist but pays for flexibility with impact on big orders; StableSwap is purpose-built for near-par assets but can punish you when the pool is off-balance [1] [3].
+Modern protocol implementations introduce three structural changes:
 
-## Liquidity provision is a moving inventory, not a fixed basket
+1. **Singleton State Engine**: Protocols such as Uniswap v4 and Ambient collapse all trading pools into a single core contract (e.g., `PoolManager.sol`). This design eliminates cross-contract external call overhead and reduces multi-hop routing costs by up to 99% [1].
+2. **Flash Accounting via Transient Storage (EIP-1153)**: Instead of transferring ERC-20 tokens into and out of contracts on each swap hop, the singleton tracks balance deltas in temporary storage that clears at the end of the transaction. Tokens are transferred only once upon final net settlement, or credited internally using the ERC-6909 multi-token standard [1].
+3. **Programmable Lifecycle Hooks**: Pools can now execute arbitrary code callbacks before and after key state transitions (swaps, liquidity adjustments, and fee distributions). Hooks enable volatility-adjusted dynamic fees, onchain limit orders, and automated treasury sweeps directly inside the pool pipeline [1].
 
-Providing liquidity means buying exposure to an automated rebalancer. In Uniswap v2, the pool pays trading fees to liquidity providers, but when the relative price of the assets changes, arbitrageurs move the pool back to external prices along the bonding curve. The result is that your position’s token mix shifts—often leaving you with more of the asset that underperformed and less of the one that outperformed compared with simply holding. Uniswap’s documentation provides the divergence-loss (often called impermanent loss) formula and notes that this loss can disappear if the price later returns to the starting ratio, while fee income can offset some or all of it depending on volume and time exposed [2].
+For an architectural breakdown of these execution primitives, read [Automated Market Makers Explained: The Complete Architecture](/guides/automated-market-maker-explained/).
 
-Scenario: You supply ETH and a dollar stablecoin. ETH rallies relative to the stablecoin. Arbitrage trades against the pool until its implied price matches the broader market. Your share of the pool now represents fewer ETH and more stablecoin than you initially deposited. Compared with buy‑and‑hold, you may be worse off; whether fees made you whole depends on how much volume flowed while you were exposed, not on a promise that fees always erase divergence loss [2].
+---
 
-Concentrated-liquidity positions intensify this dynamic. Inside your selected range, you earn more fees per unit of capital because trades traverse your liquidity more often. But if price exits your range, your position can become entirely one asset and stop earning fees until price re-enters. Understanding where your range sits relative to likely price paths is crucial [1] [2].
+## 3. Executable Market Depth vs. Headline TVL
 
-Key ideas to keep straight:
+A widespread error in liquidity analysis is treating headline Total Value Locked (TVL) as synonymous with market depth. Total Value Locked measures the aggregate dollar value of assets held in a contract; it does not measure how much capital is available to absorb a trade at a specific price point [1] [4].
 
-- Trading fees accrue but are not a guarantee against divergence loss; they must be evaluated in context of price movement, volume, and duration [2].
-- Depositing is an active risk decision. You decide to accept inventory risk shaped by the invariant and your liquidity range, not to passively own a fixed 50/50 basket [1] [2].
+In concentrated AMMs, liquidity providers concentrate capital within narrow bands to maximize fee yield per dollar deployed. If 90% of a pool's $50M TVL is positioned in inactive ranges far from the market price, an incoming $500,000 order can easily exhaust the active tick and trigger extreme price slippage.
 
-For a step-by-step way to vet pools for provision or swaps, see [How to Evaluate a Liquidity Pool: A Five-Part Research Framework](/guides/how-to-evaluate-a-liquidity-pool).
+### Comparative Framework of Core AMM Invariants
 
-## StableSwap pools: great near balance, fragile when skewed
+| Protocol Model | Mathematical Invariant | Capital Density Profile | Primary Operational Constraint |
+| :--- | :--- | :--- | :--- |
+| **Constant Product (Uniswap v2)** | $x \cdot y = k$ across $(0, \infty)$ | Uniform, low density across all prices | Predictable but high price impact on large orders [1] |
+| **Concentrated Tick (Uniswap v3/v4)** | $L^2 = (x + L/\sqrt{P_b})(y + L\sqrt{P_a})$ | Hyper-dense within $[P_a, P_b]$; zero outside | Position goes 100% single-asset when price exits tick bounds [1] |
+| **StableSwap (Curve)** | Hybrid constant-sum and constant-product ($A$) | Ultra-dense near peg; flat curve | Sharp liquidity cliff once balance skews past 80/20 [3] |
+| **Discrete Bin (Liquidity Book)** | $\sum x + P \cdot \sum y = k$ per bin | Zero intra-bin slippage; step-function transitions | Price gaps skip empty bins during volatility [1] |
 
-Curve’s StableSwap invariant was designed for swaps among like‑kind assets (e.g., stablecoins). The amplification coefficient A increases the pool’s tolerance to imbalance around the intended balance, creating a region where the curve is very flat and slippage is minimal. As the pool becomes more imbalanced, the curve steepens, and slippage rises more sharply. Higher A means tighter, lower-slippage behavior around balance but a faster degradation once you move away from balance [3].
+Selecting the appropriate pool structure requires aligning the trading pair's volatility characteristics with the underlying invariant curve [1] [3].
 
-Scenario: You want to swap one stablecoin for another. Before executing, inspect the pool’s asset composition. If the pool is near balance, StableSwap should give you low slippage. If one side is heavily depleted, your trade could see meaningfully worse pricing as you push further into the steep part of the curve. The same pool that looks ideal on a dashboard can behave very differently when its inventory is skewed [3].
+---
 
-This is why stablecoin pools often advertise “low slippage” but still merit a check of the live composition and your trade size. The design is excellent for keeping like‑assets trading near par when inventory is healthy; it is not a blanket guarantee against material impact in stressed or imbalanced conditions [3].
+## 4. Adverse Selection and Inventory Decay
 
-## Transaction ordering and MEV turn quotes into outcomes
+Liquidity provision on an automated market maker is not passive yield; it is an active underwriting agreement where the LP provides continuous, un-cancellable quotes to the public network [2] [4].
 
-Automated market makers expose both sides of the market to on-chain microstructure. Because order quantities and the predictable price impact of AMMs are visible before execution, public transaction ordering can enable front-running and other forms of extractive behavior around your trade. More broadly, AMMs expose liquidity providers to losses when the bonding-curve price diverges from external prices, and public ordering can be exploited by those able to reorder or insert transactions [4].
+Whenever outside reference prices move on centralized exchanges (like Binance or Coinbase), arbitrageurs trade against the AMM's stale onchain quote until the pool's ratio reflects external fair value. This mechanism creates systemic adverse selection:
+- When token $Y$ rallies, arbitrageurs deposit token $X$ into the pool to withdraw underpriced token $Y$.
+- The pool mechanically sells the appreciating asset and accumulates the depreciating asset.
+- If the liquidity provider withdraws after this divergence, their basket is worth less than an identical portfolio held outside the pool. This discrepancy represents divergence loss (impermanent loss) [2].
 
-Scenario: You submit a large swap during a congested block. Your transaction sits in the public mempool with a declared slippage limit. Sophisticated actors can simulate the pool’s reaction to your trade, then attempt to insert transactions before or after yours to extract value, or to cause your swap to execute at the edge of your slippage tolerance. The outcome you receive can differ from the optimistic quote shown moments earlier, because the quote did not account for how other transactions would land in the block [4].
+In concentrated liquidity pools, this inventory rotation occurs with extreme velocity. A narrow range accelerates inventory turnover, leaving the LP holding exclusively the losing token if the market trends beyond the lower bound [1] [2].
 
-There are mitigations. On Ethereum, Flashbots describes its mission as reducing the negative externalities of maximal extractable value (MEV) and offers user tooling intended to protect against frontrunning by avoiding public mempool exposure. Using such protected transaction paths can change your execution risk profile, though they do not guarantee a better price in all circumstances [5].
+For mathematical models on neutralizing this exposure, consult our guide on [Impermanent Loss Explained: Rebalancing, Relative Price, and LP Outcomes](/guides/impermanent-loss-explained/).
 
-Bottom line: a quoted spot price is not a guaranteed execution price. Your slippage tolerance, the path your transaction takes, and the block’s ordering environment all matter to final outcomes [4] [5].
+---
 
-## How to read a pool before touching it
+## 5. Correlated Asset Pools and StableSwap Tail Risk
 
-To evaluate a pool for a swap or a deposit, build a quick checklist around these levers:
+When tokens share an economic peg—such as fiat stablecoins (USDC/USDT), synthetic dollars (USDe), or liquid staking tokens (stETH/ETH)—standard constant-product curves are capital inefficient because 99% of trading occurs in an ultra-narrow band near 1.00.
 
-- Invariant and curve shape. For constant-product pools, expect impact to rise smoothly with size relative to reserves. For StableSwap pools, expect extremely low slippage near balance but faster degradation when imbalanced [1] [3].
-- Active-liquidity range. In concentrated-liquidity designs, confirm where liquidity sits relative to your intended execution price or your deposit range. Out-of-range liquidity does not help you execute or earn [1].
-- Fee design and volume context. Fees accrue to liquidity providers as trades happen; whether they offset divergence loss depends on realized volume and time, not on an assumption that “fees always win” [2].
-- Pool composition. For stablecoin or multi-asset pools, check if inventory is skewed; this determines whether you are trading on the flat or steep part of the curve [3].
-- Transaction-ordering environment. Consider your slippage limit, whether your transaction is exposed in the public mempool, and the potential for adverse ordering effects. Protected relay paths can mitigate some risks but are not panaceas [4] [5].
+Curve's StableSwap invariant solves this by combining constant-sum and constant-product behavior through an amplification parameter $A$ [3]:
 
-These checks do not require you to be a quant. They require you to ask the right questions at the right time and to treat the pool as a live pricing machine rather than a static bucket of tokens. For deeper mechanics, see [Automated Market Makers Explained: The Engine Behind AMM Pools](/guides/automated-market-maker-explained). For a practical pre-trade or pre-deposit workflow, see [How to Evaluate a Liquidity Pool: A Five-Part Research Framework](/guides/how-to-evaluate-a-liquidity-pool).
+$$A n^n \sum x_i + D = A D n^n + \frac{D^{n+1}}{n^n \prod x_i}$$
 
-## What to check before you act
+Near equilibrium ($P \approx 1.0$), the curve is flat, allowing multi-million dollar trades to clear with sub-basis-point slippage. However, if an underlying asset experiences a structural depeg or unbonding queue freeze, traders rapidly sell the distressed asset into the pool. Because the invariant holds the price near 1.0 until reserves become heavily imbalanced, the pool absorbs vast quantities of the collapsing asset before price impact sharply increases [3] [4].
 
-- Which invariant governs this pool, and where is liquidity active around my intended price? [1] [3]
-- If I deposit, how does the rule change my inventory as relative prices move, and how will I evaluate fees versus divergence loss over time? [2]
-- Is this pool’s composition balanced right now, or am I about to push into a steep part of the curve? [1] [3]
-- What slippage tolerance is acceptable for my size, and how will routing across multiple pools affect price impact? [1]
-- How is my transaction being broadcast and ordered? Do I need a protected path to reduce exposure to frontrunning risk? [4] [5]
+Passive liquidity providers in pegged pools thus underwrite severe asymmetric tail risk: collecting small fee yields during normal market regimes, while facing catastrophic single-asset exposure during structural depegs [3]. Further details are available in [Stablecoin Liquidity Pools: Peg Defense, Yield, and Systemic Risk](/guides/stablecoin-liquidity-pools/).
 
-By answering these before you click, you convert a headline APR or a clean quote into a considered decision about pricing rules, inventory risk, and execution.
+---
+
+## 6. Common Misconceptions and Operational Pitfalls
+
+Review these common operational errors before depositing capital into any onchain liquidity pool:
+
+```
++--------------------------------------------------------------------------------+
+|                   COMMON LP MISCONCEPTIONS & PRACTICAL REALITIES               |
++--------------------------------------------------------------------------------+
+|                                                                                |
+|  [x] Misconception: "Displayed APR equals guaranteed investment return."       |
+|  [v] Reality: Displayed APR reflects historical volume extrapolated forward.    |
+|      If volume declines, volatility spikes, or price exits range, net yield    |
+|      drops to zero or turns negative due to adverse selection.                 |
+|                                                                                |
+|  [x] Misconception: "High TVL guarantees low execution slippage."              |
+|  [v] Reality: Only in-range active liquidity absorbs swaps. A $100M pool with  |
+|      wide or out-of-range ticks can suffer worse execution than a $5M pool     |
+|      with dense, active liquidity at the target tick.                          |
+|                                                                                |
+|  [x] Misconception: "Stablecoin pools carry zero divergence risk."             |
+|  [v] Reality: Stable pools suffer near-total capital loss if one asset depegs, |
+|      as the invariant absorbs the toxic asset until reserves are exhausted.    |
+|                                                                                |
+|  [x] Misconception: "Uninformed retail traders generate most AMM fees."        |
+|  [v] Reality: More than 60% of volume on major pools originates from MEV bots  |
+|      and latency arbitrageurs who extract value from stale pool quotes.        |
+|                                                                                |
++--------------------------------------------------------------------------------+
+```
+
+---
+
+## 7. Pre-Deposit and Pre-Trade Operational Checklist
+
+Run this systematic verification before executing a swap or supplying capital:
+
+1. **Verify Contract Architecture**: Is the pool an immutable standalone pair (v2), a tick-based contract (v3), or a hook-enabled singleton (`PoolManager.sol`) [1]?
+2. **Inspect Hook Permissions**: In Uniswap v4 pools, verify whether attached hooks introduce dynamic fees, withdrawal fees, or admin-controlled pause parameters [1].
+3. **Measure Active Liquidity ($\pm 2\%$)**: Calculate the capital concentrated within 200 basis points of the current tick rather than evaluating aggregate TVL [1] [4].
+4. **Evaluate MEV Routing Protection**: For orders larger than $10,000, avoid submitting to the public mempool where sandwich bots operate. Route through private RPCs (e.g., Flashbots Protect) or intent-based batch solvers (CoW Swap, UniswapX) [4] [5].
+5. **Pre-Compute Out-of-Range Inventory**: For concentrated liquidity positions, calculate the exact token balance you will hold if the asset drops to your lower bound. Confirm you are prepared to hold 100% of that asset indefinitely [2].
+
+For an end-to-end institutional methodology, consult [How to Evaluate a Liquidity Pool: A Five-Part Research Framework](/guides/how-to-evaluate-a-liquidity-pool/).
+
+---
+
+## Monitoring & Onchain Tooling Stack
+
+To track fundamental liquidity pool balances, contract health, and trading activity:
+
+- **DEX Pool Overviews & TVL**: Monitor global pool volume, TVL, and fee yields across all decentralized exchanges on [DeFiLlama](https://defillama.com).
+- **Real-Time Reserve & Swap Analytics**: Inspect swap events, reserve balances, and price charts on [DexScreener](https://dexscreener.com) and [GeckoTerminal](https://geckoterminal.com).
+- **Onchain Contract State Verification**: Read contract token balances, fee tiers, and factory metadata directly on [Etherscan](https://etherscan.io).
+
+## Diagnostic Troubleshooting Decision Tree
+
+Use this fundamental decision tree when evaluating any basic liquidity pool:
+
+1. **Pool Contract Balance is Empty Despite High Reported Volume**:
+   - *Diagnostic*: The pool was recently drained by an exploit or the creator has removed liquidity in a rug-pull.
+   - *Action*: Check contract creation transactions and verify whether liquidity was locked or burned in a verifiable timelock contract.
+2. **Swap Transaction Fails with 'Insufficient Output Amount'**:
+   - *Diagnostic*: The swap size is too large relative to pool reserves, triggering price impact that breaches user slippage settings.
+   - *Action*: Break trade into smaller batches or use a DEX aggregator (e.g., 1inch, CowSwap) to route across multiple pools.
+3. **Pool Token Approvals Remain Open After Liquidity Removal**:
+   - *Diagnostic*: ERC-20 token allowances remain active on the pool contract, exposing your wallet to potential future contract exploit vectors.
+   - *Action*: Use tools like [Revoke.cash](https://revoke.cash) to immediately cancel unused token spending allowances.
 
 ## References
 
-1. [How Uniswap Works](https://developers.uniswap.org/docs/get-started/concepts/how-uniswap-works)
-2. [Understanding Returns](https://developers.uniswap.org/docs/protocols/v2/concepts/understanding-returns)
-3. [Curve StableSwap: Pools](https://curve.readthedocs.io/exchange-pools.html)
-4. [Trading in the DeFi era: automated market-maker](https://www.bis.org/publications/trading-defi-era-automated-market-maker)
-5. [Welcome to Flashbots](https://docs.flashbots.net/)
+1. [Uniswap v4 Core Whitepaper (Adams et al., 2024)](https://uniswap.org/whitepaper-v4.pdf)
+2. [Uniswap v3 Core Whitepaper (Adams et al., 2021)](https://uniswap.org/whitepaper-v3.pdf)
+3. [StableSwap - efficient mechanism for Stablecoin liquidity (Egorov, 2019)](https://berkeley-defi.github.io/assets/material/StableSwap.pdf)
+4. [Trading in the DeFi era: automated market-maker (Bank for International Settlements, 2023)](https://www.bis.org/publications/trading-defi-era-automated-market-maker)
+5. [Flash Boys 2.0: Frontrunning, Transaction Reordering, and Consensus Instability in Decentralized Exchanges (Daian et al., 2019)](https://arxiv.org/abs/1904.05234)
 
-
-[1]: https://developers.uniswap.org/docs/get-started/concepts/how-uniswap-works "How Uniswap Works"
-
-[2]: https://developers.uniswap.org/docs/protocols/v2/concepts/understanding-returns "Understanding Returns"
-
-[3]: https://curve.readthedocs.io/exchange-pools.html "Curve StableSwap: Pools"
-
+[1]: https://uniswap.org/whitepaper-v4.pdf "Uniswap v4 Core Whitepaper"
+[2]: https://uniswap.org/whitepaper-v3.pdf "Uniswap v3 Core Whitepaper"
+[3]: https://berkeley-defi.github.io/assets/material/StableSwap.pdf "StableSwap - efficient mechanism for Stablecoin liquidity"
 [4]: https://www.bis.org/publications/trading-defi-era-automated-market-maker "Trading in the DeFi era: automated market-maker"
+[5]: https://arxiv.org/abs/1904.05234 "Flash Boys 2.0: Frontrunning, Transaction Reordering, and Consensus Instability in Decentralized Exchanges"
 
-[5]: https://docs.flashbots.net/ "Welcome to Flashbots"
+

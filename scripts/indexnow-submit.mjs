@@ -4,35 +4,27 @@
  * Submits all pages to Bing, Yandex, Naver, Seznam for instant indexing
  */
 
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const HOST = 'liquiditypools.app';
 const KEY = '8d7f2a1b9c3e4056a782d1e9f4c3b5a6';
 const KEY_LOCATION = `https://${HOST}/${KEY}.txt`;
+
+const articlesDir = path.resolve(__dirname, '../src/content/articles');
+const articleSlugs = fs.readdirSync(articlesDir)
+  .filter((file) => file.endsWith('.md'))
+  .map((file) => file.replace(/\.md$/, ''))
+  .sort();
 
 const URLS = [
   `https://${HOST}/`,
   `https://${HOST}/about/`,
   `https://${HOST}/guides/`,
   `https://${HOST}/topics/`,
-  `https://${HOST}/guides/amm-vs-order-book/`,
-  `https://${HOST}/guides/automated-market-maker-explained/`,
-  `https://${HOST}/guides/concentrated-liquidity-explained/`,
-  `https://${HOST}/guides/constant-product-formula/`,
-  `https://${HOST}/guides/cross-chain-liquidity-explained/`,
-  `https://${HOST}/guides/how-to-evaluate-a-liquidity-pool/`,
-  `https://${HOST}/guides/how-to-provide-liquidity/`,
-  `https://${HOST}/guides/impermanent-loss-explained/`,
-  `https://${HOST}/guides/liquidity-mining-explained/`,
-  `https://${HOST}/guides/liquidity-pool-research-checklist/`,
-  `https://${HOST}/guides/liquidity-pool-risks/`,
-  `https://${HOST}/guides/liquidity-pool-tokens/`,
-  `https://${HOST}/guides/liquidity-provider-fees/`,
-  `https://${HOST}/guides/market-making-on-amms/`,
-  `https://${HOST}/guides/mev-and-liquidity-providers/`,
-  `https://${HOST}/guides/onchain-liquidity-metrics/`,
-  `https://${HOST}/guides/range-orders-on-amms/`,
-  `https://${HOST}/guides/stablecoin-liquidity-pools/`,
-  `https://${HOST}/guides/tvl-explained/`,
-  `https://${HOST}/guides/what-is-a-liquidity-pool/`
+  ...articleSlugs.map((slug) => `https://${HOST}/guides/${slug}/`)
 ];
 
 async function submitIndexNow(endpoint, serviceName) {
