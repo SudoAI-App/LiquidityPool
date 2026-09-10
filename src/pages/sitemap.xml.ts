@@ -8,6 +8,9 @@ export const GET: APIRoute = () => {
     { url: `${baseUrl}/`, priority: '1.0', changefreq: 'daily', lastmod: '2026-09-10' },
     { url: `${baseUrl}/guides/`, priority: '0.9', changefreq: 'daily', lastmod: '2026-09-10' },
     { url: `${baseUrl}/topics/`, priority: '0.8', changefreq: 'weekly', lastmod: '2026-09-10' },
+    { url: `${baseUrl}/tools/`, priority: '0.9', changefreq: 'weekly', lastmod: '2026-09-10' },
+    { url: `${baseUrl}/tools/impermanent-loss-calculator/`, priority: '0.9', changefreq: 'weekly', lastmod: '2026-09-10' },
+    { url: `${baseUrl}/tools/liquidity-pool-calculator/`, priority: '0.9', changefreq: 'weekly', lastmod: '2026-09-10' },
     { url: `${baseUrl}/about/`, priority: '0.6', changefreq: 'monthly', lastmod: '2026-09-10' },
   ];
 

@@ -6,8 +6,15 @@ date: 2026-08-21
 lastReviewed: "2026-09-10"
 author: "Siddharth Mehta"
 readTime: "15 min read"
-keywords: "liquidity pool checklist, DeFi liquidity research checklist, LP due diligence checklist, hook security audit, LVR hurdle test, flow toxicity check"
+keywords: "liquidity pool checklist, DeFi liquidity research checklist, LP due diligence checklist, hook security audit, LVR hurdle test, flow toxicity check, liquidity pool audit checklist, how to check locked liquidity, DeFi pool risk assessment"
 featured: false
+faq:
+  - q: "What should I check before providing liquidity?"
+    a: "Contract verification and audits, upgrade keys and timelocks, hook permissions, liquidity lock status, oracle dependencies, active depth at the current price, routed volume by tier, incentive schedule, and an unconditional withdrawal path."
+  - q: "How do I check if liquidity is locked?"
+    a: "Read the locker contract or the burn address holding the LP claim and confirm the amount and unlock time onchain. A screenshot or a claim in documentation is not verification."
+  - q: "How often should a pool be re-reviewed?"
+    a: "Whenever a parameter that drove the original decision changes: an incentive programme starting or ending, a governance vote on fees or gauges, a hook upgrade, or a change in the pair's volatility regime."
 ---
 
 Allocating capital to an automated market maker (AMM) is an active delegated market-making operation governed by deterministic smart contracts. When an institution or individual deposits assets into a liquidity pool, they underwrite directional inventory risk, absorb continuous adverse selection from high-frequency arbitrageurs, and expose collateral to smart contract, oracle, and cross-chain bridge dependencies. Headline annual percentage yields (APYs) displayed on analytics dashboards are merely historical extrapolations that fail to reflect adverse selection or boundary tick deactivations.
@@ -19,7 +26,7 @@ Before committing capital, executing an on-chain deposit, or signing a Permit2 a
   <figcaption>Institutional LP due diligence demands systematic auditing across smart contract controls, collateral risks, order flow toxicity, and LVR hurdles. <span class="article-figure__credit">Original editorial illustration by LiquidityPools.app.</span></figcaption>
 </figure>
 
-> **Desk Field Note from Siddharth Mehta**:
+> **Desk Field Note from Siddharth Mehta:**
 > *"Checklists exist to prevent emotional capital allocation. In DeFi, the most common operational failure is skipping smart contract and oracle dependency verification because a pool promises 100%+ APR. A single unverified upgradeable proxy or an illiquid price oracle dependency can wipe out your entire principal in an instant, rendering all yield calculations completely irrelevant."*
 
 ---
@@ -291,6 +298,10 @@ Follow this pre-flight verification checklist before committing institutional ca
 3. **Underlying Asset Relies on Single-Source Price Oracle**:
    - *Diagnostic*: The pool or its lending integrations depend on an illiquid spot oracle vulnerable to flash-loan price manipulation.
    - *Action*: Verify that the protocol integrates robust decentralized oracles (Chainlink) or TWAP mechanisms with sufficient observation depth.
+
+## Where to Go Next
+
+Two calculations belong alongside this checklist: expected fee income, modelled in the [liquidity pool fee and APR calculator](/tools/liquidity-pool-calculator/), and the divergence it has to clear, modelled in the [impermanent loss calculator](/tools/impermanent-loss-calculator/). For the loss taxonomy behind several checklist items, see [Can You Lose Money in a Liquidity Pool?](/guides/can-you-lose-money-in-a-liquidity-pool/).
 
 ## References
 

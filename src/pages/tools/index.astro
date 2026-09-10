@@ -1,0 +1,123 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const tools = [
+  {
+    href: '/tools/impermanent-loss-calculator/',
+    eyebrow: 'Risk · Divergence',
+    title: 'Impermanent Loss Calculator',
+    description: 'Enter entry and exit prices, capital and fees collected. Returns the divergence against holding, the break-even fee income, and the net result of the position.',
+    status: 'Live · runs in your browser'
+  },
+  {
+    href: '/tools/liquidity-pool-calculator/',
+    eyebrow: 'Revenue · Fee modelling',
+    title: 'Liquidity Pool Fee & APR Calculator',
+    description: 'Model fee income from fee tier, routed volume, your share of active liquidity and time in range, net of the gas your management cadence costs.',
+    status: 'Live · runs in your browser'
+  }
+];
+
+const frameworks = [
+  { href: '/guides/liquidity-pool-research-checklist/', title: 'Pool due diligence checklist', description: 'The pre-deposit questions, in the order a research desk asks them.' },
+  { href: '/guides/how-to-evaluate-a-liquidity-pool/', title: 'Five-part evaluation framework', description: 'Structure for assessing invariant, depth, incentives, security and execution.' },
+  { href: '/guides/onchain-liquidity-metrics/', title: 'Onchain metrics reference', description: 'Which measurements matter, where to read them, and how each one misleads.' }
+];
+
+const collectionSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'CollectionPage',
+  name: 'DeFi Liquidity Tools — LiquidityPools.app',
+  url: 'https://liquiditypools.app/tools/',
+  description: 'Free calculators and research frameworks for liquidity providers: impermanent loss, fee yield, pool due diligence.',
+  mainEntity: {
+    '@type': 'ItemList',
+    numberOfItems: tools.length,
+    itemListElement: tools.map((tool, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      name: tool.title,
+      url: `https://liquiditypools.app${tool.href}`
+    }))
+  }
+};
+const breadcrumbSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://liquiditypools.app/' },
+    { '@type': 'ListItem', position: 2, name: 'Tools', item: 'https://liquiditypools.app/tools/' }
+  ]
+};
+---
+<BaseLayout title="Liquidity Pool Tools & Calculators — LiquidityPools.app" description="Free liquidity pool calculators: impermanent loss, fee yield and APR modelling, plus the research frameworks behind them. No wallet connection, nothing stored.">
+  <Fragment slot="head">
+    <script is:inline type="application/ld+json" set:html={JSON.stringify(collectionSchema)} />
+    <script is:inline type="application/ld+json" set:html={JSON.stringify(breadcrumbSchema)} />
+  </Fragment>
+
+  <section class="page-hero">
+    <div class="container">
+      <div class="eyebrow eyebrow--mint">Tools</div>
+      <h1 class="page-title">Numbers before narratives.</h1>
+      <p>Calculators that answer one question precisely, with the formula and its limitations stated on the same page. Everything runs locally; no wallet connection, no inputs stored.</p>
+    </div>
+  </section>
+
+  <section class="section section--paper">
+    <div class="container">
+      <div class="section-head">
+        <div><div class="kicker">Interactive</div><h2 class="section-title display">Model the position before you fund it.</h2></div>
+        <p class="section-intro">Each tool states its assumptions and links to the guide that derives them. A number without its model is not a result.</p>
+      </div>
+      <div class="article-grid" style="grid-template-columns:repeat(2, 1fr)">
+        {tools.map((tool) => (
+          <a class="tool-card" href={tool.href}>
+            <div class="feature-card__meta" style="color:#537063"><span>{tool.eyebrow}</span></div>
+            <h3>{tool.title}</h3>
+            <p>{tool.description}</p>
+            <span class="tool-card__status">{tool.status}</span>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--ink">
+    <div class="container">
+      <div class="section-head"><div><div class="eyebrow eyebrow--mint">Frameworks</div><h2 class="section-title display">Checklists that do not need a calculator.</h2></div><a class="text-link" href="/guides/">Browse all guides <span>↗</span></a></div>
+      <div class="track-grid" style="grid-template-columns:repeat(3, 1fr)">
+        {frameworks.map((item, index) => (
+          <a class="track" href={item.href}>
+            <span class="track__number">0{index + 1} / FRAMEWORK</span>
+            <h3>{item.title}</h3>
+            <p>{item.description}</p>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--mist">
+    <div class="container">
+      <div class="guide-layout">
+        <aside class="guide-aside">
+          <h2>On this page</h2>
+          <a href="#method">Method</a>
+          <a href="/guides/impermanent-loss-formula/">IL formula</a>
+          <a href="/guides/lp-fees-vs-impermanent-loss/">Break-even model</a>
+        </aside>
+        <div class="article-content">
+          <h2 id="method">How these tools are built</h2>
+          <p>Every calculator here implements a published formula, states the inputs it needs in plain terms, and lists what it deliberately excludes. That last part matters more than the arithmetic: most disappointing liquidity positions were modelled correctly and scoped wrongly, with gas, time out of range or emission decay left outside the frame.</p>
+          <p>The impermanent loss calculator implements the closed-form divergence expression for a constant-product pool and compares it against a hold benchmark. The fee calculator implements the revenue identity that fee tier, routed volume and liquidity share define. Neither predicts the future, and neither is a substitute for reading the pool's contracts.</p>
+          <p>For the reasoning behind each model, start with <a href="/guides/impermanent-loss-formula/">The Impermanent Loss Formula</a> and <a href="/guides/lp-fees-vs-impermanent-loss/">LP Fees vs Impermanent Loss</a>. To verify a live position against onchain data rather than a model, reconstruct it on Revert Finance and compare the two.</p>
+        </div>
+        <aside class="guide-aside">
+          <h2>Editorial note</h2>
+          <p style="font-size:12px;line-height:1.55;color:#5b7062">These tools are educational. They are not investment, legal, tax or financial advice, and they make no claim about the future performance of any pool.</p>
+        </aside>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

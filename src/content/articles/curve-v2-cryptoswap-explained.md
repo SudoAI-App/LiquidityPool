@@ -6,8 +6,15 @@ date: 2026-09-05
 lastReviewed: "2026-09-10"
 author: "Aria Chen"
 readTime: "13 min read"
-keywords: "Curve v2, Cryptoswap invariant, dynamic pegging, internal EMA oracle, TriCrypto pool, AMM repegging"
+keywords: "Curve v2, Cryptoswap invariant, dynamic pegging, internal EMA oracle, TriCrypto pool, AMM repegging, Curve liquidity pool, volatile pair liquidity pool"
 featured: false
+faq:
+  - q: "What is Curve v2 used for?"
+    a: "Volatile pairs that still benefit from concentrated depth. It keeps liquidity clustered around an internally tracked price and repegs that centre automatically as the market moves, without the LP choosing bounds."
+  - q: "How is Curve v2 different from Uniswap v3?"
+    a: "Uniswap v3 asks the liquidity provider to choose and maintain a range. Curve v2 concentrates liquidity automatically around an internal oracle price and shoulders the rebalancing decision at the protocol level, funded by trading fees."
+  - q: "What are the risks of an internal oracle?"
+    a: "The repegging mechanism relies on the pool's own exponentially weighted price. Sharp moves can leave the centre lagging, and repegging itself consumes pool profits, so LP returns depend on the interaction between volatility and the repeg schedule."
 ---
 
 Automated market makers have historically faced a trade-off between capital efficiency and management overhead. Classical constant-product pools ($x \cdot y = k$) provide passive, set-and-forget market making across infinite price bounds at the cost of poor capital efficiency. Conversely, concentrated liquidity AMMs (such as Uniswap v3) dramatically amplify capital density within custom price ticks, but force liquidity providers (LPs) to actively re-center ranges as market prices drift, locking in divergence losses and consuming continuous rebalancing gas [1] [2]. For an analysis of these tick dynamics, see our guide on [Concentrated Liquidity Explained: Range, Capital Efficiency, and Risk](/guides/concentrated-liquidity-explained/).
@@ -19,7 +26,7 @@ Automated market makers have historically faced a trade-off between capital effi
   <figcaption>Curve v2 dynamically re-pegs its concentrated liquidity zone around volatile assets using internal EMA oracles and fee-funded loss amortization. <span class="article-figure__credit">Original editorial illustration by LiquidityPools.app.</span></figcaption>
 </figure>
 
-> **Desk Field Note from Aria Chen**:
+> **Desk Field Note from Aria Chen:**
 > *"The engineering beauty of Curve v2 Cryptoswap lies in its automated repegging budget. Unlike Uniswap v3 where LPs bear 100% of the cost of out-of-range divergence, Curve v2 amortizes repegging friction strictly against accrued trading fees. If market prices move so violently that fees cannot cover the loss, the internal oracle slows repegging to protect LP principal. However, in low-volume, high-volatility pairs, this means the pool can lag real market prices for extended intervals."*
 
 ## 1. The Cryptoswap Invariant: Blending $A$ and $\gamma$
@@ -195,6 +202,10 @@ Follow this diagnostic decision tree when evaluating Curve v2 Cryptoswap perform
 3. **Net LP Returns Lagging Underlying Buy-and-Hold**:
    - *Diagnostic*: Choppy sideways volatility is triggering repeated micro-repeggings that consume fee profits without establishing directional trend capture.
    - *Action*: Evaluate whether the asset pair's mean-reversion profile justifies Cryptoswap provision over traditional weighted or stable invariants.
+
+## Where to Go Next
+
+For the manual alternative to automated repegging, see [Out-of-Range Liquidity](/guides/out-of-range-liquidity/) and the range decisions it forces. For the family comparison, see [Types of Liquidity Pools](/guides/liquidity-pool-types/).
 
 ## References
 

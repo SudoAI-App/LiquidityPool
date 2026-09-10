@@ -301,3 +301,49 @@ img { display: block; max-width: 100%; }
   .hero-ledger { animation-delay: .12s; }
   @keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
 }
+
+/* Tools: calculators and interactive research utilities */
+.tool-layout { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr); gap: 26px; align-items: start; }
+.tool-panel { padding: 28px; border: 1px solid var(--line-light); background: rgba(255,255,255,.5); }
+.tool-panel h2 { margin: 0 0 4px; font: 700 25px/1.1 var(--display); letter-spacing: -.045em; }
+.tool-panel__note { margin: 0 0 20px; color: #55705e; font-size: 13px; line-height: 1.6; }
+.tool-field { display: grid; gap: 6px; margin-bottom: 14px; }
+.tool-field label { color: #3d5548; font: 500 11px/1.3 var(--mono); letter-spacing: .06em; text-transform: uppercase; }
+.tool-field input { width: 100%; min-height: 44px; padding: 0 12px; border: 1px solid var(--line-light); background: #fbfcf6; color: var(--ink); font: 500 15px/1 var(--mono); }
+.tool-field input:focus { outline: 2px solid #2d7348; outline-offset: -2px; }
+.tool-field small { color: #71877a; font-size: 11.5px; line-height: 1.45; }
+.tool-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.tool-presets { display: flex; flex-wrap: wrap; gap: 8px; margin: 4px 0 20px; }
+.tool-preset { padding: 8px 12px; border: 1px solid var(--line-light); background: transparent; color: #24362c; font: 500 11px/1 var(--mono); letter-spacing: .05em; text-transform: uppercase; cursor: pointer; transition: background .18s, border-color .18s; }
+.tool-preset:hover { border-color: #2d7348; background: #e8f2e6; }
+.tool-result { padding: 28px; color: var(--paper); background: var(--ink); }
+.tool-result h2 { margin: 0 0 18px; color: var(--paper); font: 700 25px/1.1 var(--display); letter-spacing: -.045em; }
+.tool-headline { padding: 18px 0 20px; border-bottom: 1px solid rgba(184,247,201,.28); }
+.tool-headline span { display: block; color: #9db39f; font: 500 10px/1 var(--mono); letter-spacing: .1em; text-transform: uppercase; }
+.tool-headline strong { display: block; margin-top: 10px; color: var(--mint); font: 700 clamp(38px, 6vw, 58px)/1 var(--display); letter-spacing: -.055em; }
+.tool-headline em { display: block; margin-top: 8px; color: #bdd0be; font-size: 13px; font-style: normal; line-height: 1.5; }
+.tool-rows { margin: 6px 0 0; }
+.tool-row { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; padding: 13px 0; border-bottom: 1px solid rgba(184,247,201,.16); }
+.tool-row span { color: #a9bdab; font-size: 13px; }
+.tool-row strong { color: var(--paper); font: 500 15px/1 var(--mono); white-space: nowrap; }
+.tool-row--net strong { color: var(--mint); }
+.tool-row--loss strong { color: var(--amber-soft); }
+.tool-verdict { margin-top: 20px; padding: 16px 18px; border-left: 3px solid var(--mint); background: rgba(184,247,201,.09); color: #d7e4d8; font-size: 13.5px; line-height: 1.6; }
+.tool-disclaimer { margin-top: 18px; color: #7d9482; font: 400 11px/1.6 var(--mono); }
+.tool-card { display: flex; flex-direction: column; min-height: 230px; padding: 26px; border: 1px solid var(--line-light); background: rgba(255,255,255,.28); transition: transform .2s cubic-bezier(.23,1,.32,1), box-shadow .2s, background .2s; }
+.tool-card:hover { background: #fbfcf6; box-shadow: var(--shadow); transform: translateY(-5px); }
+.tool-card h3 { margin: 14px 0 10px; font: 700 26px/1.06 var(--display); letter-spacing: -.045em; }
+.tool-card p { margin: 0 0 18px; color: #51645a; font-size: 13.5px; line-height: 1.6; }
+.tool-card__status { margin-top: auto; color: #71877a; font: 500 10px/1 var(--mono); letter-spacing: .08em; text-transform: uppercase; }
+
+/* FAQ blocks on guides and tools */
+.faq-block { margin: 3em 0 0; padding-top: 2em; border-top: 1px solid var(--line-light); }
+.faq-block h2 { margin: 0 0 .8em; font: 700 31px/1.15 var(--display); letter-spacing: -.05em; }
+.faq-item { padding: 18px 0; border-bottom: 1px solid var(--line-light); }
+.faq-item h3 { margin: 0 0 8px; font: 700 17px/1.35 var(--sans); color: var(--ink); }
+.faq-item p { margin: 0; color: #3f5548; font-size: 15.5px; line-height: 1.7; }
+
+@media (max-width: 900px) {
+  .tool-layout { grid-template-columns: 1fr; }
+  .tool-grid-2 { grid-template-columns: 1fr; }
+}

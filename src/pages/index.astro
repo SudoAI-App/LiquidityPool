@@ -6,7 +6,7 @@ import { authors } from '../lib/authors';
 const latest = articles.slice(0, 6);
 const authorList = Object.values(authors);
 ---
-<BaseLayout title="LiquidityPools.app — Understand DeFi Liquidity" description="A modern research library for understanding liquidity pools, automated market makers, impermanent loss, LP risk, and onchain liquidity." image="/images/liquiditypool-hero.webp">
+<BaseLayout title="Liquidity Pools Explained: AMMs, Impermanent Loss & LP Risk" description="A precise field guide to liquidity pools, automated market makers, impermanent loss, and onchain liquidity research, with free calculators for LP fee income and divergence." image="/images/liquiditypool-hero.webp">
   <section class="hero">
     <div class="hero-visual" aria-hidden="true"></div>
     <div class="container hero-grid">
@@ -16,7 +16,7 @@ const authorList = Object.values(authors);
         <p>LiquidityPools.app is a calm, precise field guide to the mechanics, risks, and research habits behind decentralized liquidity.</p>
         <div class="hero-actions">
           <a class="button button--mint" href="/guides/what-is-a-liquidity-pool/">Start with liquidity pools <span aria-hidden="true">↗</span></a>
-          <a class="button button--line" href="/topics/">Explore research tracks</a>
+          <a class="button button--line" href="/tools/impermanent-loss-calculator/">Open the IL calculator</a>
         </div>
       </div>
       <aside class="hero-ledger">
@@ -26,7 +26,7 @@ const authorList = Object.values(authors);
       </aside>
     </div>
   </section>
-  <div class="ticker"><div class="container ticker-track"><span>Liquidity pools</span><span class="ticker-dot"></span><span>AMM mechanics</span><span class="ticker-dot"></span><span>Risk frameworks</span><span class="ticker-dot"></span><span>Onchain research</span><span class="ticker-dot"></span><span>For learners &amp; builders</span></div></div>
+  <div class="ticker"><div class="container ticker-track"><span>Liquidity pools</span><span class="ticker-dot"></span><span>AMM mechanics</span><span class="ticker-dot"></span><span>Risk frameworks</span><span class="ticker-dot"></span><span>Onchain research</span><span class="ticker-dot"></span><span>Free LP calculators</span><span class="ticker-dot"></span><span>For learners &amp; builders</span></div></div>
 
   <section class="section section--paper">
     <div class="container">
@@ -49,6 +49,29 @@ const authorList = Object.values(authors);
             <div class="feature-card__body"><h3>Evaluate a Pool Before You Supply It</h3><p>A five-part research framework built around market structure, incentives, and execution.</p><span class="text-link">Use the framework <span>↗</span></span></div>
           </a>
         </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--mist">
+    <div class="container">
+      <div class="section-head">
+        <div><div class="kicker">Calculators</div><h2 class="section-title display">Model the position before you fund it.</h2></div>
+        <p class="section-intro">Two calculators that state their formula and their limits on the same page. Everything runs locally; nothing is stored.</p>
+      </div>
+      <div class="article-grid" style="grid-template-columns:repeat(2, 1fr)">
+        <a class="tool-card" href="/tools/impermanent-loss-calculator/">
+          <div class="feature-card__meta" style="color:#537063"><span>Risk · Divergence</span></div>
+          <h3>Impermanent Loss Calculator</h3>
+          <p>Entry and exit prices in, divergence against holding out, with the fee income required to break even and the net result of the position.</p>
+          <span class="tool-card__status">Live · runs in your browser</span>
+        </a>
+        <a class="tool-card" href="/tools/liquidity-pool-calculator/">
+          <div class="feature-card__meta" style="color:#537063"><span>Revenue · Fee modelling</span></div>
+          <h3>Liquidity Pool Fee &amp; APR Calculator</h3>
+          <p>Fee tier, routed volume, liquidity share and time in range resolve into daily, period and annualised income, net of the gas your cadence costs.</p>
+          <span class="tool-card__status">Live · runs in your browser</span>
+        </a>
       </div>
     </div>
   </section>

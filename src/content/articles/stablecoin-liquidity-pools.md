@@ -6,8 +6,15 @@ date: 2026-08-30
 lastReviewed: "2026-09-10"
 author: "Aria Chen"
 readTime: "12 min read"
-keywords: "stablecoin liquidity pool, StableSwap invariant, Curve amplification factor, Ethena USDe, RWA treasury tokens, depeg risk, Uniswap v4 hooks"
+keywords: "stablecoin liquidity pool, StableSwap invariant, Curve amplification factor, Ethena USDe, RWA treasury tokens, depeg risk, Uniswap v4 hooks, stablecoin pool risks, correlated asset liquidity pool, peg defense"
 featured: false
+faq:
+  - q: "Are stablecoin liquidity pools safe?"
+    a: "They have low divergence while both assets hold their peg and a severe tail when one does not. The amplified curve absorbs a failing asset at close to par, so LPs end up holding predominantly the broken one."
+  - q: "Why do stablecoin pools use a different formula?"
+    a: "Because assets expected to trade near a fixed ratio need depth concentrated at that ratio. An amplified curve is nearly flat near the peg, allowing large trades with minimal slippage, and steepens as reserves skew."
+  - q: "What happens if a stablecoin depegs?"
+    a: "Traders sell it into the pool while the curve still quotes near par. The pool accumulates it until reserves are heavily imbalanced, at which point price impact rises sharply and the LP position is dominated by the depegged asset."
 ---
 
 A stablecoin liquidity pool is not a high-yield savings account; it is an automated, conditional risk-clearinghouse. Near parity, its mathematical invariant concentrates liquidity to deliver ultra-low slippage for trading volume. Under collateral or liquidity stress, however, that same invariant functions as a programmatic mechanism that systematically transfers toxic, depegging inventory onto passive liquidity providers (LPs).
@@ -19,7 +26,7 @@ Evaluating stablecoin and pegged-asset pools requires understanding three core s
   <figcaption>Stable-asset curves are efficient near balance and defensive under stress. <span class="article-figure__credit">Original editorial illustration by LiquidityPools.app.</span></figcaption>
 </figure>
 
-> **Desk Field Note from Aria Chen**:
+> **Desk Field Note from Aria Chen:**
 > *"Stablecoin pools (e.g., Curve 3pool, USDe/USDC) offer low impermanent loss under normal market conditions, but they harbor catastrophic tail risk. When a stablecoin de-pegs due to collateral insolvency or a run on redemption queues, the AMM invariant relentlessly sells the healthy stablecoins to arbitrageurs, leaving passive LPs holding 100% of the collapsed token. In stablecoin LPing, your upside is a 3%–8% fee yield; your downside is a 100% loss of principal."*
 
 ## The Mathematics of StableSwap: Invariants and Amplification (A)
@@ -155,6 +162,10 @@ Follow this diagnostic decision tree when monitoring stablecoin pool allocations
 3. **Secondary Market Price Diverges from Mint/Redeem Parity**:
    - *Diagnostic*: Origin redemption queues are congested or paused, forcing redemptions onto secondary DEX pools.
    - *Action*: Assess whether the redemption delay is temporary operational congestion or permanent insolvency before buying discounted stablecoins.
+
+## Where to Go Next
+
+For where amplified curves sit among the alternatives, see [Types of Liquidity Pools](/guides/liquidity-pool-types/). For the tail case where the pool fills with the failing asset, see [Can You Lose Money in a Liquidity Pool?](/guides/can-you-lose-money-in-a-liquidity-pool/).
 
 ## References
 

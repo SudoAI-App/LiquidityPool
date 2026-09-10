@@ -1,0 +1,275 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const title = 'Liquidity Pool Fee and APR Calculator';
+const description = 'Estimate liquidity pool fee income from fee tier, routed volume and your share of active liquidity, then convert it into a realistic APR net of gas.';
+
+const faq = [
+  {
+    q: 'How is liquidity pool APR calculated?',
+    a: 'Daily fee income equals the fee tier multiplied by the volume routed through the pool multiplied by your share of the liquidity that is active while those trades execute. Annualising that daily figure against your deployed capital gives the APR, before divergence loss and gas.'
+  },
+  {
+    q: 'Why is my share of liquidity lower than I expected?',
+    a: 'Your deposit is added to the liquidity already in the band, so the denominator includes your own capital. On a thin pool a large deposit can halve the yield you saw quoted before depositing, which is why the calculator adds your capital to the active liquidity figure.'
+  },
+  {
+    q: 'Does this calculator include impermanent loss?',
+    a: 'No. It measures gross fee capture only. Divergence against holding is a separate calculation with a separate driver, and it is handled by the impermanent loss calculator linked from this page.'
+  },
+  {
+    q: 'What volume figure should I use?',
+    a: 'Use volume routed to the specific pool and fee tier you are supplying, not aggregate volume for the trading pair across all venues. Aggregators split orders, so pair-level volume overstates what any single pool receives.'
+  },
+  {
+    q: 'What is a realistic time-in-range assumption?',
+    a: 'For a full-range or constant-product position it is 100%. For a concentrated range it depends on band width against realised volatility, and measured values for narrow bands on volatile pairs are frequently below 50% over a month.'
+  }
+];
+
+const canonical = 'https://liquiditypools.app/tools/liquidity-pool-calculator/';
+const appSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'WebApplication',
+  name: title,
+  url: canonical,
+  applicationCategory: 'FinanceApplication',
+  operatingSystem: 'Any',
+  browserRequirements: 'Requires JavaScript',
+  description,
+  isAccessibleForFree: true,
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+  publisher: { '@type': 'Organization', name: 'LiquidityPools.app', url: 'https://liquiditypools.app' }
+};
+const faqSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faq.map((item) => ({
+    '@type': 'Question',
+    name: item.q,
+    acceptedAnswer: { '@type': 'Answer', text: item.a }
+  }))
+};
+const breadcrumbSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://liquiditypools.app/' },
+    { '@type': 'ListItem', position: 2, name: 'Tools', item: 'https://liquiditypools.app/tools/' },
+    { '@type': 'ListItem', position: 3, name: title, item: canonical }
+  ]
+};
+---
+<BaseLayout title={`${title} — LiquidityPools.app`} description={description} image="/images/guides/liquidity-pool-calculator.webp">
+  <Fragment slot="head">
+    <script is:inline type="application/ld+json" set:html={JSON.stringify(appSchema)} />
+    <script is:inline type="application/ld+json" set:html={JSON.stringify(faqSchema)} />
+    <script is:inline type="application/ld+json" set:html={JSON.stringify(breadcrumbSchema)} />
+  </Fragment>
+
+  <section class="page-hero">
+    <div class="container">
+      <div class="eyebrow eyebrow--mint">Research tools · Free, no wallet connection</div>
+      <h1 class="page-title">Liquidity pool fee &amp; APR calculator.</h1>
+      <p>Fee income is a product of three measurable quantities. Enter them and see the daily, period and annualised figures your position can actually support.</p>
+    </div>
+  </section>
+
+  <section class="section section--paper" style="padding-top:64px">
+    <div class="container">
+      <div class="tool-layout">
+        <form class="tool-panel" id="lp-form" novalidate>
+          <h2>Pool inputs</h2>
+          <p class="tool-panel__note">Use pool-level figures for the specific fee tier you intend to supply. Your capital is added to active liquidity automatically, because your deposit dilutes the pool you are joining.</p>
+
+          <div class="tool-grid-2">
+            <div class="tool-field">
+              <label for="feeTier">Fee tier (%)</label>
+              <input id="feeTier" type="number" inputmode="decimal" step="any" min="0" value="0.05" />
+            </div>
+            <div class="tool-field">
+              <label for="capital">Your capital</label>
+              <input id="capital" type="number" inputmode="decimal" step="any" min="0" value="100000" />
+            </div>
+          </div>
+
+          <div class="tool-field">
+            <label for="volume">Daily volume routed to this pool</label>
+            <input id="volume" type="number" inputmode="decimal" step="any" min="0" value="40000000" />
+            <small>Pool and tier specific, not aggregate volume for the trading pair.</small>
+          </div>
+
+          <div class="tool-field">
+            <label for="liquidity">Active liquidity already in your band</label>
+            <input id="liquidity" type="number" inputmode="decimal" step="any" min="0" value="5000000" />
+            <small>For concentrated pools, use liquidity inside the price range you will occupy, not total value locked.</small>
+          </div>
+
+          <div class="tool-grid-2">
+            <div class="tool-field">
+              <label for="timeInRange">Time in range (%)</label>
+              <input id="timeInRange" type="number" inputmode="decimal" step="any" min="0" max="100" value="100" />
+            </div>
+            <div class="tool-field">
+              <label for="days">Days held</label>
+              <input id="days" type="number" inputmode="numeric" step="1" min="1" value="30" />
+            </div>
+          </div>
+
+          <div class="tool-grid-2">
+            <div class="tool-field">
+              <label for="gas">Gas per transaction</label>
+              <input id="gas" type="number" inputmode="decimal" step="any" min="0" value="18" />
+            </div>
+            <div class="tool-field">
+              <label for="txCount">Transactions expected</label>
+              <input id="txCount" type="number" inputmode="numeric" step="1" min="0" value="4" />
+            </div>
+          </div>
+        </form>
+
+        <div class="tool-result" aria-live="polite">
+          <h2>Result</h2>
+          <div class="tool-headline">
+            <span>Annualised fee yield on your capital</span>
+            <strong id="out-apr">142.3%</strong>
+            <em id="out-share">Your share of active liquidity: 1.9608%</em>
+          </div>
+          <div class="tool-rows">
+            <div class="tool-row"><span>Gross fees per day in range</span><strong id="out-daily">$392.16</strong></div>
+            <div class="tool-row"><span>Gross fees over the period</span><strong id="out-period">$11,764.71</strong></div>
+            <div class="tool-row tool-row--loss"><span>Gas cost over the period</span><strong id="out-gas">−$72.00</strong></div>
+            <div class="tool-row tool-row--net"><span>Net fee income</span><strong id="out-net">$11,692.71</strong></div>
+            <div class="tool-row"><span>Net yield over the period</span><strong id="out-periodyield">11.69%</strong></div>
+            <div class="tool-row"><span>Daily yield in basis points</span><strong id="out-bps">39.2 bps</strong></div>
+          </div>
+          <p class="tool-verdict" id="out-verdict">This is gross fee capture. Divergence against holding is measured separately and must be subtracted before calling any of it profit.</p>
+          <p class="tool-disclaimer">Educational model only. Assumes constant volume, a stable share of liquidity, and no price impact on entry or exit. Not investment advice.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--mist" style="padding-top:72px;padding-bottom:72px">
+    <div class="container">
+      <div class="guide-layout">
+        <aside class="guide-aside">
+          <h2>Related reading</h2>
+          <a href="/guides/liquidity-provider-fees/">Liquidity provider fees</a>
+          <a href="/guides/uniswap-fee-tiers-explained/">Uniswap fee tiers</a>
+          <a href="/guides/apr-vs-apy-in-defi/">APR vs APY in DeFi</a>
+          <a href="/guides/lp-fees-vs-impermanent-loss/">Fees vs impermanent loss</a>
+          <a href="/guides/onchain-liquidity-metrics/">Onchain liquidity metrics</a>
+        </aside>
+        <div class="article-content">
+          <h2>The arithmetic</h2>
+          <p>Fee revenue for a liquidity position is the product of three quantities and one adjustment:</p>
+          <p><code>daily fees = fee tier × routed volume × (your capital ÷ total active liquidity) × time in range</code></p>
+          <p>Two of those inputs are properties of the pool and outside your control. The third, your share, falls as other liquidity providers join the same band, and the fourth is set by how wide a range you chose relative to how much the pair actually moves.</p>
+
+          <h2>Why the denominator matters more than the fee tier</h2>
+          <p>A pool advertising a higher fee tier does not necessarily pay more. Routers send orders to whichever path executes best, so raising the tier reduces the volume term while raising the rate term. The winner is whichever pool maximises the product for that specific pair, which is examined in <a href="/guides/uniswap-fee-tiers-explained/">Uniswap Fee Tiers Explained</a>.</p>
+          <p>The same logic applies to concentrated positions. Narrowing a band raises your share of active liquidity and lowers your time in range. The calculator lets you test both directions of that trade before committing capital.</p>
+
+          <h2>What this figure is not</h2>
+          <ul>
+            <li><strong>It is not profit.</strong> Divergence against holding the deposited basket is a separate cost. Model it with the <a href="/tools/impermanent-loss-calculator/">impermanent loss calculator</a>.</li>
+            <li><strong>It is not a forecast.</strong> Volume is highly variable and clusters around events, so a figure derived from a single day will not repeat.</li>
+            <li><strong>It is not net of adverse selection.</strong> A large share of pool volume on major pairs is arbitrage that reprices a stale quote, which is the mechanism behind <a href="/guides/loss-versus-rebalancing/">loss-versus-rebalancing</a>.</li>
+            <li><strong>It does not include emissions.</strong> Incentive income has a separate driver and a separate decay profile, covered in <a href="/guides/yield-farming-explained/">Yield Farming Explained</a>.</li>
+          </ul>
+
+          <h2>Where to find the inputs</h2>
+          <ul>
+            <li><strong>Routed volume and fees</strong> — pool pages on DeFiLlama, the protocol's own analytics, or a Dune query filtered to the pool address.</li>
+            <li><strong>Active liquidity</strong> — the pool's liquidity distribution chart, read at the ticks you intend to occupy rather than as a total.</li>
+            <li><strong>Time in range</strong> — measured from your own position history on Revert Finance, or estimated from trailing realised volatility against your band width.</li>
+            <li><strong>Gas</strong> — current network conditions multiplied by the number of mints, collects, rebalances and the final withdrawal.</li>
+          </ul>
+
+          <div class="faq-block">
+            <h2>Frequently asked questions</h2>
+            {faq.map((item) => (
+              <div class="faq-item">
+                <h3>{item.q}</h3>
+                <p>{item.a}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+        <aside class="guide-aside">
+          <h2>Method</h2>
+          <p style="font-size:12px;line-height:1.55;color:#5b7062">All calculations run in your browser. No inputs are transmitted, stored, or logged.</p>
+          <h2 style="margin-top:22px">Data sources</h2>
+          <a href="https://defillama.com" target="_blank" rel="noopener">DeFiLlama ↗</a>
+          <a href="https://dune.com" target="_blank" rel="noopener">Dune Analytics ↗</a>
+          <a href="https://revert.finance" target="_blank" rel="noopener">Revert Finance ↗</a>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <script is:inline>
+    (function () {
+      var ids = ['feeTier', 'capital', 'volume', 'liquidity', 'timeInRange', 'days', 'gas', 'txCount'];
+      var el = {};
+      ids.forEach(function (id) { el[id] = document.getElementById(id); });
+      var out = {};
+      ['apr', 'share', 'daily', 'period', 'gas', 'net', 'periodyield', 'bps', 'verdict'].forEach(function (key) {
+        out[key] = document.getElementById('out-' + key);
+      });
+
+      function num(node, fallback) {
+        var value = parseFloat(node.value);
+        return isFinite(value) ? value : fallback;
+      }
+
+      function money(value) {
+        return (value < 0 ? '−' : '') + '$' + Math.abs(value).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      }
+
+      function render() {
+        var tier = num(el.feeTier, 0) / 100;
+        var capital = num(el.capital, 0);
+        var volume = num(el.volume, 0);
+        var liquidity = Math.max(0, num(el.liquidity, 0));
+        var timeInRange = Math.min(100, Math.max(0, num(el.timeInRange, 100))) / 100;
+        var days = Math.max(1, num(el.days, 1));
+        var gasCost = Math.max(0, num(el.gas, 0)) * Math.max(0, num(el.txCount, 0));
+
+        if (capital <= 0 || tier < 0 || volume < 0) {
+          out.verdict.textContent = 'Enter a positive capital amount, fee tier and volume figure to see a result.';
+          return;
+        }
+
+        var share = capital / (liquidity + capital);
+        var daily = tier * volume * share * timeInRange;
+        var period = daily * days;
+        var net = period - gasCost;
+        var periodYield = (net / capital) * 100;
+        var apr = periodYield * (365 / days);
+        var bps = (daily / capital) * 10000;
+
+        out.apr.textContent = apr.toFixed(1) + '%';
+        out.share.textContent = 'Your share of active liquidity: ' + (share * 100).toFixed(4) + '%';
+        out.daily.textContent = money(daily);
+        out.period.textContent = money(period);
+        out.gas.textContent = gasCost > 0 ? '−' + money(gasCost) : money(0);
+        out.net.textContent = money(net);
+        out.periodyield.textContent = periodYield.toFixed(2) + '%';
+        out.bps.textContent = bps.toFixed(1) + ' bps';
+
+        if (net <= 0) {
+          out.verdict.textContent = 'Gas exceeds expected fee income at this position size. Either widen the range to reduce transactions, or increase size before deploying.';
+        } else if (timeInRange < 0.6) {
+          out.verdict.textContent = 'At this time-in-range assumption the position spends most of its life idle. Compare the result against a wider band with lower fee density.';
+        } else {
+          out.verdict.textContent = 'This is gross fee capture. Divergence against holding is measured separately and must be subtracted before calling any of it profit.';
+        }
+      }
+
+      ids.forEach(function (id) { el[id].addEventListener('input', render); });
+      render();
+    })();
+  </script>
+</BaseLayout>

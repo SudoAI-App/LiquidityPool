@@ -24,6 +24,9 @@ const URLS = [
   `https://${HOST}/about/`,
   `https://${HOST}/guides/`,
   `https://${HOST}/topics/`,
+  `https://${HOST}/tools/`,
+  `https://${HOST}/tools/impermanent-loss-calculator/`,
+  `https://${HOST}/tools/liquidity-pool-calculator/`,
   ...articleSlugs.map((slug) => `https://${HOST}/guides/${slug}/`)
 ];
 

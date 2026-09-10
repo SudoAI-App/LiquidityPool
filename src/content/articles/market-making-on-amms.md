@@ -6,8 +6,15 @@ date: 2026-08-22
 lastReviewed: "2026-09-10"
 author: "Dr. Elena Rostova"
 readTime: "14 min read"
-keywords: "market making AMM, AMM liquidity provider, delta hedging AMM, automated liquidity management, LVR minimization, concentrated liquidity market maker"
+keywords: "market making AMM, AMM liquidity provider, delta hedging AMM, automated liquidity management, LVR minimization, concentrated liquidity market maker, passive market making DeFi, liquidity pool vs market making, market making DeFi"
 featured: false
+faq:
+  - q: "Is providing liquidity the same as market making?"
+    a: "Structurally yes: you post continuous two-sided quotes and earn a spread. The difference is that a pooled quote cannot be cancelled or repriced between trades, which is why adverse selection is larger than for an active market maker."
+  - q: "How do professional LPs manage inventory?"
+    a: "By sizing ranges against realised volatility, rebalancing on rules rather than reactions, hedging delta on a perpetual or options venue when the position is large, and measuring performance against a rebalancing benchmark rather than a dollar return."
+  - q: "Is passive liquidity provision viable?"
+    a: "On pairs where turnover is high relative to volatility, yes. On volatile pairs with modest volume, passive positions tend to underperform holding once divergence and gas are included."
 ---
 
 Providing liquidity to an automated market maker (AMM) is not a passive high-yield deposit; it is an active quantitative market making operation governed by deterministic invariant contracts. In centralized limit order books (CLOBs), electronic market makers dynamically shade quotes, cancel resting limit orders upon external market signals, and maintain inventory neutrality using proprietary stochastic control engines. In contrast, passive AMM liquidity providers post continuous, un-cancellable quotes governed by mathematical bonding curves, leaving their capital exposed to adverse selection and toxic flow from public mempool counterparties.
@@ -19,7 +26,7 @@ To operate profitably as an on-chain market maker in modern decentralized financ
   <figcaption>AMM liquidity provision is continuous inventory rebalancing against toxic flow, requiring active risk modeling and delta management. <span class="article-figure__credit">Original editorial illustration by LiquidityPools.app.</span></figcaption>
 </figure>
 
-> **Desk Field Note from Dr. Elena Rostova**:
+> **Desk Field Note from Dr. Elena Rostova:**
 > *"Institutional market making on AMMs is a study in inventory risk management under discrete latency constraints. Unlike traditional market makers on Nasdaq who update quotes in sub-milliseconds, an onchain AMM market maker is bound by block confirmation times. Your primary risk is not inventory carry—it is adverse selection by latency searchers. Delta-hedging your pool position via perpetual futures is essential to isolate fee yield from directional crypto market beta."*
 
 ## 1. The AMM as an Autonomous Market Maker: Invariant as Trading Mandate
@@ -342,6 +349,10 @@ Follow this diagnostic framework when running active AMM market making strategie
 3. **Market Velocity Breaches Volatility Bands**:
    - *Diagnostic*: Realized volatility exceeds the width of the market-making band, threatening immediate out-of-range halts.
    - *Action*: Widen active range boundaries to preserve continuous fee capture, sacrificing nominal leverage for operational stability.
+
+## Where to Go Next
+
+The hurdle rate every quoting strategy has to clear is derived in [Loss-Versus-Rebalancing](/guides/loss-versus-rebalancing/). For the tier decision that sets the revenue side, see [Uniswap Fee Tiers Explained](/guides/uniswap-fee-tiers-explained/).
 
 ## References
 

@@ -47,12 +47,34 @@ const breadcrumbSchema = {
     { '@type': 'ListItem', position: 3, name: article.title, item: `https://liquiditypools.app/guides/${article.slug}/` }
   ]
 };
+const faq = article.faq ?? [];
+const faqSchema = faq.length
+  ? {
+      '@context': 'https://schema.org',
+      '@type': 'FAQPage',
+      mainEntity: faq.map((item) => ({
+        '@type': 'Question',
+        name: item.q,
+        acceptedAnswer: { '@type': 'Answer', text: item.a }
+      }))
+    }
+  : null;
 const trackArticles = articles.filter((item) => item.category === article.category);
 const trackIndex = trackArticles.findIndex((item) => item.slug === article.slug) + 1;
 ---
 <BaseLayout title={article.title + ' — LiquidityPools.app'} description={article.description} type="article" image={articleImage} author={authorInfo.name}>
-  <Fragment slot="head"><script is:inline type="application/ld+json" set:html={JSON.stringify(articleSchema)} /><script is:inline type="application/ld+json" set:html={JSON.stringify(breadcrumbSchema)} /></Fragment>
+  <Fragment slot="head"><script is:inline type="application/ld+json" set:html={JSON.stringify(articleSchema)} /><script is:inline type="application/ld+json" set:html={JSON.stringify(breadcrumbSchema)} />{faqSchema && <script is:inline type="application/ld+json" set:html={JSON.stringify(faqSchema)} />}</Fragment>
   <section class="article-hero"><div class="container article-hero__grid"><div><div class="eyebrow eyebrow--mint">{article.category} · Track Guide {trackIndex} of {trackArticles.length}</div><h1>{article.title}</h1><p class="dek">{article.description}</p></div><div class="article-meta"><div>Published<strong>{new Date(article.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</strong></div><div>Last reviewed<strong>{new Date(reviewedDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</strong></div><div>By<strong>{authorInfo.name}</strong></div><div>Reading time<strong>{article.readTime}</strong></div></div></div></section>
-  <article class="container article-layout"><aside class="article-rail"><div><h2>Track Progress</h2><p><strong>{article.category}</strong><br />Part {trackIndex} of {trackArticles.length} in this sequence.</p><p style="margin-top:6px"><a href="/topics/">View learning path ↗</a></p></div><div><h2>Research standard</h2><p>Mechanism first. Material claims are sourced. Outcomes remain conditional.</p></div><div><h2>Related in Track</h2>{related.map((item) => <a href={'/guides/' + item.slug + '/'}>{item.title}</a>)}</div></aside><div class="article-content"><Content /><div class="article-author-card"><div class="article-author-card__avatar">{authorInfo.initials}</div><div class="article-author-card__content"><div class="article-author-card__eyebrow">Written &amp; Reviewed By</div><h3 class="article-author-card__name">{authorInfo.name}</h3><div class="article-author-card__role">{authorInfo.role}</div><div class="article-author-card__credentials">{authorInfo.credentials}</div><p class="article-author-card__bio">{authorInfo.bio}</p></div></div><div class="article-end"><h2 class="display">Keep the model, not just the answer.</h2><p>Every liquidity position has a context. Continue through the <a href="/guides/"><strong>full research library</strong></a> to connect this idea with the mechanism, risks, and market conditions around it.</p></div></div><aside class="article-rail"><div><h2>Author</h2><p><strong>{authorInfo.name}</strong><br /><span style="font-size:11px;color:#527366">{authorInfo.role}</span></p><p style="margin-top:8px"><a href="/about/#authors">Meet the research team ↗</a></p></div><div><h2>Onchain Tool Stack</h2><p style="font-size:11.5px;color:#55705e;margin-bottom:8px">Recommended research tools:</p><a href="https://revert.finance" target="_blank" rel="noopener">Revert Finance ↗</a><a href="https://dune.com" target="_blank" rel="noopener">Dune Analytics ↗</a><a href="https://defillama.com" target="_blank" rel="noopener">DeFiLlama Yields ↗</a></div><div><h2>Editorial note</h2><p>This guide is educational and general in nature. It is not investment, legal, tax, or financial advice.</p></div><div><h2>Method</h2><p><a href="/about/">How LiquidityPool sources, reviews, and updates its work.</a></p></div></aside></article>
+  <article class="container article-layout"><aside class="article-rail"><div><h2>Track Progress</h2><p><strong>{article.category}</strong><br />Part {trackIndex} of {trackArticles.length} in this sequence.</p><p style="margin-top:6px"><a href="/topics/">View learning path ↗</a></p></div><div><h2>Research standard</h2><p>Mechanism first. Material claims are sourced. Outcomes remain conditional.</p></div><div><h2>Related in Track</h2>{related.map((item) => <a href={'/guides/' + item.slug + '/'}>{item.title}</a>)}</div></aside><div class="article-content"><Content />{faq.length > 0 && (
+    <div class="faq-block">
+      <h2>Frequently asked questions</h2>
+      {faq.map((item) => (
+        <div class="faq-item">
+          <h3>{item.q}</h3>
+          <p>{item.a}</p>
+        </div>
+      ))}
+    </div>
+  )}<div class="article-author-card"><div class="article-author-card__avatar">{authorInfo.initials}</div><div class="article-author-card__content"><div class="article-author-card__eyebrow">Written &amp; Reviewed By</div><h3 class="article-author-card__name">{authorInfo.name}</h3><div class="article-author-card__role">{authorInfo.role}</div><div class="article-author-card__credentials">{authorInfo.credentials}</div><p class="article-author-card__bio">{authorInfo.bio}</p></div></div><div class="article-end"><h2 class="display">Keep the model, not just the answer.</h2><p>Every liquidity position has a context. Continue through the <a href="/guides/"><strong>full research library</strong></a> to connect this idea with the mechanism, risks, and market conditions around it.</p></div></div><aside class="article-rail"><div><h2>Author</h2><p><strong>{authorInfo.name}</strong><br /><span style="font-size:11px;color:#527366">{authorInfo.role}</span></p><p style="margin-top:8px"><a href="/about/#authors">Meet the research team ↗</a></p></div><div><h2>Onchain Tool Stack</h2><p style="font-size:11.5px;color:#55705e;margin-bottom:8px">Recommended research tools:</p><a href="https://revert.finance" target="_blank" rel="noopener">Revert Finance ↗</a><a href="https://dune.com" target="_blank" rel="noopener">Dune Analytics ↗</a><a href="https://defillama.com" target="_blank" rel="noopener">DeFiLlama Yields ↗</a></div><div><h2>Editorial note</h2><p>This guide is educational and general in nature. It is not investment, legal, tax, or financial advice.</p></div><div><h2>Method</h2><p><a href="/about/">How LiquidityPool sources, reviews, and updates its work.</a></p></div></aside></article>
 </BaseLayout>
 

@@ -1,13 +1,20 @@
 ---
-title: "Automated Market Makers Explained: The Engine Behind AMM Pools"
+title: "Automated Market Makers Explained: How an AMM Actually Works"
 description: "AMMs price trades from reserves and rules. Trace invariants, singleton architectures, programmable hooks, dynamic fees, and execution conditions before you act."
 category: "Foundations"
 date: 2026-09-08
 lastReviewed: "2026-09-10"
 author: "Dr. Kieran Thorne"
 readTime: "11 min read"
-keywords: "automated market maker, AMM explained, AMM pool, DeFi exchange, singleton contract, hooks, flash accounting"
+keywords: "automated market maker, AMM explained, AMM pool, DeFi exchange, singleton contract, hooks, flash accounting, how does an AMM work, what is an AMM, AMM crypto, AMM liquidity pool"
 featured: true
+faq:
+  - q: "How does an AMM work?"
+    a: "An automated market maker prices trades from a formula applied to its reserves rather than from an order book. Traders deposit one asset and withdraw another, the reserves change, and the formula returns a new price. Arbitrage keeps that price aligned with external markets."
+  - q: "What is the difference between an AMM and a DEX?"
+    a: "A decentralised exchange is the venue; an automated market maker is one mechanism a venue can use to price trades. Some decentralised exchanges run order books instead, and intent-based systems settle through solvers rather than either."
+  - q: "How does a liquidity pool set price?"
+    a: "By the invariant. In a constant-product pool the marginal price is the ratio of the two reserves, so buying an asset reduces its reserve and raises its price for the next trade. Other curve designs change how quickly that happens."
 ---
 
 An automated market maker (AMM) prices financial assets using a deterministic mathematical function rather than an order book. Instead of matching a buyer's bid with a seller's ask, the AMM quotes an exchange rate directly from the ratio of token reserves held within its smart contracts.
@@ -21,7 +28,7 @@ This guide analyzes the mechanics of AMM pricing engines, details their architec
   <figcaption>An automated market maker operates as an inventory rule governed by an invariant curve. <span class="article-figure__credit">Original editorial illustration by LiquidityPools.app.</span></figcaption>
 </figure>
 
-> **Desk Field Note from Dr. Kieran Thorne**:
+> **Desk Field Note from Dr. Kieran Thorne:**
 > *"The biggest mistake engineers make when designing or integrating AMMs is treating the invariant function as a mere price formula. The invariant is actually a state machine boundary condition enforced by the EVM. When implementing custom AMM logic, every call to reserve balances introduces reentrancy risks and rounding precision errors. Always ensure math operations round in favor of the protocol reserves—round up on token input requirements, and round down on token output distributions."*
 
 ## 1. The Core Mechanism: An AMM Is an Inventory Rule, Not an Oracle
@@ -209,6 +216,10 @@ Use this operational decision tree when troubleshooting AMM pool execution anoma
 3. **LP Position Incurring Rapid Capital Depletion**:
    - *Diagnostic*: Toxic order flow is exploiting stale reserves before onchain transactions can adjust to external market shocks.
    - *Action*: Evaluate whether the pool's fee tier provides adequate compensation for trailing realized volatility ($\sigma$).
+
+## Where to Go Next
+
+The execution cost a trader pays against these curves is broken down in [Slippage and Price Impact](/guides/slippage-and-price-impact/). The value the same curves hand to arbitrageurs is quantified in [Loss-Versus-Rebalancing](/guides/loss-versus-rebalancing/). For the architectural comparison between the two most widely used versions, see [Uniswap v3 vs v4 Liquidity](/guides/uniswap-v3-vs-v4/).
 
 ## References
 

@@ -6,8 +6,15 @@ date: 2026-09-05
 lastReviewed: "2026-09-10"
 author: "Dr. Kieran Thorne"
 readTime: "11 min read"
-keywords: "liquidity pool tokens, LP tokens explained, liquidity position NFT, DeFi LP token, ERC-6909, singleton accounting"
+keywords: "liquidity pool tokens, LP tokens explained, liquidity position NFT, DeFi LP token, ERC-6909, singleton accounting, what is an LP token, liquidity pool token, LP token risks, pool share crypto"
 featured: false
+faq:
+  - q: "What is an LP token?"
+    a: "A claim on a share of a pool. In constant-product pools it is a fungible ERC-20 whose supply grows and shrinks as liquidity is added and removed. In tick-based pools each position is a distinct non-fungible claim because it has its own price bounds."
+  - q: "What are the risks of holding LP tokens?"
+    a: "The claim inherits everything about the underlying pool, including divergence and contract risk, and adds any risk from wherever the token is staked. A wrapped or staked LP claim depends on that additional contract functioning correctly."
+  - q: "What happens when I remove liquidity?"
+    a: "The contract burns your claim and returns your share of the current reserves, in whatever ratio the pool holds them at that moment, plus any uncollected fees. The quantities returned will usually differ from what you deposited."
 ---
 
 A liquidity pool token is not a static deposit receipt; it is a programmable claim on an automated market maker's dynamic reserve inventory. Depositing capital into an AMM converts liquid balances into continuous market-making exposure governed by bonding curves and protocol accounting rules.
@@ -21,7 +28,7 @@ This guide details the accounting mechanics of each LP token standard, traces ho
   <figcaption>An LP token represents a continuously rebalancing contractual claim on underlying pool reserves. <span class="article-figure__credit">Original editorial illustration by LiquidityPools.app.</span></figcaption>
 </figure>
 
-> **Desk Field Note from Dr. Kieran Thorne**:
+> **Desk Field Note from Dr. Kieran Thorne:**
 > *"The evolution of LP token standards reflects the balance between composability and execution efficiency. Uniswap v2's fungible ERC-20 LP tokens were effortless to collateralize in lending protocols, but lacked range expressiveness. Uniswap v3's ERC-721 NFTs enabled customized price bounds but fragmented money markets. Now, Uniswap v4's ERC-6909 multi-token standard brings back gas-efficient tokenized balance claims directly within the singleton contract."*
 
 ## 1. The Core Architecture: LP Tokens as Dynamic Contractual Claims
@@ -215,6 +222,10 @@ Follow this diagnostic tree when managing LP token accounting claims:
 3. **ERC-6909 Claims Not Visible in Standard Web3 Wallets**:
    - *Diagnostic*: Traditional wallets only track ERC-20 and ERC-721 token standards; ERC-6909 claims exist as internal balance mappings inside the singleton.
    - *Action*: Inspect position balances directly through the protocol's official interface or query the singleton contract's balanceOf view function.
+
+## Where to Go Next
+
+What the claim is worth when you redeem it depends on the divergence the pool accumulated, derived in [The Impermanent Loss Formula](/guides/impermanent-loss-formula/). Where staking that claim into a farm adds exposure is covered in [Yield Farming Explained](/guides/yield-farming-explained/).
 
 ## References
 

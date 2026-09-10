@@ -6,8 +6,15 @@ date: 2026-08-23
 lastReviewed: "2026-09-10"
 author: "Siddharth Mehta"
 readTime: "12 min read"
-keywords: "liquidity mining, DeFi incentives, ve-tokenomics, bribe markets, Hidden Hand, Votium, points programs, Uniswap v4 hook incentives, mercenary capital"
+keywords: "liquidity mining, DeFi incentives, ve-tokenomics, bribe markets, Hidden Hand, Votium, points programs, Uniswap v4 hook incentives, mercenary capital, liquidity mining vs yield farming, liquidity incentives"
 featured: false
+faq:
+  - q: "What is liquidity mining?"
+    a: "A protocol issuing its own token to reward deposits, usually to bootstrap depth on pairs that would not attract enough liquidity from fees alone. It is the incentive programme, distinct from the user-side activity of farming it."
+  - q: "What is the difference between liquidity mining and yield farming?"
+    a: "Liquidity mining describes the protocol issuing incentives. Yield farming describes the user moving capital toward whatever combination of fees and incentives currently pays most."
+  - q: "What happens when liquidity mining rewards end?"
+    a: "Capital that arrived for emissions usually leaves quickly, depth falls, routers send less volume, and fee income for remaining LPs declines. Pools that were viable on fees alone survive the transition; others do not."
 ---
 
 Liquidity mining is a programmatic balance-sheet acquisition mechanism used by decentralized finance protocols to bootstrap initial trading depth. Rather than organic market interest or sustainable yield, incentive emissions represent the distribution of protocol equity to subsidize the adverse selection and impermanent loss absorbed by liquidity providers (LPs). When poorly designed, liquidity mining degenerates into a mercenary capital loop that dilutes native token holders, inflates artificial Total Value Locked (TVL), and leaves pools completely dry once reward emissions terminate.
@@ -19,7 +26,7 @@ Understanding modern liquidity mining requires analyzing the structural evolutio
   <figcaption>Incentive-funded liquidity and organic market flow are different inputs. <span class="article-figure__credit">Original editorial illustration by LiquidityPools.app.</span></figcaption>
 </figure>
 
-> **Desk Field Note from Siddharth Mehta**:
+> **Desk Field Note from Siddharth Mehta:**
 > *"Liquidity mining is a customer acquisition cost for protocols, not an enduring yield source for LPs. The classic 'farm-and-dump' tokenomics cycle guarantees that mercenary capital will enter during high emission phases, farm the reward token, and aggressively sell it on DEXs, depressing token price and collapsing APY. Sustainable liquidity strategies focus on protocols transitioning to fee-sharing (veTokenomics) or direct protocol-owned liquidity (POL)."*
 
 ## The Four Generations of Liquidity Mining Architecture
@@ -155,6 +162,10 @@ Use this operational decision tree when participating in liquidity mining progra
 3. **Lock-Up Penalties Prevent Early Capital Withdrawal**:
    - *Diagnostic*: The protocol enforces vesting or lock-up periods that restrict liquidity exit during adverse market events.
    - *Action*: Stress-test whether maximum reward yield exceeds the 100% loss scenario of the underlying reward token before committing locked capital.
+
+## Where to Go Next
+
+The user-side view of the same mechanism, including how to value emissions and what happens when a programme tapers, is in [Yield Farming Explained](/guides/yield-farming-explained/). To compare an incentivised pool against a simple staked position, see [Liquidity Pool vs Staking](/guides/liquidity-pool-vs-staking/), and to read the rate itself correctly, [APR vs APY in DeFi](/guides/apr-vs-apy-in-defi/).
 
 ## References
 

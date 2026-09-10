@@ -6,8 +6,15 @@ date: 2026-08-31
 lastReviewed: "2026-09-10"
 author: "Aria Chen"
 readTime: "11 min read"
-keywords: "range orders AMM, concentrated liquidity limit order, Uniswap v4 limit hook, Ambient knock-out liquidity, AMM order execution, LVR"
+keywords: "range orders AMM, concentrated liquidity limit order, Uniswap v4 limit hook, Ambient knock-out liquidity, AMM order execution, LVR, range order liquidity, single-sided liquidity, one-sided liquidity provision"
 featured: false
+faq:
+  - q: "What is a range order?"
+    a: "A single-asset liquidity position placed entirely above or below the current price, so that price movement through the range converts the deposit into the other asset. It behaves like a limit order that earns fees while it fills."
+  - q: "How is a range order different from a limit order?"
+    a: "It fills gradually across the range rather than at one price, it earns fees while filling, and it can un-fill if price moves back through the range before you withdraw."
+  - q: "What happens after a range order fills?"
+    a: "The position sits fully converted and stops earning. Unless you withdraw, a reversal will convert it back, which is the main operational difference from a conventional limit order."
 ---
 
 A single-sided concentrated liquidity position deployed outside the active trading tick is commonly termed an AMM "range order." Capital allocators and decentralized treasuries deploy range orders to simulate limit-order execution, aiming to acquire or liquidate token inventory without paying taker fees while collecting passive swap yield during conversion.
@@ -19,7 +26,7 @@ Conflating an AMM range order with a traditional limit order, however, obscures 
   <figcaption>A bounded position can express a conditional exchange range. <span class="article-figure__credit">Original editorial illustration by LiquidityPools.app.</span></figcaption>
 </figure>
 
-> **Desk Field Note from Aria Chen**:
+> **Desk Field Note from Aria Chen:**
 > *"Using single-sided concentrated liquidity as a synthetic limit order (range order) is a clever technique, but it comes with a critical catch: reversibility. Unlike a traditional limit order on Binance that executes and deposits tokens into your account, an AMM range order remains in the pool. If the market price crosses your tick and subsequently reverses, your order un-fills, swapping your newly acquired tokens back into the depreciating asset. You must withdraw immediately upon fill."*
 
 ## Mechanics of Single-Sided Range Orders
@@ -152,6 +159,10 @@ Use this operational tree when executing range orders on concentrated AMMs:
 3. **Range Order Earns Significant Fees During Extended Choppy Crossing**:
    - *Diagnostic*: Price oscillates across your exact single-sided interval, capturing continuous trading fees while gradually executing.
    - *Action*: Beneficial outcome; collect bonus fee yield alongside the target order execution.
+
+## Where to Go Next
+
+A range order is a deliberate out-of-range position, so the mechanics in [Out-of-Range Liquidity](/guides/out-of-range-liquidity/) apply directly. For the alternative of simply taking liquidity and paying the impact, see [Slippage and Price Impact](/guides/slippage-and-price-impact/).
 
 ## References
 

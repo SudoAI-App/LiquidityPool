@@ -6,8 +6,15 @@ date: 2026-09-02
 lastReviewed: "2026-09-10"
 author: "Marcus Vance"
 readTime: "11 min read"
-keywords: "liquidity provider fees, LP fees, AMM fee tier, liquidity pool APR, dynamic fees, LVR"
+keywords: "liquidity provider fees, LP fees, AMM fee tier, liquidity pool APR, dynamic fees, LVR, liquidity pool fees explained, who pays liquidity pool fees, pool fee tier"
 featured: false
+faq:
+  - q: "Who pays liquidity pool fees?"
+    a: "The trader pays the fee on each swap. It accrues to the liquidity that was active for that trade, in proportion to each position's share of that active liquidity."
+  - q: "Are liquidity pool fees guaranteed?"
+    a: "No. Fees depend on volume actually routing through your pool and, in concentrated pools, on your position being in range when it does. Both can fall to zero without anything failing."
+  - q: "Do liquidity pool fees compound automatically?"
+    a: "In constant-product pools fees are added to reserves and effectively compound. In tick-based pools they accrue as separate claimable balances and only compound if you collect and redeposit them, which costs gas."
 ---
 
 Liquidity provider fees represent market compensation for underwriting continuous inventory availability against incoming order flow. Rather than passive interest or risk-free yield, LP fees are microstructural payments collected when traders, aggregators, and arbitrageurs execute against an AMM contract's quoted price curve. An LP's real financial outcome depends entirely on three structural factors: the exact price domain where liquidity remains active, the path-dependent trajectory of spot prices across initialized ticks, and how smart contracts account for and disburse collected fee balances [1] [2].
@@ -19,7 +26,7 @@ In modern AMM architectures, fee models have transitioned from static pool-wide 
   <figcaption>Fees accrue from eligible active flow, not from a fixed yield source. <span class="article-figure__credit">Original editorial illustration by LiquidityPools.app.</span></figcaption>
 </figure>
 
-> **Desk Field Note from Marcus Vance**:
+> **Desk Field Note from Marcus Vance:**
 > *"LPs must understand the distinction between nominal fee volume and net economic fee capture. If an AMM processes $50M in daily volume, but $40M of that volume represents toxic cross-DEX arbitrageurs backrunning CEX quotes, the pool is capturing fees at the expense of permanent inventory decay. High volume is only profitable if the ratio of uninformed retail flow to toxic arbitrage flow is sufficiently high."*
 
 ## From a Trader’s Swap to Your Wallet: The Fee Path
@@ -146,6 +153,10 @@ Use this operational troubleshooting flow when evaluating fee profitability:
 3. **Fee Compounding Gas Exceeds Yield Generation**:
    - *Diagnostic*: The frequency of manual fee collection and reinvestment is too high relative to position capital size.
    - *Action*: Batch fee claims; only reinvest when accumulated fees exceed at least 10x transaction gas costs.
+
+## Where to Go Next
+
+Tier selection is the decision that moves this number most, and it is treated in [Uniswap Fee Tiers Explained](/guides/uniswap-fee-tiers-explained/). To model expected income from volume and liquidity share, use the [liquidity pool fee and APR calculator](/tools/liquidity-pool-calculator/). To read a quoted rate correctly, see [APR vs APY in DeFi](/guides/apr-vs-apy-in-defi/).
 
 ## References
 

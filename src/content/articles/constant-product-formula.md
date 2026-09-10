@@ -6,8 +6,15 @@ date: 2026-09-07
 lastReviewed: "2026-09-10"
 author: "Dr. Elena Rostova"
 readTime: "10 min read"
-keywords: "constant product formula, x y k AMM, Uniswap formula, AMM pricing curve, virtual reserves"
+keywords: "constant product formula, x y k AMM, Uniswap formula, AMM pricing curve, virtual reserves, constant product AMM, constant product market maker, pool reserves AMM, bonding curve crypto"
 featured: false
+faq:
+  - q: "What is the x times y equals k formula?"
+    a: "It is the constant-product invariant: the product of the two reserve balances stays constant across a trade, before fees. It defines the price for every possible trade size and guarantees the pool can always quote, at increasingly unfavourable prices for larger orders."
+  - q: "Why does price impact increase with trade size?"
+    a: "Because the invariant is a hyperbola. Removing a fixed fraction of one reserve requires adding a proportionally larger amount of the other, so the average execution price degrades convexly as the order grows relative to the reserve."
+  - q: "Does the constant product formula apply to Uniswap v3?"
+    a: "Yes, in translated form. A v3 position uses the same curve shifted so that reserves reach zero at the position bounds, which is why the mathematics of price impact inside a range is familiar even though capital efficiency is much higher."
 ---
 
 The constant product formula, $x \cdot y = k$, is the foundational deterministic pricing rule of decentralized exchange microstructure. It establishes the mathematical relationship between pooled token reserves and executable market prices without relying on an external order matching engine.
@@ -21,7 +28,7 @@ This guide presents the mathematical derivation of execution prices and price im
   <figcaption>The constant product curve forces larger transactions to incur progressively higher execution friction. <span class="article-figure__credit">Original editorial illustration by LiquidityPools.app.</span></figcaption>
 </figure>
 
-> **Desk Field Note from Dr. Elena Rostova**:
+> **Desk Field Note from Dr. Elena Rostova:**
 > *"The constant product formula $x \cdot y = k$ is elegant in theory but inherently unhedged in practice. Every continuous AMM position represents a short options straddle: you collect a stream of premium (trading fees) in exchange for paying out variance to informed traders whenever the underlying asset trends strongly. Understanding the curvature $\frac{d^2y}{dx^2} = \frac{2k}{x^3}$ tells you everything about your marginal slippage and exposure profile."*
 
 ## 1. The Mathematical Execution Invariant Inside the Pool
@@ -177,6 +184,10 @@ Follow this diagnostic decision tree when analyzing constant product pool execut
 3. **Fee Accruals Lagging Behind Projected APY**:
    - *Diagnostic*: Trading volume on the pair has migrated to concentrated liquidity AMMs (Uniswap v3/v4) that offer superior execution pricing to aggregators.
    - *Action*: Reallocate capital from classic $x \cdot y = k$ pools to concentrated tick-based or discretized bin protocols.
+
+## Where to Go Next
+
+The same invariant produces two consequences worth studying separately: the cost a trader pays, in [Slippage and Price Impact](/guides/slippage-and-price-impact/), and the cost a liquidity provider absorbs, in [The Impermanent Loss Formula](/guides/impermanent-loss-formula/). For how other curve families change both, see [Types of Liquidity Pools](/guides/liquidity-pool-types/).
 
 ## References
 

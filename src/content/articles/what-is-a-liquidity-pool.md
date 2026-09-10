@@ -1,13 +1,22 @@
 ---
-title: "What Is a Liquidity Pool? A Clear Guide to DeFi Market Depth"
+title: "What Is a Liquidity Pool? How DeFi Liquidity Pools Work"
 description: "How liquidity pools work: bonding curve invariants, singleton architectures, programmable hooks, intent solvers, and LP inventory risk explained."
 category: "Foundations"
 date: 2026-09-09
 lastReviewed: "2026-09-10"
 author: "Dr. Kieran Thorne"
 readTime: "10 min read"
-keywords: "what is a liquidity pool, DeFi liquidity pool, automated market maker, AMM, singleton architecture, hooks"
+keywords: "what is a liquidity pool, DeFi liquidity pool, automated market maker, AMM, singleton architecture, hooks, how do liquidity pools work, crypto liquidity pools, liquidity pool explained, liquidity pool meaning"
 featured: true
+faq:
+  - q: "How do liquidity pools work?"
+    a: "A pool holds reserves of two or more tokens in a smart contract and prices trades from a formula applied to those reserves. Traders swap against the contract instead of matching with another person, and the reserve ratio moves with every trade, which is what changes the quoted price."
+  - q: "How do liquidity providers make money?"
+    a: "Each swap pays a fee that accrues to the liquidity active for that trade. Some pools add token emissions on top. Whether the total exceeds the divergence the position takes on is a separate question answered by the fee and impermanent loss arithmetic."
+  - q: "Do liquidity pools affect the token price?"
+    a: "Within the pool, yes: the price is a function of the reserve ratio, so every trade moves it. Across the market, a pool with deep liquidity anchors price by making arbitrage cheap, while a thin pool can be moved sharply by a single order."
+  - q: "Do I need both tokens to provide liquidity?"
+    a: "For a standard two-sided pool, yes, in the ratio the pool requires at the current price. Interfaces often offer a single-asset deposit that swaps half your input first, which costs a swap fee and price impact rather than removing the requirement."
 ---
 
 A liquidity pool is not a passive savings vault; it is a deterministic pricing engine executed by smart contracts to clear asset trades without a centralized intermediary. In modern decentralized finance, liquidity pools serve as the primary execution and settlement layer for automated market makers (AMMs), DEX aggregators, and off-chain intent-based solver networks.
@@ -19,7 +28,7 @@ Understanding how token reserves rebalance along mathematical curves, how capita
   <figcaption>How an automated market maker converts reserve balances into continuous execution quotes. <span class="article-figure__credit">Original editorial illustration by LiquidityPools.app.</span></figcaption>
 </figure>
 
-> **Desk Field Note from Dr. Kieran Thorne**:
+> **Desk Field Note from Dr. Kieran Thorne:**
 > *"At its core, a liquidity pool is nothing more than a shared smart contract holding two or more token balances, governed by an immutable state transition function. There is no counterparty sitting on the other side negotiating price—the contract itself is the counterparty. Every time you deposit capital, you surrender custody of your individual tokens in exchange for a fractional share of the contract's future reserve claims."*
 
 ## 1. Automated Pricing Rules vs. Static Balance Vaults
@@ -193,6 +202,10 @@ Use this fundamental decision tree when evaluating any basic liquidity pool:
 3. **Pool Token Approvals Remain Open After Liquidity Removal**:
    - *Diagnostic*: ERC-20 token allowances remain active on the pool contract, exposing your wallet to potential future contract exploit vectors.
    - *Action*: Use tools like [Revoke.cash](https://revoke.cash) to immediately cancel unused token spending allowances.
+
+## Where to Go Next
+
+With the mechanism in place, three questions usually follow. What the pricing rule costs you is answered in [The Impermanent Loss Formula](/guides/impermanent-loss-formula/) and can be tested directly with the [impermanent loss calculator](/tools/impermanent-loss-calculator/). Which pool structure suits a given pair is covered in [Types of Liquidity Pools](/guides/liquidity-pool-types/). Whether supplying liquidity beats simply holding is worked through in [LP Fees vs Impermanent Loss](/guides/lp-fees-vs-impermanent-loss/).
 
 ## References
 

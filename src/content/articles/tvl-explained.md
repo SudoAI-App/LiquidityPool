@@ -6,8 +6,15 @@ date: 2026-09-04
 lastReviewed: "2026-09-10"
 author: "Aria Chen"
 readTime: "11 min read"
-keywords: "TVL explained, total value locked, DeFi TVL, liquidity pool TVL, restaking leverage, executable depth"
+keywords: "TVL explained, total value locked, DeFi TVL, liquidity pool TVL, restaking leverage, executable depth, TVL liquidity pool, liquidity pool depth, pool utilization DeFi, liquidity depth crypto"
 featured: false
+faq:
+  - q: "What does TVL mean in DeFi?"
+    a: "Total value locked is the aggregate market value of assets held by a protocol or pool. It measures deposits, not the depth available to absorb a trade at the current price."
+  - q: "Is high TVL good for a liquidity pool?"
+    a: "Not on its own. In concentrated pools most of the value can sit in ranges the market never visits, so a smaller pool with dense active liquidity can offer better execution and better fee density."
+  - q: "What should I look at instead of TVL?"
+    a: "Active liquidity within a percentage band of the current price, routed volume for the specific pool and tier, and the ratio of fees generated to liquidity supplying them."
 ---
 
 Total Value Locked (TVL) is a point-in-time balance sheet valuation, not a solvency score, execution guarantee, or safety rating. In decentralized finance, headline TVL aggregates gross contract balances across disparate tokens, routinely obscuring critical market microstructure realities: idle out-of-range capital in concentrated AMMs, recursive restaking multi-counting loops, and oracle pricing distortions [1] [2].
@@ -19,7 +26,7 @@ Evaluating capital across decentralized protocols requires deconstructing how TV
   <figcaption>Headline value and executable depth are not the same measurement. <span class="article-figure__credit">Original editorial illustration by LiquidityPools.app.</span></figcaption>
 </figure>
 
-> **Desk Field Note from Aria Chen**:
+> **Desk Field Note from Aria Chen:**
 > *"Total Value Locked (TVL) is the most easily manipulated vanity metric in DeFi. Through recursive borrowing in money markets and double-counting across wrapper tokens (e.g., ETH $\to$ stETH $\to$ eETH $\to$ pool), a single dollar of real capital can easily be reported as $4 to $6 of TVL. When evaluating protocol solvency and liquidity depth, always look at non-borrowed native liquidity and measure 24-hour fee generation relative to real TVL."*
 
 ## TVL Is a Valuation Snapshot, Not a Score
@@ -163,6 +170,10 @@ Use this operational framework when evaluating protocol TVL:
 3. **Sudden TVL Outflow Without Market Price Drop**:
    - *Diagnostic*: Institutional capital is withdrawing due to exploit rumors, regulatory pressure, or higher risk-adjusted yields elsewhere.
    - *Action*: Audit protocol security channels and reduce personal capital exposure until liquidity stabilizes.
+
+## Where to Go Next
+
+The practical consequence of the depth-versus-deposits distinction shows up in execution, covered in [Slippage and Price Impact](/guides/slippage-and-price-impact/), and in fee income, which you can model with the [liquidity pool fee and APR calculator](/tools/liquidity-pool-calculator/). For how the same distinction distorts quoted yields, see [APR vs APY in DeFi](/guides/apr-vs-apy-in-defi/).
 
 ## References
 

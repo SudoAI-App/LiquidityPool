@@ -6,8 +6,15 @@ date: 2026-09-06
 lastReviewed: "2026-09-10"
 author: "Marcus Vance"
 readTime: "11 min read"
-keywords: "AMM vs order book, automated market maker vs order book, DEX market structure, intent solver, CLOB"
+keywords: "AMM vs order book, automated market maker vs order book, DEX market structure, intent solver, CLOB, AMM vs DEX, liquidity pool vs order book, AMM vs order book exchange"
 featured: false
+faq:
+  - q: "What is the difference between an AMM and an order book?"
+    a: "An order book matches discrete bids and offers posted by traders who can cancel at any time. An automated market maker quotes continuously from a formula and cannot cancel, which is why it is systematically exposed to informed flow."
+  - q: "Which gives better execution?"
+    a: "It depends on size and pair. Deep order books usually execute large orders on major pairs more cheaply. Pools are competitive for smaller sizes, long-tail assets, and anything where posting a resting quote onchain is impractical."
+  - q: "Why do decentralised exchanges use AMMs at all?"
+    a: "Because continuous quoting requires no active operator, no cancellation traffic and no matching engine, which suits a blockchain where every message costs gas and block times are long relative to market updates."
 ---
 
 Financial market architecture defines how buyer and seller liquidity is converted into executable clearing prices. In modern decentralized finance, execution venues have evolved into a three-way market microstructure taxonomy: continuous Automated Market Makers (AMMs), Central Limit Order Books (CLOBs) operating on dedicated high-throughput appchains, and off-chain Intent-Based Request-for-Quote (RFQ) solver auctions.
@@ -19,7 +26,7 @@ The fundamental distinction between these architectures is not philosophical; it
   <figcaption>Continuous pool pricing and discrete order levels solve different problems. <span class="article-figure__credit">Original editorial illustration by LiquidityPools.app.</span></figcaption>
 </figure>
 
-> **Desk Field Note from Marcus Vance**:
+> **Desk Field Note from Marcus Vance:**
 > *"When institutional trading desks compare central limit order books to automated market makers, they often focus solely on headline trading fees. In reality, onchain AMMs charge an invisible execution tax through deterministic execution latency. Because AMM quotes remain static until a transaction updates onchain state, high-frequency searchers can extract zero-risk value whenever external prices move faster than block intervals. If your LP fee does not exceed this adverse selection drag, you are providing subsidized liquidity to latency arbitrageurs."*
 
 ## The Three-Way Market Taxonomy: AMMs, CLOBs, and Intent Solvers
@@ -167,6 +174,10 @@ Follow this diagnostic framework when evaluating whether to route flow or provid
 3. **Severe Order Cancellation Overhead on Onchain CLOBs**:
    - *Diagnostic*: Layer-1 gas fees exceed the bid-ask spread profits of active market making.
    - *Action*: Transition market making strategies to Layer-2 rollups with dedicated sub-second block times or appchains with offchain matching and onchain settlement.
+
+## Where to Go Next
+
+The execution-cost comparison in practice is worked through in [Slippage and Price Impact](/guides/slippage-and-price-impact/). The structural disadvantage of a quote that cannot be cancelled is quantified in [Loss-Versus-Rebalancing](/guides/loss-versus-rebalancing/).
 
 ## References
 

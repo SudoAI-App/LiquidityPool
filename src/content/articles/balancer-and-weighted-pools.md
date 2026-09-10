@@ -6,8 +6,15 @@ date: 2026-09-06
 lastReviewed: "2026-09-10"
 author: "Dr. Elena Rostova"
 readTime: "13 min read"
-keywords: "Balancer weighted pools, 80/20 liquidity pools, constant mean formula, impermanent loss 80/20, Balancer v3, LBP"
+keywords: "Balancer weighted pools, 80/20 liquidity pools, constant mean formula, impermanent loss 80/20, Balancer v3, LBP, weighted liquidity pool, Balancer weighted pool, 80/20 liquidity pool"
 featured: false
+faq:
+  - q: "What is a weighted liquidity pool?"
+    a: "A pool whose assets are held at fixed value proportions such as 80/20 rather than 50/50, priced by a constant-mean invariant. It behaves like a continuously rebalanced index with a fee stream attached."
+  - q: "Do 80/20 pools reduce impermanent loss?"
+    a: "For the same price move, yes, because less of the portfolio rotates. The position keeps more directional exposure to the heavier asset, which is a feature for some mandates and a risk for others."
+  - q: "What is a liquidity bootstrapping pool?"
+    a: "A weighted pool whose weights shift over time, typically starting heavily weighted toward the token being sold. The shifting weights create downward price pressure that discourages early buying at inflated prices."
 ---
 
 Most automated market makers constrain liquidity providers to equal 50/50 value pairings. While the classical constant-product formula ($x \cdot y = k$) functions reliably for standard trading pairs, it forces liquidity providers to take on substantial 50% exposure to quote assets (such as USDC) when market making their preferred native token. Furthermore, during aggressive price rallies, a 50/50 pool mechanically sells off half of the appreciating inventory, inflicting severe divergence loss [1] [2].
@@ -19,7 +26,7 @@ Balancer generalizes automated market making by introducing the **constant-mean 
   <figcaption>Balancer weighted pools decouple reserve ratios from 50/50 symmetry, allowing custom weight vectors to dampen divergence loss. <span class="article-figure__credit">Original editorial illustration by LiquidityPools.app.</span></figcaption>
 </figure>
 
-> **Desk Field Note from Dr. Elena Rostova**:
+> **Desk Field Note from Dr. Elena Rostova:**
 > *"Balancer's multi-token weighted invariant $\prod B_i^{w_i} = k$ is fundamentally an automated continuous rebalancing engine that replicates Constant Proportion Portfolio Insurance (CPPI). In an 80/20 pool, an LP naturally reduces maximum impermanent loss to approximately one-third of a 50/50 pool because the position only sells 20% of the appreciating asset. However, LPs must recognize that lower impermanent loss is directly offset by reduced capital efficiency and lower gross fee capture per unit of total committed capital."*
 
 ## 1. The Generalized Constant-Mean Invariant
@@ -193,6 +200,10 @@ Follow this diagnostic protocol when managing multi-token weighted liquidity pos
 3. **Weight Drift Creating Unintended Directional Exposure**:
    - *Diagnostic*: Extreme price trends have shifted the pool's dollar-weighted allocation away from target portfolio parameters.
    - *Action*: Trigger a rebalancing swap or reallocate liquidity across secondary hedging pools to restore target asset weightings.
+
+## Where to Go Next
+
+For how weighted pools sit alongside the other invariants, see [Types of Liquidity Pools](/guides/liquidity-pool-types/). For the divergence arithmetic that 80/20 weighting dampens rather than removes, see [The Impermanent Loss Formula](/guides/impermanent-loss-formula/).
 
 ## References
 

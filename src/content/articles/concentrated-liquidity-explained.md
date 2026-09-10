@@ -6,8 +6,15 @@ date: 2026-09-01
 lastReviewed: "2026-09-10"
 author: "Dr. Elena Rostova"
 readTime: "12 min read"
-keywords: "concentrated liquidity, liquidity range, Uniswap v3, Uniswap v4, Liquidity Book, AMM capital efficiency, tick math, LVR, JIT liquidity"
+keywords: "concentrated liquidity, liquidity range, Uniswap v3, Uniswap v4, Liquidity Book, AMM capital efficiency, tick math, LVR, JIT liquidity, what is concentrated liquidity, concentrated liquidity risk, liquidity range Uniswap v3, out of range liquidity"
 featured: true
+faq:
+  - q: "What is concentrated liquidity?"
+    a: "Liquidity supplied only within a chosen price range rather than across all prices. Inside the range the position backs far more quoted depth per dollar; outside it, the position holds a single asset and earns nothing."
+  - q: "Is concentrated liquidity riskier?"
+    a: "It concentrates the same risks rather than adding new ones. Divergence is amplified inside the range, income stops outside it, and the strategy requires active monitoring that a full-range position does not."
+  - q: "What is a good range width?"
+    a: "One matched to the pair's realised volatility and your willingness to rebalance. A band narrower than typical daily movement will exit range constantly; a very wide band earns little more than a full-range position."
 ---
 
 Concentrated liquidity transforms automated market making from an unconstrained passive deposit into an active, bounded inventory position. Rather than allocating capital uniformly across the entire theoretical price spectrum from zero to infinity ($0, \infty$), concentrated AMMs restrict liquidity within explicit price boundaries $[P_l, P_u]$. This architectural shift delivers unprecedented capital efficiency multipliers, but it simultaneously converts liquidity provision into a leveraged options-writing operation with discrete deactivation boundaries and amplified path-dependent adverse selection [1] [2].
@@ -19,7 +26,7 @@ In modern market microstructure, market makers do not evaluate concentrated pool
   <figcaption>Capital can be dense in one range and inactive outside it. <span class="article-figure__credit">Original editorial illustration by LiquidityPools.app.</span></figcaption>
 </figure>
 
-> **Desk Field Note from Dr. Elena Rostova**:
+> **Desk Field Note from Dr. Elena Rostova:**
 > *"When modeling concentrated liquidity returns, never extrapolate 24-hour annualized fee yield across market cycles. In volatile pairs like WETH/USDC, over 65% of volume in wide ranges is driven by latency arbitrageurs taking stale pool quotes against Binance order books. If your pool fee does not exceed $\sigma \sqrt{\Delta t}$, you are subsidizing HFT searchers with your inventory. Concentrated liquidity is not passive income—it is active inventory options trading."*
 
 ## The Mathematics of Concentrated Liquidity and Virtual Reserves
@@ -194,6 +201,10 @@ Use this systematic diagnostic tree when monitoring concentrated liquidity posit
 3. **Fee Accrual Drops Suddenly Despite Elevated Trading Volume**:
    - *Diagnostic*: JIT searchers are injecting massive concentrated capital in front of large swaps, extracting the vast majority of fee yield.
    - *Action*: Migrate liquidity to fee pools protected by anti-JIT hooks or protocols utilizing minimum holding duration invariants.
+
+## Where to Go Next
+
+The boundary case deserves its own treatment: [Out-of-Range Liquidity](/guides/out-of-range-liquidity/) covers what happens when price leaves the interval and how to price a rebalance. For tier selection inside a concentrated pool, see [Uniswap Fee Tiers Explained](/guides/uniswap-fee-tiers-explained/), and for the architectural differences between versions, [Uniswap v3 vs v4 Liquidity](/guides/uniswap-v3-vs-v4/).
 
 ## References
 

@@ -6,8 +6,15 @@ date: 2026-08-24
 lastReviewed: "2026-09-10"
 author: "Marcus Vance"
 readTime: "12 min read"
-keywords: "onchain liquidity metrics, executable depth, AMM analytics, LVR rate, order flow toxicity, turnover velocity, JIT dilution factor, TVL verifiability"
+keywords: "onchain liquidity metrics, executable depth, AMM analytics, LVR rate, order flow toxicity, turnover velocity, JIT dilution factor, TVL verifiability, liquidity pool data, pool analytics DeFi, liquidity pool volume, how to research a DeFi pool"
 featured: false
+faq:
+  - q: "Which liquidity metrics actually matter?"
+    a: "Depth within a defined band around the current price, routed volume for the specific pool, fee revenue relative to liquidity supplying it, the share of volume that is arbitrage, and time in range for concentrated positions."
+  - q: "How do I research a DeFi pool onchain?"
+    a: "Start with the pool contract and its parameters, then read the liquidity distribution, then reconstruct swap history to separate ordinary flow from arbitrage, then compare fee accrual against a hold benchmark for a representative position."
+  - q: "What is pool utilisation?"
+    a: "A measure of how much of the supplied liquidity is actually being used to price trades. In tick-based pools it is closer to the share of liquidity that is in range and receiving flow, rather than a lending-style utilisation figure."
 ---
 
 In decentralized finance, nominal scoreboard metrics such as Total Value Locked (TVL) and 24-hour trading volume routinely distort operational reality. Gross TVL is frequently inflated by recursive restaking loops and vast allocations of out-of-range capital sitting idle far away from the active spot tick [1] [2]. Similarly, headline trading volume is often dominated by latency arbitrageurs, cyclic MEV bundles, and flash-loan churn that extracts value from passive reserves rather than reflecting organic market demand [3].
@@ -19,7 +26,7 @@ Liquidity is not an aggregate dollar balance. It is the **instantaneous, mechani
   <figcaption>Depth, flow, and imbalance reveal more than a single TVL figure. <span class="article-figure__credit">Original editorial illustration by LiquidityPools.app.</span></figcaption>
 </figure>
 
-> **Desk Field Note from Marcus Vance**:
+> **Desk Field Note from Marcus Vance:**
 > *"A single metric in DeFi will always mislead you. High TVL can be mercenary capital waiting to withdraw at the end of an incentive cycle; high volume can be wash-trading or toxic MEV bot arbitrage; and high APR is often nominal inflation. Institutional analysts evaluate the trinity: Fee-to-TVL ratio (capital turnover), Toxic Flow ratio (adverse selection), and LVR-adjusted return. If a pool cannot survive on organic fees alone, it is a speculative gamble."*
 
 ## Deconstructing Gross TVL: The Verifiability Deficit
@@ -169,6 +176,10 @@ Follow this diagnostic decision tree when screening liquidity metrics:
 3. **Reported APY Diverges Radically Across Analytical Dashboards**:
    - *Diagnostic*: Different platforms use differing compounding assumptions, trailing time windows, or token pricing feeds.
    - *Action*: Calculate manual gross fee yield directly from onchain fee growth global variables (feeGrowthGlobal) rather than relying on frontend estimates.
+
+## Where to Go Next
+
+Turn these measurements into an expected income figure with the [liquidity pool fee and APR calculator](/tools/liquidity-pool-calculator/), and into a cost figure with [LP Fees vs Impermanent Loss](/guides/lp-fees-vs-impermanent-loss/). For why a quoted rate rarely matches measured data, see [APR vs APY in DeFi](/guides/apr-vs-apy-in-defi/).
 
 ## References
 

@@ -6,8 +6,15 @@ date: 2026-09-08
 lastReviewed: "2026-09-10"
 author: "Dr. Kieran Thorne"
 readTime: "14 min read"
-keywords: "Uniswap v4 architecture, Uniswap v4 hooks, PoolManager.sol, transient storage EIP-1153, flash accounting, ERC-6909, dynamic fee hook"
+keywords: "Uniswap v4 architecture, Uniswap v4 hooks, PoolManager.sol, transient storage EIP-1153, flash accounting, ERC-6909, dynamic fee hook, Uniswap v4 hooks liquidity pools, Uniswap v4 singleton, Uniswap v4 flash accounting, Uniswap v4 liquidity pool"
 featured: true
+faq:
+  - q: "What are Uniswap v4 hooks?"
+    a: "Contracts attached to a pool at creation that run at defined points in the pool lifecycle, such as before and after a swap or a liquidity change. They can implement dynamic fees, custom curves, onchain orders and fee routing."
+  - q: "Are hooks dangerous for liquidity providers?"
+    a: "They are arbitrary code with permissions over the pool's lifecycle, so a pool inherits the trust assumptions of its hook. Check whether the hook is verified, audited, immutable, and what it may do on liquidity removal."
+  - q: "What is flash accounting?"
+    a: "Settlement that records net balance changes in transient storage during a transaction and transfers only the net amounts at the end, rather than moving tokens at each hop. It sharply reduces gas on multi-hop and multi-pool operations."
 ---
 
 Uniswap v4 fundamentally restructures decentralized exchange architecture on Ethereum. In prior iterations (Uniswap v2 and v3), every trading pair existed as an independently deployed smart contract factory instance. Multi-hop swaps required token balances to transfer physically across multiple contract boundaries, incurring cumulative ERC-20 transfer overhead, state writes, and gas friction.
@@ -19,7 +26,7 @@ Uniswap v4 consolidates all liquidity pools into a single central contract: `Poo
   <figcaption>The Uniswap v4 singleton architecture centralizes token balances while delegating execution logic to modular hooks. <span class="article-figure__credit">Original editorial illustration by LiquidityPools.app.</span></figcaption>
 </figure>
 
-> **Desk Field Note from Dr. Kieran Thorne**:
+> **Desk Field Note from Dr. Kieran Thorne:**
 > *"Uniswap v4's hook architecture represents the greatest paradigm shift in AMM security since reentrancy was discovered. Because hooks execute arbitrary code during critical state transitions, a malicious or poorly written hook contract can re-enter the singleton, manipulate internal balances, or freeze pool liquidity entirely. Never deposit capital into a v4 pool without verifying the hook address bitmask permissions and auditing the hook contract's upgradeability."*
 
 ## 1. The Singleton Architecture vs. Factory Model
@@ -227,6 +234,10 @@ Follow this diagnostic decision tree when building or interacting with Uniswap v
 3. **Hook Address Bitmask Verification Fails at Initialization**:
    - *Diagnostic*: The deployed hook contract address does not possess the exact leading bitmask matching its declared permission flags.
    - *Action*: Re-mine the hook deployment salt using CREATE2 (via Foundry) until the deployed contract address matches the exact bitwise permissions required by PoolManager.
+
+## Where to Go Next
+
+For the migration decision stated as a comparison rather than an architecture tour, see [Uniswap v3 vs v4 Liquidity](/guides/uniswap-v3-vs-v4/). For what a dynamic-fee hook is actually trying to price, see [Loss-Versus-Rebalancing](/guides/loss-versus-rebalancing/).
 
 ## References
 

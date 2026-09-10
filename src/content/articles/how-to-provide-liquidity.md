@@ -6,8 +6,15 @@ date: 2026-09-03
 lastReviewed: "2026-09-10"
 author: "Siddharth Mehta"
 readTime: "11 min read"
-keywords: "how to provide liquidity, provide liquidity AMM, liquidity provider guide, DeFi LP, Permit2, hooks"
+keywords: "how to provide liquidity, provide liquidity AMM, liquidity provider guide, DeFi LP, Permit2, hooks, how to provide liquidity on Uniswap, liquidity provision DeFi, do I need both tokens to provide liquidity"
 featured: true
+faq:
+  - q: "How much do you need to provide liquidity?"
+    a: "There is no protocol minimum, but there is an economic one. If gas for minting, collecting and withdrawing is a large fraction of expected fee income, the position cannot work. On high-fee networks that threshold rules out small positions entirely."
+  - q: "How long should I provide liquidity?"
+    a: "Long enough for fee income to clear the divergence the position takes on, which depends on turnover and volatility rather than on a calendar. Positions judged over a few days are dominated by noise."
+  - q: "When should I remove liquidity?"
+    a: "When the reason for the position no longer holds: the pair's volatility has risen beyond what the fee tier compensates, volume has migrated elsewhere, the incentive programme has ended, or you no longer want exposure to either asset."
 ---
 
 Providing liquidity to an automated market maker (AMM) is not a passive yield deposit; it is an active underwriting agreement in which a capital allocator authorizes an immutable smart contract to trade against inventory at deterministic price levels. In return for collecting swap fee cash flow, the liquidity provider (LP) accepts directional inventory drift, continuous options-like adverse selection (Loss-Versus-Rebalancing), and transaction ordering risk from arbitrageurs [1] [2] [4].
@@ -19,7 +26,7 @@ In modern decentralized finance, providing liquidity involves concrete technical
   <figcaption>Providing liquidity means choosing a pool, assets, and active range. <span class="article-figure__credit">Original editorial illustration by LiquidityPools.app.</span></figcaption>
 </figure>
 
-> **Desk Field Note from Siddharth Mehta**:
+> **Desk Field Note from Siddharth Mehta:**
 > *"The moment you sign an approval and deposit liquidity into an onchain pool, you are running an active market-making business. Beginners frequently fail to account for the transaction cost friction of entering and exiting pools. On Ethereum mainnet, approving two ERC-20 tokens, minting a position NFT, and collecting fees can easily cost $80–$150 in gas. If your initial deposit is only $1,000, you are starting with an immediate 10% performance handicap."*
 
 ## Start from the Pricing Rule: Invariant and Active Region
@@ -162,6 +169,10 @@ Use this operational troubleshooting tree when executing liquidity deposits:
 3. **Fee Accruals Lagging Behind Gas Expenditure**:
    - *Diagnostic*: Position capital size is too small relative to onchain transaction costs.
    - *Action*: Batch fee collection operations; do not claim fees until accumulated yield exceeds at least 5x transaction gas costs.
+
+## Where to Go Next
+
+Before choosing bounds, price the boundary case in [Out-of-Range Liquidity](/guides/out-of-range-liquidity/) and the tier in [Uniswap Fee Tiers Explained](/guides/uniswap-fee-tiers-explained/). Then run the two numbers that decide the position: expected fees in the [liquidity pool fee and APR calculator](/tools/liquidity-pool-calculator/) and expected divergence in the [impermanent loss calculator](/tools/impermanent-loss-calculator/).
 
 ## References
 

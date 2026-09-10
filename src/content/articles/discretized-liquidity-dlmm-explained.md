@@ -6,8 +6,15 @@ date: 2026-09-07
 lastReviewed: "2026-09-10"
 author: "Dr. Elena Rostova"
 readTime: "13 min read"
-keywords: "DLMM, discretized liquidity, Trader Joe Liquidity Book, Meteora DLMM, zero slippage bins, volatility accumulator, bin step"
+keywords: "DLMM, discretized liquidity, Trader Joe Liquidity Book, Meteora DLMM, zero slippage bins, volatility accumulator, bin step, DLMM explained, DLMM vs concentrated liquidity, liquidity bins crypto, Liquidity Book"
 featured: false
+faq:
+  - q: "What is DLMM?"
+    a: "A discrete liquidity market maker, which divides the price axis into fixed bins. Each bin quotes a single price, so trades inside a bin have zero slippage and price moves in steps as bins are consumed."
+  - q: "How is DLMM different from concentrated liquidity?"
+    a: "Concentrated liquidity uses a continuous curve within a chosen range; DLMM uses discrete bins that can be filled in arbitrary shapes. Bins also allow fees that respond to how fast price is moving across them."
+  - q: "What is a volatility accumulator?"
+    a: "A running measure of how many bins price has crossed recently, used to raise the fee during fast moves. It is a protocol-level attempt to charge arbitrage more when the pool's quote is most likely to be stale."
 ---
 
 In concentrated liquidity protocols derived from Uniswap v3, liquidity is bounded within discrete price ticks, but trading inside those ticks continues along a continuous virtual constant-product curve ($x \cdot y = L^2$). As a result, even small swaps incur non-zero price impact, and high-frequency tick crossings generate significant gas overhead as smart contracts update global liquidity accumulators [1] [2].
@@ -19,7 +26,7 @@ The **Discretized Liquidity Market Maker (DLMM)**—pioneered by Trader Joe's Li
   <figcaption>Discretized liquidity confines trading to independent constant-sum bins, eliminating intra-bin slippage while dynamically pricing volatility. <span class="article-figure__credit">Original editorial illustration by LiquidityPools.app.</span></figcaption>
 </figure>
 
-> **Desk Field Note from Dr. Elena Rostova**:
+> **Desk Field Note from Dr. Elena Rostova:**
 > *"Discretized Liquidity (DLMM) fundamentally alters AMM market making by eliminating within-bin price slippage. Because each discrete bin behaves as a constant sum invariant ($x + P \cdot y = k$), trades inside the active bin execute with zero slippage. For LPs, the critical innovation is the volatility accumulator: when market volatility surges, bin fees automatically scale up without external oracle latency, directly neutralizing the toxic adverse selection that bleeds Uniswap v3 LPs."*
 
 ## 1. Mathematical Architecture: The Constant-Sum Bin Invariant
@@ -212,6 +219,10 @@ Use this diagnostic sequence when monitoring discrete bin liquidity positions:
 3. **Excessive Gas Overhead During Frequent Bin Transitions**:
    - *Diagnostic*: High bin step resolution relative to price volatility is forcing transactions to cross multiple bins, accumulating state transition gas.
    - *Action*: Deploy liquidity in pools with wider bin step parameters (e.g., 20 bps or 50 bps bins) for volatile assets.
+
+## Where to Go Next
+
+For how bin-based designs compare with the other curve families, see [Types of Liquidity Pools](/guides/liquidity-pool-types/). For the shared boundary problem that every range-based design has, see [Out-of-Range Liquidity](/guides/out-of-range-liquidity/).
 
 ## References
 

@@ -8,6 +8,7 @@ export type Article = {
   author?: string;
   readTime: string;
   keywords: string;
+  faq?: { q: string; a: string }[];
   featured?: boolean;
   Content: any;
 };

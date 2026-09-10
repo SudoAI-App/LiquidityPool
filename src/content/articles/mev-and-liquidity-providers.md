@@ -6,8 +6,15 @@ date: 2026-08-27
 lastReviewed: "2026-09-10"
 author: "Marcus Vance"
 readTime: "12 min read"
-keywords: "MEV liquidity providers, JIT liquidity, sandwich attacks, LVR, toxic order flow, Uniswap v4 hooks, MEV-Share, PBS"
+keywords: "MEV liquidity providers, JIT liquidity, sandwich attacks, LVR, toxic order flow, Uniswap v4 hooks, MEV-Share, PBS, how does MEV affect liquidity providers, sandwich attacks liquidity pools, adverse selection AMM"
 featured: false
+faq:
+  - q: "How does MEV affect liquidity providers?"
+    a: "Most of it arrives as arbitrage that reprices a stale pool quote, transferring value from LPs to searchers and block builders. A smaller part, just-in-time liquidity, dilutes the fees passive LPs earn on the largest trades."
+  - q: "What is a sandwich attack?"
+    a: "A searcher buys immediately before a victim's trade and sells immediately after, profiting from the price movement the victim's own order creates. The profit is bounded by the slippage tolerance the victim set."
+  - q: "Can liquidity providers avoid MEV?"
+    a: "Not individually, but pool design changes the exposure: dynamic fees price volatility, auctions can return arbitrage profit to LPs, and batch settlement removes the ordering advantage that makes extraction possible."
 ---
 
 In decentralized finance, Maximal Extractable Value (MEV) is the primary determinant of net liquidity provider profitability. Automated market makers (AMMs) post passive, unhedged, and un-cancellable quotes to a public mempool. This architectural design creates an asymmetric execution game: algorithmic searchers, block builders, and validating nodes continuously exploit the deterministic ordering of transactions to extract rent from passive pool reserves through latency arbitrage, frontrunning, sandwich attacks, and Just-In-Time (JIT) fee dilution [1] [2] [3].
@@ -19,7 +26,7 @@ For an institutional market maker, evaluating an AMM pool requires analyzing the
   <figcaption>Transaction ordering can change the execution around a visible swap. <span class="article-figure__credit">Original editorial illustration by LiquidityPools.app.</span></figcaption>
 </figure>
 
-> **Desk Field Note from Marcus Vance**:
+> **Desk Field Note from Marcus Vance:**
 > *"MEV is not a victimless technical quirk—it is a direct extraction of value from liquidity providers and swappers. Just-In-Time (JIT) liquidity attacks steal trading fees without taking inventory risk, while cross-DEX arbitrageurs continuously buy underpriced tokens and sell overpriced tokens against AMM reserves. If you want to protect your capital, look for pools integrated with MEV-capturing AMMs (such as MEV-Blocker, CowSwap, or hook-enabled pools that auction backrunning rights)."*
 
 ## The MEV Supply Chain: How Transactions Reach the Blockchain
@@ -182,6 +189,10 @@ Use this diagnostic sequence to identify and mitigate MEV attacks on LP position
 3. **LVR Outpaces Gross Fees During High Market Volatility**:
    - *Diagnostic*: Toxic arbitrageurs are exploiting block latency to pick off stale quotes before onchain prices update.
    - *Action*: Avoid narrow concentrated positions in pools without dynamic fee adjustment hooks during scheduled economic announcements or extreme volatility.
+
+## Where to Go Next
+
+The formal measure of what this extraction costs a liquidity provider is developed in [Loss-Versus-Rebalancing](/guides/loss-versus-rebalancing/). For the trader-side defences against the same mechanisms, including tolerance settings and private routing, see [Slippage and Price Impact](/guides/slippage-and-price-impact/).
 
 ## References
 

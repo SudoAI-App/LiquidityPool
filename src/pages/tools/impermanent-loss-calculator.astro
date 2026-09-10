@@ -1,0 +1,321 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const title = 'Impermanent Loss Calculator';
+const description = 'Calculate impermanent loss from entry and exit prices, compare the pooled position against holding, and test whether fee income cleared the divergence.';
+
+const faq = [
+  {
+    q: 'How does this impermanent loss calculator work?',
+    a: 'It takes the entry and current price of both assets, derives the relative price ratio k, and applies the closed-form expression IL(k) = 2·√k / (1 + k) − 1. It then values a balanced deposit under both scenarios: held in a wallet, and supplied to a constant-product pool that rebalanced continuously.'
+  },
+  {
+    q: 'What does a negative impermanent loss figure mean?',
+    a: 'It is the percentage by which the pooled position trails the value of simply holding the deposited basket at the same prices. A result of −5.72% means the pool is worth 5.72% less than the unpooled tokens before fee income is added.'
+  },
+  {
+    q: 'Should I include fees in the calculation?',
+    a: 'Yes. Enter the fees collected over the holding period and the calculator reports the net result against holding. Impermanent loss on its own describes a cost, not an outcome; the outcome is the cost net of the revenue that was supposed to compensate for it.'
+  },
+  {
+    q: 'Does this calculator work for Uniswap v3 concentrated positions?',
+    a: 'It models the unbounded constant-product case, which is the correct baseline for full-range and v2-style positions. A concentrated range experiences amplified divergence inside its bounds and stops rebalancing once price exits them, so treat this result as a floor rather than an exact figure for a narrow range.'
+  },
+  {
+    q: 'What price should I use for the entry price?',
+    a: 'The market price of each asset at the moment you deposited, in the same unit of account. If you deposited in several transactions, use a value-weighted average or run the calculator once per deposit and sum the results.'
+  }
+];
+
+const canonical = 'https://liquiditypools.app/tools/impermanent-loss-calculator/';
+const appSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'WebApplication',
+  name: 'Impermanent Loss Calculator',
+  url: canonical,
+  applicationCategory: 'FinanceApplication',
+  operatingSystem: 'Any',
+  browserRequirements: 'Requires JavaScript',
+  description,
+  isAccessibleForFree: true,
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+  publisher: { '@type': 'Organization', name: 'LiquidityPools.app', url: 'https://liquiditypools.app' }
+};
+const faqSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faq.map((item) => ({
+    '@type': 'Question',
+    name: item.q,
+    acceptedAnswer: { '@type': 'Answer', text: item.a }
+  }))
+};
+const breadcrumbSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://liquiditypools.app/' },
+    { '@type': 'ListItem', position: 2, name: 'Tools', item: 'https://liquiditypools.app/tools/' },
+    { '@type': 'ListItem', position: 3, name: title, item: canonical }
+  ]
+};
+---
+<BaseLayout title={`${title} — LiquidityPools.app`} description={description} image="/images/guides/impermanent-loss-calculator.webp">
+  <Fragment slot="head">
+    <script is:inline type="application/ld+json" set:html={JSON.stringify(appSchema)} />
+    <script is:inline type="application/ld+json" set:html={JSON.stringify(faqSchema)} />
+    <script is:inline type="application/ld+json" set:html={JSON.stringify(breadcrumbSchema)} />
+  </Fragment>
+
+  <section class="page-hero">
+    <div class="container">
+      <div class="eyebrow eyebrow--mint">Research tools · Free, no wallet connection</div>
+      <h1 class="page-title">Impermanent loss calculator.</h1>
+      <p>Enter what you deposited and where prices are now. The calculator reports the divergence against holding, the fee income needed to offset it, and the net result of the position.</p>
+    </div>
+  </section>
+
+  <section class="section section--paper" style="padding-top:64px">
+    <div class="container">
+      <div class="tool-layout">
+        <form class="tool-panel" id="il-form" novalidate>
+          <h2>Position inputs</h2>
+          <p class="tool-panel__note">Defaults describe a balanced ETH/USDC deposit where ETH has risen from 2,000 to 3,000. Every field updates the result immediately.</p>
+
+          <div class="tool-grid-2">
+            <div class="tool-field">
+              <label for="priceA0">Token A price at deposit</label>
+              <input id="priceA0" name="priceA0" type="number" inputmode="decimal" step="any" min="0" value="2000" />
+            </div>
+            <div class="tool-field">
+              <label for="priceA1">Token A price now</label>
+              <input id="priceA1" name="priceA1" type="number" inputmode="decimal" step="any" min="0" value="3000" />
+            </div>
+          </div>
+
+          <div class="tool-grid-2">
+            <div class="tool-field">
+              <label for="priceB0">Token B price at deposit</label>
+              <input id="priceB0" name="priceB0" type="number" inputmode="decimal" step="any" min="0" value="1" />
+            </div>
+            <div class="tool-field">
+              <label for="priceB1">Token B price now</label>
+              <input id="priceB1" name="priceB1" type="number" inputmode="decimal" step="any" min="0" value="1" />
+            </div>
+          </div>
+
+          <div class="tool-field">
+            <label for="capital">Capital deployed at deposit</label>
+            <input id="capital" name="capital" type="number" inputmode="decimal" step="any" min="0" value="10000" />
+            <small>Total value supplied, split 50/50 across the pair at the deposit prices.</small>
+          </div>
+
+          <div class="tool-grid-2">
+            <div class="tool-field">
+              <label for="fees">Fees earned so far</label>
+              <input id="fees" name="fees" type="number" inputmode="decimal" step="any" min="0" value="260" />
+            </div>
+            <div class="tool-field">
+              <label for="days">Days held</label>
+              <input id="days" name="days" type="number" inputmode="numeric" step="1" min="1" value="45" />
+            </div>
+          </div>
+
+          <div class="tool-presets" role="group" aria-label="Price scenario presets">
+            <button type="button" class="tool-preset" data-ratio="1.25">A up 25%</button>
+            <button type="button" class="tool-preset" data-ratio="1.5">A up 50%</button>
+            <button type="button" class="tool-preset" data-ratio="2">A doubles</button>
+            <button type="button" class="tool-preset" data-ratio="4">A quadruples</button>
+            <button type="button" class="tool-preset" data-ratio="0.5">A halves</button>
+          </div>
+        </form>
+
+        <div class="tool-result" aria-live="polite">
+          <h2>Result</h2>
+          <div class="tool-headline">
+            <span>Impermanent loss vs. holding</span>
+            <strong id="out-il">−2.02%</strong>
+            <em id="out-ratio">Relative price ratio k = 1.5000</em>
+          </div>
+          <div class="tool-rows">
+            <div class="tool-row"><span>Value if you had simply held</span><strong id="out-hodl">$12,500.00</strong></div>
+            <div class="tool-row"><span>Pool position value before fees</span><strong id="out-pool">$12,247.45</strong></div>
+            <div class="tool-row tool-row--loss"><span>Divergence in currency terms</span><strong id="out-div">−$252.55</strong></div>
+            <div class="tool-row"><span>Fees collected</span><strong id="out-fees">$260.00</strong></div>
+            <div class="tool-row tool-row--net"><span>Net result vs. holding</span><strong id="out-net">+$7.45</strong></div>
+            <div class="tool-row"><span>Fee income needed to break even</span><strong id="out-breakeven">$252.55</strong></div>
+            <div class="tool-row"><span>Annualised fee yield on capital</span><strong id="out-apr">21.1%</strong></div>
+          </div>
+          <p class="tool-verdict" id="out-verdict">Fee income has covered the divergence over this holding period.</p>
+          <p class="tool-disclaimer">Educational model only. Excludes gas, price impact on entry and exit, emissions, and time spent out of range. Not investment advice.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--mist" style="padding-top:72px;padding-bottom:72px">
+    <div class="container">
+      <div class="guide-layout">
+        <aside class="guide-aside">
+          <h2>Related reading</h2>
+          <a href="/guides/impermanent-loss-formula/">The impermanent loss formula</a>
+          <a href="/guides/impermanent-loss-explained/">Impermanent loss explained</a>
+          <a href="/guides/lp-fees-vs-impermanent-loss/">Fees vs impermanent loss</a>
+          <a href="/guides/out-of-range-liquidity/">Out-of-range liquidity</a>
+          <a href="/guides/concentrated-liquidity-explained/">Concentrated liquidity</a>
+        </aside>
+        <div class="article-content">
+          <h2>The formula behind the number</h2>
+          <p>For a two-asset constant-product pool, impermanent loss depends on exactly one variable: the ratio between how much each asset moved. Let <strong>k</strong> be the price of token A relative to token B, measured against their prices at deposit:</p>
+          <p><code>k = (A_now / A_deposit) ÷ (B_now / B_deposit)</code></p>
+          <p>Arbitrage keeps the pool's marginal price aligned with the market, which fixes the reserves after the move. Valuing them gives the closed form used above:</p>
+          <p><code>IL(k) = 2 · √k / (1 + k) − 1</code></p>
+          <p>The result is always negative except at <code>k = 1</code>, and it is symmetric in log price: a halving and a doubling of the relative price produce the same 5.72% shortfall. The full derivation, including the concentrated liquidity variant, is in <a href="/guides/impermanent-loss-formula/">The Impermanent Loss Formula</a>.</p>
+
+          <h2>What each input means</h2>
+          <ul>
+            <li><strong>Token A and B prices at deposit</strong> — the market price of each asset when you supplied liquidity, expressed in the same unit of account. For a pair against a fiat stablecoin, token B is usually 1.00 at both points.</li>
+            <li><strong>Capital deployed</strong> — the total value supplied, assumed to be split evenly across the two assets at deposit prices, which is what a balanced constant-product deposit requires.</li>
+            <li><strong>Fees earned</strong> — trading fees collected over the holding period, valued in the same currency. Include incentive tokens only at the price you could actually sell them.</li>
+            <li><strong>Days held</strong> — used to annualise the fee yield so it can be compared with other quotes. See <a href="/guides/apr-vs-apy-in-defi/">APR vs APY in DeFi</a> for how those quotes are constructed.</li>
+          </ul>
+
+          <h2>Reading the result</h2>
+          <p>Three lines carry the decision. <strong>Divergence in currency terms</strong> is the cost the pricing rule imposed by rebalancing your basket. <strong>Fee income needed to break even</strong> is the revenue required to offset it exactly. <strong>Net result versus holding</strong> is the only figure that answers whether supplying liquidity beat the simplest alternative.</p>
+          <p>A position can show a positive net result and still have been a poor use of capital if a different pool, or a different pair, would have paid more for the same exposure. Equally, a negative net result in a strongly trending market is expected behaviour rather than evidence of a mistake: the invariant sold the winner, which is what it exists to do.</p>
+
+          <h2>Reference values worth memorising</h2>
+          <table>
+            <thead><tr><th>Relative price ratio</th><th>Move</th><th>Impermanent loss</th></tr></thead>
+            <tbody>
+              <tr><td>1.25</td><td>+25%</td><td>−0.62%</td></tr>
+              <tr><td>1.50</td><td>+50%</td><td>−2.02%</td></tr>
+              <tr><td>2.00</td><td>2x</td><td>−5.72%</td></tr>
+              <tr><td>3.00</td><td>3x</td><td>−13.40%</td></tr>
+              <tr><td>4.00</td><td>4x</td><td>−20.00%</td></tr>
+              <tr><td>5.00</td><td>5x</td><td>−25.46%</td></tr>
+            </tbody>
+          </table>
+
+          <h2>Limitations of this model</h2>
+          <p>The calculation assumes an unbounded constant-product curve, a balanced deposit, and no intermediate withdrawals. It deliberately excludes several costs that are often larger than the divergence itself:</p>
+          <ul>
+            <li><strong>Concentrated ranges.</strong> A narrow band amplifies divergence while price is inside it and freezes the position once price exits. Use this result as a lower bound and read <a href="/guides/out-of-range-liquidity/">Out-of-Range Liquidity</a>.</li>
+            <li><strong>Path dependency.</strong> Two paths ending at the same price produce identical results here, but not in reality. The value handed to arbitrageurs along the way is measured by <a href="/guides/loss-versus-rebalancing/">loss-versus-rebalancing</a>.</li>
+            <li><strong>Friction.</strong> Gas, entry swaps and exit price impact are excluded. On small positions they routinely dominate. See <a href="/guides/slippage-and-price-impact/">Slippage and Price Impact</a>.</li>
+            <li><strong>Emission decay.</strong> Incentive tokens should be valued at realisable prices, not accrual prices, as discussed in <a href="/guides/yield-farming-explained/">Yield Farming Explained</a>.</li>
+          </ul>
+
+          <div class="faq-block">
+            <h2>Frequently asked questions</h2>
+            {faq.map((item) => (
+              <div class="faq-item">
+                <h3>{item.q}</h3>
+                <p>{item.a}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+        <aside class="guide-aside">
+          <h2>Method</h2>
+          <p style="font-size:12px;line-height:1.55;color:#5b7062">All calculations run in your browser. No inputs are transmitted, stored, or logged.</p>
+          <h2 style="margin-top:22px">Verify onchain</h2>
+          <a href="https://revert.finance" target="_blank" rel="noopener">Revert Finance ↗</a>
+          <a href="https://dune.com" target="_blank" rel="noopener">Dune Analytics ↗</a>
+          <a href="https://defillama.com" target="_blank" rel="noopener">DeFiLlama ↗</a>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <script is:inline>
+    (function () {
+      var ids = ['priceA0', 'priceA1', 'priceB0', 'priceB1', 'capital', 'fees', 'days'];
+      var el = {};
+      ids.forEach(function (id) { el[id] = document.getElementById(id); });
+      var out = {};
+      ['il', 'ratio', 'hodl', 'pool', 'div', 'fees', 'net', 'breakeven', 'apr', 'verdict'].forEach(function (key) {
+        out[key] = document.getElementById('out-' + key);
+      });
+
+      function num(node, fallback) {
+        var value = parseFloat(node.value);
+        return isFinite(value) ? value : fallback;
+      }
+
+      function money(value) {
+        var sign = value < 0 ? '−' : '';
+        return sign + '$' + Math.abs(value).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      }
+
+      function signedMoney(value) {
+        if (Math.abs(value) < 0.005) return '$0.00';
+        return (value > 0 ? '+' : '−') + '$' + Math.abs(value).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      }
+
+      function percent(value) {
+        var sign = value < 0 ? '−' : value > 0 ? '+' : '';
+        return sign + Math.abs(value).toFixed(2) + '%';
+      }
+
+      function render() {
+        var a0 = num(el.priceA0, 0), a1 = num(el.priceA1, 0);
+        var b0 = num(el.priceB0, 0), b1 = num(el.priceB1, 0);
+        var capital = num(el.capital, 0);
+        var feesEarned = num(el.fees, 0);
+        var days = Math.max(1, num(el.days, 1));
+
+        if (a0 <= 0 || b0 <= 0 || a1 < 0 || b1 < 0 || capital <= 0) {
+          out.verdict.textContent = 'Enter positive deposit prices and a capital amount to see a result.';
+          return;
+        }
+
+        var k = (a1 / a0) / (b1 / b0);
+        var il = k > 0 ? (2 * Math.sqrt(k) / (1 + k)) - 1 : -1;
+
+        var qtyA = (capital / 2) / a0;
+        var qtyB = (capital / 2) / b0;
+        var hodl = qtyA * a1 + qtyB * b1;
+        var pool = hodl * (1 + il);
+        var divergence = pool - hodl;
+        var net = divergence + feesEarned;
+        var apr = (feesEarned / capital) * (365 / days) * 100;
+
+        out.il.textContent = percent(il * 100);
+        out.ratio.textContent = 'Relative price ratio k = ' + k.toFixed(4);
+        out.hodl.textContent = money(hodl);
+        out.pool.textContent = money(pool);
+        out.div.textContent = signedMoney(divergence);
+        out.fees.textContent = money(feesEarned);
+        out.net.textContent = signedMoney(net);
+        out.breakeven.textContent = money(Math.abs(divergence));
+        out.apr.textContent = (isFinite(apr) ? apr.toFixed(1) : '0.0') + '%';
+
+        if (Math.abs(k - 1) < 0.0001) {
+          out.verdict.textContent = 'Relative prices are unchanged, so there is no divergence. Fee income is the entire result.';
+        } else if (net > 0) {
+          out.verdict.textContent = 'Fee income has covered the divergence over this holding period. The position is ahead of simply holding the deposited basket.';
+        } else {
+          out.verdict.textContent = 'Fee income has not yet covered the divergence. Holding the deposited basket would have produced ' + money(Math.abs(net)) + ' more over this period.';
+        }
+      }
+
+      ids.forEach(function (id) {
+        el[id].addEventListener('input', render);
+      });
+
+      Array.prototype.forEach.call(document.querySelectorAll('.tool-preset'), function (button) {
+        button.addEventListener('click', function () {
+          var ratio = parseFloat(button.getAttribute('data-ratio'));
+          var base = parseFloat(el.priceA0.value);
+          if (isFinite(ratio) && isFinite(base) && base > 0) {
+            el.priceA1.value = String(Number((base * ratio).toFixed(6)));
+            render();
+          }
+        });
+      });
+
+      render();
+    })();
+  </script>
+</BaseLayout>

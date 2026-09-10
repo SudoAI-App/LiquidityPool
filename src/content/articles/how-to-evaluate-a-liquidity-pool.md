@@ -6,8 +6,15 @@ date: 2026-08-25
 lastReviewed: "2026-09-10"
 author: "Siddharth Mehta"
 readTime: "12 min read"
-keywords: "how to evaluate liquidity pool, DeFi LP due diligence, AMM pool evaluation, LVR hurdle rate, Uniswap v4 hook audit, active depth metrics"
+keywords: "how to evaluate liquidity pool, DeFi LP due diligence, AMM pool evaluation, LVR hurdle rate, Uniswap v4 hook audit, active depth metrics, how to choose a liquidity pool, how to compare liquidity pools, liquidity pool due diligence, is providing liquidity profitable"
 featured: true
+faq:
+  - q: "How do I choose a liquidity pool?"
+    a: "Match the curve to the pair, check that fee income at realistic volume clears the volatility hurdle, verify the contracts and any hook, confirm depth at the price where trades actually happen, and decide whether you would hold either asset alone."
+  - q: "How do I compare two liquidity pools?"
+    a: "Normalise both to a net figure: fee-only yield at current routed volume with your capital added to the denominator, minus an estimate of divergence for the pair, minus gas for the management cadence each requires."
+  - q: "Is a high APY liquidity pool safe?"
+    a: "A persistently high rate is compensation for something specific: volatility, thin liquidity, emissions that will taper, or an unreviewed contract. Identify which before deciding whether the rate is adequate."
 ---
 
 Headline yield figures displayed on decentralized exchange analytics dashboards routinely mislead capital allocators. An advertised 38% annual percentage rate (APR) paired with a $50 million Total Value Locked (TVL) metric conveys an illusion of safety, but reveals virtually nothing about actual market making viability. Headline APR is a backward-looking historical extrapolation that ignores inventory conversion, adverse selection, and boundary deactivation. Gross TVL is routinely inflated by recursive restaking loops and idle out-of-range capital parked miles away from current spot prices.
@@ -24,7 +31,7 @@ Providing liquidity to an automated market maker (AMM) is an active quantitative
   <figcaption>A pool deserves a mechanism-by-mechanism review before capital is committed. <span class="article-figure__credit">Original editorial illustration by LiquidityPools.app.</span></figcaption>
 </figure>
 
-> **Desk Field Note from Siddharth Mehta**:
+> **Desk Field Note from Siddharth Mehta:**
 > *"Institutional allocators never look at headline APR in isolation. An advertised 80% APR pool is often a capital trap: if 60% of that yield consists of inflationary farm tokens with continuous sell pressure, and the remaining 20% is trading fees on an unhedged volatile pair, your net real return will be negative. Always decompose yield into pure swap fee yield versus emission subsidies, and stress-test the position against a 20% drawdown in the underlying asset."*
 
 ## Part 1: Invariant and Execution Architecture
@@ -176,6 +183,10 @@ Follow this diagnostic checklist when screening potential pools for capital allo
 3. **Emission Rewards Represent >70% of Advertised APY**:
    - *Diagnostic*: The pool relies on inflationary mercenary capital; once reward emissions decay, TVL will collapse, leaving late LPs with depreciated farm tokens.
    - *Action*: Implement daily harvesting and liquidation rules, or allocate strictly to pools where organic trading fees constitute the majority of yield.
+
+## Where to Go Next
+
+Match the curve to the pair using [Types of Liquidity Pools](/guides/liquidity-pool-types/), then quantify the income side with the [liquidity pool fee and APR calculator](/tools/liquidity-pool-calculator/) and the cost side with the [impermanent loss calculator](/tools/impermanent-loss-calculator/). For the hurdle that decides whether a pool is worth supplying at all, see [LP Fees vs Impermanent Loss](/guides/lp-fees-vs-impermanent-loss/).
 
 ## References
 

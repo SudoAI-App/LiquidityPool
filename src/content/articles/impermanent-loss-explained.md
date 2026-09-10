@@ -6,8 +6,15 @@ date: 2026-08-29
 lastReviewed: "2026-09-10"
 author: "Dr. Elena Rostova"
 readTime: "13 min read"
-keywords: "impermanent loss explained, Loss-Versus-Rebalancing, LVR, AMM market microstructure, Uniswap v3 IL, adverse selection, toxic flow"
+keywords: "impermanent loss explained, Loss-Versus-Rebalancing, LVR, AMM market microstructure, Uniswap v3 IL, adverse selection, toxic flow, what is impermanent loss, how to avoid impermanent loss, impermanent loss calculator, divergence loss"
 featured: true
+faq:
+  - q: "What is impermanent loss?"
+    a: "The shortfall between a pooled position and simply holding the deposited tokens, caused by the pool selling whichever asset appreciates and accumulating whichever falls. It becomes permanent when you withdraw at a different relative price than you entered."
+  - q: "How to avoid impermanent loss?"
+    a: "It cannot be removed while supplying a two-sided pool, only reduced or offset: correlated or pegged pairs diverge less, weighted pools rotate less, fee income offsets what remains, and a hedge can neutralise the delta at a cost."
+  - q: "Is impermanent loss vs permanent loss a real distinction?"
+    a: "Only until you withdraw. The word impermanent refers to the possibility that relative prices return to their entry ratio, which closes the gap. Withdrawing crystallises whatever gap exists at that moment."
 ---
 
 Automated market makers (AMMs) enforce a deterministic pricing invariant that mandates continuous inventory rebalancing against incoming market orders. When relative market prices diverge from deposit levels, the pool's invariant algorithmically sells the appreciating asset and accumulates the depreciating one. The difference between the value of this dynamically rebalanced inventory and a static hold portfolio is conventionally termed **impermanent loss (IL)**.
@@ -19,7 +26,7 @@ In institutional quantitative finance, treating impermanent loss as an "imperman
   <figcaption>Pool rebalancing changes inventory relative to simply holding. <span class="article-figure__credit">Original editorial illustration by LiquidityPools.app.</span></figcaption>
 </figure>
 
-> **Desk Field Note from Dr. Elena Rostova**:
+> **Desk Field Note from Dr. Elena Rostova:**
 > *"The phrase 'impermanent loss' is one of the most dangerous misnomers in finance. While divergence loss is path-independent and will reset if prices return to the exact initial ratio, the Loss-Versus-Rebalancing (LVR) accrued along that price trajectory is permanent and unrecoverable. Every time the price moves away and returns, arbitrageurs rebalance your pool reserves at favorable prices, locking in structural decay that trading fees must overcome."*
 
 ## The Mathematics of Impermanent Loss in Constant-Product AMMs
@@ -186,6 +193,10 @@ Follow this diagnostic framework when evaluating impermanent divergence risk:
 3. **Impermanent Loss Completely Neutralized by Fee Accrual**:
    - *Diagnostic*: The pool exhibits high organic trading volume with bounded volatility, generating fee yield greater than divergence drag.
    - *Action*: Continue providing liquidity; consider compounding accrued fees back into active reserves to maximize compound yield.
+
+## Where to Go Next
+
+For the closed-form derivation and a step-by-step worked example, read [The Impermanent Loss Formula](/guides/impermanent-loss-formula/), then run your own position through the [impermanent loss calculator](/tools/impermanent-loss-calculator/). To test whether fee income clears the divergence over a holding period, use [LP Fees vs Impermanent Loss](/guides/lp-fees-vs-impermanent-loss/).
 
 ## References
 

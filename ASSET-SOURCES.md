@@ -26,3 +26,24 @@ The visual system uses charcoal ground, ivory structures, mint for active liquid
 | `stablecoin-liquidity-pools` | Stable-asset curves are efficient near balance and defensive under stress. | `public/images/guides/stablecoin-liquidity-pools.webp` |
 | `tvl-explained` | Headline value and executable depth are not the same measurement. | `public/images/guides/tvl-explained.webp` |
 | `what-is-a-liquidity-pool` | How a pool turns two reserves into a continuous quote. | `public/images/guides/what-is-a-liquidity-pool.webp` |
+
+## Programmatically generated figures (keyword-expansion release, 2026-09-10)
+
+The figures below are rendered directly from `scripts/generate-guide-figures.py` rather than commissioned. Each is a labelled diagram or plot drawn from the numbers used in its guide, exported at 1600x1067 WebP on the dark technical ground described in [`VISUAL-SYSTEM.md`](./VISUAL-SYSTEM.md). They contain no third-party marks and can be regenerated deterministically with `python3 scripts/generate-guide-figures.py <slug>`.
+
+| Guide or tool | Visual argument | Asset |
+| --- | --- | --- |
+| `out-of-range-liquidity` | Fee accrual is a step function of price: full inside the interval, zero outside. | `public/images/guides/out-of-range-liquidity.webp` |
+| `impermanent-loss-formula` | Divergence plotted against the price ratio, with a worked dollar example. | `public/images/guides/impermanent-loss-formula.webp` |
+| `lp-fees-vs-impermanent-loss` | Fee capture grows with volatility; adverse selection grows with its square. | `public/images/guides/lp-fees-vs-impermanent-loss.webp` |
+| `loss-versus-rebalancing` | The widening gap between pool value and a continuously rebalancing benchmark. | `public/images/guides/loss-versus-rebalancing.webp` |
+| `uniswap-v3-vs-v4` | Row-by-row comparison of what changed between versions, and what did not. | `public/images/guides/uniswap-v3-vs-v4.webp` |
+| `slippage-and-price-impact` | Execution price against order size for two pool depths. | `public/images/guides/slippage-and-price-impact.webp` |
+| `uniswap-fee-tiers-explained` | Each tier's typical pairs and its share of routed volume. | `public/images/guides/uniswap-fee-tiers-explained.webp` |
+| `apr-vs-apy-in-defi` | One rate under five compounding conventions, and the costs no rate includes. | `public/images/guides/apr-vs-apy-in-defi.webp` |
+| `yield-farming-explained` | The two revenue paths into a farmed position and the deductions against them. | `public/images/guides/yield-farming-explained.webp` |
+| `liquidity-pool-types` | Three invariants plotted together with the exposure each hands the LP. | `public/images/guides/liquidity-pool-types.webp` |
+| `liquidity-pool-vs-staking` | Two payoffs compared across revenue, exposure, path dependency and exit. | `public/images/guides/liquidity-pool-vs-staking.webp` |
+| `can-you-lose-money-in-a-liquidity-pool` | Six distinct loss paths, only two specific to automated market making. | `public/images/guides/can-you-lose-money-in-a-liquidity-pool.webp` |
+| `/tools/impermanent-loss-calculator/` | Inputs, formula and benchmark for the divergence calculation. | `public/images/guides/impermanent-loss-calculator.webp` |
+| `/tools/liquidity-pool-calculator/` | Fee income as the product of tier, routed volume and liquidity share. | `public/images/guides/liquidity-pool-calculator.webp` |
