@@ -183,14 +183,20 @@ Turn these measurements into an expected income figure with the [liquidity pool 
 
 ## References
 
+
+1. [Uniswap v3 Concentrated Liquidity Documentation](https://developers.uniswap.org/docs/protocols/v3/concepts/concentrated-liquidity)
+2. [Towards Verifiability of Total Value Locked (TVL) in Decentralized Finance | BIS Working Paper 1268](https://www.bis.org/publ/work1268.htm)
+3. [Measuring Arbitrage Losses and Profitability of AMM Liquidity (Fritsch, 2024)](https://arxiv.org/abs/2404.05803)
+4. [Automated Market Making and Loss-Versus-Rebalancing (Milionis et al., 2022)](https://arxiv.org/abs/2208.06046)
+5. [Just-In-Time Liquidity: Characteristics and Impact on Concentrated AMMs](https://arxiv.org/abs/2305.19211)
+6. [Trading in the DeFi era: automated market maker (BIS Bulletin No 58, 2022)](https://www.bis.org/publ/bisbull58.htm)
+7. [On the Quality of Cryptocurrency Markets: Centralized versus Decentralized Exchanges (Barbon & Ranaldo, 2021)](https://arxiv.org/abs/2112.07386)
+8. [DeFi risks and the decentralisation illusion (BIS Quarterly Review, December 2021)](https://www.bis.org/publ/qtrpdf/r_qt2112b.htm)
 [1]: https://developers.uniswap.org/docs/protocols/v3/concepts/concentrated-liquidity "Uniswap v3 Concentrated Liquidity Documentation"
-
 [2]: https://www.bis.org/publ/work1268.htm "Towards Verifiability of Total Value Locked (TVL) in Decentralized Finance | BIS Working Paper 1268"
-
-[3]: https://arxiv.org/html/2404.05803v2 "Measuring Arbitrage Losses and Profitability of AMM Liquidity (Fritsch, 2024)"
-
+[3]: https://arxiv.org/abs/2404.05803 "Measuring Arbitrage Losses and Profitability of AMM Liquidity (Fritsch, 2024)"
 [4]: https://arxiv.org/abs/2208.06046 "Automated Market Making and Loss-Versus-Rebalancing (Milionis et al., 2022)"
-
 [5]: https://arxiv.org/abs/2305.19211 "Just-In-Time Liquidity: Characteristics and Impact on Concentrated AMMs"
-
-[6]: https://www.bis.org/publications/trading-defi-era-automated-market-maker "Trading in the DeFi Era: Automated Market-Maker Microstructure"
+[6]: https://www.bis.org/publ/bisbull58.htm "Trading in the DeFi era: automated market maker (BIS Bulletin No 58, 2022)"
+[7]: https://arxiv.org/abs/2112.07386 "On the Quality of Cryptocurrency Markets: Centralized versus Decentralized Exchanges (Barbon & Ranaldo, 2021)"
+[8]: https://www.bis.org/publ/qtrpdf/r_qt2112b.htm "DeFi risks and the decentralisation illusion (BIS Quarterly Review, December 2021)"

@@ -230,14 +230,23 @@ For how bin-based designs compare with the other curve families, see [Types of L
 
 ## References
 
-[1]: https://app.uniswap.org/whitepaper-v3.pdf "Uniswap v3 Core Whitepaper"
 
+1. [Uniswap v3 Core Whitepaper](https://uniswap.org/whitepaper-v3.pdf)
+2. [Uniswap v3 Concentrated Liquidity Documentation](https://developers.uniswap.org/docs/protocols/v3/concepts/concentrated-liquidity)
+3. [Liquidity Book: concentrated liquidity in bins (Trader Joe Documentation)](https://docs.traderjoexyz.com/concepts/concentrated-liquidity)
+4. [Meteora DLMM Documentation and Architecture](https://docs.meteora.ag/dlmm/dlmm-overview)
+5. [Automated Market Making and Loss-Versus-Rebalancing (Milionis et al., 2022)](https://arxiv.org/abs/2208.06046)
+6. [Strategic Liquidity Provision in Discretized AMM Architectures](https://arxiv.org/abs/2305.19211)
+7. [Optimal Fees for Geometric Mean Market Makers (Evans et al., 2021)](https://arxiv.org/abs/2104.00446)
+8. [When Does the Tail Wag the Dog? Curvature and Market Making (Angeris et al., 2020)](https://arxiv.org/abs/2012.08040)
+9. [Trading in the DeFi era: automated market maker (BIS Bulletin No 58, 2022)](https://www.bis.org/publ/bisbull58.htm)
+
+[1]: https://uniswap.org/whitepaper-v3.pdf "Uniswap v3 Core Whitepaper"
 [2]: https://developers.uniswap.org/docs/protocols/v3/concepts/concentrated-liquidity "Uniswap v3 Concentrated Liquidity Documentation"
-
-[3]: https://github.com/traderjoe-xyz/LB-Whitepaper/blob/main/Joe_LB_Whitepaper.pdf "Trader Joe Liquidity Book Whitepaper (Mountain et al., 2022)"
-
+[3]: https://docs.traderjoexyz.com/concepts/concentrated-liquidity "Liquidity Book: concentrated liquidity in bins (Trader Joe Documentation)"
 [4]: https://docs.meteora.ag/dlmm/dlmm-overview "Meteora DLMM Documentation and Architecture"
-
 [5]: https://arxiv.org/abs/2208.06046 "Automated Market Making and Loss-Versus-Rebalancing (Milionis et al., 2022)"
-
 [6]: https://arxiv.org/abs/2305.19211 "Strategic Liquidity Provision in Discretized AMM Architectures"
+[7]: https://arxiv.org/abs/2104.00446 "Optimal Fees for Geometric Mean Market Makers (Evans et al., 2021)"
+[8]: https://arxiv.org/abs/2012.08040 "When Does the Tail Wag the Dog? Curvature and Market Making (Angeris et al., 2020)"
+[9]: https://www.bis.org/publ/bisbull58.htm "Trading in the DeFi era: automated market maker (BIS Bulletin No 58, 2022)"

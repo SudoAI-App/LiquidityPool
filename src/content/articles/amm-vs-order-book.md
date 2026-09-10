@@ -183,12 +183,21 @@ The execution-cost comparison in practice is worked through in [Slippage and Pri
 
 ## References
 
+
+1. [Concentrated Liquidity | Uniswap Developers](https://developers.uniswap.org/docs/get-started/concepts/liquidity-providers/concentrated-liquidity)
+2. [StableSwap pools (Curve Documentation)](https://docs.curve.finance/developer/amm/legacy/stableswap-overview)
+3. [Flashbots Auction: Overview](https://docs.flashbots.net/flashbots-auction/overview)
+4. [Coexisting Exchange Platforms: Limit Order Books and Automated Market Makers](https://doi.org/10.1086/732831)
+5. [Maximal Extractable Value (MEV) | ethereum.org](https://ethereum.org/en/developers/docs/mev/)
+6. [On the Quality of Cryptocurrency Markets: Centralized versus Decentralized Exchanges (Barbon & Ranaldo, 2021)](https://arxiv.org/abs/2112.07386)
+7. [The Adoption of Blockchain-based Decentralized Exchanges (Capponi & Jia, 2021)](https://arxiv.org/abs/2103.08842)
+8. [Trading in the DeFi era: automated market maker (BIS Bulletin No 58, 2022)](https://www.bis.org/publ/bisbull58.htm)
+
 [1]: https://developers.uniswap.org/docs/get-started/concepts/liquidity-providers/concentrated-liquidity "Concentrated Liquidity | Uniswap Developers"
-
-[2]: https://curve.readthedocs.io/exchange-pools.html "StableSwap: Pools | Curve Documentation"
-
+[2]: https://docs.curve.finance/developer/amm/legacy/stableswap-overview "StableSwap pools (Curve Documentation)"
 [3]: https://docs.flashbots.net/flashbots-auction/overview "Flashbots Auction: Overview"
-
 [4]: https://doi.org/10.1086/732831 "Coexisting Exchange Platforms: Limit Order Books and Automated Market Makers"
-
-[5]: https://ethereum.org/developers/docs/mev/ "Maximal Extractable Value (MEV) | ethereum.org"
+[5]: https://ethereum.org/en/developers/docs/mev/ "Maximal Extractable Value (MEV) | ethereum.org"
+[6]: https://arxiv.org/abs/2112.07386 "On the Quality of Cryptocurrency Markets: Centralized versus Decentralized Exchanges (Barbon & Ranaldo, 2021)"
+[7]: https://arxiv.org/abs/2103.08842 "The Adoption of Blockchain-based Decentralized Exchanges (Capponi & Jia, 2021)"
+[8]: https://www.bis.org/publ/bisbull58.htm "Trading in the DeFi era: automated market maker (BIS Bulletin No 58, 2022)"

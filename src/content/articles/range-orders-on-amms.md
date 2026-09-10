@@ -166,18 +166,25 @@ A range order is a deliberate out-of-range position, so the mechanics in [Out-of
 
 ## References
 
-[1]: https://app.uniswap.org/whitepaper-v3.pdf "Uniswap v3 Core Whitepaper"
 
+1. [Uniswap v3 Core Whitepaper](https://uniswap.org/whitepaper-v3.pdf)
+2. [Uniswap v3 Concentrated Liquidity Concepts](https://developers.uniswap.org/docs/protocols/v3/concepts/concentrated-liquidity)
+3. [Uniswap v4 Core Whitepaper](https://uniswap.org/whitepaper-v4.pdf)
+4. [Strategic Liquidity Provision in Uniswap v3 (Neuder et al., 2021)](https://arxiv.org/abs/2106.12033)
+5. [Trading Fast and Slow: Colocation and Liquidity](https://academic.oup.com/rfs/article/26/1/249/1574519)
+6. [Ambient Protocol Knock-Out Liquidity Architecture](https://docs.ambient.run/protocol-design/knock-out-liquidity)
+7. [CoW Protocol Documentation](https://docs.cow.fi/)
+8. [An Analysis of Uniswap v3: Loss-Versus-Rebalancing and Market Microstructure](https://arxiv.org/abs/2208.06046)
+9. [On the Quality of Cryptocurrency Markets: Centralized versus Decentralized Exchanges (Barbon & Ranaldo, 2021)](https://arxiv.org/abs/2112.07386)
+10. [Trading in the DeFi era: automated market maker (BIS Bulletin No 58, 2022)](https://www.bis.org/publ/bisbull58.htm)
+
+[1]: https://uniswap.org/whitepaper-v3.pdf "Uniswap v3 Core Whitepaper"
 [2]: https://developers.uniswap.org/docs/protocols/v3/concepts/concentrated-liquidity "Uniswap v3 Concentrated Liquidity Concepts"
-
-[3]: https://github.com/Uniswap/v4-core/blob/main/docs/whitepaper-v4.pdf "Uniswap v4 Core Whitepaper"
-
-[4]: https://arxiv.org/html/2106.12033v5 "Strategic Liquidity Provision in Uniswap v3"
-
+[3]: https://uniswap.org/whitepaper-v4.pdf "Uniswap v4 Core Whitepaper"
+[4]: https://arxiv.org/abs/2106.12033 "Strategic Liquidity Provision in Uniswap v3 (Neuder et al., 2021)"
 [5]: https://academic.oup.com/rfs/article/26/1/249/1574519 "Trading Fast and Slow: Colocation and Liquidity"
-
 [6]: https://docs.ambient.run/protocol-design/knock-out-liquidity "Ambient Protocol Knock-Out Liquidity Architecture"
-
-[7]: https://cow.fi/learn/what-is-cow-swap "CoW Swap: Batch Auctions and Intent-Based Trading"
-
+[7]: https://docs.cow.fi/ "CoW Protocol Documentation"
 [8]: https://arxiv.org/abs/2208.06046 "An Analysis of Uniswap v3: Loss-Versus-Rebalancing and Market Microstructure"
+[9]: https://arxiv.org/abs/2112.07386 "On the Quality of Cryptocurrency Markets: Centralized versus Decentralized Exchanges (Barbon & Ranaldo, 2021)"
+[10]: https://www.bis.org/publ/bisbull58.htm "Trading in the DeFi era: automated market maker (BIS Bulletin No 58, 2022)"

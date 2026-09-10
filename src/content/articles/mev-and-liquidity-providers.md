@@ -196,18 +196,23 @@ The formal measure of what this extraction costs a liquidity provider is develop
 
 ## References
 
+
+1. [Uniswap v3 Concentrated Liquidity Documentation](https://developers.uniswap.org/docs/protocols/v3/concepts/concentrated-liquidity)
+2. [Flashbots Documentation: MEV and Proposer-Builder Separation](https://docs.flashbots.net/)
+3. [Ethereum Foundation: Maximal Extractable Value (MEV)](https://ethereum.org/en/developers/docs/mev/)
+4. [Automated Market Making and Loss-Versus-Rebalancing (Milionis et al., 2022)](https://arxiv.org/abs/2208.06046)
+5. [Measuring Arbitrage Losses and Profitability of AMM Liquidity (Fritsch, 2024)](https://arxiv.org/abs/2404.05803)
+6. [CoW Protocol Documentation](https://docs.cow.fi/)
+7. [Uniswap v4 Core Whitepaper](https://uniswap.org/whitepaper-v4.pdf)
+8. [Just-In-Time Liquidity: Characteristics and Impact on Concentrated AMMs](https://arxiv.org/abs/2305.19211)
+9. [Quantifying Blockchain Extractable Value: How Dark is the Forest? (Qin et al., 2021)](https://arxiv.org/abs/2101.05511)
+
 [1]: https://developers.uniswap.org/docs/protocols/v3/concepts/concentrated-liquidity "Uniswap v3 Concentrated Liquidity Documentation"
-
 [2]: https://docs.flashbots.net/ "Flashbots Documentation: MEV and Proposer-Builder Separation"
-
-[3]: https://ethereum.org/developers/docs/mev/ "Ethereum Foundation: Maximal Extractable Value (MEV)"
-
+[3]: https://ethereum.org/en/developers/docs/mev/ "Ethereum Foundation: Maximal Extractable Value (MEV)"
 [4]: https://arxiv.org/abs/2208.06046 "Automated Market Making and Loss-Versus-Rebalancing (Milionis et al., 2022)"
-
-[5]: https://arxiv.org/html/2404.05803v2 "Measuring Arbitrage Losses and Profitability of AMM Liquidity (Fritsch, 2024)"
-
-[6]: https://cow.fi/learn/what-is-cow-swap "CoW Swap: Batch Auctions and Intent Architecture"
-
-[7]: https://github.com/Uniswap/v4-core/blob/main/docs/whitepaper-v4.pdf "Uniswap v4 Core Whitepaper"
-
+[5]: https://arxiv.org/abs/2404.05803 "Measuring Arbitrage Losses and Profitability of AMM Liquidity (Fritsch, 2024)"
+[6]: https://docs.cow.fi/ "CoW Protocol Documentation"
+[7]: https://uniswap.org/whitepaper-v4.pdf "Uniswap v4 Core Whitepaper"
 [8]: https://arxiv.org/abs/2305.19211 "Just-In-Time Liquidity: Characteristics and Impact on Concentrated AMMs"
+[9]: https://arxiv.org/abs/2101.05511 "Quantifying Blockchain Extractable Value: How Dark is the Forest? (Qin et al., 2021)"

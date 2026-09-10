@@ -196,18 +196,25 @@ Match the curve to the pair using [Types of Liquidity Pools](/guides/liquidity-p
 
 ## References
 
+
+1. [Uniswap v3 Concentrated Liquidity Documentation](https://developers.uniswap.org/docs/protocols/v3/concepts/concentrated-liquidity)
+2. [Curve StableSwap Exchange Architecture Overview](https://docs.curve.finance/developer/amm/legacy/stableswap-overview)
+3. [Automated Market Making and Loss-Versus-Rebalancing (Milionis et al., 2022)](https://arxiv.org/abs/2208.06046)
+4. [Uniswap v4 Core Whitepaper](https://uniswap.org/whitepaper-v4.pdf)
+5. [Liquidity Book: concentrated liquidity in bins (Trader Joe Documentation)](https://docs.traderjoexyz.com/concepts/concentrated-liquidity)
+6. [DeFi risks and the decentralisation illusion (BIS Quarterly Review, December 2021)](https://www.bis.org/publ/qtrpdf/r_qt2112b.htm)
+7. [Measuring Arbitrage Losses and Profitability of AMM Liquidity (Fritsch, 2024)](https://arxiv.org/abs/2404.05803)
+8. [Just-In-Time Liquidity: Characteristics and Impact on Concentrated AMMs](https://arxiv.org/abs/2305.19211)
+9. [SoK: Decentralized Exchanges with Automated Market Maker Protocols (Xu et al., 2021)](https://arxiv.org/abs/2103.12732)
+10. [The Financial Stability Risks of Decentralised Finance (Financial Stability Board, 2023)](https://www.fsb.org/2023/02/the-financial-stability-risks-of-decentralised-finance/)
+
 [1]: https://developers.uniswap.org/docs/protocols/v3/concepts/concentrated-liquidity "Uniswap v3 Concentrated Liquidity Documentation"
-
 [2]: https://docs.curve.finance/developer/amm/legacy/stableswap-overview "Curve StableSwap Exchange Architecture Overview"
-
 [3]: https://arxiv.org/abs/2208.06046 "Automated Market Making and Loss-Versus-Rebalancing (Milionis et al., 2022)"
-
-[4]: https://github.com/Uniswap/v4-core/blob/main/docs/whitepaper-v4.pdf "Uniswap v4 Core Whitepaper"
-
-[5]: https://github.com/traderjoe-xyz/LB-Whitepaper/blob/main/Joe_LB_Whitepaper.pdf "Trader Joe Liquidity Book Whitepaper"
-
-[6]: https://www.bis.org/publications/defi-risks-and-decentralisation-illusion "DeFi Risks and the Decentralisation Illusion | Bank for International Settlements"
-
-[7]: https://arxiv.org/html/2404.05803v2 "Measuring Arbitrage Losses and Profitability of AMM Liquidity (Fritsch, 2024)"
-
+[4]: https://uniswap.org/whitepaper-v4.pdf "Uniswap v4 Core Whitepaper"
+[5]: https://docs.traderjoexyz.com/concepts/concentrated-liquidity "Liquidity Book: concentrated liquidity in bins (Trader Joe Documentation)"
+[6]: https://www.bis.org/publ/qtrpdf/r_qt2112b.htm "DeFi risks and the decentralisation illusion (BIS Quarterly Review, December 2021)"
+[7]: https://arxiv.org/abs/2404.05803 "Measuring Arbitrage Losses and Profitability of AMM Liquidity (Fritsch, 2024)"
 [8]: https://arxiv.org/abs/2305.19211 "Just-In-Time Liquidity: Characteristics and Impact on Concentrated AMMs"
+[9]: https://arxiv.org/abs/2103.12732 "SoK: Decentralized Exchanges with Automated Market Maker Protocols (Xu et al., 2021)"
+[10]: https://www.fsb.org/2023/02/the-financial-stability-risks-of-decentralised-finance/ "The Financial Stability Risks of Decentralised Finance (Financial Stability Board, 2023)"

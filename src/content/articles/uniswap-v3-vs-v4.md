@@ -126,8 +126,14 @@ The exposure both versions share is derived in [The Impermanent Loss Formula](/g
 2. [Uniswap v4 Core Whitepaper (Adams et al., 2024)](https://uniswap.org/whitepaper-v4.pdf)
 3. [EIP-1153: Transient Storage Opcodes (Ethereum Improvement Proposals)](https://eips.ethereum.org/EIPS/eip-1153)
 4. [What are the risks when providing liquidity? (Uniswap Labs)](https://support.uniswap.org/hc/en-us/articles/37113550065549-What-are-the-risks-when-providing-liquidity)
+5. [ERC-6909: Minimal Multi-Token Interface (Ethereum Improvement Proposals)](https://eips.ethereum.org/EIPS/eip-6909)
+6. [Hooks (Uniswap v4 Documentation)](https://docs.uniswap.org/contracts/v4/concepts/hooks)
+7. [Risks and Returns of Uniswap V3 Liquidity Providers (Heimbach et al., 2022)](https://arxiv.org/abs/2205.08904)
 
 [1]: https://uniswap.org/whitepaper-v3.pdf "Uniswap v3 Core Whitepaper"
 [2]: https://uniswap.org/whitepaper-v4.pdf "Uniswap v4 Core Whitepaper"
 [3]: https://eips.ethereum.org/EIPS/eip-1153 "EIP-1153: Transient Storage Opcodes"
 [4]: https://support.uniswap.org/hc/en-us/articles/37113550065549-What-are-the-risks-when-providing-liquidity "What are the risks when providing liquidity?"
+[5]: https://eips.ethereum.org/EIPS/eip-6909 "ERC-6909: Minimal Multi-Token Interface (Ethereum Improvement Proposals)"
+[6]: https://docs.uniswap.org/contracts/v4/concepts/hooks "Hooks (Uniswap v4 Documentation)"
+[7]: https://arxiv.org/abs/2205.08904 "Risks and Returns of Uniswap V3 Liquidity Providers (Heimbach et al., 2022)"

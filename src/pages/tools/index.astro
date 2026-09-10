@@ -123,6 +123,16 @@ const breadcrumbSchema = {
           <p>There is no liquidity pool tracker or LP position tracker here, and there will not be one until it can be built on live data we control. A DeFi liquidity tracker that reports stale or partial position state is worse than no tracker at all, because it invites decisions on numbers nobody verified.</p>
           <p>For live position tracking today, reconstruct positions on Revert Finance, read pool state directly from a block explorer, and use pool analytics on Dune or DeFiLlama for volume and fee history. The frameworks in <a href="/guides/onchain-liquidity-metrics/">Onchain Liquidity Metrics</a> and <a href="/guides/token-liquidity-analysis/">Token Liquidity Analysis</a> explain which measurements to take from those sources and how each one misleads.</p>
           <p>For the reasoning behind each model, start with <a href="/guides/impermanent-loss-formula/">The Impermanent Loss Formula</a> and <a href="/guides/lp-fees-vs-impermanent-loss/">LP Fees vs Impermanent Loss</a>. To verify a live position against onchain data rather than a model, reconstruct it on Revert Finance and compare the two.</p>
+          <h2 id="sources">Sources</h2>
+          <p>Every model on these pages is built from published specifications and research rather than from house rules. The primary sources are:</p>
+          <ol class="tool-sources">
+            <li><a href="https://uniswap.org/whitepaper-v3.pdf" target="_blank" rel="noopener">Uniswap v3 Core Whitepaper (Adams et al., 2021)</a></li>
+            <li><a href="https://arxiv.org/abs/2208.06046" target="_blank" rel="noopener">Automated Market Making and Loss-Versus-Rebalancing (Milionis et al., 2022)</a></li>
+            <li><a href="https://arxiv.org/abs/2103.12732" target="_blank" rel="noopener">SoK: Decentralized Exchanges with Automated Market Maker Protocols (Xu et al., 2021)</a></li>
+            <li><a href="https://www.bis.org/publ/bisbull58.htm" target="_blank" rel="noopener">Trading in the DeFi era: automated market maker (BIS Bulletin No 58, 2022)</a></li>
+            <li><a href="https://support.uniswap.org/hc/en-us/articles/37113550065549-What-are-the-risks-when-providing-liquidity" target="_blank" rel="noopener">What are the risks when providing liquidity? (Uniswap Labs)</a></li>
+          </ol>
+
         </div>
         <aside class="guide-aside">
           <h2>Editorial note</h2>

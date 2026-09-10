@@ -356,16 +356,25 @@ The hurdle rate every quoting strategy has to clear is derived in [Loss-Versus-R
 
 ## References
 
+
+1. [High-frequency trading in a limit order book (Avellaneda & Stoikov, 2008)](https://www.math.nyu.edu/~avellane/HighFrequencyTrading.pdf)
+2. [Uniswap v4 Core Whitepaper](https://uniswap.org/whitepaper-v4.pdf)
+3. [Uniswap v3 Core Whitepaper](https://uniswap.org/whitepaper-v3.pdf)
+4. [Automated Market Making and Loss-Versus-Rebalancing](https://arxiv.org/abs/2208.06046)
+5. [Flash Boys 2.0: Frontrunning, Transaction Reordering, and Consensus Instability in Decentralized Exchanges](https://arxiv.org/abs/1904.05234)
+6. [Strategic Liquidity Provision in Uniswap v3](https://arxiv.org/abs/2206.12543)
+7. [Uniswap v4 Developer Documentation: Hooks Architecture](https://docs.uniswap.org/contracts/v4/concepts/hooks)
+8. [Optimal Fees for Geometric Mean Market Makers (Evans et al., 2021)](https://arxiv.org/abs/2104.00446)
+9. [On the Quality of Cryptocurrency Markets: Centralized versus Decentralized Exchanges (Barbon & Ranaldo, 2021)](https://arxiv.org/abs/2112.07386)
+10. [DeFi risks and the decentralisation illusion (BIS Quarterly Review, December 2021)](https://www.bis.org/publ/qtrpdf/r_qt2112b.htm)
+
 [1]: https://www.math.nyu.edu/~avellane/HighFrequencyTrading.pdf "High-frequency trading in a limit order book (Avellaneda & Stoikov, 2008)"
-
 [2]: https://uniswap.org/whitepaper-v4.pdf "Uniswap v4 Core Whitepaper"
-
 [3]: https://uniswap.org/whitepaper-v3.pdf "Uniswap v3 Core Whitepaper"
-
 [4]: https://arxiv.org/abs/2208.06046 "Automated Market Making and Loss-Versus-Rebalancing"
-
 [5]: https://arxiv.org/abs/1904.05234 "Flash Boys 2.0: Frontrunning, Transaction Reordering, and Consensus Instability in Decentralized Exchanges"
-
 [6]: https://arxiv.org/abs/2206.12543 "Strategic Liquidity Provision in Uniswap v3"
-
 [7]: https://docs.uniswap.org/contracts/v4/concepts/hooks "Uniswap v4 Developer Documentation: Hooks Architecture"
+[8]: https://arxiv.org/abs/2104.00446 "Optimal Fees for Geometric Mean Market Makers (Evans et al., 2021)"
+[9]: https://arxiv.org/abs/2112.07386 "On the Quality of Cryptocurrency Markets: Centralized versus Decentralized Exchanges (Barbon & Ranaldo, 2021)"
+[10]: https://www.bis.org/publ/qtrpdf/r_qt2112b.htm "DeFi risks and the decentralisation illusion (BIS Quarterly Review, December 2021)"

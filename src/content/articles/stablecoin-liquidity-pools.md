@@ -169,18 +169,23 @@ For where amplified curves sit among the alternatives, see [Types of Liquidity P
 
 ## References
 
+
+1. [Uniswap v3 Concentrated Liquidity Concepts](https://developers.uniswap.org/docs/protocols/v3/concepts/concentrated-liquidity)
+2. [StableSwap pools (Curve Documentation)](https://docs.curve.finance/developer/amm/legacy/stableswap-overview)
+3. [StableSwap - Efficient Mechanism for Stablecoin Liquidity](https://berkeley-defi.github.io/assets/material/StableSwap.pdf)
+4. [Maximal Extractable Value (MEV) Overview](https://ethereum.org/en/developers/docs/mev/)
+5. [Primary and Secondary Markets for Stablecoins | Federal Reserve](https://www.federalreserve.gov/econres/notes/feds-notes/primary-and-secondary-markets-for-stablecoins-20240223.html)
+6. [Ethena Protocol Architecture and Hedging Mechanics](https://docs.ethena.fi/solution-overview/system-architecture)
+7. [Uniswap v4 Core Whitepaper](https://uniswap.org/whitepaper-v4.pdf)
+8. [Security Analysis of Decentralized Finance Protocols](https://arxiv.org/abs/2105.02784)
+9. [While Stability Lasts: A Stochastic Model of Non-Custodial Stablecoins (Klages-Mundt & Minca, 2020)](https://arxiv.org/abs/2004.01304)
+
 [1]: https://developers.uniswap.org/docs/protocols/v3/concepts/concentrated-liquidity "Uniswap v3 Concentrated Liquidity Concepts"
-
-[2]: https://curve.readthedocs.io/exchange-pools.html "Curve StableSwap: Invariant and Pool Mathematics"
-
+[2]: https://docs.curve.finance/developer/amm/legacy/stableswap-overview "StableSwap pools (Curve Documentation)"
 [3]: https://berkeley-defi.github.io/assets/material/StableSwap.pdf "StableSwap - Efficient Mechanism for Stablecoin Liquidity"
-
-[4]: https://ethereum.org/developers/docs/mev/ "Maximal Extractable Value (MEV) Overview"
-
+[4]: https://ethereum.org/en/developers/docs/mev/ "Maximal Extractable Value (MEV) Overview"
 [5]: https://www.federalreserve.gov/econres/notes/feds-notes/primary-and-secondary-markets-for-stablecoins-20240223.html "Primary and Secondary Markets for Stablecoins | Federal Reserve"
-
 [6]: https://docs.ethena.fi/solution-overview/system-architecture "Ethena Protocol Architecture and Hedging Mechanics"
-
-[7]: https://github.com/Uniswap/v4-core/blob/main/docs/whitepaper-v4.pdf "Uniswap v4 Core Whitepaper"
-
+[7]: https://uniswap.org/whitepaper-v4.pdf "Uniswap v4 Core Whitepaper"
 [8]: https://arxiv.org/abs/2105.02784 "Security Analysis of Decentralized Finance Protocols"
+[9]: https://arxiv.org/abs/2004.01304 "While Stability Lasts: A Stochastic Model of Non-Custodial Stablecoins (Klages-Mundt & Minca, 2020)"

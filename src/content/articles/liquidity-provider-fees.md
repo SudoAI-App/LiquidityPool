@@ -162,12 +162,21 @@ Tier selection is the decision that moves this number most, and it is treated in
 
 ## References
 
+
+1. [Pools | Uniswap Developers](https://developers.uniswap.org/docs/protocols/v2/concepts/pools)
+2. [Fees | Uniswap Developers](https://developers.uniswap.org/docs/get-started/concepts/fees)
+3. [Uniswap v4 Core Whitepaper & Architecture](https://uniswap.org/whitepaper-v4.pdf)
+4. [What is veCRV? | Curve Knowledge Hub](https://docs.curve.finance/user/vecrv/what-is-vecrv)
+5. [Automated Market Making and Loss-Versus-Rebalancing](https://arxiv.org/abs/2208.06046)
+6. [Optimal Fees for Geometric Mean Market Makers (Evans et al., 2021)](https://arxiv.org/abs/2104.00446)
+7. [Automated Market Making and Arbitrage Profits in the Presence of Fees (Milionis et al., 2023)](https://arxiv.org/abs/2305.14604)
+8. [DeFi risks and the decentralisation illusion (BIS Quarterly Review, December 2021)](https://www.bis.org/publ/qtrpdf/r_qt2112b.htm)
+
 [1]: https://developers.uniswap.org/docs/protocols/v2/concepts/pools "Pools | Uniswap Developers"
-
 [2]: https://developers.uniswap.org/docs/get-started/concepts/fees "Fees | Uniswap Developers"
-
 [3]: https://uniswap.org/whitepaper-v4.pdf "Uniswap v4 Core Whitepaper & Architecture"
-
 [4]: https://docs.curve.finance/user/vecrv/what-is-vecrv "What is veCRV? | Curve Knowledge Hub"
-
 [5]: https://arxiv.org/abs/2208.06046 "Automated Market Making and Loss-Versus-Rebalancing"
+[6]: https://arxiv.org/abs/2104.00446 "Optimal Fees for Geometric Mean Market Makers (Evans et al., 2021)"
+[7]: https://arxiv.org/abs/2305.14604 "Automated Market Making and Arbitrage Profits in the Presence of Fees (Milionis et al., 2023)"
+[8]: https://www.bis.org/publ/qtrpdf/r_qt2112b.htm "DeFi risks and the decentralisation illusion (BIS Quarterly Review, December 2021)"

@@ -10,7 +10,8 @@
     "preview": "astro preview --host 0.0.0.0",
     "check": "astro check",
     "content:audit": "node scripts/content-audit.mjs",
-    "indexnow": "node scripts/indexnow-submit.mjs"
+    "indexnow": "node scripts/indexnow-submit.mjs",
+    "links:check": "node scripts/check-links.mjs"
   },
   "devDependencies": {
     "@astrojs/check": "0.9.10",

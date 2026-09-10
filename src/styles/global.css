@@ -347,3 +347,9 @@ img { display: block; max-width: 100%; }
   .tool-layout { grid-template-columns: 1fr; }
   .tool-grid-2 { grid-template-columns: 1fr; }
 }
+
+/* Source lists on tool pages */
+.tool-sources { margin: 1.2em 0 0; padding-left: 1.3em; }
+.tool-sources li { margin-bottom: .55em; font-size: 14.5px; line-height: 1.6; }
+.tool-sources a { color: #1d6240; text-decoration: underline; text-decoration-color: rgba(29, 98, 64, .36); text-underline-offset: .16em; }
+.tool-sources a:hover { color: #0c3422; text-decoration-color: currentColor; }

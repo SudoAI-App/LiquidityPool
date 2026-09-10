@@ -309,16 +309,23 @@ Two calculations belong alongside this checklist: expected fee income, modelled 
 
 ## References
 
+
+1. [Uniswap v4 Core Whitepaper (Adams et al., 2024)](https://uniswap.org/whitepaper-v4.pdf)
+2. [Concentrated Liquidity: Construction and Properties (Adams et al., 2021)](https://uniswap.org/whitepaper-v3.pdf)
+3. [StableSwap - efficient mechanism for Stablecoin liquidity (Egorov, 2019)](https://berkeley-defi.github.io/assets/material/StableSwap.pdf)
+4. [Automated Market Making and Loss-Versus-Rebalancing (Milionis, Moallemi, Roughgarden, Timmer, 2022)](https://arxiv.org/abs/2208.06046)
+5. [Flash Boys 2.0: Frontrunning, Transaction Reordering, and Consensus Instability in Decentralized Exchanges (Daian et al., 2019)](https://arxiv.org/abs/1904.05234)
+6. [Strategic Liquidity Provision in Uniswap v3 (Heimbach, Schertenleib, Wattenhofer, 2022)](https://arxiv.org/abs/2206.12543)
+7. [Uniswap v4 Developer Documentation: Hooks Architecture](https://docs.uniswap.org/contracts/v4/concepts/hooks)
+8. [SoK: Decentralized Finance (DeFi) Attacks (Zhou et al., 2022)](https://arxiv.org/abs/2208.13035)
+9. [The Financial Stability Risks of Decentralised Finance (Financial Stability Board, 2023)](https://www.fsb.org/2023/02/the-financial-stability-risks-of-decentralised-finance/)
+
 [1]: https://uniswap.org/whitepaper-v4.pdf "Uniswap v4 Core Whitepaper (Adams et al., 2024)"
-
 [2]: https://uniswap.org/whitepaper-v3.pdf "Concentrated Liquidity: Construction and Properties (Adams et al., 2021)"
-
 [3]: https://berkeley-defi.github.io/assets/material/StableSwap.pdf "StableSwap - efficient mechanism for Stablecoin liquidity (Egorov, 2019)"
-
 [4]: https://arxiv.org/abs/2208.06046 "Automated Market Making and Loss-Versus-Rebalancing (Milionis, Moallemi, Roughgarden, Timmer, 2022)"
-
 [5]: https://arxiv.org/abs/1904.05234 "Flash Boys 2.0: Frontrunning, Transaction Reordering, and Consensus Instability in Decentralized Exchanges (Daian et al., 2019)"
-
 [6]: https://arxiv.org/abs/2206.12543 "Strategic Liquidity Provision in Uniswap v3 (Heimbach, Schertenleib, Wattenhofer, 2022)"
-
 [7]: https://docs.uniswap.org/contracts/v4/concepts/hooks "Uniswap v4 Developer Documentation: Hooks Architecture"
+[8]: https://arxiv.org/abs/2208.13035 "SoK: Decentralized Finance (DeFi) Attacks (Zhou et al., 2022)"
+[9]: https://www.fsb.org/2023/02/the-financial-stability-risks-of-decentralised-finance/ "The Financial Stability Risks of Decentralised Finance (Financial Stability Board, 2023)"

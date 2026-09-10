@@ -200,18 +200,25 @@ For the closed-form derivation and a step-by-step worked example, read [The Impe
 
 ## References
 
+
+1. [Uniswap Support: What is Impermanent Loss?](https://support.uniswap.org/hc/en-us/articles/20904453751693-What-is-Impermanent-Loss)
+2. [Uniswap v3 Concentrated Liquidity Documentation](https://developers.uniswap.org/docs/protocols/v3/concepts/concentrated-liquidity)
+3. [Automated Market Making and Loss-Versus-Rebalancing (Milionis et al., 2022)](https://arxiv.org/abs/2208.06046)
+4. [Uniswap v3 Core Whitepaper](https://uniswap.org/whitepaper-v3.pdf)
+5. [Risks and Returns of Uniswap V3 Liquidity Providers (Heimbach et al., 2022)](https://arxiv.org/abs/2205.08904)
+6. [Measuring Arbitrage Losses and Profitability of AMM Liquidity (Fritsch, 2024)](https://arxiv.org/abs/2404.05803)
+7. [Trading Fast and Slow: Colocation and Liquidity](https://academic.oup.com/rfs/article/26/1/249/1574519)
+8. [Liquidity Book: concentrated liquidity in bins (Trader Joe Documentation)](https://docs.traderjoexyz.com/concepts/concentrated-liquidity)
+9. [Impermanent Loss in Uniswap v3 (Loesch et al., 2021)](https://arxiv.org/abs/2111.09192)
+10. [Trading in the DeFi era: automated market maker (BIS Bulletin No 58, 2022)](https://www.bis.org/publ/bisbull58.htm)
+
 [1]: https://support.uniswap.org/hc/en-us/articles/20904453751693-What-is-Impermanent-Loss "Uniswap Support: What is Impermanent Loss?"
-
 [2]: https://developers.uniswap.org/docs/protocols/v3/concepts/concentrated-liquidity "Uniswap v3 Concentrated Liquidity Documentation"
-
 [3]: https://arxiv.org/abs/2208.06046 "Automated Market Making and Loss-Versus-Rebalancing (Milionis et al., 2022)"
-
-[4]: https://app.uniswap.org/whitepaper-v3.pdf "Uniswap v3 Core Whitepaper"
-
-[5]: https://liobaheimba.ch/assets/pdf/Papers/Risks_and_Returns_of_Uniswap_V3_Liquidity_Providers.pdf "Risks and Returns of Uniswap V3 Liquidity Providers (Heimbach et al., 2022)"
-
-[6]: https://arxiv.org/html/2404.05803v2 "Measuring Arbitrage Losses and Profitability of AMM Liquidity (Fritsch, 2024)"
-
+[4]: https://uniswap.org/whitepaper-v3.pdf "Uniswap v3 Core Whitepaper"
+[5]: https://arxiv.org/abs/2205.08904 "Risks and Returns of Uniswap V3 Liquidity Providers (Heimbach et al., 2022)"
+[6]: https://arxiv.org/abs/2404.05803 "Measuring Arbitrage Losses and Profitability of AMM Liquidity (Fritsch, 2024)"
 [7]: https://academic.oup.com/rfs/article/26/1/249/1574519 "Trading Fast and Slow: Colocation and Liquidity"
-
-[8]: https://github.com/traderjoe-xyz/LB-Whitepaper/blob/main/Joe_LB_Whitepaper.pdf "Trader Joe Liquidity Book Whitepaper"
+[8]: https://docs.traderjoexyz.com/concepts/concentrated-liquidity "Liquidity Book: concentrated liquidity in bins (Trader Joe Documentation)"
+[9]: https://arxiv.org/abs/2111.09192 "Impermanent Loss in Uniswap v3 (Loesch et al., 2021)"
+[10]: https://www.bis.org/publ/bisbull58.htm "Trading in the DeFi era: automated market maker (BIS Bulletin No 58, 2022)"

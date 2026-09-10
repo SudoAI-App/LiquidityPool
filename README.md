@@ -101,6 +101,7 @@ The site uses Astro and runs on `http://localhost:4321` by default. The Vite con
 pnpm build
 pnpm check
 pnpm content:audit
+pnpm links:check   # network required: verifies every cited source resolves
 ```
 
 The static production output is written to `dist/public`. The project has been verified with Astro build and type checks.
@@ -109,7 +110,7 @@ The static production output is written to `dist/public`. The project has been v
 
 Guide content lives in `src/content/articles/`. Each Markdown article contains title, description, category, publication date, review date, author, reading time, keyword theme, featured status, and an optional `faq` list in frontmatter. The `faq` entries render as a question-and-answer block on the guide and emit FAQPage structured data. The guide pages and XML sitemap are generated statically during the build.
 
-Article visuals are stored under `public/images/guides/`. The library uses original, mechanism-led editorial illustrations rather than generic crypto imagery: each visual explains the pool behavior addressed by its guide. The visual brief and asset record are tracked in [`VISUAL-SYSTEM.md`](./VISUAL-SYSTEM.md) and [`ASSET-SOURCES.md`](./ASSET-SOURCES.md). Run `pnpm content:audit` before publishing to enforce the launch-library quality floor: a source list, internal links, a visual, review metadata, five substantive sections, and at least 1,300 words per guide.
+Article visuals are stored under `public/images/guides/`. The library uses original, mechanism-led editorial illustrations rather than generic crypto imagery: each visual explains the pool behavior addressed by its guide. The visual brief and asset record are tracked in [`VISUAL-SYSTEM.md`](./VISUAL-SYSTEM.md) and [`ASSET-SOURCES.md`](./ASSET-SOURCES.md). Run `pnpm content:audit` before publishing to enforce the quality floor: at least 1,300 words, five substantive sections, worked numbers, a comparison table, three or more FAQ entries, internal links, a visual with attribution, review metadata, and a rendered reference list of five or more sources including at least one research paper and one standards body or public-sector publication. It also rejects guaranteed-yield and best-pool style claims. `pnpm links:check` verifies that every cited source still resolves and requires outbound network access, so it runs manually rather than in the audit.
 
 The launch SEO strategy is documented in [`SEO-LAUNCH-PLAN.md`](./SEO-LAUNCH-PLAN.md). Guide figures are generated programmatically by `scripts/generate-guide-figures.py`, which renders each diagram as a 1600x1067 WebP in the house palette.
 

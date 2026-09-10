@@ -207,16 +207,21 @@ For how weighted pools sit alongside the other invariants, see [Types of Liquidi
 
 ## References
 
+
+1. [Balancer: A Non-Custodial Portfolio Manager, Liquidity Provider, and Price Sensor (Martinelli & Mushegian, 2019)](https://balancer.fi/whitepaper.pdf)
+2. [Uniswap v3 Core Whitepaper](https://uniswap.org/whitepaper-v3.pdf)
+3. [Balancer Documentation: Weighted Pools Architecture](https://docs.balancer.fi/concepts/pools/weighted.html)
+4. [Constant Function Market Makers: Multi-asset Trades via Convex Optimization (Angeris et al., 2020)](https://web.stanford.edu/~boyd/papers/pdf/cfmm.pdf)
+5. [Liquidity Bootstrapping Pools (LBPs) Mechanism Design](https://docs.balancer.fi/concepts/pools/liquidity-bootstrapping.html)
+6. [Balancer v3 Core Architecture and Monorepo](https://github.com/balancer/balancer-v3-monorepo)
+7. [Automated Market Making and Loss-Versus-Rebalancing (Milionis et al., 2022)](https://arxiv.org/abs/2208.06046)
+8. [Why Decentralised Finance (DeFi) Matters and the Policy Implications (OECD, 2022)](https://www.oecd.org/daf/fin/financial-markets/Why-Decentralised-Finance-DeFi-Matters-and-the-Policy-Implications.pdf)
+
 [1]: https://balancer.fi/whitepaper.pdf "Balancer: A Non-Custodial Portfolio Manager, Liquidity Provider, and Price Sensor (Martinelli & Mushegian, 2019)"
-
-[2]: https://app.uniswap.org/whitepaper-v3.pdf "Uniswap v3 Core Whitepaper"
-
+[2]: https://uniswap.org/whitepaper-v3.pdf "Uniswap v3 Core Whitepaper"
 [3]: https://docs.balancer.fi/concepts/pools/weighted.html "Balancer Documentation: Weighted Pools Architecture"
-
-[4]: https://www-leland.stanford.edu/~boyd/papers/pdf/cfmm.pdf "Constant Function Market Makers: Multi-asset Trades via Convex Optimization (Angeris et al., 2020)"
-
+[4]: https://web.stanford.edu/~boyd/papers/pdf/cfmm.pdf "Constant Function Market Makers: Multi-asset Trades via Convex Optimization (Angeris et al., 2020)"
 [5]: https://docs.balancer.fi/concepts/pools/liquidity-bootstrapping.html "Liquidity Bootstrapping Pools (LBPs) Mechanism Design"
-
 [6]: https://github.com/balancer/balancer-v3-monorepo "Balancer v3 Core Architecture and Monorepo"
-
 [7]: https://arxiv.org/abs/2208.06046 "Automated Market Making and Loss-Versus-Rebalancing (Milionis et al., 2022)"
+[8]: https://www.oecd.org/daf/fin/financial-markets/Why-Decentralised-Finance-DeFi-Matters-and-the-Policy-Implications.pdf "Why Decentralised Finance (DeFi) Matters and the Policy Implications (OECD, 2022)"

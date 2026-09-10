@@ -209,16 +209,25 @@ For the manual alternative to automated repegging, see [Out-of-Range Liquidity](
 
 ## References
 
-[1]: https://app.uniswap.org/whitepaper-v3.pdf "Uniswap v3 Core Technical Whitepaper"
 
+1. [Uniswap v3 Core Technical Whitepaper](https://uniswap.org/whitepaper-v3.pdf)
+2. [Strategic Liquidity Provision in Uniswap v3 (Heimbach et al., 2022)](https://arxiv.org/abs/2206.12543)
+3. [StableSwap pools (Curve Documentation)](https://docs.curve.finance/developer/amm/legacy/stableswap-overview)
+4. [Curve Finance Cryptoswap v2 Architecture Overview](https://docs.curve.finance/developer/amm/crypto/overview)
+5. [StableSwap - Efficient Mechanism for Stablecoin Liquidity (Egorov, 2019)](https://berkeley-defi.github.io/assets/material/StableSwap.pdf)
+6. [Price Oracles and Time-Weighted Averages in AMMs](https://developers.uniswap.org/docs/protocols/v3/concepts/price-oracles)
+7. [Automated Market Making and Loss-Versus-Rebalancing (Milionis et al., 2022)](https://arxiv.org/abs/2208.06046)
+8. [When Does the Tail Wag the Dog? Curvature and Market Making (Angeris et al., 2020)](https://arxiv.org/abs/2012.08040)
+9. [While Stability Lasts: A Stochastic Model of Non-Custodial Stablecoins (Klages-Mundt & Minca, 2020)](https://arxiv.org/abs/2004.01304)
+10. [Primary and Secondary Markets for Stablecoins (Federal Reserve FEDS Notes, 2024)](https://www.federalreserve.gov/econres/notes/feds-notes/primary-and-secondary-markets-for-stablecoins-20240223.html)
+
+[1]: https://uniswap.org/whitepaper-v3.pdf "Uniswap v3 Core Technical Whitepaper"
 [2]: https://arxiv.org/abs/2206.12543 "Strategic Liquidity Provision in Uniswap v3 (Heimbach et al., 2022)"
-
-[3]: https://curve.readthedocs.io/exchange-pools.html "Automatic Market-Making with Dynamic Pegging (Egorov & Curve Team, 2021)"
-
+[3]: https://docs.curve.finance/developer/amm/legacy/stableswap-overview "StableSwap pools (Curve Documentation)"
 [4]: https://docs.curve.finance/developer/amm/crypto/overview "Curve Finance Cryptoswap v2 Architecture Overview"
-
 [5]: https://berkeley-defi.github.io/assets/material/StableSwap.pdf "StableSwap - Efficient Mechanism for Stablecoin Liquidity (Egorov, 2019)"
-
 [6]: https://developers.uniswap.org/docs/protocols/v3/concepts/price-oracles "Price Oracles and Time-Weighted Averages in AMMs"
-
 [7]: https://arxiv.org/abs/2208.06046 "Automated Market Making and Loss-Versus-Rebalancing (Milionis et al., 2022)"
+[8]: https://arxiv.org/abs/2012.08040 "When Does the Tail Wag the Dog? Curvature and Market Making (Angeris et al., 2020)"
+[9]: https://arxiv.org/abs/2004.01304 "While Stability Lasts: A Stochastic Model of Non-Custodial Stablecoins (Klages-Mundt & Minca, 2020)"
+[10]: https://www.federalreserve.gov/econres/notes/feds-notes/primary-and-secondary-markets-for-stablecoins-20240223.html "Primary and Secondary Markets for Stablecoins (Federal Reserve FEDS Notes, 2024)"

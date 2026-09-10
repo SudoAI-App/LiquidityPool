@@ -201,6 +201,17 @@ const breadcrumbSchema = {
           <h2>Using it before rather than after</h2>
           <p>The most useful application is forward-looking. Enter a price you consider plausible, an honest estimate of fee income over the intended holding period, and the gas your management cadence requires. If the net result is negative under a reasonable price assumption, the position needs a different pair, a different structure, or a different size before any capital moves. Estimate the income side with the <a href="/tools/liquidity-pool-calculator/">liquidity pool fee and APR calculator</a> and isolate the divergence with the <a href="/tools/impermanent-loss-calculator/">impermanent loss calculator</a>.</p>
 
+          <h2 id="sources">Sources</h2>
+          <p>The formulas, parameters and risk statements used by this tool come from protocol specifications, peer-reviewed and preprint research, and public-sector analysis of automated market making.</p>
+          <ol class="tool-sources">
+            <li><a href="https://uniswap.org/whitepaper-v3.pdf" target="_blank" rel="noopener">Uniswap v3 Core Whitepaper (Adams et al., 2021)</a></li>
+            <li><a href="https://arxiv.org/abs/2208.06046" target="_blank" rel="noopener">Automated Market Making and Loss-Versus-Rebalancing (Milionis et al., 2022)</a></li>
+            <li><a href="https://arxiv.org/abs/2305.14604" target="_blank" rel="noopener">Automated Market Making and Arbitrage Profits in the Presence of Fees (Milionis et al., 2023)</a></li>
+            <li><a href="https://arxiv.org/abs/2205.08904" target="_blank" rel="noopener">Risks and Returns of Uniswap V3 Liquidity Providers (Heimbach et al., 2022)</a></li>
+            <li><a href="https://ethereum.org/en/developers/docs/gas/" target="_blank" rel="noopener">Gas and Fees (Ethereum Foundation Documentation)</a></li>
+            <li><a href="https://support.uniswap.org/hc/en-us/articles/37113550065549-What-are-the-risks-when-providing-liquidity" target="_blank" rel="noopener">What are the risks when providing liquidity? (Uniswap Labs)</a></li>
+          </ol>
+
           <div class="faq-block">
             <h2>Frequently asked questions</h2>
             {faq.map((item) => (

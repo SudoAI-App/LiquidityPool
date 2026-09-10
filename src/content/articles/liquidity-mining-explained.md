@@ -169,14 +169,21 @@ The user-side view of the same mechanism, including how to value emissions and w
 
 ## References
 
-[1]: https://www-leland.stanford.edu/~boyd/papers/pdf/cfmm.pdf "Constant Function Market Makers: Multi-asset Trades via Convex Optimization"
 
+1. [Constant Function Market Makers: Multi-asset Trades via Convex Optimization](https://web.stanford.edu/~boyd/papers/pdf/cfmm.pdf)
+2. [Curve Finance Gauges & Incentives Architectural Overview](https://docs.curve.finance/protocol/gauge/overview)
+3. [Automated Market Making and Loss-Versus-Rebalancing (Milionis et al., 2022)](https://arxiv.org/abs/2208.06046)
+4. [Hidden Hand Bribe Marketplace Architecture and Documentation](https://docs.hiddenhand.finance/)
+5. [DeFi risks and the decentralisation illusion (BIS Quarterly Review, December 2021)](https://www.bis.org/publ/qtrpdf/r_qt2112b.htm)
+6. [Uniswap v4 Core Whitepaper](https://uniswap.org/whitepaper-v4.pdf)
+7. [SoK: Yield Aggregators in DeFi (Cousaert et al., 2021)](https://arxiv.org/abs/2105.13891)
+8. [Why Decentralised Finance (DeFi) Matters and the Policy Implications (OECD, 2022)](https://www.oecd.org/daf/fin/financial-markets/Why-Decentralised-Finance-DeFi-Matters-and-the-Policy-Implications.pdf)
+
+[1]: https://web.stanford.edu/~boyd/papers/pdf/cfmm.pdf "Constant Function Market Makers: Multi-asset Trades via Convex Optimization"
 [2]: https://docs.curve.finance/protocol/gauge/overview "Curve Finance Gauges & Incentives Architectural Overview"
-
 [3]: https://arxiv.org/abs/2208.06046 "Automated Market Making and Loss-Versus-Rebalancing (Milionis et al., 2022)"
-
 [4]: https://docs.hiddenhand.finance/ "Hidden Hand Bribe Marketplace Architecture and Documentation"
-
-[5]: https://www.bis.org/publications/defi-risks-and-decentralisation-illusion "DeFi Risks and the Decentralisation Illusion | Bank for International Settlements"
-
-[6]: https://github.com/Uniswap/v4-core/blob/main/docs/whitepaper-v4.pdf "Uniswap v4 Core Whitepaper"
+[5]: https://www.bis.org/publ/qtrpdf/r_qt2112b.htm "DeFi risks and the decentralisation illusion (BIS Quarterly Review, December 2021)"
+[6]: https://uniswap.org/whitepaper-v4.pdf "Uniswap v4 Core Whitepaper"
+[7]: https://arxiv.org/abs/2105.13891 "SoK: Yield Aggregators in DeFi (Cousaert et al., 2021)"
+[8]: https://www.oecd.org/daf/fin/financial-markets/Why-Decentralised-Finance-DeFi-Matters-and-the-Policy-Implications.pdf "Why Decentralised Finance (DeFi) Matters and the Policy Implications (OECD, 2022)"

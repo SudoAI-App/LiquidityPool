@@ -206,21 +206,25 @@ For a plain enumeration of how capital is actually lost, in the order the causes
 ## References
 
 1. [Uniswap v3 Concentrated Liquidity Concepts (Uniswap Developers)](https://developers.uniswap.org/docs/protocols/v3/concepts/concentrated-liquidity)
-2. [Ethereum Foundation: Oracles and Data Feeds](https://ethereum.org/developers/docs/oracles/)
-3. [Curve StableSwap: Pools and Amplification Architecture (Curve Docs)](https://curve.readthedocs.io/exchange-pools.html)
-4. [Uniswap v4 Core Whitepaper (Adams et al., 2024)](https://github.com/Uniswap/v4-core/blob/main/docs/whitepaper-v4.pdf)
+2. [Ethereum Foundation: Oracles and Data Feeds](https://ethereum.org/en/developers/docs/oracles/)
+3. [StableSwap pools (Curve Documentation)](https://docs.curve.finance/developer/amm/legacy/stableswap-overview)
+4. [Uniswap v4 Core Whitepaper (Adams et al., 2024)](https://uniswap.org/whitepaper-v4.pdf)
 5. [Automated Market Making and Loss-Versus-Rebalancing (Milionis et al., 2022)](https://arxiv.org/abs/2208.06046)
 6. [Just-In-Time Liquidity: Characteristics and Impact on Concentrated AMMs (Adams et al., 2023)](https://arxiv.org/abs/2305.19211)
 7. [Cryptocurrencies and Decentralised Finance (BIS Working Paper 1061)](https://www.bis.org/publ/work1061.htm)
 8. [Security Analysis of Decentralized Finance Protocols and Price Oracles (Qin et al., 2021)](https://arxiv.org/abs/2105.02784)
+9. [SoK: Decentralized Finance (DeFi) Attacks (Zhou et al., 2022)](https://arxiv.org/abs/2208.13035)
+10. [The Financial Stability Risks of Decentralised Finance (Financial Stability Board, 2023)](https://www.fsb.org/2023/02/the-financial-stability-risks-of-decentralised-finance/)
+11. [Global Financial Stability Report, April 2022 (International Monetary Fund)](https://www.imf.org/en/Publications/GFSR/Issues/2022/04/19/global-financial-stability-report-april-2022)
 
 [1]: https://developers.uniswap.org/docs/protocols/v3/concepts/concentrated-liquidity "Uniswap v3 Concentrated Liquidity Concepts"
-[2]: https://ethereum.org/developers/docs/oracles/ "Ethereum Foundation: Oracles and Data Feeds"
-[3]: https://curve.readthedocs.io/exchange-pools.html "Curve StableSwap: Pools and Amplification Architecture"
-[4]: https://github.com/Uniswap/v4-core/blob/main/docs/whitepaper-v4.pdf "Uniswap v4 Core Whitepaper"
+[2]: https://ethereum.org/en/developers/docs/oracles/ "Ethereum Foundation: Oracles and Data Feeds"
+[3]: https://docs.curve.finance/developer/amm/legacy/stableswap-overview "StableSwap pools (Curve Documentation)"
+[4]: https://uniswap.org/whitepaper-v4.pdf "Uniswap v4 Core Whitepaper"
 [5]: https://arxiv.org/abs/2208.06046 "Automated Market Making and Loss-Versus-Rebalancing"
 [6]: https://arxiv.org/abs/2305.19211 "Just-In-Time Liquidity: Characteristics and Impact on Concentrated AMMs"
 [7]: https://www.bis.org/publ/work1061.htm "Cryptocurrencies and Decentralised Finance"
 [8]: https://arxiv.org/abs/2105.02784 "Security Analysis of Decentralized Finance Protocols and Price Oracles"
-
-
+[9]: https://arxiv.org/abs/2208.13035 "SoK: Decentralized Finance (DeFi) Attacks (Zhou et al., 2022)"
+[10]: https://www.fsb.org/2023/02/the-financial-stability-risks-of-decentralised-finance/ "The Financial Stability Risks of Decentralised Finance (Financial Stability Board, 2023)"
+[11]: https://www.imf.org/en/Publications/GFSR/Issues/2022/04/19/global-financial-stability-report-april-2022 "Global Financial Stability Report, April 2022 (International Monetary Fund)"

@@ -208,18 +208,25 @@ The boundary case deserves its own treatment: [Out-of-Range Liquidity](/guides/o
 
 ## References
 
-[1]: https://app.uniswap.org/whitepaper-v3.pdf "Uniswap v3 Core"
 
+1. [Uniswap v3 Core](https://uniswap.org/whitepaper-v3.pdf)
+2. [Uniswap v3 Concentrated Liquidity Concepts](https://developers.uniswap.org/docs/protocols/v3/concepts/concentrated-liquidity)
+3. [Uniswap v4 Core Whitepaper](https://uniswap.org/whitepaper-v4.pdf)
+4. [Price Oracles and Time-Weighted Averages](https://developers.uniswap.org/docs/protocols/v3/concepts/price-oracles)
+5. [Risks and Returns of Uniswap V3 Liquidity Providers (Heimbach et al., 2022)](https://arxiv.org/abs/2205.08904)
+6. [Liquidity Book: concentrated liquidity in bins (Trader Joe Documentation)](https://docs.traderjoexyz.com/concepts/concentrated-liquidity)
+7. [An Analysis of Uniswap v3: Loss-Versus-Rebalancing and Market Microstructure](https://arxiv.org/abs/2208.06046)
+8. [Just-In-Time Liquidity: Characteristics and Impact on Concentrated AMMs](https://arxiv.org/abs/2305.19211)
+9. [Strategic Liquidity Provision in Uniswap v3 (Neuder et al., 2021)](https://arxiv.org/abs/2106.12033)
+10. [DeFi risks and the decentralisation illusion (BIS Quarterly Review, December 2021)](https://www.bis.org/publ/qtrpdf/r_qt2112b.htm)
+
+[1]: https://uniswap.org/whitepaper-v3.pdf "Uniswap v3 Core"
 [2]: https://developers.uniswap.org/docs/protocols/v3/concepts/concentrated-liquidity "Uniswap v3 Concentrated Liquidity Concepts"
-
-[3]: https://github.com/Uniswap/v4-core/blob/main/docs/whitepaper-v4.pdf "Uniswap v4 Core Whitepaper"
-
+[3]: https://uniswap.org/whitepaper-v4.pdf "Uniswap v4 Core Whitepaper"
 [4]: https://developers.uniswap.org/docs/protocols/v3/concepts/price-oracles "Price Oracles and Time-Weighted Averages"
-
-[5]: https://liobaheimba.ch/assets/pdf/Papers/Risks_and_Returns_of_Uniswap_V3_Liquidity_Providers.pdf "Risks and Returns of Uniswap V3 Liquidity Providers"
-
-[6]: https://github.com/traderjoe-xyz/LB-Whitepaper/blob/main/Joe_LB_Whitepaper.pdf "Trader Joe Liquidity Book Whitepaper"
-
+[5]: https://arxiv.org/abs/2205.08904 "Risks and Returns of Uniswap V3 Liquidity Providers (Heimbach et al., 2022)"
+[6]: https://docs.traderjoexyz.com/concepts/concentrated-liquidity "Liquidity Book: concentrated liquidity in bins (Trader Joe Documentation)"
 [7]: https://arxiv.org/abs/2208.06046 "An Analysis of Uniswap v3: Loss-Versus-Rebalancing and Market Microstructure"
-
 [8]: https://arxiv.org/abs/2305.19211 "Just-In-Time Liquidity: Characteristics and Impact on Concentrated AMMs"
+[9]: https://arxiv.org/abs/2106.12033 "Strategic Liquidity Provision in Uniswap v3 (Neuder et al., 2021)"
+[10]: https://www.bis.org/publ/qtrpdf/r_qt2112b.htm "DeFi risks and the decentralisation illusion (BIS Quarterly Review, December 2021)"

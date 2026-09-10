@@ -227,11 +227,16 @@ The execution cost a trader pays against these curves is broken down in [Slippag
 2. [Uniswap v3 Core Whitepaper (Adams et al., 2021)](https://uniswap.org/whitepaper-v3.pdf)
 3. [Fees in Concentrated Liquidity (Uniswap Developer Documentation)](https://developers.uniswap.org/docs/get-started/concepts/fees)
 4. [Curve StableSwap Exchange: Overview (Curve Knowledge Hub)](https://docs.curve.finance/developer/amm/legacy/stableswap-overview)
-5. [Maximal Extractable Value (MEV) Documentation (Ethereum.org)](https://ethereum.org/developers/docs/mev/)
+5. [Maximal Extractable Value (MEV) Documentation (Ethereum.org)](https://ethereum.org/en/developers/docs/mev/)
+6. [SoK: Decentralized Exchanges with Automated Market Maker Protocols (Xu et al., 2021)](https://arxiv.org/abs/2103.12732)
+7. [Constant Function Market Makers: Multi-Asset Trades via Convex Optimization (Angeris et al., Stanford)](https://web.stanford.edu/~boyd/papers/pdf/cfmm.pdf)
+8. [DeFi risks and the decentralisation illusion (BIS Quarterly Review, December 2021)](https://www.bis.org/publ/qtrpdf/r_qt2112b.htm)
 
 [1]: https://uniswap.org/whitepaper-v4.pdf "Uniswap v4 Core Whitepaper"
 [2]: https://uniswap.org/whitepaper-v3.pdf "Uniswap v3 Core Whitepaper"
 [3]: https://developers.uniswap.org/docs/get-started/concepts/fees "Fees in Concentrated Liquidity"
 [4]: https://docs.curve.finance/developer/amm/legacy/stableswap-overview "Curve StableSwap Exchange: Overview"
-[5]: https://ethereum.org/developers/docs/mev/ "Maximal Extractable Value (MEV) Documentation"
-
+[5]: https://ethereum.org/en/developers/docs/mev/ "Maximal Extractable Value (MEV) Documentation"
+[6]: https://arxiv.org/abs/2103.12732 "SoK: Decentralized Exchanges with Automated Market Maker Protocols (Xu et al., 2021)"
+[7]: https://web.stanford.edu/~boyd/papers/pdf/cfmm.pdf "Constant Function Market Makers: Multi-Asset Trades via Convex Optimization (Angeris et al., Stanford)"
+[8]: https://www.bis.org/publ/qtrpdf/r_qt2112b.htm "DeFi risks and the decentralisation illusion (BIS Quarterly Review, December 2021)"

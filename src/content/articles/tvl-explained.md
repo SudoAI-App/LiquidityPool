@@ -179,10 +179,18 @@ The practical consequence of the depth-versus-deposits distinction shows up in e
 
 ## References
 
+
+1. [Towards verifiability of total value locked (TVL) in decentralized finance | BIS Working Paper 1268](https://www.bis.org/publ/work1268.htm)
+2. [How Uniswap Works | Uniswap Developers](https://developers.uniswap.org/docs/get-started/concepts/how-uniswap-works)
+3. [StableSwap pools (Curve Documentation)](https://docs.curve.finance/developer/amm/legacy/stableswap-overview)
+4. [Trading in the DeFi era: automated market maker (BIS Bulletin No 58, 2022)](https://www.bis.org/publ/bisbull58.htm)
+5. [DeFi risks and the decentralisation illusion (BIS Quarterly Review, December 2021)](https://www.bis.org/publ/qtrpdf/r_qt2112b.htm)
+6. [SoK: Decentralized Finance (DeFi) (Werner et al., 2021)](https://arxiv.org/abs/2101.08778)
+7. [On the Quality of Cryptocurrency Markets: Centralized versus Decentralized Exchanges (Barbon & Ranaldo, 2021)](https://arxiv.org/abs/2112.07386)
 [1]: https://www.bis.org/publ/work1268.htm "Towards verifiability of total value locked (TVL) in decentralized finance | BIS Working Paper 1268"
-
 [2]: https://developers.uniswap.org/docs/get-started/concepts/how-uniswap-works "How Uniswap Works | Uniswap Developers"
-
-[3]: https://curve.readthedocs.io/exchange-pools.html "Curve StableSwap: Pools | Curve Documentation"
-
-[4]: https://www.bis.org/publications/trading-defi-era-automated-market-maker "Trading in the DeFi era: automated market-maker | Bank for International Settlements"
+[3]: https://docs.curve.finance/developer/amm/legacy/stableswap-overview "StableSwap pools (Curve Documentation)"
+[4]: https://www.bis.org/publ/bisbull58.htm "Trading in the DeFi era: automated market maker (BIS Bulletin No 58, 2022)"
+[5]: https://www.bis.org/publ/qtrpdf/r_qt2112b.htm "DeFi risks and the decentralisation illusion (BIS Quarterly Review, December 2021)"
+[6]: https://arxiv.org/abs/2101.08778 "SoK: Decentralized Finance (DeFi) (Werner et al., 2021)"
+[7]: https://arxiv.org/abs/2112.07386 "On the Quality of Cryptocurrency Markets: Centralized versus Decentralized Exchanges (Barbon & Ranaldo, 2021)"

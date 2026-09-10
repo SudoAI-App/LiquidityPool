@@ -241,16 +241,21 @@ For the migration decision stated as a comparison rather than an architecture to
 
 ## References
 
-[1]: https://github.com/Uniswap/v4-core/blob/main/docs/whitepaper-v4.pdf "Uniswap v4 Core Whitepaper (Adams et al., 2024)"
 
+1. [Uniswap v4 Core Whitepaper (Adams et al., 2024)](https://uniswap.org/whitepaper-v4.pdf)
+2. [Uniswap v4 Developer Documentation: Hooks Architecture](https://docs.uniswap.org/contracts/v4/concepts/hooks)
+3. [EIP-1153: Transient Storage Opcodes](https://eips.ethereum.org/EIPS/eip-1153)
+4. [Uniswap v3 Core Technical Whitepaper](https://uniswap.org/whitepaper-v3.pdf)
+5. [Just-In-Time Liquidity: Characteristics and Impact on Concentrated AMMs](https://arxiv.org/abs/2305.19211)
+6. [EIP-6909: Minimal Multi-Token Interface](https://eips.ethereum.org/EIPS/eip-6909)
+7. [Automated Market Making and Loss-Versus-Rebalancing (Milionis et al., 2022)](https://arxiv.org/abs/2208.06046)
+8. [SoK: Decentralized Finance (DeFi) Attacks (Zhou et al., 2022)](https://arxiv.org/abs/2208.13035)
+
+[1]: https://uniswap.org/whitepaper-v4.pdf "Uniswap v4 Core Whitepaper (Adams et al., 2024)"
 [2]: https://docs.uniswap.org/contracts/v4/concepts/hooks "Uniswap v4 Developer Documentation: Hooks Architecture"
-
 [3]: https://eips.ethereum.org/EIPS/eip-1153 "EIP-1153: Transient Storage Opcodes"
-
-[4]: https://app.uniswap.org/whitepaper-v3.pdf "Uniswap v3 Core Technical Whitepaper"
-
+[4]: https://uniswap.org/whitepaper-v3.pdf "Uniswap v3 Core Technical Whitepaper"
 [5]: https://arxiv.org/abs/2305.19211 "Just-In-Time Liquidity: Characteristics and Impact on Concentrated AMMs"
-
 [6]: https://eips.ethereum.org/EIPS/eip-6909 "EIP-6909: Minimal Multi-Token Interface"
-
 [7]: https://arxiv.org/abs/2208.06046 "Automated Market Making and Loss-Versus-Rebalancing (Milionis et al., 2022)"
+[8]: https://arxiv.org/abs/2208.13035 "SoK: Decentralized Finance (DeFi) Attacks (Zhou et al., 2022)"

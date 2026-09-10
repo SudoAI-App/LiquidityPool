@@ -234,11 +234,15 @@ What the claim is worth when you redeem it depends on the divergence the pool ac
 3. [Uniswap v3 Core Whitepaper (Adams et al., 2021)](https://uniswap.org/whitepaper-v3.pdf)
 4. [Providing Liquidity in Pools (Curve Finance Documentation)](https://docs.curve.finance/user/yield/lp)
 5. [Risks and Returns of Uniswap V3 Liquidity Providers (Heimbach et al., 2022)](https://doi.org/10.1145/3558535.3559772)
+6. [EIP-721: Non-Fungible Token Standard (Ethereum Improvement Proposals)](https://eips.ethereum.org/EIPS/eip-721)
+7. [ERC-6909: Minimal Multi-Token Interface (Ethereum Improvement Proposals)](https://eips.ethereum.org/EIPS/eip-6909)
+8. [SoK: Decentralized Exchanges with Automated Market Maker Protocols (Xu et al., 2021)](https://arxiv.org/abs/2103.12732)
 
 [1]: https://uniswap.org/whitepaper.pdf "Uniswap v2 Core Whitepaper"
 [2]: https://uniswap.org/whitepaper-v4.pdf "Uniswap v4 Core Whitepaper & Architecture"
 [3]: https://uniswap.org/whitepaper-v3.pdf "Uniswap v3 Core Whitepaper"
 [4]: https://docs.curve.finance/user/yield/lp "Providing Liquidity in Pools"
 [5]: https://doi.org/10.1145/3558535.3559772 "Risks and Returns of Uniswap V3 Liquidity Providers"
-
-
+[6]: https://eips.ethereum.org/EIPS/eip-721 "EIP-721: Non-Fungible Token Standard (Ethereum Improvement Proposals)"
+[7]: https://eips.ethereum.org/EIPS/eip-6909 "ERC-6909: Minimal Multi-Token Interface (Ethereum Improvement Proposals)"
+[8]: https://arxiv.org/abs/2103.12732 "SoK: Decentralized Exchanges with Automated Market Maker Protocols (Xu et al., 2021)"

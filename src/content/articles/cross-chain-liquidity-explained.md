@@ -168,18 +168,25 @@ Fragmented depth shows up first in execution quality, covered in [Slippage and P
 
 ## References
 
-[1]: https://ethereum.org/developers/docs/bridges/ "Ethereum Foundation: Blockchain Bridges and Architecture"
 
-[2]: https://arxiv.org/html/2501.03423v1 "SoK: A Review of Cross-Chain Bridge Hacks and Vulnerabilities"
+1. [Ethereum Foundation: Blockchain Bridges and Architecture](https://ethereum.org/en/developers/docs/bridges/)
+2. [SoK: A Review of Cross-Chain Bridge Hacks and Vulnerabilities](https://arxiv.org/abs/2501.03423)
+3. [Across Protocol Architecture: Intent-Based Cross-Chain Settlement](https://docs.across.to/)
+4. [Cryptocurrencies and Decentralised Finance (DeFi) | BIS Working Paper 1061](https://www.bis.org/publ/work1061.htm)
+5. [Circle Cross-Chain Transfer Protocol (CCTP) Architecture](https://www.circle.com/en/cross-chain-transfer-protocol)
+6. [ERC-7683: Cross-Chain Intent Standard](https://eips.ethereum.org/EIPS/eip-7683)
+7. [Chainlink Cross-Chain Interoperability Protocol (CCIP) Documentation](https://docs.chain.link/ccip)
+8. [LayerZero Omnichain Fungible Token (OFT) Standard](https://docs.layerzero.network/v2/home/token-standards/oft)
+9. [The Financial Stability Risks of Decentralised Finance (Financial Stability Board, 2023)](https://www.fsb.org/2023/02/the-financial-stability-risks-of-decentralised-finance/)
+10. [SoK: Decentralized Finance (DeFi) (Werner et al., 2021)](https://arxiv.org/abs/2101.08778)
 
+[1]: https://ethereum.org/en/developers/docs/bridges/ "Ethereum Foundation: Blockchain Bridges and Architecture"
+[2]: https://arxiv.org/abs/2501.03423 "SoK: A Review of Cross-Chain Bridge Hacks and Vulnerabilities"
 [3]: https://docs.across.to/ "Across Protocol Architecture: Intent-Based Cross-Chain Settlement"
-
 [4]: https://www.bis.org/publ/work1061.htm "Cryptocurrencies and Decentralised Finance (DeFi) | BIS Working Paper 1061"
-
 [5]: https://www.circle.com/en/cross-chain-transfer-protocol "Circle Cross-Chain Transfer Protocol (CCTP) Architecture"
-
 [6]: https://eips.ethereum.org/EIPS/eip-7683 "ERC-7683: Cross-Chain Intent Standard"
-
 [7]: https://docs.chain.link/ccip "Chainlink Cross-Chain Interoperability Protocol (CCIP) Documentation"
-
 [8]: https://docs.layerzero.network/v2/home/token-standards/oft "LayerZero Omnichain Fungible Token (OFT) Standard"
+[9]: https://www.fsb.org/2023/02/the-financial-stability-risks-of-decentralised-finance/ "The Financial Stability Risks of Decentralised Finance (Financial Stability Board, 2023)"
+[10]: https://arxiv.org/abs/2101.08778 "SoK: Decentralized Finance (DeFi) (Werner et al., 2021)"
