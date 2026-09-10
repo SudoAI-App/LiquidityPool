@@ -225,7 +225,7 @@ Follow this diagnostic tree when managing LP token accounting claims:
 
 ## Where to Go Next
 
-What the claim is worth when you redeem it depends on the divergence the pool accumulated, derived in [The Impermanent Loss Formula](/guides/impermanent-loss-formula/). Where staking that claim into a farm adds exposure is covered in [Yield Farming Explained](/guides/yield-farming-explained/).
+What the claim is worth when you redeem it depends on the divergence the pool accumulated, derived in [The Impermanent Loss Formula](/guides/impermanent-loss-formula/). Where staking that claim into a farm adds exposure is covered in [Yield Farming Explained](/guides/yield-farming-explained/). The v3 position NFT and its accounting are covered in [Uniswap v3 Ticks and Position NFTs](/guides/uniswap-v3-ticks-and-lp-nfts/).
 
 ## References
 

@@ -1,0 +1,297 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const title = 'LP Profit and Return Calculator';
+const description = 'Combine fee income, divergence loss and gas into one net result for a liquidity position, benchmarked against holding the deposited basket.';
+
+const faq = [
+  {
+    q: 'How do you calculate liquidity pool profit?',
+    a: 'A liquidity pool profit calculator adds the fees collected to the current value of the position, then subtract the value the same deposited assets would have had if simply held, and subtract every transaction cost paid along the way. The remainder is the profit or loss attributable to providing liquidity.'
+  },
+  {
+    q: 'What is the difference between LP return and LP profit?',
+    a: 'Return is usually quoted against your starting capital in a single currency, which mixes market movement with the result of providing liquidity. Profit against a hold benchmark isolates what the pool did, which is the figure that tells you whether the position was worth opening.'
+  },
+  {
+    q: 'Does this calculator include impermanent loss?',
+    a: 'Yes. Divergence is computed from the price ratio between entry and now, then applied to the value of the deposited basket. It appears as its own line so you can see how much of the result it explains.'
+  },
+  {
+    q: 'What annualised figure does this produce?',
+    a: 'It annualises the net result over the days held, on the capital deployed. Treat it as a description of what happened rather than a forecast: fee income and volatility both vary, and a short window annualises noise.'
+  },
+  {
+    q: 'Why is my position profitable in dollars but negative here?',
+    a: 'Because the benchmark is holding the deposited basket, not holding cash. In a rising market a pooled position can gain in dollar terms while still trailing the assets it started with, and this calculator reports that gap explicitly.'
+  }
+];
+
+const canonical = 'https://liquiditypools.app/tools/lp-profit-calculator/';
+const appSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'WebApplication',
+  name: title,
+  url: canonical,
+  applicationCategory: 'FinanceApplication',
+  operatingSystem: 'Any',
+  browserRequirements: 'Requires JavaScript',
+  description,
+  isAccessibleForFree: true,
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+  publisher: { '@type': 'Organization', name: 'LiquidityPools.app', url: 'https://liquiditypools.app' }
+};
+const faqSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faq.map((item) => ({
+    '@type': 'Question',
+    name: item.q,
+    acceptedAnswer: { '@type': 'Answer', text: item.a }
+  }))
+};
+const breadcrumbSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://liquiditypools.app/' },
+    { '@type': 'ListItem', position: 2, name: 'Tools', item: 'https://liquiditypools.app/tools/' },
+    { '@type': 'ListItem', position: 3, name: title, item: canonical }
+  ]
+};
+---
+<BaseLayout title={`${title} — LiquidityPools.app`} description={description} image="/images/guides/lp-profit-calculator.webp">
+  <Fragment slot="head">
+    <script is:inline type="application/ld+json" set:html={JSON.stringify(appSchema)} />
+    <script is:inline type="application/ld+json" set:html={JSON.stringify(faqSchema)} />
+    <script is:inline type="application/ld+json" set:html={JSON.stringify(breadcrumbSchema)} />
+  </Fragment>
+
+  <section class="page-hero">
+    <div class="container">
+      <div class="eyebrow eyebrow--mint">Research tools · Free, no wallet connection</div>
+      <h1 class="page-title">LP profit &amp; return calculator.</h1>
+      <p>Fee income on one side, divergence and gas on the other. One net number, benchmarked against simply holding what you deposited.</p>
+    </div>
+  </section>
+
+  <section class="section section--paper" style="padding-top:64px">
+    <div class="container">
+      <div class="tool-layout">
+        <form class="tool-panel" id="profit-form" novalidate>
+          <h2>Position inputs</h2>
+          <p class="tool-panel__note">Defaults describe a 10,000 dollar ETH/USDC position opened at 2,000 per ETH and held for 60 days while ETH rose to 2,800.</p>
+
+          <div class="tool-grid-2">
+            <div class="tool-field">
+              <label for="priceA0">Token A price at deposit</label>
+              <input id="priceA0" type="number" inputmode="decimal" step="any" min="0" value="2000" />
+            </div>
+            <div class="tool-field">
+              <label for="priceA1">Token A price now</label>
+              <input id="priceA1" type="number" inputmode="decimal" step="any" min="0" value="2800" />
+            </div>
+          </div>
+
+          <div class="tool-grid-2">
+            <div class="tool-field">
+              <label for="priceB0">Token B price at deposit</label>
+              <input id="priceB0" type="number" inputmode="decimal" step="any" min="0" value="1" />
+            </div>
+            <div class="tool-field">
+              <label for="priceB1">Token B price now</label>
+              <input id="priceB1" type="number" inputmode="decimal" step="any" min="0" value="1" />
+            </div>
+          </div>
+
+          <div class="tool-field">
+            <label for="capital">Capital deployed at deposit</label>
+            <input id="capital" type="number" inputmode="decimal" step="any" min="0" value="10000" />
+            <small>Split 50/50 across the pair at the deposit prices.</small>
+          </div>
+
+          <div class="tool-grid-2">
+            <div class="tool-field">
+              <label for="fees">Fees collected</label>
+              <input id="fees" type="number" inputmode="decimal" step="any" min="0" value="430" />
+            </div>
+            <div class="tool-field">
+              <label for="rewards">Incentive tokens sold</label>
+              <input id="rewards" type="number" inputmode="decimal" step="any" min="0" value="0" />
+            </div>
+          </div>
+
+          <div class="tool-grid-2">
+            <div class="tool-field">
+              <label for="gas">Gas per transaction</label>
+              <input id="gas" type="number" inputmode="decimal" step="any" min="0" value="18" />
+            </div>
+            <div class="tool-field">
+              <label for="txCount">Transactions paid</label>
+              <input id="txCount" type="number" inputmode="numeric" step="1" min="0" value="3" />
+            </div>
+          </div>
+
+          <div class="tool-field">
+            <label for="days">Days held</label>
+            <input id="days" type="number" inputmode="numeric" step="1" min="1" value="60" />
+          </div>
+        </form>
+
+        <div class="tool-result" aria-live="polite">
+          <h2>Result</h2>
+          <div class="tool-headline">
+            <span>Net result versus holding the basket</span>
+            <strong id="out-net">+$208.16</strong>
+            <em id="out-ratio">Relative price ratio k = 1.4000</em>
+          </div>
+          <div class="tool-rows">
+            <div class="tool-row"><span>Value if you had simply held</span><strong id="out-hodl">$12,000.00</strong></div>
+            <div class="tool-row"><span>Pool position value now</span><strong id="out-pool">$11,832.16</strong></div>
+            <div class="tool-row tool-row--loss"><span>Divergence loss</span><strong id="out-div">−$167.84</strong></div>
+            <div class="tool-row"><span>Fees and sold incentives</span><strong id="out-income">$430.00</strong></div>
+            <div class="tool-row tool-row--loss"><span>Gas paid</span><strong id="out-gas">−$54.00</strong></div>
+            <div class="tool-row tool-row--net"><span>Net versus holding</span><strong id="out-net2">+$208.16</strong></div>
+            <div class="tool-row"><span>Annualised net on capital</span><strong id="out-apr">12.7%</strong></div>
+            <div class="tool-row"><span>Total position value including income</span><strong id="out-total">$12,208.16</strong></div>
+          </div>
+          <p class="tool-verdict" id="out-verdict">Income cleared the divergence and the gas over this holding period.</p>
+          <p class="tool-disclaimer">Educational model only. Assumes a balanced deposit on an unbounded constant-product curve, no intermediate withdrawals, and no price impact on entry or exit. Not investment advice.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--mist" style="padding-top:72px;padding-bottom:72px">
+    <div class="container">
+      <div class="guide-layout">
+        <aside class="guide-aside">
+          <h2>Related reading</h2>
+          <a href="/guides/lp-fees-vs-impermanent-loss/">Fees vs impermanent loss</a>
+          <a href="/guides/impermanent-loss-examples/">Impermanent loss examples</a>
+          <a href="/guides/lp-gas-costs/">Gas costs for LPs</a>
+          <a href="/guides/real-yield-liquidity-pools/">Real yield</a>
+          <a href="/guides/what-is-a-liquidity-provider/">What is a liquidity provider</a>
+        </aside>
+        <div class="article-content">
+          <h2>What this calculator computes</h2>
+          <p>Four quantities decide whether a liquidity position was worth opening, and this tool resolves all four into one line:</p>
+          <ul>
+            <li><strong>The hold benchmark</strong> — what the deposited assets would be worth today if you had never pooled them.</li>
+            <li><strong>The pool position</strong> — the same basket after the invariant rebalanced it, computed from the relative price ratio.</li>
+            <li><strong>Income</strong> — fees collected plus any incentive tokens valued at what you actually realised, not at the price when they accrued.</li>
+            <li><strong>Friction</strong> — gas across every transaction the position required, from approvals to the final withdrawal.</li>
+          </ul>
+          <p>The net figure is income minus divergence minus friction. A positive result means providing liquidity beat holding the same assets over the same window.</p>
+
+          <h2>Why the benchmark is the basket, not cash</h2>
+          <p>A position can rise in dollar terms and still have been the wrong decision. If the pair appreciated, the pool sold the winner along the way, so the correct comparison is against the assets you deposited rather than against your starting currency. Reporting profit in dollars alone hides that gap, and it is the most common way liquidity results are misread. The mechanics are worked through in <a href="/guides/impermanent-loss-examples/">Impermanent Loss Examples</a>.</p>
+
+          <h2>Valuing incentive tokens honestly</h2>
+          <p>Enter incentive income at the value you realised when selling, not at the quoted price when it accrued. Emission tokens are issued continuously and sold by most recipients, so quoted and realised values diverge, an effect examined in <a href="/guides/real-yield-liquidity-pools/">Real Yield in Liquidity Pools</a>. Leaving the field at zero and treating retained tokens as a separate position is the cleaner approach.</p>
+
+          <h2>What the model leaves out</h2>
+          <ul>
+            <li><strong>Concentrated ranges.</strong> A narrow band amplifies divergence while in range and freezes it on conversion. Use this result as a baseline and read <a href="/guides/out-of-range-liquidity/">Out-of-Range Liquidity</a>.</li>
+            <li><strong>Path dependency.</strong> Two paths ending at the same price produce the same answer here and different answers in reality, as covered in <a href="/guides/loss-versus-rebalancing/">loss-versus-rebalancing</a>.</li>
+            <li><strong>Entry and exit price impact.</strong> Reaching the deposit ratio and unwinding both consume depth. See <a href="/guides/slippage-and-price-impact/">Slippage and Price Impact</a>.</li>
+            <li><strong>Partial withdrawals and additions.</strong> Model each tranche separately and sum the results.</li>
+          </ul>
+
+          <h2>Using it before rather than after</h2>
+          <p>The most useful application is forward-looking. Enter a price you consider plausible, an honest estimate of fee income over the intended holding period, and the gas your management cadence requires. If the net result is negative under a reasonable price assumption, the position needs a different pair, a different structure, or a different size before any capital moves. Estimate the income side with the <a href="/tools/liquidity-pool-calculator/">liquidity pool fee and APR calculator</a> and isolate the divergence with the <a href="/tools/impermanent-loss-calculator/">impermanent loss calculator</a>.</p>
+
+          <div class="faq-block">
+            <h2>Frequently asked questions</h2>
+            {faq.map((item) => (
+              <div class="faq-item">
+                <h3>{item.q}</h3>
+                <p>{item.a}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+        <aside class="guide-aside">
+          <h2>Method</h2>
+          <p style="font-size:12px;line-height:1.55;color:#5b7062">All calculations run in your browser. No inputs are transmitted, stored, or logged.</p>
+          <h2 style="margin-top:22px">Verify onchain</h2>
+          <a href="https://revert.finance" target="_blank" rel="noopener">Revert Finance ↗</a>
+          <a href="https://dune.com" target="_blank" rel="noopener">Dune Analytics ↗</a>
+          <a href="https://defillama.com" target="_blank" rel="noopener">DeFiLlama ↗</a>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <script is:inline>
+    (function () {
+      var ids = ['priceA0', 'priceA1', 'priceB0', 'priceB1', 'capital', 'fees', 'rewards', 'gas', 'txCount', 'days'];
+      var el = {};
+      ids.forEach(function (id) { el[id] = document.getElementById(id); });
+      var out = {};
+      ['net', 'net2', 'ratio', 'hodl', 'pool', 'div', 'income', 'gas', 'apr', 'total', 'verdict'].forEach(function (key) {
+        out[key] = document.getElementById('out-' + key);
+      });
+
+      function num(node, fallback) {
+        var value = parseFloat(node.value);
+        return isFinite(value) ? value : fallback;
+      }
+
+      function money(value) {
+        return (value < 0 ? '−' : '') + '$' + Math.abs(value).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      }
+
+      function signedMoney(value) {
+        if (Math.abs(value) < 0.005) return '$0.00';
+        return (value > 0 ? '+' : '−') + '$' + Math.abs(value).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      }
+
+      function render() {
+        var a0 = num(el.priceA0, 0), a1 = num(el.priceA1, 0);
+        var b0 = num(el.priceB0, 0), b1 = num(el.priceB1, 0);
+        var capital = num(el.capital, 0);
+        var income = Math.max(0, num(el.fees, 0)) + Math.max(0, num(el.rewards, 0));
+        var gasCost = Math.max(0, num(el.gas, 0)) * Math.max(0, num(el.txCount, 0));
+        var days = Math.max(1, num(el.days, 1));
+
+        if (a0 <= 0 || b0 <= 0 || a1 < 0 || b1 < 0 || capital <= 0) {
+          out.verdict.textContent = 'Enter positive deposit prices and a capital amount to see a result.';
+          return;
+        }
+
+        var k = (a1 / b1) / (a0 / b0);
+        var il = k > 0 ? (2 * Math.sqrt(k) / (1 + k)) - 1 : -1;
+        var qtyA = (capital / 2) / a0;
+        var qtyB = (capital / 2) / b0;
+        var hodl = qtyA * a1 + qtyB * b1;
+        var pool = hodl * (1 + il);
+        var divergence = pool - hodl;
+        var net = divergence + income - gasCost;
+        var apr = (net / capital) * (365 / days) * 100;
+
+        out.ratio.textContent = 'Relative price ratio k = ' + k.toFixed(4);
+        out.hodl.textContent = money(hodl);
+        out.pool.textContent = money(pool);
+        out.div.textContent = signedMoney(divergence);
+        out.income.textContent = money(income);
+        out.gas.textContent = gasCost > 0 ? '−' + money(gasCost) : money(0);
+        out.net.textContent = signedMoney(net);
+        out.net2.textContent = signedMoney(net);
+        out.apr.textContent = (isFinite(apr) ? apr.toFixed(1) : '0.0') + '%';
+        out.total.textContent = money(pool + income - gasCost);
+
+        if (net > 0) {
+          out.verdict.textContent = 'Income cleared the divergence and the gas over this holding period. The position beat holding the deposited basket.';
+        } else if (Math.abs(k - 1) < 0.0001) {
+          out.verdict.textContent = 'Relative prices are unchanged, so the result is income minus gas. Any shortfall here is transaction cost, not divergence.';
+        } else {
+          out.verdict.textContent = 'Income did not cover the divergence and gas. Holding the deposited basket would have produced ' + money(Math.abs(net)) + ' more.';
+        }
+      }
+
+      ids.forEach(function (id) { el[id].addEventListener('input', render); });
+      render();
+    })();
+  </script>
+</BaseLayout>

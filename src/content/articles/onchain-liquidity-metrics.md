@@ -179,7 +179,7 @@ Follow this diagnostic decision tree when screening liquidity metrics:
 
 ## Where to Go Next
 
-Turn these measurements into an expected income figure with the [liquidity pool fee and APR calculator](/tools/liquidity-pool-calculator/), and into a cost figure with [LP Fees vs Impermanent Loss](/guides/lp-fees-vs-impermanent-loss/). For why a quoted rate rarely matches measured data, see [APR vs APY in DeFi](/guides/apr-vs-apy-in-defi/).
+Turn these measurements into an expected income figure with the [liquidity pool fee and APR calculator](/tools/liquidity-pool-calculator/), and into a cost figure with [LP Fees vs Impermanent Loss](/guides/lp-fees-vs-impermanent-loss/). For why a quoted rate rarely matches measured data, see [APR vs APY in DeFi](/guides/apr-vs-apy-in-defi/). Depth specifically is treated in [Liquidity Depth and Execution](/guides/liquidity-depth-and-execution/), and token-level exit capacity in [Token Liquidity Analysis](/guides/token-liquidity-analysis/).
 
 ## References
 

@@ -17,6 +17,10 @@ faq:
     a: "Only when the expected fee income from the new range clears the cost of exiting, swapping and re-minting, plus the divergence you realise by rebalancing. In choppy, mean-reverting markets waiting is often cheaper than paying gas to chase price; in a structural repricing, waiting simply extends the period of zero income."
   - q: "Do out-of-range positions still carry price risk?"
     a: "Yes, and it is concentrated. An out-of-range position holds 100% of one asset, so it takes the full directional exposure of that asset with none of the fee income that compensated you for holding it."
+  - q: "Why am I not earning fees on Uniswap v3?"
+    a: "Because the pool's current tick is outside your position's bounds. A concentrated position is only quoted to traders while price sits inside its range, so outside it the position holds one asset and accrues no share of fee growth."
+  - q: "What happens when liquidity is out of range?"
+    a: "The position converts fully into one of the two assets, keeps the full price exposure of that asset, and stops earning until price returns to the range or you withdraw and re-mint around the current price."
 ---
 
 A concentrated liquidity position earns nothing the moment the market trades outside the interval it was minted into. The capital is not lost, not locked, and not at any greater smart-contract risk than before; it is simply no longer part of the quote. This is the most common support question in liquidity provision, and it is a mechanical consequence of how tick-based automated market makers allocate depth.

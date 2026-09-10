@@ -237,7 +237,7 @@ Follow this diagnostic decision tree when building or interacting with Uniswap v
 
 ## Where to Go Next
 
-For the migration decision stated as a comparison rather than an architecture tour, see [Uniswap v3 vs v4 Liquidity](/guides/uniswap-v3-vs-v4/). For what a dynamic-fee hook is actually trying to price, see [Loss-Versus-Rebalancing](/guides/loss-versus-rebalancing/).
+For the migration decision stated as a comparison rather than an architecture tour, see [Uniswap v3 vs v4 Liquidity](/guides/uniswap-v3-vs-v4/). For what a dynamic-fee hook is actually trying to price, see [Loss-Versus-Rebalancing](/guides/loss-versus-rebalancing/). The fee mechanism hooks are most often used for is examined in [Dynamic Fees in AMMs](/guides/dynamic-fees-in-amms/).
 
 ## References
 

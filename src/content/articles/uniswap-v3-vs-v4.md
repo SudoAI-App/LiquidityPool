@@ -118,7 +118,7 @@ The architecture is better. That is a statement about execution cost and extensi
 
 ## Where to Go Next
 
-The exposure both versions share is derived in [The Impermanent Loss Formula](/guides/impermanent-loss-formula/), and the tier or dynamic-fee decision is covered in [Uniswap Fee Tiers Explained](/guides/uniswap-fee-tiers-explained/).
+The exposure both versions share is derived in [The Impermanent Loss Formula](/guides/impermanent-loss-formula/), and the tier or dynamic-fee decision is covered in [Uniswap Fee Tiers Explained](/guides/uniswap-fee-tiers-explained/). For the earlier comparison that still matters to most providers, see [Uniswap v2 vs v3](/guides/uniswap-v2-vs-v3/).
 
 ## References
 

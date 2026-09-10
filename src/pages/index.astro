@@ -57,9 +57,9 @@ const authorList = Object.values(authors);
     <div class="container">
       <div class="section-head">
         <div><div class="kicker">Calculators</div><h2 class="section-title display">Model the position before you fund it.</h2></div>
-        <p class="section-intro">Two calculators that state their formula and their limits on the same page. Everything runs locally; nothing is stored.</p>
+        <p class="section-intro">Three calculators that state their formula and their limits on the same page. Everything runs locally; nothing is stored.</p>
       </div>
-      <div class="article-grid" style="grid-template-columns:repeat(2, 1fr)">
+      <div class="article-grid" style="grid-template-columns:repeat(3, 1fr)">
         <a class="tool-card" href="/tools/impermanent-loss-calculator/">
           <div class="feature-card__meta" style="color:#537063"><span>Risk · Divergence</span></div>
           <h3>Impermanent Loss Calculator</h3>
@@ -70,6 +70,12 @@ const authorList = Object.values(authors);
           <div class="feature-card__meta" style="color:#537063"><span>Revenue · Fee modelling</span></div>
           <h3>Liquidity Pool Fee &amp; APR Calculator</h3>
           <p>Fee tier, routed volume, liquidity share and time in range resolve into daily, period and annualised income, net of the gas your cadence costs.</p>
+          <span class="tool-card__status">Live · runs in your browser</span>
+        </a>
+        <a class="tool-card" href="/tools/lp-profit-calculator/">
+          <div class="feature-card__meta" style="color:#537063"><span>Outcome · Net result</span></div>
+          <h3>LP Profit &amp; Return Calculator</h3>
+          <p>Both sides of the ledger in one place: income against divergence and gas, benchmarked against holding the assets you deposited.</p>
           <span class="tool-card__status">Live · runs in your browser</span>
         </a>
       </div>

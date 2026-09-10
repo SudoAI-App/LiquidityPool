@@ -100,6 +100,19 @@ High advertised rates are not free money that others have overlooked. Competitiv
 
 The useful habit is to treat an unusually high rate as a question rather than an answer. Identify which of the four conditions is producing it, then decide whether you are being paid enough for that specific exposure. A pool paying 60% because it is genuinely volatile is a legitimate trade for someone sized correctly. A pool paying 60% because nobody has audited it is not a trade at all.
 
+### Typical magnitudes, side by side
+
+| Loss path | Typical size on a \$10,000 position | Visible in advance? |
+| :--- | ---: | :--- |
+| Directional move (pair falls 30%) | −\$3,000 | Yes, from the pair you chose |
+| Divergence at a 2x relative move | −\$572 | Yes, from the formula |
+| One month fully out of range | −\$120 of foregone fees | Yes, from band width and volatility |
+| Contract or hook failure | up to −\$10,000 | Partly, from permissions and audits |
+| Depeg absorbed at par | −\$1,500 to −\$4,000 | Partly, from collateral quality |
+| Friction on a small position | −\$70 to −\$200 | Yes, from gas and transaction count |
+
+The ordering is instructive. The largest routine line is the one nobody calls a liquidity pool risk, and the smallest is the one that gets the most attention.
+
 ---
 
 ## 7. Diagnostic Order When a Position Is Down

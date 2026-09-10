@@ -47,3 +47,28 @@ The figures below are rendered directly from `scripts/generate-guide-figures.py`
 | `can-you-lose-money-in-a-liquidity-pool` | Six distinct loss paths, only two specific to automated market making. | `public/images/guides/can-you-lose-money-in-a-liquidity-pool.webp` |
 | `/tools/impermanent-loss-calculator/` | Inputs, formula and benchmark for the divergence calculation. | `public/images/guides/impermanent-loss-calculator.webp` |
 | `/tools/liquidity-pool-calculator/` | Fee income as the product of tier, routed volume and liquidity share. | `public/images/guides/liquidity-pool-calculator.webp` |
+
+### Second wave figures (full keyword coverage release, 2026-09-11)
+
+| Guide or tool | Visual argument | Asset |
+| --- | --- | --- |
+| `what-is-a-liquidity-provider` | What an LP is paid against what the same position underwrites. | `public/images/guides/what-is-a-liquidity-provider.webp` |
+| `how-to-avoid-impermanent-loss` | Six mitigations and the cost each one carries. | `public/images/guides/how-to-avoid-impermanent-loss.webp` |
+| `impermanent-loss-examples` | Five price scenarios scaled against the four-times case. | `public/images/guides/impermanent-loss-examples.webp` |
+| `uniswap-liquidity-pools` | Three generations of Uniswap pools compared for an LP. | `public/images/guides/uniswap-liquidity-pools.webp` |
+| `uniswap-v3-ticks-and-lp-nfts` | The six contract internals behind a range position. | `public/images/guides/uniswap-v3-ticks-and-lp-nfts.webp` |
+| `uniswap-v2-vs-v3` | A passive claim and a managed position, side by side. | `public/images/guides/uniswap-v2-vs-v3.webp` |
+| `liquidity-pool-rug-pulls` | Six pre-deposit checks answerable from chain data. | `public/images/guides/liquidity-pool-rug-pulls.webp` |
+| `lp-gas-costs` | Round-trip gas as a share of annual fee income by position size. | `public/images/guides/lp-gas-costs.webp` |
+| `single-sided-liquidity` | A one-sided deposit converting as price crosses the band. | `public/images/guides/single-sided-liquidity.webp` |
+| `lending-pool-vs-liquidity-pool` | Two instruments that share a word and little else. | `public/images/guides/lending-pool-vs-liquidity-pool.webp` |
+| `real-yield-liquidity-pools` | Fee-funded and emission-funded income compared. | `public/images/guides/real-yield-liquidity-pools.webp` |
+| `bonding-curves-and-amm-invariants` | Three curve families from flat to convex. | `public/images/guides/bonding-curves-and-amm-invariants.webp` |
+| `dynamic-fees-in-amms` | Fixed tiers against a volatility-linked fee. | `public/images/guides/dynamic-fees-in-amms.webp` |
+| `liquidity-depth-and-execution` | Price impact against order size for three depths. | `public/images/guides/liquidity-depth-and-execution.webp` |
+| `concentrated-liquidity-strategy` | Fee density, time in range, and the net peak between them. | `public/images/guides/concentrated-liquidity-strategy.webp` |
+| `liquidity-pools-for-beginners` | The five decisions in the order they arrive. | `public/images/guides/liquidity-pools-for-beginners.webp` |
+| `token-liquidity-analysis` | Six measurements describing a token's real liquidity. | `public/images/guides/token-liquidity-analysis.webp` |
+| `onchain-liquidity-explained` | Five layers from deposit to executed quote. | `public/images/guides/onchain-liquidity-explained.webp` |
+| `pancakeswap-liquidity-pools` | Protocol comparison across curves, fees and incentives. | `public/images/guides/pancakeswap-liquidity-pools.webp` |
+| `/tools/lp-profit-calculator/` | Inputs and outputs of the net LP result calculation. | `public/images/guides/lp-profit-calculator.webp` |

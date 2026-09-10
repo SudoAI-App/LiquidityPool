@@ -165,7 +165,7 @@ Follow this diagnostic decision tree when monitoring stablecoin pool allocations
 
 ## Where to Go Next
 
-For where amplified curves sit among the alternatives, see [Types of Liquidity Pools](/guides/liquidity-pool-types/). For the tail case where the pool fills with the failing asset, see [Can You Lose Money in a Liquidity Pool?](/guides/can-you-lose-money-in-a-liquidity-pool/).
+For where amplified curves sit among the alternatives, see [Types of Liquidity Pools](/guides/liquidity-pool-types/). For the tail case where the pool fills with the failing asset, see [Can You Lose Money in a Liquidity Pool?](/guides/can-you-lose-money-in-a-liquidity-pool/). For how these curves compare with lending markets on the same assets, see [Lending Pool vs Liquidity Pool](/guides/lending-pool-vs-liquidity-pool/).
 
 ## References
 

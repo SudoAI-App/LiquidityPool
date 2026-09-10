@@ -175,6 +175,114 @@ def label_box(d, xy, lines, color=MINT, pad=12, fsize=19):
 
 
 # ----------------------------------------------------------------------------
+# Data-driven layouts
+# ----------------------------------------------------------------------------
+
+def layout_rows(d, eyebrow, title, sub, columns, rows, note, label_w=380):
+    """columns: list of (heading, colour). rows: list of (label, value_per_column...)."""
+    chrome(d, eyebrow, title, sub)
+    top = 244
+    n = len(columns)
+    col_w = (1400 - label_w - 40) // n
+    for i, (heading, colour) in enumerate(columns):
+        d.text((140 + label_w + i * col_w, top), heading.upper(), font=font(23, "mono-bold"), fill=colour)
+    y = top + 42
+    height = min(104, int((780 - y) / max(1, len(rows))))
+    for idx, row in enumerate(rows):
+        panel(d, (100, y, 1500, y + height - 8), fill=PANEL if idx % 2 else PANEL_ALT)
+        paragraph(d, (124, y + 18), row[0], font(21, "bold"), INK, label_w - 40, 26)
+        for i, value in enumerate(row[1:]):
+            colour = columns[i][1] if i else MUTED
+            paragraph(d, (140 + label_w + i * col_w, y + 18), value, font(19, "mono"), colour, col_w - 30, 25)
+        y += height
+    paragraph(d, (100, y + 22), note, font(22), MUTED, 1400)
+
+
+def layout_cards(d, eyebrow, title, sub, items, note, cols=3):
+    """items: list of (heading, body, colour)."""
+    chrome(d, eyebrow, title, sub)
+    rows = (len(items) + cols - 1) // cols
+    card_w = (1400 - (cols - 1) * 40) // cols
+    card_h = min(268, int((790 - 250) / rows) - 18)
+    for i, (heading, body, colour) in enumerate(items):
+        bx = 100 + (i % cols) * (card_w + 40)
+        by = 250 + (i // cols) * (card_h + 30)
+        panel(d, (bx, by, bx + card_w, by + card_h), fill=PANEL_ALT)
+        d.rectangle([bx, by, bx + card_w, by + 7], fill=colour)
+        d.text((bx + 24, by + 30), f"{i + 1:02d}", font=font(28, "mono-bold"), fill=colour)
+        yy = paragraph(d, (bx + 24, by + 76), heading, font(22, "mono-bold"), INK, card_w - 48, 28)
+        paragraph(d, (bx + 24, yy + 12), body, font(20), MUTED, card_w - 48, 28)
+    paragraph(d, (100, 250 + rows * (card_h + 30) + 16), note, font(22), MUTED, 1400)
+
+
+def layout_bars(d, eyebrow, title, sub, bars, note, axis_label=""):
+    """bars: list of (label, sub_label, fraction, value_text, colour)."""
+    chrome(d, eyebrow, title, sub)
+    y = 262
+    height = min(140, int((800 - y) / max(1, len(bars))))
+    if axis_label:
+        d.text((760, y - 30), axis_label.upper(), font=font(18, "mono"), fill=MUTED)
+    for label, sub_label, frac, value_text, colour in bars:
+        panel(d, (100, y, 1500, y + height - 16), fill=PANEL_ALT)
+        d.text((132, y + 22), label, font=font(30, "mono-bold"), fill=colour)
+        d.text((132, y + 66), sub_label, font=font(20), fill=MUTED)
+        d.rectangle([620, y + 34, 1420, y + 68], fill=PANEL, outline=LINE, width=1)
+        d.rectangle([620, y + 34, 620 + int(800 * max(0.02, min(1.0, frac))), y + 68], fill=colour)
+        d.text((632 + int(800 * max(0.02, min(1.0, frac))), y + 38), value_text, font=font(21, "mono-bold"), fill=colour)
+        y += height
+    paragraph(d, (100, y + 14), note, font(22), MUTED, 1400)
+
+
+def layout_steps(d, eyebrow, title, sub, steps, note):
+    """steps: list of (heading, body, colour)."""
+    chrome(d, eyebrow, title, sub)
+    n = len(steps)
+    gap = 58
+    w = (1400 - (n - 1) * gap) // n
+    for i, (heading, body, colour) in enumerate(steps):
+        x = 100 + i * (w + gap)
+        panel(d, (x, 300, x + w, 590), fill=PANEL_ALT, outline=colour if colour is not INK else LINE)
+        d.text((x + 22, 326), f"{i + 1:02d}", font=font(24, "mono-bold"), fill=colour)
+        yy = paragraph(d, (x + 22, 366), heading, font(21, "mono-bold"), INK, w - 44, 27)
+        paragraph(d, (x + 22, yy + 10), body, font(19), MUTED, w - 44, 26)
+        if i < n - 1:
+            arrow(d, (x + w + 10, 445), (x + w + gap - 12, 445), MINT)
+    paragraph(d, (100, 650), note, font(23), MUTED, 1400)
+
+
+def layout_ledger(d, eyebrow, title, sub, left, right, note):
+    """left/right: (heading, colour, [(label, value)])."""
+    chrome(d, eyebrow, title, sub)
+    for idx, (heading, colour, rows) in enumerate((left, right)):
+        x = 100 + idx * 720
+        panel(d, (x, 260, x + 680, 800), fill=PANEL_ALT)
+        d.rectangle([x, 260, x + 680, 268], fill=colour)
+        d.text((x + 28, 296), heading.upper(), font=font(24, "mono-bold"), fill=colour)
+        y = 356
+        for label, value in rows:
+            d.text((x + 28, y), label.upper(), font=font(18, "mono"), fill=MUTED)
+            yy = paragraph(d, (x + 28, y + 26), value, font(21), INK, 620, 28)
+            d.line([(x + 28, yy + 10), (x + 652, yy + 10)], fill=GRID, width=1)
+            y = yy + 30
+    paragraph(d, (100, 840), note, font(22), MUTED, 1400)
+
+
+def layout_curve(d, eyebrow, title, sub, xlabel, ylabel, domain, rng, series, note,
+                 xticks=None, yticks=None, annotation=None, box=(100, 280, 1500, 740)):
+    """series: list of (fn, colour, label, dashed)."""
+    chrome(d, eyebrow, title, sub)
+    plot_frame(d, box, xlabel, ylabel)
+    for fn, colour, _label, dashed in series:
+        draw_curve(d, box, fn, domain, rng, colour, 5, dashed)
+    if xticks and yticks:
+        ticks(d, box, domain, rng, xticks, yticks)
+    if annotation:
+        label_box(d, annotation[0], annotation[1], color=annotation[2] if len(annotation) > 2 else AMBER)
+    legend(d, 100, box[3] + 46, [(label, colour) for _fn, colour, label, _dash in series])
+    paragraph(d, (100, box[3] + 100), note, font(22), MUTED, 1400)
+
+
+# ----------------------------------------------------------------------------
 # Figure builders
 # ----------------------------------------------------------------------------
 
@@ -614,6 +722,285 @@ def fig_lp_calculator(d):
               font(22), MUTED, 1400)
 
 
+
+def fig_liquidity_provider(d):
+    layout_ledger(d, "the lp bargain", "A liquidity provider is paid to hold inventory",
+                  "Two sides of the same position, and only one of them is quoted as a yield.",
+                  ("What the LP is paid", MINT, [
+                      ("Swap fees", "A share of every trade routed through the position while it is in range"),
+                      ("Incentives", "Optional emissions from a gauge or farm, funded by issuance"),
+                      ("Priority in routing", "Depth at the touch attracts the flow that pays the fee"),
+                  ]),
+                  ("What the LP underwrites", AMBER, [
+                      ("Inventory rotation", "The invariant sells the winner and accumulates the loser"),
+                      ("Adverse selection", "Arbitrage reprices a stale quote before the LP can cancel"),
+                      ("Contract and hook risk", "Every contract in the stack must keep working"),
+                      ("Exit conditions", "Withdrawal happens at the ratio the pool holds that block"),
+                  ]),
+                  "Anyone can become a liquidity provider by depositing a pair. Being paid more than the position "
+                  "costs requires the fee side to clear the underwriting side over the holding period.")
+
+
+def fig_avoid_il(d):
+    layout_cards(d, "mitigation, not elimination", "Six ways to reduce divergence, and what each one costs",
+                 "Impermanent loss cannot be removed while quoting two assets. It can be repriced.",
+                 [("CORRELATED PAIRS", "Pegged or tightly coupled assets diverge less. The trade is a much thinner fee stream and a large depeg tail.", MINT),
+                  ("WEIGHTED POOLS", "An 80/20 pool rotates less of the portfolio, keeping directional exposure to the heavy asset.", MINT),
+                  ("WIDER RANGES", "More time in range and less amplification, at lower fee density per dollar.", AMBER),
+                  ("SHORTER HOLDS", "Less time for relative prices to separate, but gas is paid on every entry and exit.", AMBER),
+                  ("DELTA HEDGING", "A short perpetual neutralises the price exposure, adding funding cost and margin risk.", ROSE),
+                  ("HIGHER FEE TIERS", "More revenue per unit of volume, usually with less routed volume to earn it on.", ROSE)],
+                 "The honest framing: choose which cost you would rather pay, then verify the fee stream still clears it.")
+
+
+def fig_il_examples(d):
+    layout_bars(d, "worked scenarios", "The same formula across five real position shapes",
+                "Divergence against holding for a balanced deposit, before fee income.",
+                [("+25%", "ETH/USDC drifts up a quarter", 0.03, "-0.62%", MINT),
+                 ("2x", "ETH doubles against the dollar", 0.29, "-5.72%", MINT),
+                 ("4x", "A mid-cap runs four times", 1.00, "-20.00%", AMBER),
+                 ("-50%", "The volatile asset halves", 0.29, "-5.72%", AMBER),
+                 ("Depeg to 0.90", "A stable pair breaks its peg", 0.01, "-0.14% before absorption", ROSE)],
+                "Bars are scaled to the 4x case. The depeg row shows why endpoint divergence understates stable-pool "
+                "risk: the loss arrives through reserve composition, not through the ratio.", "relative magnitude")
+
+
+def fig_uniswap_pools(d):
+    layout_rows(d, "protocol overview", "Three generations of Uniswap pools, one pricing idea",
+                "What an LP actually chooses differs far more than the mathematics does.",
+                [("v2", MUTED), ("v3", MINT), ("v4", AMBER)],
+                [("Price coverage", "0 to infinity", "Chosen range", "Chosen range"),
+                 ("Fee options", "30 bps fixed", "1 / 5 / 30 / 100 bps", "Tiers or hook-set dynamic fee"),
+                 ("LP claim", "Fungible ERC-20", "ERC-721 position NFT", "ERC-6909 or NFT via periphery"),
+                 ("Deployment", "One pair contract", "One contract per tier", "Singleton PoolManager"),
+                 ("Management", "Passive", "Active range management", "Active, hooks can automate"),
+                 ("Capital efficiency", "Low, uniform", "High inside the band", "High inside the band")],
+                "The right version is the one where the pair has routed volume and where you can actually maintain "
+                "the position you intend to hold.", label_w=330)
+
+
+def fig_ticks(d):
+    layout_cards(d, "position internals", "What a Uniswap v3 position is made of",
+                 "Ticks, spacing, the NFT and the fee accumulators that decide what you can claim.",
+                 [("TICKS", "Prices are stored as discrete ticks where each tick is 1.0001 times the previous one.", MINT),
+                  ("TICK SPACING", "Each fee tier only allows every Nth tick, which sets the narrowest legal range.", MINT),
+                  ("POSITION NFT", "An ERC-721 token recording lower tick, upper tick and liquidity, not a token balance.", AMBER),
+                  ("FEE GROWTH", "Per-tick accumulators let the contract compute what a position earned while in range.", AMBER),
+                  ("CROSSING", "A swap that exhausts one tick moves to the next initialised tick and updates accounting.", ROSE),
+                  ("CLAIMING", "Fees sit outside the position until collected; they do not compound on their own.", ROSE)],
+                 "Every operational surprise in a range position traces back to one of these six mechanics.")
+
+
+def fig_v2_vs_v3(d):
+    layout_rows(d, "version comparison", "Uniswap v2 and v3 ask different things of the LP",
+                "The same pair, two products: a passive claim and a managed position.",
+                [("v2", MUTED), ("v3", MINT)],
+                [("Deposit", "Pair at the current ratio, full range", "Pair plus a chosen price range"),
+                 ("Capital efficiency", "Uniform, most capital idle", "Up to two orders of magnitude higher in band"),
+                 ("Fee tiers", "Single 30 bps tier", "Four tiers, separate pools"),
+                 ("Divergence", "Standard curve, unbounded", "Amplified inside the band, bounded at the edge"),
+                 ("Time in range", "Always in range", "Depends on band width and volatility"),
+                 ("Work required", "None after deposit", "Monitoring, rebalancing, gas")],
+                "A v3 position with a wide range approximates v2 at higher gas. A narrow one is a different strategy "
+                "with a management workload attached.", label_w=340)
+
+
+def fig_rug_pulls(d):
+    layout_cards(d, "pre-deposit security", "Six checks that eliminate most pool-level fraud",
+                 "None of these require reading Solidity. All of them are verifiable onchain.",
+                 [("LOCKED LIQUIDITY", "Confirm the LP claim sits in a locker contract or a burn address, with the amount and unlock time read onchain.", MINT),
+                  ("TOKEN PERMISSIONS", "Check for mint, pause, blacklist and fee-changing functions still held by an address.", MINT),
+                  ("OWNERSHIP", "Renounced, timelocked or multisig, verified in the contract rather than in documentation.", AMBER),
+                  ("HOLDER CONCENTRATION", "A handful of wallets holding most supply can exit through the pool you funded.", AMBER),
+                  ("CONTRACT VERIFICATION", "Unverified bytecode on a token or pool is a refusal, not a risk to price.", ROSE),
+                  ("EXIT SIMULATION", "Simulate a sell before buying. Tokens that can be bought but not sold are visible in seconds.", ROSE)],
+                 "A locked pool with a malicious token is still a total loss. Both the pool and the assets in it have to pass.")
+
+
+def fig_gas_costs(d):
+    layout_bars(d, "friction floor", "Gas decides the minimum viable position size",
+                "Round-trip cost as a share of a year of fee income at a 20% gross rate.",
+                [("$500", "Mint, collect, rebalance twice, withdraw", 1.00, "72% of annual fees", ROSE),
+                 ("$2,000", "Same cadence on the same network", 0.25, "18% of annual fees", ROSE),
+                 ("$10,000", "Same cadence", 0.05, "3.6% of annual fees", AMBER),
+                 ("$50,000", "Same cadence", 0.01, "0.7% of annual fees", MINT),
+                 ("$10,000 on an L2", "Same cadence, cheaper execution", 0.002, "0.1% of annual fees", MINT)],
+                "Assumes roughly $18 per transaction and five transactions. The conclusion is not that small positions "
+                "are wrong; it is that they belong in wider ranges on cheaper networks.", "share of annual fee income")
+
+
+def fig_single_sided(d):
+    layout_steps(d, "one-sided provision", "Single-sided liquidity is a conversion with a fee attached",
+                 "Depositing one asset does not remove the two-asset exposure, it schedules it.",
+                 [("YOU DEPOSIT", "One asset, placed entirely on one side of the current price.", MINT),
+                  ("THE RANGE FILLS", "As price moves through the band, the invariant sells your asset for the other one.", MINT),
+                  ("FEES ACCRUE", "The position earns while price is inside the range and it is being converted.", AMBER),
+                  ("CONVERSION COMPLETES", "Past the far bound the position holds only the other asset and stops earning.", AMBER),
+                  ("YOU DECIDE", "Withdraw and realise the conversion, or leave it exposed to a reversal.", ROSE)],
+                 "The economics are a limit order that pays you to wait, with the risk that the market reverses "
+                 "through your range and converts you back.")
+
+
+def fig_lending_vs_pool(d):
+    layout_rows(d, "different instruments", "A lending pool and a liquidity pool share a word, not a payoff",
+                "One is a credit position with a utilisation curve. The other is a quoted market.",
+                [("LENDING POOL", MUTED), ("LIQUIDITY POOL", MINT)],
+                [("Assets supplied", "One", "Two or more, in ratio"),
+                 ("Revenue", "Borrower interest", "Swap fees paid by executed flow"),
+                 ("Rate set by", "Utilisation curve", "Fee tier and routed volume"),
+                 ("Principal risk", "Bad debt, oracle failure, liquidation shortfall", "Divergence, adverse selection, depeg"),
+                 ("Withdrawal", "Subject to available liquidity", "Any block, at the current ratio"),
+                 ("Quantity held", "Unchanged, grows with interest", "Rotates with relative price")],
+                "Both can be sensible. Sizing one as though it behaved like the other is the error worth avoiding.",
+                label_w=330)
+
+
+def fig_real_yield(d):
+    layout_ledger(d, "yield provenance", "Real yield is a statement about who funds the payment",
+                  "The same headline percentage can be paid from two very different balance sheets.",
+                  ("Fee-funded", MINT, [
+                      ("Source", "Traders paying the pool fee on executed volume"),
+                      ("Persistence", "Continues while the pair keeps trading"),
+                      ("Dilution", "None: no new supply is created"),
+                      ("Denominated in", "The pool's own assets"),
+                  ]),
+                  ("Emission-funded", AMBER, [
+                      ("Source", "Newly issued protocol tokens"),
+                      ("Persistence", "Ends when the schedule or the gauge vote ends"),
+                      ("Dilution", "Continuous, borne by existing holders"),
+                      ("Denominated in", "A token whose price must absorb the issuance"),
+                  ]),
+                  "The test takes one minute: set emissions to zero and ask whether you would still supply the pool "
+                  "at the rate that remains.")
+
+
+def fig_bonding_curves(d):
+    layout_curve(d, "invariant design", "The invariant decides where depth lives",
+                 "Three curve families plotted on the same axes, from perfectly flat to perfectly convex.",
+                 "RESERVE RATIO", "MARGINAL PRICE", (0.35, 3.0), (0, 3.2),
+                 [(lambda t: 1.0 / t, MINT, "Constant product", False),
+                  (lambda t: max(0.02, min(3.15, 1 + (1.0 / t - 1) * 0.14)), AMBER, "Amplified stable", False),
+                  (lambda t: max(0.02, min(3.15, 2.0 - 0.62 * t)), ROSE, "Constant sum", True)],
+                 "A constant-sum curve gives perfect execution until reserves run out. A constant-product curve never "
+                 "runs out but charges impact everywhere. Every practical invariant sits between the two, and the "
+                 "choice is a statement about what the pair is expected to do.")
+
+
+def fig_dynamic_fees(d):
+    layout_curve(d, "fee design", "A dynamic fee prices volatility instead of guessing it",
+                 "What a pool charges as conditions change, under fixed tiers and under a hook.",
+                 "REALISED VOLATILITY", "FEE CHARGED (BPS)", (0.1, 2.0), (0, 60),
+                 [(lambda v: 5, MUTED, "Fixed 5 bps tier", True),
+                  (lambda v: 30, MINT, "Fixed 30 bps tier", True),
+                  (lambda v: min(58, 4 + 26 * v * v), AMBER, "Dynamic fee hook", False)],
+                 "A fixed tier is either too cheap during a repricing or too expensive during calm conditions. A hook "
+                 "that raises the fee with realised volatility charges arbitrage more precisely when the pool's quote "
+                 "is most likely to be stale.")
+
+
+def fig_depth(d):
+    layout_curve(d, "executable depth", "Depth, not deposits, decides what a trade costs",
+                 "Price impact against order size for three pools with the same headline TVL.",
+                 "ORDER SIZE (% OF ACTIVE DEPTH)", "PRICE IMPACT", (0, 50), (-36, 2),
+                 [(lambda s: -100 * (s / 100) / (1 + s / 100) * 2.0, ROSE, "Thin active depth", False),
+                  (lambda s: -100 * (s / 100) / (1 + s / 100), AMBER, "Moderate depth", False),
+                  (lambda s: -100 * (s / 100) / (1 + s / 100) * 0.45, MINT, "Deep active band", False)],
+                 "Two pools with identical total value locked can sit on any of these curves. The measurement that "
+                 "matters is capital within a defined band of the current price, at the moment the trade executes.")
+
+
+def fig_range_strategy(d):
+    def density(w):
+        return 100 * min(1.0, 6.0 / w)
+
+    def in_range(w):
+        return 100 * (1 - math.exp(-w / 12.0))
+
+    def net(w):
+        return max(0.0, (density(w) * in_range(w) / 100.0 - 220.0 / w) / 13.9 * 100.0)
+
+    layout_curve(d, "range width", "Fee density and time in range pull in opposite directions",
+                 "Each series indexed to its own maximum. Net includes the gas a narrow band keeps costing.",
+                 "BAND WIDTH (PLUS OR MINUS PERCENT)", "INDEXED OUTCOME", (3, 40), (0, 105),
+                 [(density, MINT, "Fee density per dollar", False),
+                  (in_range, AMBER, "Expected time in range", False),
+                  (net, ROSE, "Net of rebalancing cost", False)],
+                 "The net curve peaks in the middle and the peak moves with realised volatility: more volatile pairs "
+                 "push it wider, calmer pairs pull it tighter. There is no universally correct width, only one that "
+                 "matches the volatility you face and the rebalancing you will actually pay for.",
+                 xticks=["3%", "12%", "21%", "30%", "40%"],
+                 yticks=[(0, "0"), (50, "50"), (100, "100")])
+
+
+def fig_beginners(d):
+    layout_steps(d, "start here", "Five decisions, in the order they actually arrive",
+                 "Everything else in liquidity provision is a refinement of these five.",
+                 [("PICK THE PAIR", "You will hold both assets in changing proportions. Start from what you would hold anyway.", MINT),
+                  ("PICK THE CURVE", "Pegged assets belong on stable curves, volatile pairs on constant product or a range.", MINT),
+                  ("PICK THE TIER", "Higher fee, less routed volume. The product of the two is what pays you.", AMBER),
+                  ("SIZE THE POSITION", "Gas on entry, management and exit must be small against expected fee income.", AMBER),
+                  ("SET THE EXIT RULE", "Decide in advance what ends the position: a price, a date, or a measured shortfall.", ROSE)],
+                 "None of these steps requires predicting a price. All of them require being honest about what you are "
+                 "willing to hold when the market moves against the position.")
+
+
+def fig_token_liquidity(d):
+    layout_cards(d, "token-level research", "Six measurements that describe a token's real liquidity",
+                 "Market capitalisation says nothing about whether a position can be exited.",
+                 [("ACTIVE DEPTH", "Capital within two percent of the current price, summed across venues.", MINT),
+                  ("EXIT SIZE", "The trade that moves price five percent. That number is your practical position cap.", MINT),
+                  ("VENUE SPREAD", "Liquidity split across chains and pools is thinner than the total suggests.", AMBER),
+                  ("HOLDER SHAPE", "Concentrated supply means the exit you plan may be behind someone else's.", AMBER),
+                  ("VOLUME QUALITY", "Separate organic flow from arbitrage and wash activity before trusting a volume figure.", ROSE),
+                  ("LOCK STATUS", "Liquidity that can be withdrawn by one party is not liquidity you can rely on.", ROSE)],
+                 "Run these before sizing, not after. Each one is available onchain and none needs a paid data feed.")
+
+
+def fig_onchain_liquidity(d):
+    layout_steps(d, "market structure", "How decentralized liquidity is actually assembled",
+                 "From a single deposit to the quote a trader receives, five layers deep.",
+                 [("DEPOSITS", "Individual LPs supply pairs into pool contracts on many chains.", MINT),
+                  ("POOLS", "Each contract prices trades from its own reserves and invariant.", MINT),
+                  ("ROUTERS", "Aggregators split an order across pools to minimise total execution cost.", AMBER),
+                  ("SOLVERS", "Intent systems compete to fill an outcome, netting flow before touching a pool.", AMBER),
+                  ("ARBITRAGE", "Searchers reconcile prices across venues, which is what keeps quotes honest.", ROSE)],
+                 "Onchain liquidity is not one book. It is a set of independent quotes held consistent by arbitrage, "
+                 "which is precisely why LPs pay for that consistency.")
+
+
+def fig_pancakeswap(d):
+    layout_rows(d, "protocol comparison", "PancakeSwap pools alongside the Uniswap model",
+                "Similar mathematics, different chains, fee schedules and incentive design.",
+                [("PANCAKESWAP", AMBER), ("UNISWAP", MINT)],
+                [("Core curves", "Constant product and concentrated ranges", "Constant product and concentrated ranges"),
+                 ("Primary chains", "BNB Chain plus several EVM networks", "Ethereum plus major L2s"),
+                 ("Fee tiers", "1 / 5 / 25 / 100 bps depending on pool type", "1 / 5 / 30 / 100 bps"),
+                 ("Incentives", "CAKE emissions directed by gauge voting", "Mostly fee-funded, campaign incentives vary"),
+                 ("LP claim", "ERC-20 for v2, position NFT for v3", "ERC-20, NFT or ERC-6909 by version"),
+                 ("What to check", "Emission schedule and gauge weight", "Routed volume by tier and hook permissions")],
+                "The invariant transfers between venues; the incentive design does not. Read the emission schedule "
+                "before comparing a farmed rate against a fee-only one.", label_w=330)
+
+
+def fig_profit_calculator(d):
+    layout_ledger(d, "tool", "Net LP result: three inputs, one honest number",
+                  "Fee income, divergence and friction resolved into a single comparison against holding.",
+                  ("Inputs", MINT, [
+                      ("Position", "$10,000 into an ETH/USDC pool at 2,000"),
+                      ("Price now", "2,800 per ETH, k = 1.40"),
+                      ("Fee capture", "$430 collected over 60 days"),
+                      ("Friction", "$54 of gas across five transactions"),
+                  ]),
+                  ("Output", AMBER, [
+                      ("Divergence vs holding", "-1.44%, or -$168"),
+                      ("Net result vs holding", "+$208"),
+                      ("Annualised net", "+12.7% on deployed capital"),
+                      ("Break-even fees", "$168 over the same window"),
+                  ]),
+                  "The calculator exists to answer one question: did this position beat holding the basket it started "
+                  "from, after everything that was actually paid?")
+
+
 FIGURES = {
     "out-of-range-liquidity": fig_out_of_range,
     "uniswap-v3-vs-v4": fig_v3_vs_v4,
@@ -629,6 +1016,26 @@ FIGURES = {
     "can-you-lose-money-in-a-liquidity-pool": fig_lose_money,
     "impermanent-loss-calculator": fig_il_calculator,
     "liquidity-pool-calculator": fig_lp_calculator,
+    "what-is-a-liquidity-provider": fig_liquidity_provider,
+    "how-to-avoid-impermanent-loss": fig_avoid_il,
+    "impermanent-loss-examples": fig_il_examples,
+    "uniswap-liquidity-pools": fig_uniswap_pools,
+    "uniswap-v3-ticks-and-lp-nfts": fig_ticks,
+    "uniswap-v2-vs-v3": fig_v2_vs_v3,
+    "liquidity-pool-rug-pulls": fig_rug_pulls,
+    "lp-gas-costs": fig_gas_costs,
+    "single-sided-liquidity": fig_single_sided,
+    "lending-pool-vs-liquidity-pool": fig_lending_vs_pool,
+    "real-yield-liquidity-pools": fig_real_yield,
+    "bonding-curves-and-amm-invariants": fig_bonding_curves,
+    "dynamic-fees-in-amms": fig_dynamic_fees,
+    "liquidity-depth-and-execution": fig_depth,
+    "concentrated-liquidity-strategy": fig_range_strategy,
+    "liquidity-pools-for-beginners": fig_beginners,
+    "token-liquidity-analysis": fig_token_liquidity,
+    "onchain-liquidity-explained": fig_onchain_liquidity,
+    "pancakeswap-liquidity-pools": fig_pancakeswap,
+    "lp-profit-calculator": fig_profit_calculator,
 }
 
 

@@ -124,7 +124,7 @@ For the wider due-diligence process that surrounds this arithmetic, use [How to 
 
 ## Where to Go Next
 
-Model the revenue side with the [liquidity pool fee and APR calculator](/tools/liquidity-pool-calculator/) and the cost side with the [impermanent loss calculator](/tools/impermanent-loss-calculator/). For the tier decision underneath both, see [Uniswap Fee Tiers Explained](/guides/uniswap-fee-tiers-explained/).
+Model the revenue side with the [liquidity pool fee and APR calculator](/tools/liquidity-pool-calculator/) and the cost side with the [impermanent loss calculator](/tools/impermanent-loss-calculator/). For the tier decision underneath both, see [Uniswap Fee Tiers Explained](/guides/uniswap-fee-tiers-explained/). Both sides resolve into one figure in the [LP profit and return calculator](/tools/lp-profit-calculator/).
 
 ## References
 

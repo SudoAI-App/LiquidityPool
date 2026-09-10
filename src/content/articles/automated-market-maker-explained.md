@@ -219,7 +219,7 @@ Use this operational decision tree when troubleshooting AMM pool execution anoma
 
 ## Where to Go Next
 
-The execution cost a trader pays against these curves is broken down in [Slippage and Price Impact](/guides/slippage-and-price-impact/). The value the same curves hand to arbitrageurs is quantified in [Loss-Versus-Rebalancing](/guides/loss-versus-rebalancing/). For the architectural comparison between the two most widely used versions, see [Uniswap v3 vs v4 Liquidity](/guides/uniswap-v3-vs-v4/).
+The execution cost a trader pays against these curves is broken down in [Slippage and Price Impact](/guides/slippage-and-price-impact/). The value the same curves hand to arbitrageurs is quantified in [Loss-Versus-Rebalancing](/guides/loss-versus-rebalancing/). For the architectural comparison between the two most widely used versions, see [Uniswap v3 vs v4 Liquidity](/guides/uniswap-v3-vs-v4/). The curve families themselves are compared in [Bonding Curves and AMM Invariants](/guides/bonding-curves-and-amm-invariants/), and the fee side of the same design space in [Dynamic Fees in AMMs](/guides/dynamic-fees-in-amms/).
 
 ## References
 

@@ -15,6 +15,10 @@ faq:
     a: "Read the locker contract or the burn address holding the LP claim and confirm the amount and unlock time onchain. A screenshot or a claim in documentation is not verification."
   - q: "How often should a pool be re-reviewed?"
     a: "Whenever a parameter that drove the original decision changes: an incentive programme starting or ending, a governance vote on fees or gauges, a hook upgrade, or a change in the pair's volatility regime."
+  - q: "How do I check whether pool liquidity is locked or unlocked?"
+    a: "Read the LP token's holder list and confirm whether the balance sits in a locker contract or a burn address, then read the lock entry for the amount and unlock timestamp. Anything held in an ordinary wallet is withdrawable at any moment."
+  - q: "Does a liquidity pool smart contract audit make it safe?"
+    a: "An audit is evidence about a specific commit at a specific time. Confirm that the deployed bytecode matches the audited version, check for a proxy and its upgrade authority, and treat the report as one input rather than as a verdict."
 ---
 
 Allocating capital to an automated market maker (AMM) is an active delegated market-making operation governed by deterministic smart contracts. When an institution or individual deposits assets into a liquidity pool, they underwrite directional inventory risk, absorb continuous adverse selection from high-frequency arbitrageurs, and expose collateral to smart contract, oracle, and cross-chain bridge dependencies. Headline annual percentage yields (APYs) displayed on analytics dashboards are merely historical extrapolations that fail to reflect adverse selection or boundary tick deactivations.

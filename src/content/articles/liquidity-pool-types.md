@@ -87,7 +87,7 @@ An 80/20 pool holds most of its value in one asset while still quoting both. For
 - **LP exposure**: partial divergence, dominated by the heavy asset's price path.
 - **Appropriate for**: treasury-managed positions and portfolio-style allocations.
 
-Covered in detail in [Balancer Weighted Pools](/guides/balancer-and-weighted-pools/).
+Covered in detail in [Balancer Weighted Pools](/guides/balancer-and-weighted-pools/), and the automatically repegged volatile-pair variant in [Curve v2 Explained](/guides/curve-v2-cryptoswap-explained/).
 
 ---
 
@@ -124,6 +124,19 @@ Protocol branding obscures how much overlap exists between venues. A concentrate
 
 The one place branding does matter is implementation maturity. The same mathematics deployed in an unaudited fork, with an admin key over the fee parameters, is a materially different risk from a long-lived deployment with immutable core contracts. Read the invariant to understand the exposure, and read the deployment to understand the counterparty.
 
+### The same deposit across four curves
+
+A \$25,000 deposit into an ETH/USDC pair, held while ETH rises 35%, behaves differently on each structure.
+
+| Structure | Divergence vs holding | Fee density | Position at the end |
+| :--- | ---: | :--- | :--- |
+| Constant product, full range | roughly −1.2% | Low | Both assets, less ETH |
+| Concentrated ±10% band | roughly −2.8% while in range | High while quoted | Fully USDC after conversion |
+| 80/20 weighted, ETH-heavy | roughly −0.4% | Low to moderate | Mostly ETH |
+| Amplified stable (wrong fit) | not applicable | Very low | Depth in the wrong place, negligible fees |
+
+None of these figures is a forecast; each follows from the invariant and the price ratio. The last row is included deliberately, because supplying a pegged-asset curve to a volatile pair is the most common structural error and it produces no dramatic loss, only capital that earns almost nothing.
+
 ---
 
 ## 7. Selection Checklist
@@ -140,7 +153,7 @@ The correct question is never which pool type is best. It is which pricing rule 
 
 ## Where to Go Next
 
-Once the curve is chosen, size the position with the [liquidity pool fee and APR calculator](/tools/liquidity-pool-calculator/) and check the exposure with the [impermanent loss calculator](/tools/impermanent-loss-calculator/).
+Once the curve is chosen, size the position with the [liquidity pool fee and APR calculator](/tools/liquidity-pool-calculator/) and check the exposure with the [impermanent loss calculator](/tools/impermanent-loss-calculator/). Lending markets, which share the word and little else, are compared in [Lending Pool vs Liquidity Pool](/guides/lending-pool-vs-liquidity-pool/).
 
 ## References
 

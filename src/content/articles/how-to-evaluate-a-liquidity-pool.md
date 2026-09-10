@@ -15,6 +15,12 @@ faq:
     a: "Normalise both to a net figure: fee-only yield at current routed volume with your capital added to the denominator, minus an estimate of divergence for the pair, minus gas for the management cadence each requires."
   - q: "Is a high APY liquidity pool safe?"
     a: "A persistently high rate is compensation for something specific: volatility, thin liquidity, emissions that will taper, or an unreviewed contract. Identify which before deciding whether the rate is adequate."
+  - q: "Is liquidity providing worth it?"
+    a: "It is worth it when fee income over your holding period exceeds the divergence the pair generates plus the gas your management cadence costs. That comparison is computable in advance for any pool with published volume data, and it answers the question far better than a quoted yield does."
+  - q: "What is a good liquidity pool?"
+    a: "One where the curve matches the pair, routed volume is high relative to the liquidity competing for it, the contracts are verified and unprivileged, and you would be content holding either asset alone. A high advertised rate is not on that list."
+  - q: "Is high APY liquidity pool safe?"
+    a: "A persistently high rate is compensation for something specific: volatility, thin liquidity, emissions that will taper, or an unreviewed contract. Identify which one before deciding whether the rate is adequate for the exposure it carries."
 ---
 
 Headline yield figures displayed on decentralized exchange analytics dashboards routinely mislead capital allocators. An advertised 38% annual percentage rate (APR) paired with a $50 million Total Value Locked (TVL) metric conveys an illusion of safety, but reveals virtually nothing about actual market making viability. Headline APR is a backward-looking historical extrapolation that ignores inventory conversion, adverse selection, and boundary deactivation. Gross TVL is routinely inflated by recursive restaking loops and idle out-of-range capital parked miles away from current spot prices.
@@ -186,7 +192,7 @@ Follow this diagnostic checklist when screening potential pools for capital allo
 
 ## Where to Go Next
 
-Match the curve to the pair using [Types of Liquidity Pools](/guides/liquidity-pool-types/), then quantify the income side with the [liquidity pool fee and APR calculator](/tools/liquidity-pool-calculator/) and the cost side with the [impermanent loss calculator](/tools/impermanent-loss-calculator/). For the hurdle that decides whether a pool is worth supplying at all, see [LP Fees vs Impermanent Loss](/guides/lp-fees-vs-impermanent-loss/).
+Match the curve to the pair using [Types of Liquidity Pools](/guides/liquidity-pool-types/), then quantify the income side with the [liquidity pool fee and APR calculator](/tools/liquidity-pool-calculator/) and the cost side with the [impermanent loss calculator](/tools/impermanent-loss-calculator/). For the hurdle that decides whether a pool is worth supplying at all, see [LP Fees vs Impermanent Loss](/guides/lp-fees-vs-impermanent-loss/). Token-level exit capacity is measured in [Token Liquidity Analysis](/guides/token-liquidity-analysis/), and the yield-provenance test is in [Real Yield in Liquidity Pools](/guides/real-yield-liquidity-pools/).
 
 ## References
 

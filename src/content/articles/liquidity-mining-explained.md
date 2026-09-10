@@ -165,7 +165,7 @@ Use this operational decision tree when participating in liquidity mining progra
 
 ## Where to Go Next
 
-The user-side view of the same mechanism, including how to value emissions and what happens when a programme tapers, is in [Yield Farming Explained](/guides/yield-farming-explained/). To compare an incentivised pool against a simple staked position, see [Liquidity Pool vs Staking](/guides/liquidity-pool-vs-staking/), and to read the rate itself correctly, [APR vs APY in DeFi](/guides/apr-vs-apy-in-defi/).
+The user-side view of the same mechanism, including how to value emissions and what happens when a programme tapers, is in [Yield Farming Explained](/guides/yield-farming-explained/). To compare an incentivised pool against a simple staked position, see [Liquidity Pool vs Staking](/guides/liquidity-pool-vs-staking/), and to read the rate itself correctly, [APR vs APY in DeFi](/guides/apr-vs-apy-in-defi/). The provenance test that separates durable income from issuance is in [Real Yield in Liquidity Pools](/guides/real-yield-liquidity-pools/).
 
 ## References
 

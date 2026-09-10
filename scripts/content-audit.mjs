@@ -6,6 +6,8 @@ const articlesDir = join(root, 'src/content/articles');
 const imagesDir = join(root, 'public/images/guides');
 const requiredFields = ['title', 'description', 'category', 'date', 'lastReviewed', 'author', 'readTime', 'keywords'];
 const prohibitedPhrases = ['in the ever-evolving world', 'revolutionary', 'game-changer', 'unlock the', 'delve into'];
+// Financial-claim language the keyword research flagged as damaging to an educational position.
+const prohibitedClaims = ['guaranteed apy', 'guaranteed yield', 'guaranteed return', 'guaranteed income', 'guaranteed profit', 'safe income', 'safe yield', 'best pool', 'best liquidity pool', 'highest apy', 'passive income machine'];
 
 const errors = [];
 const rows = [];
@@ -29,6 +31,9 @@ for (const file of readdirSync(articlesDir).filter((name) => name.endsWith('.md'
   const internalLinks = (body.match(/\]\(\/guides\//g) ?? []).length;
   const headings = (body.match(/^## /gm) ?? []).length;
   const hasFigure = body.includes('<figure class="article-figure">');
+  const faqCount = (frontmatter[1].match(/^ {2}- q:/gm) ?? []).length;
+  const hasNumbers = /\$[\d,]{3,}|\d+(\.\d+)?%/.test(body);
+  const hasTable = /^\|.*\|$/m.test(body);
   const image = join(imagesDir, `${slug}.webp`);
 
   if (words < 1300) errors.push(`${slug}: only ${words} body words`);
@@ -41,11 +46,19 @@ for (const file of readdirSync(articlesDir).filter((name) => name.endsWith('.md'
   if (/^# /m.test(body)) errors.push(`${slug}: duplicate Markdown H1`);
   if (/pexels\.com|unsplash\.com/i.test(body)) errors.push(`${slug}: contains retired generic-stock visual attribution`);
 
+  if (faqCount < 3) errors.push(`${slug}: only ${faqCount} FAQ entries in frontmatter (need 3+ for question-intent coverage)`);
+  if (!hasNumbers) errors.push(`${slug}: no worked numbers (currency or percentage figures) in the body`);
+  if (!hasTable) errors.push(`${slug}: missing a comparison or data table`);
+
   for (const phrase of prohibitedPhrases) {
     if (body.toLowerCase().includes(phrase)) errors.push(`${slug}: contains generic phrase “${phrase}”`);
   }
 
-  rows.push({ slug, words, references, internalLinks, headings });
+  for (const claim of prohibitedClaims) {
+    if (body.toLowerCase().includes(claim)) errors.push(`${slug}: contains unsupported financial claim “${claim}”`);
+  }
+
+  rows.push({ slug, words, references, internalLinks, headings, faqCount });
 }
 
 if (rows.length < 20) errors.push(`expected at least 20 article files, found ${rows.length}`);
@@ -59,6 +72,7 @@ const totals = rows.reduce((sum, row) => ({
   words: sum.words + row.words,
   references: sum.references + row.references,
   internalLinks: sum.internalLinks + row.internalLinks,
-}), { words: 0, references: 0, internalLinks: 0 });
+  faq: sum.faq + row.faqCount,
+}), { words: 0, references: 0, internalLinks: 0, faq: 0 });
 
-console.log(`CONTENT AUDIT PASSED — ${rows.length} guides, ${totals.words.toLocaleString()} words, ${totals.references} source definitions, ${totals.internalLinks} internal guide links.`);
+console.log(`CONTENT AUDIT PASSED — ${rows.length} guides, ${totals.words.toLocaleString()} words, ${totals.references} source definitions, ${totals.internalLinks} internal guide links, ${totals.faq} FAQ entries.`);

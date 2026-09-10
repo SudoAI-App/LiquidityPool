@@ -6,7 +6,7 @@ date: 2026-09-07
 lastReviewed: "2026-09-10"
 author: "Dr. Elena Rostova"
 readTime: "13 min read"
-keywords: "DLMM, discretized liquidity, Trader Joe Liquidity Book, Meteora DLMM, zero slippage bins, volatility accumulator, bin step, DLMM explained, DLMM vs concentrated liquidity, liquidity bins crypto, Liquidity Book"
+keywords: "DLMM, discretized liquidity, Trader Joe Liquidity Book, Meteora DLMM, zero slippage bins, volatility accumulator, bin step, DLMM explained, DLMM vs concentrated liquidity, liquidity bins crypto, Liquidity Book, volatility accumulator DLMM"
 featured: false
 faq:
   - q: "What is DLMM?"
@@ -15,6 +15,10 @@ faq:
     a: "Concentrated liquidity uses a continuous curve within a chosen range; DLMM uses discrete bins that can be filled in arbitrary shapes. Bins also allow fees that respond to how fast price is moving across them."
   - q: "What is a volatility accumulator?"
     a: "A running measure of how many bins price has crossed recently, used to raise the fee during fast moves. It is a protocol-level attempt to charge arbitrage more when the pool's quote is most likely to be stale."
+  - q: "What are zero slippage liquidity bins?"
+    a: "In a bin-based design, each bin quotes a single fixed price, so a trade that stays inside one bin executes with no price movement at all. Price changes only when a trade exhausts a bin and moves to the next one."
+  - q: "What is a volatility accumulator in DLMM?"
+    a: "A volatility accumulator in DLMM tracks how many bins price has crossed recently, decaying over time. The accumulated value feeds the fee function, so rapid movement raises the fee while a quiet market lets it fall back to the base rate."
 ---
 
 In concentrated liquidity protocols derived from Uniswap v3, liquidity is bounded within discrete price ticks, but trading inside those ticks continues along a continuous virtual constant-product curve ($x \cdot y = L^2$). As a result, even small swaps incur non-zero price impact, and high-frequency tick crossings generate significant gas overhead as smart contracts update global liquidity accumulators [1] [2].

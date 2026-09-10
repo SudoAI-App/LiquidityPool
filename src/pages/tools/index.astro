@@ -10,6 +10,13 @@ const tools = [
     status: 'Live · runs in your browser'
   },
   {
+    href: '/tools/lp-profit-calculator/',
+    eyebrow: 'Outcome · Net result',
+    title: 'LP Profit & Return Calculator',
+    description: 'Fee income, divergence and gas resolved into one net figure, benchmarked against holding the assets you deposited rather than against cash.',
+    status: 'Live · runs in your browser'
+  },
+  {
     href: '/tools/liquidity-pool-calculator/',
     eyebrow: 'Revenue · Fee modelling',
     title: 'Liquidity Pool Fee & APR Calculator',
@@ -70,7 +77,7 @@ const breadcrumbSchema = {
         <div><div class="kicker">Interactive</div><h2 class="section-title display">Model the position before you fund it.</h2></div>
         <p class="section-intro">Each tool states its assumptions and links to the guide that derives them. A number without its model is not a result.</p>
       </div>
-      <div class="article-grid" style="grid-template-columns:repeat(2, 1fr)">
+      <div class="article-grid" style="grid-template-columns:repeat(3, 1fr)">
         {tools.map((tool) => (
           <a class="tool-card" href={tool.href}>
             <div class="feature-card__meta" style="color:#537063"><span>{tool.eyebrow}</span></div>
@@ -110,7 +117,11 @@ const breadcrumbSchema = {
         <div class="article-content">
           <h2 id="method">How these tools are built</h2>
           <p>Every calculator here implements a published formula, states the inputs it needs in plain terms, and lists what it deliberately excludes. That last part matters more than the arithmetic: most disappointing liquidity positions were modelled correctly and scoped wrongly, with gas, time out of range or emission decay left outside the frame.</p>
-          <p>The impermanent loss calculator implements the closed-form divergence expression for a constant-product pool and compares it against a hold benchmark. The fee calculator implements the revenue identity that fee tier, routed volume and liquidity share define. Neither predicts the future, and neither is a substitute for reading the pool's contracts.</p>
+          <p>The impermanent loss calculator implements the closed-form divergence expression for a constant-product pool and compares it against a hold benchmark. The liquidity pool fee calculator implements the revenue identity that fee tier, routed volume and liquidity share define, and doubles as an LP APY calculator once the period figure is annualised. The LP return calculator combines both sides into a single profit figure. Neither predicts the future, and none is a substitute for reading the pool's contracts.</p>
+
+          <h2 id="trackers">What we do not build</h2>
+          <p>There is no liquidity pool tracker or LP position tracker here, and there will not be one until it can be built on live data we control. A DeFi liquidity tracker that reports stale or partial position state is worse than no tracker at all, because it invites decisions on numbers nobody verified.</p>
+          <p>For live position tracking today, reconstruct positions on Revert Finance, read pool state directly from a block explorer, and use pool analytics on Dune or DeFiLlama for volume and fee history. The frameworks in <a href="/guides/onchain-liquidity-metrics/">Onchain Liquidity Metrics</a> and <a href="/guides/token-liquidity-analysis/">Token Liquidity Analysis</a> explain which measurements to take from those sources and how each one misleads.</p>
           <p>For the reasoning behind each model, start with <a href="/guides/impermanent-loss-formula/">The Impermanent Loss Formula</a> and <a href="/guides/lp-fees-vs-impermanent-loss/">LP Fees vs Impermanent Loss</a>. To verify a live position against onchain data rather than a model, reconstruct it on Revert Finance and compare the two.</p>
         </div>
         <aside class="guide-aside">

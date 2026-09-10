@@ -15,6 +15,10 @@ faq:
     a: "Because the invariant is a hyperbola. Removing a fixed fraction of one reserve requires adding a proportionally larger amount of the other, so the average execution price degrades convexly as the order grows relative to the reserve."
   - q: "Does the constant product formula apply to Uniswap v3?"
     a: "Yes, in translated form. A v3 position uses the same curve shifted so that reserves reach zero at the position bounds, which is why the mathematics of price impact inside a range is familiar even though capital efficiency is much higher."
+  - q: "What is the x*y=k formula?"
+    a: "It is the constant-product invariant: the product of the two reserve balances stays constant across a trade before fees. It defines the execution price for any trade size and guarantees the pool can always quote, at increasingly unfavourable prices for larger orders."
+  - q: "Why does liquidity pool price change?"
+    a: "Because price is a function of the reserve ratio. Every swap changes the reserves, so the marginal price moves against the trade, and arbitrage then aligns that price with the wider market."
 ---
 
 The constant product formula, $x \cdot y = k$, is the foundational deterministic pricing rule of decentralized exchange microstructure. It establishes the mathematical relationship between pooled token reserves and executable market prices without relying on an external order matching engine.

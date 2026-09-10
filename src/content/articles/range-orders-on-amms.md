@@ -162,7 +162,7 @@ Use this operational tree when executing range orders on concentrated AMMs:
 
 ## Where to Go Next
 
-A range order is a deliberate out-of-range position, so the mechanics in [Out-of-Range Liquidity](/guides/out-of-range-liquidity/) apply directly. For the alternative of simply taking liquidity and paying the impact, see [Slippage and Price Impact](/guides/slippage-and-price-impact/).
+A range order is a deliberate out-of-range position, so the mechanics in [Out-of-Range Liquidity](/guides/out-of-range-liquidity/) apply directly. For the alternative of simply taking liquidity and paying the impact, see [Slippage and Price Impact](/guides/slippage-and-price-impact/). The one-sided case is developed further in [Single-Sided Liquidity](/guides/single-sided-liquidity/).
 
 ## References
 

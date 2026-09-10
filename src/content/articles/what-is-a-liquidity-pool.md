@@ -17,6 +17,8 @@ faq:
     a: "Within the pool, yes: the price is a function of the reserve ratio, so every trade moves it. Across the market, a pool with deep liquidity anchors price by making arbitrage cheap, while a thin pool can be moved sharply by a single order."
   - q: "Do I need both tokens to provide liquidity?"
     a: "For a standard two-sided pool, yes, in the ratio the pool requires at the current price. Interfaces often offer a single-asset deposit that swaps half your input first, which costs a swap fee and price impact rather than removing the requirement."
+  - q: "What is liquidity pool crypto?"
+    a: "It is the common phrasing for a pool of tokens held in a smart contract that prices trades from its own reserves. The pool replaces an order book: traders swap against the contract, and depositors earn a share of the fee on every swap."
 ---
 
 A liquidity pool is not a passive savings vault; it is a deterministic pricing engine executed by smart contracts to clear asset trades without a centralized intermediary. In modern decentralized finance, liquidity pools serve as the primary execution and settlement layer for automated market makers (AMMs), DEX aggregators, and off-chain intent-based solver networks.
@@ -205,7 +207,7 @@ Use this fundamental decision tree when evaluating any basic liquidity pool:
 
 ## Where to Go Next
 
-With the mechanism in place, three questions usually follow. What the pricing rule costs you is answered in [The Impermanent Loss Formula](/guides/impermanent-loss-formula/) and can be tested directly with the [impermanent loss calculator](/tools/impermanent-loss-calculator/). Which pool structure suits a given pair is covered in [Types of Liquidity Pools](/guides/liquidity-pool-types/). Whether supplying liquidity beats simply holding is worked through in [LP Fees vs Impermanent Loss](/guides/lp-fees-vs-impermanent-loss/).
+With the mechanism in place, three questions usually follow. What the pricing rule costs you is answered in [The Impermanent Loss Formula](/guides/impermanent-loss-formula/) and can be tested directly with the [impermanent loss calculator](/tools/impermanent-loss-calculator/). Which pool structure suits a given pair is covered in [Types of Liquidity Pools](/guides/liquidity-pool-types/). Whether supplying liquidity beats simply holding is worked through in [LP Fees vs Impermanent Loss](/guides/lp-fees-vs-impermanent-loss/). If you are starting from zero, [Liquidity Pools for Beginners](/guides/liquidity-pools-for-beginners/) sequences the five decisions, and [What Is a Liquidity Provider?](/guides/what-is-a-liquidity-provider/) covers the role itself.
 
 ## References
 

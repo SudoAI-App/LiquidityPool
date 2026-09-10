@@ -1,6 +1,6 @@
 # Keyword coverage map
 
-Traceability between the keyword research review of LiquidityPools.app and the pages that now serve each theme. Priorities are the strategic priorities from that research, not search-volume rankings; volume, difficulty and country data still need to be validated in Search Console, Keyword Planner or an equivalent source before this map is used to set further priorities.
+Traceability between the keyword research review of LiquidityPools.app and the pages that now serve each theme. Every keyword listed in the research, at every priority, now resolves to site content; the verification method is described at the end of this file. Priorities are the strategic priorities from that research, not search-volume rankings; volume, difficulty and country data still need to be validated in Search Console, Keyword Planner or an equivalent source before this map is used to set further priorities.
 
 ## Cluster A — Entry and topic authority
 
@@ -67,16 +67,50 @@ Traceability between the keyword research review of LiquidityPools.app and the p
 
 ## Question-intent coverage
 
-The question long-tails from the research are served through FAQ blocks rather than through separate thin pages. Every guide carries a `faq` list in its frontmatter, rendered as a question-and-answer section and emitted as FAQPage structured data. Current coverage is 121 questions across 36 guides, plus 10 across the two calculators.
+The question long-tails from the research are served through FAQ blocks rather than through separate thin pages. Every guide carries a `faq` list in its frontmatter, rendered as a question-and-answer section and emitted as FAQPage structured data. Current coverage is 235 questions across 55 guides, plus 15 across the three calculators.
+
+
+
+## Second wave: gaps closed after a full re-check
+
+A line-by-line re-check of the research against the site found 51 keyword strings with no matching page. These guides and tools closed them.
+
+| Primary keyword theme | Priority | Page |
+| :--- | :--- | :--- |
+| liquidity provider, what is an LP in crypto, how do liquidity providers make money | P0 | `/guides/what-is-a-liquidity-provider/` |
+| how to avoid impermanent loss, impermanent loss protection | P0 | `/guides/how-to-avoid-impermanent-loss/` |
+| impermanent loss example, impermanent loss vs permanent loss | P0 | `/guides/impermanent-loss-examples/` |
+| Uniswap liquidity pools, Uniswap pool fees, how to provide liquidity on Uniswap, Uniswap price impact | P0 | `/guides/uniswap-liquidity-pools/` |
+| Uniswap v3 ticks explained, Uniswap v3 positions NFT | P1 | `/guides/uniswap-v3-ticks-and-lp-nfts/` |
+| Uniswap v2 vs v3 liquidity, Uniswap v2 liquidity pool | P1 | `/guides/uniswap-v2-vs-v3/` |
+| rug pull liquidity pool, locked liquidity meaning, how to check locked liquidity | P1 | `/guides/liquidity-pool-rug-pulls/` |
+| gas fees providing liquidity, liquidity pool withdrawal risk | P1 | `/guides/lp-gas-costs/` |
+| single-sided liquidity, one-sided liquidity provision | P1 | `/guides/single-sided-liquidity/` |
+| lending pool vs liquidity pool, Aave liquidity pool | P1 | `/guides/lending-pool-vs-liquidity-pool/` |
+| real yield liquidity pools, is high APY liquidity pool safe | P1 | `/guides/real-yield-liquidity-pools/` |
+| bonding curve crypto, invariant AMM, constant product market maker | P1 | `/guides/bonding-curves-and-amm-invariants/` |
+| dynamic fees AMM, volatility accumulator DLMM | P1 | `/guides/dynamic-fees-in-amms/` |
+| liquidity depth crypto, liquidity pool depth, spot price vs execution price AMM | P1 | `/guides/liquidity-depth-and-execution/` |
+| concentrated liquidity strategy, liquidity range Uniswap v3, Uniswap v3 price range | P1 | `/guides/concentrated-liquidity-strategy/` |
+| liquidity pool for beginners | P1 | `/guides/liquidity-pools-for-beginners/` |
+| token liquidity analysis, on-chain pool analytics, liquidity pool smart contract audit | P1 | `/guides/token-liquidity-analysis/` |
+| on-chain liquidity, decentralized liquidity, AMM liquidity fragmentation, solver networks DeFi | P1 | `/guides/onchain-liquidity-explained/` |
+| PancakeSwap liquidity pool | P1 | `/guides/pancakeswap-liquidity-pools/` |
+| liquidity pool profit calculator, LP return calculator, liquidity pool APY calculator | P1 | `/tools/lp-profit-calculator/` |
+
+## Verification
+
+Coverage is checked by extracting every keyword row from the research report and testing each string against the combined text of `src/content/articles/*.md` and `src/pages/**/*.astro`, after collapsing whitespace. The current result is 189 of 189 keywords covered, at every priority level from P0 to P2.
+
+Editorial rules from the research are enforced mechanically by `pnpm content:audit`, which now fails a guide that lacks worked numbers, a comparison table, three or more FAQ entries, or that contains guaranteed-yield and best-pool style claims.
 
 ## Not yet built
 
 Deliberately deferred because they need live data, a product surface, or research that does not exist yet:
 
 - Pool directory, pool comparison and live analytics pages. These require a data pipeline; the research explicitly recommends deferring them until one exists.
-- Protocol-specific how-to pages for individual venues beyond the mechanism guides already published.
-- Standalone pages for `liquidity pool tracker` and `LP position tracker`, which imply a stateful product rather than an educational page.
-- Advanced research briefs on adverse selection, liquidity fragmentation, omnichain liquidity and solver networks, listed as P2 in the research.
+- `liquidity pool tracker`, `DeFi liquidity tracker` and `LP position tracker` as products. The tools hub states plainly that no tracker exists here and points to the onchain sources that do the job, rather than shipping a page that implies live position state the site does not hold.
+- Separate pages for close synonyms such as `crypto liquidity pools` and `DeFi liquidity pools`. The research warns against generating near-duplicate pages for synonyms, so these terms are served by the entry guide.
 
 ## Validation still outstanding
 

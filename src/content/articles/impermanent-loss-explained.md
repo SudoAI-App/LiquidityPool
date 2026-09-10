@@ -196,7 +196,7 @@ Follow this diagnostic framework when evaluating impermanent divergence risk:
 
 ## Where to Go Next
 
-For the closed-form derivation and a step-by-step worked example, read [The Impermanent Loss Formula](/guides/impermanent-loss-formula/), then run your own position through the [impermanent loss calculator](/tools/impermanent-loss-calculator/). To test whether fee income clears the divergence over a holding period, use [LP Fees vs Impermanent Loss](/guides/lp-fees-vs-impermanent-loss/).
+For the closed-form derivation and a step-by-step worked example, read [The Impermanent Loss Formula](/guides/impermanent-loss-formula/), then run your own position through the [impermanent loss calculator](/tools/impermanent-loss-calculator/). To test whether fee income clears the divergence over a holding period, use [LP Fees vs Impermanent Loss](/guides/lp-fees-vs-impermanent-loss/). For five fully worked positions see [Impermanent Loss Examples](/guides/impermanent-loss-examples/), and for the mitigations and what each costs see [How to Avoid Impermanent Loss](/guides/how-to-avoid-impermanent-loss/).
 
 ## References
 

@@ -172,7 +172,7 @@ Use this operational troubleshooting tree when executing liquidity deposits:
 
 ## Where to Go Next
 
-Before choosing bounds, price the boundary case in [Out-of-Range Liquidity](/guides/out-of-range-liquidity/) and the tier in [Uniswap Fee Tiers Explained](/guides/uniswap-fee-tiers-explained/). Then run the two numbers that decide the position: expected fees in the [liquidity pool fee and APR calculator](/tools/liquidity-pool-calculator/) and expected divergence in the [impermanent loss calculator](/tools/impermanent-loss-calculator/).
+Before choosing bounds, price the boundary case in [Out-of-Range Liquidity](/guides/out-of-range-liquidity/) and the tier in [Uniswap Fee Tiers Explained](/guides/uniswap-fee-tiers-explained/). Then run the two numbers that decide the position: expected fees in the [liquidity pool fee and APR calculator](/tools/liquidity-pool-calculator/) and expected divergence in the [impermanent loss calculator](/tools/impermanent-loss-calculator/). For depositing with one asset, see [Single-Sided Liquidity](/guides/single-sided-liquidity/); for the protocol-level walkthrough, see [Uniswap Liquidity Pools](/guides/uniswap-liquidity-pools/).
 
 ## References
 

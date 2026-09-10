@@ -17,6 +17,8 @@ faq:
     a: "Either the pool moved between quote and execution, or a searcher placed a buy in front of your transaction and a sell behind it, capturing the difference your tolerance allowed. The second case is a sandwich, and it is bounded exactly by the tolerance you set."
   - q: "How do I reduce price impact on a large trade?"
     a: "Split the order across pools and time, route through an aggregator that can use several venues, or use an intent-based system where solvers compete to fill the order. On concentrated liquidity pools, check the depth inside the active tick rather than total value locked."
+  - q: "What is the difference between spot price and execution price on an AMM?"
+    a: "Spot is the marginal price for an infinitesimally small trade. Execution price is the average received across the whole order, which is always worse because the order moves along the curve as it fills."
 ---
 
 Two different costs get collapsed into one word. Price impact is deterministic: given the pool's reserves and the size of your order, the execution price is fixed by the invariant before you sign anything. Slippage is what happens between the moment you were quoted and the moment your transaction lands in a block, and it is the part other market participants can influence.

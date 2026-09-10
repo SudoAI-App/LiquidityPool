@@ -15,6 +15,8 @@ faq:
     a: "It depends on size and pair. Deep order books usually execute large orders on major pairs more cheaply. Pools are competitive for smaller sizes, long-tail assets, and anything where posting a resting quote onchain is impractical."
   - q: "Why do decentralised exchanges use AMMs at all?"
     a: "Because continuous quoting requires no active operator, no cancellation traffic and no matching engine, which suits a blockchain where every message costs gas and block times are long relative to market updates."
+  - q: "What is the difference between a liquidity pool vs exchange order book?"
+    a: "A liquidity pool vs exchange comparison comes down to who quotes. On a centralised exchange, market makers post and cancel orders continuously. In a pool, deposited capital quotes automatically from an invariant and cannot be cancelled, which is why pools serve any size at any hour and why their providers carry adverse selection."
 ---
 
 Financial market architecture defines how buyer and seller liquidity is converted into executable clearing prices. In modern decentralized finance, execution venues have evolved into a three-way market microstructure taxonomy: continuous Automated Market Makers (AMMs), Central Limit Order Books (CLOBs) operating on dedicated high-throughput appchains, and off-chain Intent-Based Request-for-Quote (RFQ) solver auctions.
@@ -177,7 +179,7 @@ Follow this diagnostic framework when evaluating whether to route flow or provid
 
 ## Where to Go Next
 
-The execution-cost comparison in practice is worked through in [Slippage and Price Impact](/guides/slippage-and-price-impact/). The structural disadvantage of a quote that cannot be cancelled is quantified in [Loss-Versus-Rebalancing](/guides/loss-versus-rebalancing/).
+The execution-cost comparison in practice is worked through in [Slippage and Price Impact](/guides/slippage-and-price-impact/). The structural disadvantage of a quote that cannot be cancelled is quantified in [Loss-Versus-Rebalancing](/guides/loss-versus-rebalancing/). The assembly of routers, solvers and arbitrage around pools is described in [Onchain Liquidity](/guides/onchain-liquidity-explained/).
 
 ## References
 

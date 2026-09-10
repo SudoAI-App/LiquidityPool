@@ -15,6 +15,8 @@ faq:
     a: "No. Fees depend on volume actually routing through your pool and, in concentrated pools, on your position being in range when it does. Both can fall to zero without anything failing."
   - q: "Do liquidity pool fees compound automatically?"
     a: "In constant-product pools fees are added to reserves and effectively compound. In tick-based pools they accrue as separate claimable balances and only compound if you collect and redeposit them, which costs gas."
+  - q: "How much can you earn providing liquidity?"
+    a: "Fee income equals the fee tier multiplied by the volume routed to your position multiplied by your share of the active liquidity, adjusted for time in range. On deep pairs that is often single-digit to low double-digit annualised before divergence and gas are subtracted."
 ---
 
 Liquidity provider fees represent market compensation for underwriting continuous inventory availability against incoming order flow. Rather than passive interest or risk-free yield, LP fees are microstructural payments collected when traders, aggregators, and arbitrageurs execute against an AMM contract's quoted price curve. An LP's real financial outcome depends entirely on three structural factors: the exact price domain where liquidity remains active, the path-dependent trajectory of spot prices across initialized ticks, and how smart contracts account for and disburse collected fee balances [1] [2].
@@ -156,7 +158,7 @@ Use this operational troubleshooting flow when evaluating fee profitability:
 
 ## Where to Go Next
 
-Tier selection is the decision that moves this number most, and it is treated in [Uniswap Fee Tiers Explained](/guides/uniswap-fee-tiers-explained/). To model expected income from volume and liquidity share, use the [liquidity pool fee and APR calculator](/tools/liquidity-pool-calculator/). To read a quoted rate correctly, see [APR vs APY in DeFi](/guides/apr-vs-apy-in-defi/).
+Tier selection is the decision that moves this number most, and it is treated in [Uniswap Fee Tiers Explained](/guides/uniswap-fee-tiers-explained/). To model expected income from volume and liquidity share, use the [liquidity pool fee and APR calculator](/tools/liquidity-pool-calculator/). To read a quoted rate correctly, see [APR vs APY in DeFi](/guides/apr-vs-apy-in-defi/). For the net result once divergence and gas are included, use the [LP profit and return calculator](/tools/lp-profit-calculator/).
 
 ## References
 
