@@ -33,31 +33,45 @@ In institutional quantitative finance, treating impermanent loss as an "imperman
 
 In a standard constant-product AMM ($x \cdot y = k$), the spot price $P$ of base asset $x$ in terms of quote asset $y$ is determined by the reserve ratio:
 
-$$P = \frac{y}{x}$$
+$$
+P = \frac{y}{x}
+$$
 
 Solving for individual reserves yields:
 
-$$x = \sqrt{\frac{k}{P}}, \quad y = \sqrt{k \cdot P}$$
+$$
+x = \sqrt{\frac{k}{P}}, \quad y = \sqrt{k \cdot P}
+$$
 
 The total portfolio value of the LP position at spot price $P$ is:
 
-$$V_{\text{LP}}(P) = x \cdot P + y = \sqrt{\frac{k}{P}} \cdot P + \sqrt{k \cdot P} = 2 \sqrt{k \cdot P}$$
+$$
+V_{\text{LP}}(P) = x \cdot P + y = \sqrt{\frac{k}{P}} \cdot P + \sqrt{k \cdot P} = 2 \sqrt{k \cdot P}
+$$
 
 Now, suppose the market price shifts from an initial level $P_0$ to a new level $P_1$, representing a relative price ratio $k_r = P_1 / P_0$. The value of the pool position at $P_1$ evaluates to:
 
-$$V_{\text{LP}}(P_1) = 2 \sqrt{k P_1} = 2 \sqrt{k P_0} \sqrt{k_r}$$
+$$
+V_{\text{LP}}(P_1) = 2 \sqrt{k P_1} = 2 \sqrt{k P_0} \sqrt{k_r}
+$$
 
 In contrast, if the liquidity provider had simply held their initial reserves $x_0$ and $y_0$ in cold storage, the value of that "Hold" baseline portfolio at $P_1$ would be:
 
-$$V_{\text{Hold}}(P_1) = x_0 \cdot P_1 + y_0 = x_0 \cdot P_0 \cdot k_r + y_0$$
+$$
+V_{\text{Hold}}(P_1) = x_0 \cdot P_1 + y_0 = x_0 \cdot P_0 \cdot k_r + y_0
+$$
 
 Because the initial deposit satisfied $x_0 \cdot P_0 = y_0 = \sqrt{k P_0}$, we obtain:
 
-$$V_{\text{Hold}}(P_1) = \sqrt{k P_0} (1 + k_r)$$
+$$
+V_{\text{Hold}}(P_1) = \sqrt{k P_0} (1 + k_r)
+$$
 
 Dividing $V_{\text{LP}}$ by $V_{\text{Hold}}$ and subtracting 1 gives the classical closed-form equation for impermanent loss:
 
-$$\text{IL}(k_r) = \frac{V_{\text{LP}}}{V_{\text{Hold}}} - 1 = \frac{2 \sqrt{k_r}}{1 + k_r} - 1$$
+$$
+\text{IL}(k_r) = \frac{V_{\text{LP}}}{V_{\text{Hold}}} - 1 = \frac{2 \sqrt{k_r}}{1 + k_r} - 1
+$$
 
 | Price Ratio ($k_r = P_1/P_0$) | Equivalent Asset Move | Classical Impermanent Loss | Implied Option Position Equivalent |
 |---|---|---|---|
@@ -83,7 +97,7 @@ A narrow band of $\pm 5\%$ around spot price amplifies the instantaneous diverge
 
 The classical framing of impermanent loss contains a dangerous intellectual flaw: **it is strictly path-independent**.
 
-According to classical IL math, if ETH begins at $3,000, rallies to $5,000, crashes to $1,500, and wanders back to exactly $3,000, the calculated impermanent loss upon withdrawal is **0%**. Traditional decentralized finance literature concluded that if relative price returns to its deposit baseline, the LP incurs no structural loss beyond missed alternate yields [1].
+According to classical IL math, if ETH begins at \$3,000, rallies to \$5,000, crashes to \$1,500, and wanders back to exactly \$3,000, the calculated impermanent loss upon withdrawal is **0%**. Traditional decentralized finance literature concluded that if relative price returns to its deposit baseline, the LP incurs no structural loss beyond missed alternate yields [1].
 
 In real-world decentralized markets, this conclusion is provably false. Automated market makers do not possess autonomous price discovery; they rely entirely on external arbitrageurs to update their internal quotes. Centralized order books (Binance, Coinbase) update instantaneously in response to global macro signals. AMMs update with on-chain latency. This structural asynchronous gap creates an unhedged arbitrage window that bleeds pool capital continuously.
 
@@ -95,15 +109,21 @@ Instead of comparing an LP position to a passive "buy-and-hold" portfolio, LVR c
 
 Under standard continuous-time market assumptions where spot price follows geometric Brownian motion with instantaneous volatility $\sigma$:
 
-$$dP_t = \mu P_t dt + \sigma P_t dW_t$$
+$$
+dP_t = \mu P_t dt + \sigma P_t dW_t
+$$
 
 The expected instantaneous rate of LVR for a constant-product AMM pool is derived as:
 
-$$\frac{d(\text{LVR}_t)}{dt} = \frac{\sigma^2}{8} \cdot L \cdot \sqrt{P_t}$$
+$$
+\frac{d(\text{LVR}_t)}{dt} = \frac{\sigma^2}{8} \cdot L \cdot \sqrt{P_t}
+$$
 
 Integrating over time $t \in [0, T]$, cumulative LVR is:
 
-$$\text{LVR}_T = \int_0^T \frac{\sigma^2}{8} \cdot L \cdot \sqrt{P_t} \, dt$$
+$$
+\text{LVR}_T = \int_0^T \frac{\sigma^2}{8} \cdot L \cdot \sqrt{P_t} \, dt
+$$
 
 ### Key Microstructure Properties of LVR
 
@@ -137,7 +157,9 @@ Total AMM Volume = Uninformed Flow (Retail / Solvers) + Toxic Flow (Latency Arbi
 
 An AMM liquidity provider generates positive economic profit if and only if the fees harvested from uninformed flow exceed cumulative LVR plus gas overhead:
 
-$$\text{Net LP Profit} = \sum \text{Fees}_{\text{uninformed}} - \text{LVR} - \text{Gas}_{\text{management}} > 0$$
+$$
+\text{Net LP Profit} = \sum \text{Fees}_{\text{uninformed}} - \text{LVR} - \text{Gas}_{\text{management}} > 0
+$$
 
 Empirical academic audits of Uniswap v3 have demonstrated that in major volatile pools (such as ETH/USDC 0.05% and 0.30%), cumulative LVR and arbitrage extraction frequently exceed total fee generation, rendering passive liquidity provision net negative in real terms [6] [7]. Learn how transaction ordering and mempool dynamics exacerbate this drain in our deep dive on [MEV and Liquidity Providers: Sandwich Attacks, JIT Liquidity, and Toxic Flow](/guides/mev-and-liquidity-providers/).
 

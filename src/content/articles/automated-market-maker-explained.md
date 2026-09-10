@@ -99,7 +99,9 @@ Hooks enable dynamic fee adjustments based on volatility, onchain limit orders, 
 
 In a constant-product pool obeying $x \cdot y = k$, sending an input $\Delta x$ into the pool increases reserve $x$ to $x + (1 - f) \cdot \Delta x$, where $f$ represents the pool swap fee rate. The output $\Delta y$ received by the swapper is calculated as:
 
-$$\Delta y = y - \frac{k}{x + (1 - f) \cdot \Delta x}$$
+$$
+\Delta y = y - \frac{k}{x + (1 - f) \cdot \Delta x}
+$$
 
 From this formula, three operational realities emerge:
 1. **Marginal vs. Average Execution Price**: The marginal spot price before the trade is $P_{\text{spot}} = y/x$. The actual average execution price received by the trader is $\bar{P} = \Delta x / \Delta y$. As order size $\Delta x$ increases, $\bar{P}$ degrades monotonically relative to $P_{\text{spot}}$ [1].

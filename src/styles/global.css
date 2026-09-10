@@ -215,7 +215,49 @@ img { display: block; max-width: 100%; }
   color: #55705e;
   letter-spacing: .02em;
 }
-.article-content code { padding: .15em .35em; border-radius: 2px; background: #e1e8de; font: 500 12px/1 var(--mono); }
+.article-content :not(pre) > code { padding: .15em .35em; border-radius: 2px; background: #e1e8de; color: #16301f; font: 500 12px/1.4 var(--mono); word-break: break-word; }
+.article-content pre {
+  margin: 2em 0;
+  padding: 20px 22px;
+  border-radius: 4px;
+  border: 1px solid rgba(10, 19, 15, .18);
+  background: #10201a !important;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  tab-size: 2;
+}
+.article-content pre code {
+  display: block;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  color: inherit;
+  font: 400 12.5px/1.75 var(--mono);
+  white-space: pre;
+}
+.article-content pre code .line { display: block; min-height: 1.75em; }
+@media (max-width: 700px) {
+  .article-content pre { padding: 16px; }
+  .article-content pre code { font-size: 11px; line-height: 1.7; }
+}
+.article-content .katex { font-size: 1.045em; color: var(--ink); }
+.article-content .katex-display {
+  margin: 1.9em 0;
+  padding: 18px 20px;
+  border-left: 3px solid #2d7348;
+  background: #eaf0e7;
+  border-radius: 0 4px 4px 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+.article-content .katex-display > .katex { font-size: 1.14em; text-align: left; }
+.article-content .katex-display > .katex > .katex-html { display: block; }
+.article-content p > .katex { white-space: nowrap; }
+@media (max-width: 700px) {
+  .article-content .katex-display { padding: 14px 14px; }
+  .article-content .katex-display > .katex { font-size: 1em; }
+}
 .article-content table { width: 100%; margin: 1.75em 0; border-collapse: collapse; font-size: 14px; line-height: 1.5; }
 .article-content th { color: #204b34; text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: .08em; }
 .article-content th, .article-content td { padding: 12px 10px; border-bottom: 1px solid var(--line-light); vertical-align: top; }

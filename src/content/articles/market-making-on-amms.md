@@ -33,7 +33,9 @@ To operate profitably as an on-chain market maker in modern decentralized financ
 
 In order-driven markets, market makers operate according to stochastic inventory control models, such as the seminal framework formulated by Avellaneda and Stoikov [1]. In that classical framework, an agent continuously quotes bid and ask prices around an asset's mid-price $S_t$. To protect against directional inventory accumulation, the market maker computes an optimal reservation (indifference) price $r(s, q, t)$:
 
-$$r(s, q, t) = s - q \gamma \sigma^2 (T - t)$$
+$$
+r(s, q, t) = s - q \gamma \sigma^2 (T - t)
+$$
 
 Where:
 - $s$ is the current reference mid-price,
@@ -70,26 +72,32 @@ When liquidity providers migrated from full-range constant product pools to conc
 
 A concentrated liquidity position deployed within a lower boundary $P_l$ and an upper boundary $P_u$ holds virtual reserves of risky token $X$ and numéraire token $Y$. The total portfolio value of this position $V(P)$, measured in terms of token $Y$ as a function of current price $P$, is given by:
 
-$$V(P) = 
+$$
+V(P) =
 \begin{cases} 
 L (\sqrt{P_u} - \sqrt{P_l}) \cdot P & \text{if } P < P_l \\
 L \left( 2\sqrt{P} - \sqrt{P_l} - \frac{P}{\sqrt{P_u}} \right) & \text{if } P_l \le P \le P_u \\
 L \left( \frac{1}{\sqrt{P_l}} - \frac{1}{\sqrt{P_u}} \right) \cdot P_u = L \left( \sqrt{P_u} - \frac{P_u}{\sqrt{P_l}} \right) & \text{if } P > P_u 
-\end{cases}$$
+\end{cases}
+$$
 
 Where $L$ is the position's liquidity density parameter.
 
 Notice the mathematical curvature of this value function:
 1. **Delta ($\Delta = \frac{\partial V}{\partial P}$)**: Represents the position's directional exposure to the risky asset.
    
-   $$\Delta(P) = \frac{\partial V}{\partial P} = L \left( \frac{1}{\sqrt{P}} - \frac{1}{\sqrt{P_u}} \right) \quad \text{for } P \in [P_l, P_u]$$
+   $$
+   \Delta(P) = \frac{\partial V}{\partial P} = L \left( \frac{1}{\sqrt{P}} - \frac{1}{\sqrt{P_u}} \right) \quad \text{for } P \in [P_l, P_u]
+   $$
 
    - At the lower bound ($P = P_l$), $\Delta = L \left( \frac{1}{\sqrt{P_l}} - \frac{1}{\sqrt{P_u}} \right) = x_{\max}$. The position is 100% composed of token $X$ and holds maximum long directional exposure.
    - At the upper bound ($P = P_u$), $\Delta = L \left( \frac{1}{\sqrt{P_u}} - \frac{1}{\sqrt{P_u}} \right) = 0$. The position has converted 100% of its reserves into token $Y$ (the quote asset) and has zero delta exposure to token $X$.
 
 2. **Gamma ($\Gamma = \frac{\partial^2 V}{\partial P^2}$)**: Represents the rate of change of Delta with respect to price.
    
-   $$\Gamma(P) = \frac{\partial^2 V}{\partial P^2} = -\frac{L}{2 P^{3/2}} < 0$$
+   $$
+   \Gamma(P) = \frac{\partial^2 V}{\partial P^2} = -\frac{L}{2 P^{3/2}} < 0
+   $$
 
 Because $\Gamma(P)$ is strictly negative across the entire active interval $[P_l, P_u]$, **an AMM liquidity position is structurally short gamma**. 
 
@@ -127,17 +135,23 @@ Impermanent loss is **path-independent**: it compares the portfolio value at tim
 
 In contrast, active market makers benchmark their operations against **Loss-Versus-Rebalancing (LVR)**, formulated by Milionis, Moallemi, Roughgarden, and Timmer (2022) [4]. LVR measures the difference between an LP position's performance and an actively rebalanced reference portfolio that matches the AMM's asset weights without paying transaction fees or suffering adverse selection:
 
-$$\frac{d(\text{LVR})}{dt} = \frac{\sigma^2}{8} L \sqrt{P}$$
+$$
+\frac{d(\text{LVR})}{dt} = \frac{\sigma^2}{8} L \sqrt{P}
+$$
 
 Integrated across a time horizon $T$ under geometric Brownian motion, expected cumulative LVR is given by:
 
-$$\mathbb{E}[\text{LVR}_T] = \frac{\sigma^2}{8} \int_0^T L_t \sqrt{P_t} \, dt$$
+$$
+\mathbb{E}[\text{LVR}_T] = \frac{\sigma^2}{8} \int_0^T L_t \sqrt{P_t} \, dt
+$$
 
 LVR represents the structural rent extracted from passive liquidity pools by informed traders and atomic arbitrageurs. Because AMMs cannot update their prices until an onchain block is mined, arbitrageurs continuously execute latency arbitrage: whenever the Binance or Coinbase mid-price shifts, an arbitrageur snipes the stale AMM tick, buying underpriced assets or selling overpriced assets back to the pool [4] [5].
 
 For an AMM market maker to achieve long-term profitability, fee intake must exceed this theoretical LVR floor:
 
-$$\text{Net Alpha} = \text{Fee Revenue} - \text{LVR} - \text{Operational/Gas Costs} > 0$$
+$$
+\text{Net Alpha} = \text{Fee Revenue} - \text{LVR} - \text{Operational/Gas Costs} > 0
+$$
 
 For a rigorous derivation of this framework, reference our guides on [Impermanent Loss Explained: Rebalancing, Relative Price, and LP Outcomes](/guides/impermanent-loss-explained/) and [Onchain Liquidity Metrics: Measuring Real Depth and Flow](/guides/onchain-liquidity-metrics/).
 
@@ -151,11 +165,15 @@ To eliminate directional price exposure and isolate pure market-making spread re
 
 Assume an institutional market maker deploys $L$ units of liquidity into an ETH/USDC concentrated pool within price bounds $[P_l, P_u]$. At current spot price $P \in [P_l, P_u]$, the market maker's long ETH exposure is exactly:
 
-$$\Delta_{\text{AMM}}(P) = L \left( \frac{1}{\sqrt{P}} - \frac{1}{\sqrt{P_u}} \right)$$
+$$
+\Delta_{\text{AMM}}(P) = L \left( \frac{1}{\sqrt{P}} - \frac{1}{\sqrt{P_u}} \right)
+$$
 
 To neutralize this directional exposure, the market maker establishes a short perpetual futures position ($\Delta_{\text{Perp}}$) on a low-latency exchange (such as Hyperliquid, dYdX, or Binance) such that:
 
-$$\Delta_{\text{Net}} = \Delta_{\text{AMM}}(P) + \Delta_{\text{Perp}} = 0 \implies \Delta_{\text{Perp}} = -\Delta_{\text{AMM}}(P)$$
+$$
+\Delta_{\text{Net}} = \Delta_{\text{AMM}}(P) + \Delta_{\text{Perp}} = 0 \implies \Delta_{\text{Perp}} = -\Delta_{\text{AMM}}(P)
+$$
 
 ```
 +--------------------------------------------------------------------------------+
@@ -196,7 +214,9 @@ Delta-neutral AMM market makers must also account for the **perpetual funding ra
 
 The net profit equation for a delta-hedged AMM market maker over interval $\Delta t$ is:
 
-$$\Pi = \sum \text{Swap Fees} - \sum \text{Hedging Execution Costs} + \sum \text{Funding Payments} - \text{Gas Fees}$$
+$$
+\Pi = \sum \text{Swap Fees} - \sum \text{Hedging Execution Costs} + \sum \text{Funding Payments} - \text{Gas Fees}
+$$
 
 If the fee generation rate fails to exceed hedging drag plus adverse selection, the delta-hedged position loses capital despite zero net directional exposure.
 
@@ -309,7 +329,9 @@ Before deploying dedicated capital into an automated market-making strategy, ins
 
 1. **Compute the Volatility Hurdle Rate**:
    Calculate the annualized historical and implied volatility ($\sigma$) of the trading pair. Compute the minimum daily fee yield required to offset theoretical LVR using the benchmark hurdle:
-   $$\text{Hurdle Fee Yield} \approx \frac{\sigma^2}{8}$$
+   $$
+   \text{Hurdle Fee Yield} \approx \frac{\sigma^2}{8}
+   $$
    If historical 24-hour pool volume multiplied by fee tier divided by active TVL does not comfortably exceed this hurdle, passive market making on this pair will yield negative expected alpha [4].
 
 2. **Evaluate Toxic Flow Share**:

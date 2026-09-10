@@ -39,7 +39,9 @@ When an LP deposits capital entirely within a range $[P_l, P_u]$ situated strict
 
 As the market spot price enters the range from below and traverses from $P_l$ to $P_u$, incoming swappers buy token $X$ from the position and deposit token $Y$. The effective average execution price $\bar{P}$ obtained by the LP across the entire traversed interval is mathematically defined as the geometric mean of the boundaries:
 
-$$\bar{P} = \sqrt{P_l \cdot P_u}$$
+$$
+\bar{P} = \sqrt{P_l \cdot P_u}
+$$
 
 For an order placed across a single minimum tick spacing $\Delta t$ where $P_u = P_l \cdot 1.0001^{\Delta t}$, the execution price is virtually indistinguishable from the boundary ticks. If the range spans wider boundaries, say $[3,100, 3,300]$, the realized fill price is $\sqrt{3100 \times 3300} \approx 3198.44$ USDC per ETH.
 
@@ -129,7 +131,7 @@ To monitor range order fill status and automate immediate withdrawals:
 ## Practical Scenarios: Stablecoins, Exits, and Volatility Bands
 
 ### Scenario A: The Stablecoin Depeg Arbitrage Range
-Traders frequently use range orders on pegged assets (e.g., DAI/USDC or crvUSD/USDC) around the $[0.9990, 1.0010]$ corridor. If a stablecoin dips to $0.9980 due to temporary liquidity strain, placing a single-sided range order between $[0.9985, 0.9995]$ effectively bids for the discounted asset. If the peg recovers to $1.0000$, the position completely converts into quote currency plus accumulated fees [2]. However, if the discount represents a structural insolvency rather than a transitory liquidity shock, the range order is completely filled with the defaulting token, crystallizing catastrophic loss.
+Traders frequently use range orders on pegged assets (e.g., DAI/USDC or crvUSD/USDC) around the $[0.9990, 1.0010]$ corridor. If a stablecoin dips to \$0.9980 due to temporary liquidity strain, placing a single-sided range order between $[0.9985, 0.9995]$ effectively bids for the discounted asset. If the peg recovers to $1.0000$, the position completely converts into quote currency plus accumulated fees [2]. However, if the discount represents a structural insolvency rather than a transitory liquidity shock, the range order is completely filled with the defaulting token, crystallizing catastrophic loss.
 
 ### Scenario B: Phased Treasury Liquidation
 DAOs and decentralized treasuries often utilize wide range orders to execute programmatic token diversifications. By placing a single-sided governance token position over a wide band (e.g., $[$10.00, $15.00$]), the treasury acts as an on-chain automated seller. As external demand absorbs token inventory, the DAO accumulates USDC with zero price impact slippage, earning trading fees throughout the execution horizon [1].

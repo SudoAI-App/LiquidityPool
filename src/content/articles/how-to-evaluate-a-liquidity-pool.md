@@ -17,7 +17,7 @@ faq:
     a: "A persistently high rate is compensation for something specific: volatility, thin liquidity, emissions that will taper, or an unreviewed contract. Identify which before deciding whether the rate is adequate."
 ---
 
-Headline yield figures displayed on decentralized exchange analytics dashboards routinely mislead capital allocators. An advertised 38% annual percentage rate (APR) paired with a $50 million Total Value Locked (TVL) metric conveys an illusion of safety, but reveals virtually nothing about actual market making viability. Headline APR is a backward-looking historical extrapolation that ignores inventory conversion, adverse selection, and boundary deactivation. Gross TVL is routinely inflated by recursive restaking loops and idle out-of-range capital parked miles away from current spot prices.
+Headline yield figures displayed on decentralized exchange analytics dashboards routinely mislead capital allocators. An advertised 38% annual percentage rate (APR) paired with a \$50 million Total Value Locked (TVL) metric conveys an illusion of safety, but reveals virtually nothing about actual market making viability. Headline APR is a backward-looking historical extrapolation that ignores inventory conversion, adverse selection, and boundary deactivation. Gross TVL is routinely inflated by recursive restaking loops and idle out-of-range capital parked miles away from current spot prices.
 
 Providing liquidity to an automated market maker (AMM) is an active quantitative underwriting operation. Evaluating whether a pool offers sustainable, risk-adjusted returns requires an **institutional five-part research framework**:
 1. **Invariant and Execution Architecture**
@@ -67,7 +67,7 @@ Gross TVL: Total collateral sitting in the pool contract ($50,000,000)
 
 ### Depth within $\pm 1\%$ and $\pm 2\%$ Bands
 Institutional routers route swaps based on depth available within narrow price corridors around spot price. Query on-chain tick states to calculate:
-- **Executable Depth ($\pm 2\%$)**: The dollar value of inventory required to push spot price 2% in either direction. A pool with $10M in gross TVL but only $200k within $\pm 2\%$ is illiquid and highly vulnerable to price slippage and manipulation.
+- **Executable Depth ($\pm 2\%$)**: The dollar value of inventory required to push spot price 2% in either direction. A pool with \$10M in gross TVL but only \$200k within $\pm 2\%$ is illiquid and highly vulnerable to price slippage and manipulation.
 - **Turnover Velocity**: The ratio of daily trading volume to active liquidity ($V / L_{\text{active}}$). A healthy pool exhibits steady turnover velocity (e.g., 0.5x to 3.0x daily), indicating that capital is actively working rather than sitting stagnant [6].
 
 For an exhaustive audit of TVL distortions and multi-counting loops, explore our guide on [TVL Explained: Capital Efficiency and Valuation](/guides/tvl-explained/).
@@ -79,11 +79,15 @@ A high headline fee APR is meaningless if adverse selection destroys more capita
 ### 1. Calculate the LVR Hurdle Rate
 As formulated by Milionis et al. (2022), the instantaneous cost extracted from an AMM pool by latency arbitrageurs scales with the square of market volatility ($\sigma^2$) [3]:
 
-$$\text{Expected Annual LVR Rate} \approx \frac{\sigma^2}{8}$$
+$$
+\text{Expected Annual LVR Rate} \approx \frac{\sigma^2}{8}
+$$
 
 If an asset pair exhibits an annualized volatility $\sigma = 80\%$ ($\sigma = 0.80$):
 
-$$\text{LVR Hurdle} = \frac{0.80^2}{8} = \frac{0.64}{8} = 8.0\% \text{ per annum}$$
+$$
+\text{LVR Hurdle} = \frac{0.80^2}{8} = \frac{0.64}{8} = 8.0\% \text{ per annum}
+$$
 
 If the pool's gross trading fee yield from organic retail volume is only 5.0%, **the pool has a structural negative expected return of -3.0% per year**. Every day capital remains in the pool, arbitrageurs extract more value than retail fees compensate.
 

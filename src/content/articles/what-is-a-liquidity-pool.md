@@ -37,7 +37,9 @@ Most decentralized trading relies on constant-function market makers (CFMMs). Un
 
 In the foundational constant-product design ($x \cdot y = k$), introduced by Uniswap v1 and v2, the pool maintains two reserves ($x$ and $y$). When a trader swaps token $X$ for token $Y$, they deposit $\Delta x$ into the contract and withdraw $\Delta y$, such that the product of the reserves remains constant before fee deduction:
 
-$$(x + \Delta x)(y - \Delta y) = k$$
+$$
+(x + \Delta x)(y - \Delta y) = k
+$$
 
 Because the reserve ratio $y/x$ sets the marginal spot price, purchasing an asset directly degrades its exchange rate for the next trade. The larger the order relative to the pool's reserves, the steeper the realized price impact.
 
@@ -91,7 +93,7 @@ For an architectural breakdown of these execution primitives, read [Automated Ma
 
 A widespread error in liquidity analysis is treating headline Total Value Locked (TVL) as synonymous with market depth. Total Value Locked measures the aggregate dollar value of assets held in a contract; it does not measure how much capital is available to absorb a trade at a specific price point [1] [4].
 
-In concentrated AMMs, liquidity providers concentrate capital within narrow bands to maximize fee yield per dollar deployed. If 90% of a pool's $50M TVL is positioned in inactive ranges far from the market price, an incoming $500,000 order can easily exhaust the active tick and trigger extreme price slippage.
+In concentrated AMMs, liquidity providers concentrate capital within narrow bands to maximize fee yield per dollar deployed. If 90% of a pool's \$50M TVL is positioned in inactive ranges far from the market price, an incoming \$500,000 order can easily exhaust the active tick and trigger extreme price slippage.
 
 ### Comparative Framework of Core AMM Invariants
 
@@ -127,7 +129,9 @@ When tokens share an economic peg—such as fiat stablecoins (USDC/USDT), synthe
 
 Curve's StableSwap invariant solves this by combining constant-sum and constant-product behavior through an amplification parameter $A$ [3]:
 
-$$A n^n \sum x_i + D = A D n^n + \frac{D^{n+1}}{n^n \prod x_i}$$
+$$
+A n^n \sum x_i + D = A D n^n + \frac{D^{n+1}}{n^n \prod x_i}
+$$
 
 Near equilibrium ($P \approx 1.0$), the curve is flat, allowing multi-million dollar trades to clear with sub-basis-point slippage. However, if an underlying asset experiences a structural depeg or unbonding queue freeze, traders rapidly sell the distressed asset into the pool. Because the invariant holds the price near 1.0 until reserves become heavily imbalanced, the pool absorbs vast quantities of the collapsing asset before price impact sharply increases [3] [4].
 
@@ -174,7 +178,7 @@ Run this systematic verification before executing a swap or supplying capital:
 1. **Verify Contract Architecture**: Is the pool an immutable standalone pair (v2), a tick-based contract (v3), or a hook-enabled singleton (`PoolManager.sol`) [1]?
 2. **Inspect Hook Permissions**: In Uniswap v4 pools, verify whether attached hooks introduce dynamic fees, withdrawal fees, or admin-controlled pause parameters [1].
 3. **Measure Active Liquidity ($\pm 2\%$)**: Calculate the capital concentrated within 200 basis points of the current tick rather than evaluating aggregate TVL [1] [4].
-4. **Evaluate MEV Routing Protection**: For orders larger than $10,000, avoid submitting to the public mempool where sandwich bots operate. Route through private RPCs (e.g., Flashbots Protect) or intent-based batch solvers (CoW Swap, UniswapX) [4] [5].
+4. **Evaluate MEV Routing Protection**: For orders larger than \$10,000, avoid submitting to the public mempool where sandwich bots operate. Route through private RPCs (e.g., Flashbots Protect) or intent-based batch solvers (CoW Swap, UniswapX) [4] [5].
 5. **Pre-Compute Out-of-Range Inventory**: For concentrated liquidity positions, calculate the exact token balance you will hold if the asset drops to your lower bound. Confirm you are prepared to hold 100% of that asset indefinitely [2].
 
 For an end-to-end institutional methodology, consult [How to Evaluate a Liquidity Pool: A Five-Part Research Framework](/guides/how-to-evaluate-a-liquidity-pool/).

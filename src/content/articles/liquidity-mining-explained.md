@@ -86,9 +86,11 @@ In Uniswap v4, singleton hooks can inspect the exact tick distribution of a liqu
 
 Protocols must evaluate liquidity mining not as free user acquisition, but through strict quantitative accounting:
 
-$$\text{Net Incentive Efficiency} = \frac{\text{Organic Trading Fee Revenue Generated}}{\text{Dollar Value of Token Emissions Distributed}}$$
+$$
+\text{Net Incentive Efficiency} = \frac{\text{Organic Trading Fee Revenue Generated}}{\text{Dollar Value of Token Emissions Distributed}}
+$$
 
-If a protocol distributes $1,000,000 in token emissions over a month to attract $20,000,000 in TVL, but that pool generates only $40,000 in cumulative trading fees, the **Net Incentive Efficiency is 0.04 (4%)**. The protocol is effectively burning $0.96 of equity for every dollar of trading activity it facilitates.
+If a protocol distributes \$1,000,000 in token emissions over a month to attract \$20,000,000 in TVL, but that pool generates only \$40,000 in cumulative trading fees, the **Net Incentive Efficiency is 0.04 (4%)**. The protocol is effectively burning \$0.96 of equity for every dollar of trading activity it facilitates.
 
 ```
 Total Displayed APR Breakdown:
@@ -105,7 +107,7 @@ To understand how real trading fees are calculated and distributed across pool t
 
 A critical failure mode of legacy liquidity mining on concentrated AMMs is **passive gauge exploitation** [1] [2]:
 
-In Uniswap v3 and v4, an LP can deposit $1,000,000 into a range that is 50% away from the current market price. If the incentive contract distributes rewards solely based on the total liquidity value of staked NFT positions, the out-of-range LP collects emissions while assuming **zero impermanent loss risk** and providing **zero executable depth** to traders.
+In Uniswap v3 and v4, an LP can deposit \$1,000,000 into a range that is 50% away from the current market price. If the incentive contract distributes rewards solely based on the total liquidity value of staked NFT positions, the out-of-range LP collects emissions while assuming **zero impermanent loss risk** and providing **zero executable depth** to traders.
 
 ```
 Exploitative Staking:
