@@ -37,7 +37,9 @@ This guide covers what each one is, and where it shows up when something looks w
 
 Uniswap v3 does not store prices as floating-point numbers. It stores a tick index $i$, where the price is defined as [1]:
 
-$$p(i) = 1.0001^{i}$$
+$$
+p(i) = 1.0001^{i}
+$$
 
 One tick is therefore one basis point of price movement, and the whole usable range of prices maps to integers roughly between −887,272 and 887,272. Internally the contract works with the square root of price in Q64.96 fixed-point format, because the range mathematics needs $\sqrt{P}$ rather than $P$ and fixed-point arithmetic avoids rounding drift.
 

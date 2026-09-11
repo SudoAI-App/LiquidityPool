@@ -47,7 +47,9 @@ The structural difference shows up everywhere: in persistence, in what the incom
 
 Most aggregators publish base and reward yield separately. Where they do not, the decomposition is computable:
 
-$$\text{fee APR} = \frac{\text{fees over window}}{\text{liquidity supplying them}} \times \frac{365}{\text{window in days}}$$
+$$
+\text{fee APR} = \frac{\text{fees over window}}{\text{liquidity supplying them}} \times \frac{365}{\text{window in days}}
+$$
 
 Everything above that figure in the quoted rate is incentive income. Verify the base figure over at least thirty days rather than a single day, because volume clusters around events and a one-day window will not repeat.
 

@@ -39,7 +39,9 @@ Depth is a function of a price band, so it is meaningless without one. The stand
 
 For a constant-product pool, depth follows directly from the reserves, and a trade of size $\Delta x$ against reserve $x$ produces roughly:
 
-$$\text{impact} \approx \frac{\Delta x / x}{1 + \Delta x / x}$$
+$$
+\text{impact} \approx \frac{\Delta x / x}{1 + \Delta x / x}
+$$
 
 For a concentrated pool the calculation runs over ticks. Liquidity is constant within each tick range, so depth within a band is the sum of liquidity across the ticks it spans, converted to notional at the prices involved. Bin-based designs are simpler still: each bin holds a known amount at a known price, and depth is the sum across bins in the band.
 

@@ -37,7 +37,9 @@ Three canonical shapes bound the design space, and every production invariant si
 
 The simplest invariant holds the sum of reserves constant:
 
-$$x + y = k$$
+$$
+x + y = k
+$$
 
 Price is fixed at one for one regardless of the reserve balance, so trades execute with no slippage at all. The problem is what happens when the true market price moves away from that ratio: arbitrageurs drain the cheaper asset entirely, and the pool is left holding only the asset nobody wants.
 
@@ -49,11 +51,15 @@ Constant-sum curves are therefore never used alone in production. They appear as
 
 The workhorse invariant holds the product constant [1]:
 
-$$x \cdot y = k$$
+$$
+x \cdot y = k
+$$
 
 The marginal price is the reserve ratio, and the curve is a hyperbola: reserves approach but never reach zero, so the pool can quote at any price. Price impact for an order of size $\Delta x$ against reserve $x$ is approximately:
 
-$$\text{impact} \approx \frac{\Delta x / x}{1 + \Delta x / x}$$
+$$
+\text{impact} \approx \frac{\Delta x / x}{1 + \Delta x / x}
+$$
 
 The properties that matter to a provider: the pool never runs out, the divergence profile is the familiar symmetric one, and depth is spread across every price including those the pair will never visit. The derivation and its consequences are in [The Constant Product Formula](/guides/constant-product-formula/).
 
@@ -63,7 +69,9 @@ The properties that matter to a provider: the pool never runs out, the divergenc
 
 Hybrid invariants interpolate. The StableSwap design combines constant-sum and constant-product behaviour through an amplification coefficient $A$ [3]:
 
-$$A n^n \sum x_i + D = A D n^n + \frac{D^{n+1}}{n^n \prod x_i}$$
+$$
+A n^n \sum x_i + D = A D n^n + \frac{D^{n+1}}{n^n \prod x_i}
+$$
 
 Near balance the curve is almost flat, giving stable-pair execution close to constant sum. As reserves skew, it steepens toward constant product, which preserves solvency. The coefficient sets where that transition happens: high amplification means a flatter centre and a sharper cliff.
 
@@ -75,7 +83,9 @@ The trade is explicit. Flatness is efficiency while the peg holds and absorption
 
 Concentrated liquidity is not a different curve. It is the constant-product curve translated so that reserves reach zero at chosen bounds [2]:
 
-$$\left(x + \frac{L}{\sqrt{p_b}}\right)\left(y + L\sqrt{p_a}\right) = L^2$$
+$$
+\left(x + \frac{L}{\sqrt{p_b}}\right)\left(y + L\sqrt{p_a}\right) = L^2
+$$
 
 Inside the band, the same capital backs far more depth. Outside it, the position holds one asset and quotes nothing. Discrete bin designs go further, quoting a fixed price within each bin so that intra-bin trades have no slippage at all, then stepping between bins as liquidity is consumed.
 

@@ -49,7 +49,9 @@ Supplying liquidity has three obligations that a depositor into a savings produc
 
 Fee revenue over a period is the product of three measurable quantities:
 
-$$F = f \times V_{\text{routed}} \times s$$
+$$
+F = f \times V_{\text{routed}} \times s
+$$
 
 where $f$ is the fee tier, $V_{\text{routed}}$ is the volume that actually executes against your pool, and $s$ is your share of the liquidity that was active for those trades. In range-based pools, multiply again by the fraction of the period your position was in range.
 

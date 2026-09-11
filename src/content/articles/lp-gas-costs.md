@@ -52,7 +52,9 @@ A passive full-range position uses three of these. An actively managed narrow ba
 
 Let $g$ be the average cost of one transaction, $n$ the number of transactions in your intended cycle, and $R$ the expected daily fee income at your position size. The break-even holding period in days for the gas alone is:
 
-$$T_{\text{gas}} = \frac{n \cdot g}{R}$$
+$$
+T_{\text{gas}} = \frac{n \cdot g}{R}
+$$
 
 Suppose gas averages \$14 per transaction, a cycle involves five transactions, and the position expects a 25% annualised gross fee yield.
 

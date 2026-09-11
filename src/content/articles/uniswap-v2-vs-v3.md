@@ -47,7 +47,9 @@ The pricing mathematics is the same. Divergence, adverse selection and fee accru
 
 The multiplier for a symmetric band from $p_a$ to $p_b$ around the current price is approximately:
 
-$$C = \frac{1}{1 - \left(\frac{p_a}{p_b}\right)^{1/4}}$$
+$$
+C = \frac{1}{1 - \left(\frac{p_a}{p_b}\right)^{1/4}}
+$$
 
 A ±10% band gives roughly 20 times the depth of a full-range position for the same capital. A ±2% band gives roughly 100 times.
 

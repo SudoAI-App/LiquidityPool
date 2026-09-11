@@ -39,11 +39,15 @@ Understanding which decisions belong to which version is what makes the differen
 
 Every Uniswap pool prices swaps from reserves. In v2 the invariant is the constant product across all prices [1]:
 
-$$x \cdot y = k$$
+$$
+x \cdot y = k
+$$
 
 The marginal price is the reserve ratio $y/x$, so each trade moves the price against the trader. In v3 and v4 the same curve is translated so that a position's reserves reach zero at its chosen bounds [2]:
 
-$$\left(x + \frac{L}{\sqrt{p_b}}\right)\left(y + L\sqrt{p_a}\right) = L^2$$
+$$
+\left(x + \frac{L}{\sqrt{p_b}}\right)\left(y + L\sqrt{p_a}\right) = L^2
+$$
 
 Nothing about divergence, adverse selection or fee accrual changes between versions because of this equation. What changes is where liquidity sits and what it costs to interact with it.
 

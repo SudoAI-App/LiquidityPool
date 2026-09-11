@@ -39,7 +39,9 @@ A defensible framework needs three inputs, all measurable, and one decision abou
 
 **Fee density.** The capital efficiency multiplier for a symmetric band is approximately:
 
-$$C = \frac{1}{1 - \left(\frac{p_a}{p_b}\right)^{1/4}}$$
+$$
+C = \frac{1}{1 - \left(\frac{p_a}{p_b}\right)^{1/4}}
+$$
 
 which gives roughly 20 times for a ±10% band and 100 times for ±2%. That multiplier applies only while the position is in range.
 
@@ -66,7 +68,9 @@ These are expected times to first touch a boundary, not guarantees. The importan
 
 What you actually want to maximise over the holding period is:
 
-$$\text{net} = (\text{fee density}) \times (\text{time in range}) - (\text{cycles} \times \text{cost per cycle}) - (\text{realised divergence})$$
+$$
+\text{net} = (\text{fee density}) \times (\text{time in range}) - (\text{cycles} \times \text{cost per cycle}) - (\text{realised divergence})
+$$
 
 Every term is estimable in advance. The first two pull in opposite directions, the third rises as the band narrows because rebalancing becomes more frequent, and the fourth grows with both amplification and the number of re-centres.
 

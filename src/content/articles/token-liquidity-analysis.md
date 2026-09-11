@@ -47,7 +47,9 @@ Record both sides separately. Depth is frequently asymmetric after a trend, and 
 
 Convert depth into the number that governs sizing:
 
-$$S_{\text{exit}} = \text{the trade that moves price by } \delta$$
+$$
+S_{\text{exit}} = \text{the trade that moves price by } \delta
+$$
 
 Compute it for several values of $\delta$, since the shape of the curve matters more than any single point.
 
