@@ -50,7 +50,9 @@ The original decentralized exchange accounting model relies on fungible ERC-20 t
 
 The quantity of minted LP tokens ($\Delta S$) relative to the circulating total supply ($S$) matches the depositor's contribution relative to existing reserves:
 
-$$\frac{\Delta S}{S} = \frac{\Delta x}{x} = \frac{\Delta y}{y}$$
+$$
+\frac{\Delta S}{S} = \frac{\Delta x}{x} = \frac{\Delta y}{y}
+$$
 
 ### Automatic Fee Compounding
 In this architecture, swap fees (e.g., 30 bps per trade) are not distributed to separate balances. They are retained directly within the pool's token reserves ($x$ and $y$). As trading volume clears through the contract, the constant product $k = x \cdot y$ grows over time.
@@ -60,7 +62,9 @@ Because the total supply of LP tokens remains static unless capital is added or 
 ### Mechanics of Capital Redemption
 When an LP redeems their ERC-20 pool tokens, they call `burn()`, which destroys the tokens and transfers a pro-rata share of current reserves back to the wallet:
 
-$$\text{Redeemed } x = \frac{\text{LP Tokens Burned}}{S} \cdot x_{\text{current}}, \quad \text{Redeemed } y = \frac{\text{LP Tokens Burned}}{S} \cdot y_{\text{current}}$$
+$$
+\text{Redeemed } x = \frac{\text{LP Tokens Burned}}{S} \cdot x_{\text{current}}, \quad \text{Redeemed } y = \frac{\text{LP Tokens Burned}}{S} \cdot y_{\text{current}}
+$$
 
 If the relative price between Token A and Token B shifted during the deposit period, the returned basket will contain more of the depreciating asset and less of the appreciating asset compared to the original deposit [1]. For the mathematical foundation of this shift, see [The Constant Product Formula: How x × y = k Shapes AMM Prices](/guides/constant-product-formula/).
 

@@ -112,7 +112,7 @@ A liquidity pool is only as robust as the weakest asset held within its reserves
 ### Assessing Depeg Dynamics
 When auditing stablecoin or pegged pools (e.g., Curve StableSwap or Uniswap v3/v4 ticks near 1.00):
 - **Evaluate the Amplification Parameter ($A$)**: In Curve pools, a high $A$ parameter creates deep near-peg liquidity but causes an abrupt "liquidity cliff" once balance skews past 80/20 [3].
-- **Check External Redemption Paths**: Does the pegged token offer a guaranteed primary-market redemption mechanism (e.g., 1 USDe redeemable for $1 of collateral through Ethena mint/redeem contracts, or stETH unbonding via Ethereum consensus withdrawal queues)? If primary redemption is suspended or delayed by weeks, the AMM becomes the sole exit route, guaranteeing massive adverse selection against passive LPs [2].
+- **Check External Redemption Paths**: Does the pegged token offer a guaranteed primary-market redemption mechanism (e.g., 1 USDe redeemable for \$1 of collateral through Ethena mint/redeem contracts, or stETH unbonding via Ethereum consensus withdrawal queues)? If primary redemption is suspended or delayed by weeks, the AMM becomes the sole exit route, guaranteeing massive adverse selection against passive LPs [2].
 
 Review our detailed research on peg defense models in [Stablecoin Liquidity Pools: Peg Defense, Yield, and Systemic Risk](/guides/stablecoin-liquidity-pools/).
 
@@ -120,7 +120,7 @@ Review our detailed research on peg defense models in [Stablecoin Liquidity Pool
 
 ## Pillar 3: Market Microstructure & Order Flow Toxicity
 
-Headline Total Value Locked (TVL) is a vanity metric. A pool with $100M in TVL can generate lower fee yields and suffer worse execution than a pool with $5M in TVL if its depth is poorly configured or its volume is dominated by toxic MEV searchers [4] [5].
+Headline Total Value Locked (TVL) is a vanity metric. A pool with \$100M in TVL can generate lower fee yields and suffer worse execution than a pool with \$5M in TVL if its depth is poorly configured or its volume is dominated by toxic MEV searchers [4] [5].
 
 ```
 +-----------------------------------------------------------------------------+
@@ -150,7 +150,9 @@ Headline Total Value Locked (TVL) is a vanity metric. A pool with $100M in TVL c
 ### The Toxicity Formula and JIT Dilution
 Active market makers quantify flow quality before committing inventory:
 1. **Order Flow Toxicity**:
-   $$\text{Tox} = \frac{\sum \text{Volume}_{\text{atomic arbitrage}} + \sum \text{Volume}_{\text{sandwich}}}{\text{Total Volume}}$$
+   $$
+   \text{Tox} = \frac{\sum \text{Volume}_{\text{atomic arbitrage}} + \sum \text{Volume}_{\text{sandwich}}}{\text{Total Volume}}
+   $$
    If $\text{Tox} > 0.60$, the pool acts primarily as an arbitrage settlement endpoint for centralized exchange latency arbs, bleeding capital to external searchers [5] [6].
 2. **JIT Dilution Assessment**:
    Analyze whether institutional MEV bots execute atomic JIT liquidity attacks. If flash-liquidity accounts for more than 25% of fee capture during volatile blocks, passive in-range LPs suffer severe yield dilution [5].
@@ -190,11 +192,15 @@ Passive yield calculators project annual earnings by extrapolating past 24-hour 
 ### The LVR Hurdle Rate Rule of Thumb
 For any automated market maker trading a risky asset against a numéraire, theoretical LVR accumulates at rate [4]:
 
-$$\frac{d(\text{LVR})}{dt} = \frac{\sigma^2}{8} L \sqrt{P}$$
+$$
+\frac{d(\text{LVR})}{dt} = \frac{\sigma^2}{8} L \sqrt{P}
+$$
 
 To evaluate whether a pool's trading fee yield is adequate:
 - **Compute the Hurdle**: A pair with 90% annualized volatility ($\sigma = 0.90$) incurs an annual LVR drag of approximately:
-  $$\frac{0.90^2}{8} = \frac{0.81}{8} \approx 10.125\% \text{ per year}$$
+  $$
+  \frac{0.90^2}{8} = \frac{0.81}{8} \approx 10.125\% \text{ per year}
+  $$
 - **Compare to Organic Fee Yield**: If the pool generates 7.5% in organic trading fees (excluding temporary inflationary token emissions), **the position has a negative expected net return (-2.625% alpha)**.
 - **Rule of Thumb**: If displayed organic fee yield is less than $\frac{\sigma^2}{8}$, you are subsidizing arbitrageurs unless you actively delta-hedge the position via perpetual futures [4] [6].
 
@@ -250,7 +256,7 @@ To execute thorough pre-deployment due diligence on liquidity pools:
 | Due Diligence Error | Failure Mode | Mitigation Checklist Step |
 |---|---|---|
 | **Skipping Hook Address Inspection** | Malicious or upgradeable hook drains fees or restricts withdrawals via `beforeRemoveLiquidity`. | Verify hook bitmask address prefix against Uniswap v4 specification; reject contracts with unneeded hooks. |
-| **Omitting Round-Trip Gas Costs** | Deploying small positions (<$10,000) on Ethereum L1 where gas for deposit, rebalance, and withdrawal exceeds 1-year fee yield. | Run the Gas Amortization calculation (Pillar 5.1): require gas payback in under 14 days. |
+| **Omitting Round-Trip Gas Costs** | Deploying small positions (<\$10,000) on Ethereum L1 where gas for deposit, rebalance, and withdrawal exceeds 1-year fee yield. | Run the Gas Amortization calculation (Pillar 5.1): require gas payback in under 14 days. |
 | **Treating Bridged Assets as Native** | Depositing wrapped bridge tokens that can become worthless overnight if the off-chain lock-and-mint bridge is hacked. | Verify asset canonicality (Pillar 2.1): demand native burn/mint protocols (Circle CCTP) or Layer 1 native tokens. |
 | **Ignoring JIT MEV Fee Dilution** | Headline APR shows 30%, but MEV bots inject JIT liquidity right before large volume spikes, leaving passive LPs with <5%. | Audit mempool history for atomic JIT mint/burn bundles (Pillar 3.3). |
 

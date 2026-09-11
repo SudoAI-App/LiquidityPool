@@ -35,16 +35,24 @@ In classical constant-product automated market makers such as Uniswap v2, liquid
 
 Concentrated liquidity protocols, pioneered by Uniswap v3 and refined in Uniswap v4, solve this capital inefficiency by introducing *virtual reserves*. A liquidity provider specifies a lower price boundary $P_l$ and an upper price boundary $P_u$. Within this interval, the pool behaves exactly like a constant-product curve shifted toward the origin, governed by the virtual reserve equation:
 
-$$(x + x_{\text{offset}})(y + y_{\text{offset}}) = L^2$$
+$$
+(x + x_{\text{offset}})(y + y_{\text{offset}}) = L^2
+$$
 
 Where $L$ denotes liquidity depth (the geometric mean of virtual token reserves, $L = \sqrt{x_{\text{virtual}} \cdot y_{\text{virtual}}}$), and the offsets are defined analytically by:
 
-$$x_{\text{offset}} = \frac{L}{\sqrt{P_u}}, \quad y_{\text{offset}} = L \cdot \sqrt{P_l}$$
+$$
+x_{\text{offset}} = \frac{L}{\sqrt{P_u}}, \quad y_{\text{offset}} = L \cdot \sqrt{P_l}
+$$
 
 The real token balances $x_{\text{real}}$ and $y_{\text{real}}$ deposited by the LP satisfy:
 
-$$x_{\text{real}} = L \left( \frac{1}{\sqrt{P}} - \frac{1}{\sqrt{P_u}} \right)$$
-$$y_{\text{real}} = L \left( \sqrt{P} - \sqrt{P_l} \right)$$
+$$
+x_{\text{real}} = L \left( \frac{1}{\sqrt{P}} - \frac{1}{\sqrt{P_u}} \right)
+$$
+$$
+y_{\text{real}} = L \left( \sqrt{P} - \sqrt{P_l} \right)
+$$
 
 When the spot price $P$ drops to or below the lower bound $P_l$, $y_{\text{real}}$ drops to zero, and the position holds 100% asset $x$. Conversely, when the spot price rises to or exceeds $P_u$, $x_{\text{real}}$ drops to zero, and the position holds 100% asset $y$.
 
@@ -52,7 +60,9 @@ When the spot price $P$ drops to or below the lower bound $P_l$, $y_{\text{real}
 
 The capital efficiency gain of a concentrated position relative to an unconstrained constant-product position is determined by the ratio of virtual reserves to real reserves. The theoretical leverage multiplier $\mathcal{E}$ for a symmetric range around current price $P_0$ can be approximated as:
 
-$$\mathcal{E} = \frac{1}{1 - \left(\frac{P_l}{P_u}\right)^{1/4}}$$
+$$
+\mathcal{E} = \frac{1}{1 - \left(\frac{P_l}{P_u}\right)^{1/4}}
+$$
 
 For a stablecoin pair operating within an ultra-tight band of $[0.999, 1.001]$, this multiplier can exceed 2,000x to 4,000x. For volatile pairs like ETH/USDC configured across a $\pm 5\%$ band, capital efficiency frequently ranges between 20x and 50x. This amplification applies symmetrically: trading fee earnings per unit of deposited capital are amplified by $\mathcal{E}$, but exposure to adverse selection and boundary deactivation is accelerated by the exact same factor [2] [5]. To understand how this virtual reserve math underpins base AMM mechanics, explore our companion analysis on the [Constant Product Formula: Math and Mechanics](/guides/constant-product-formula/).
 
@@ -68,7 +78,9 @@ When a swap executes, it consumes liquidity along a continuous virtual curve unt
 ### 2. Discrete Bin Architecture (Trader Joe Liquidity Book)
 In contrast, discrete bin AMMs (such as Trader Joe's Liquidity Book) discard virtual curves entirely in favor of independent, constant-sum price bins [6]. Each bin represents an explicit price level $P_{\text{bin}}$. Within a single active bin, liquidity trades along a zero-slippage constant-sum invariant:
 
-$$x + P_{\text{bin}} \cdot y = L_{\text{bin}}$$
+$$
+x + P_{\text{bin}} \cdot y = L_{\text{bin}}
+$$
 
 Only one bin is active at any given moment. A swap consumes the available inventory of the active bin at exactly zero price slippage until that bin is emptied, at which point the spot price steps discretely into the adjacent bin. Liquidity Book decouples pool state from complex global tick tracking and introduces an endogenous volatility accumulator that adjusts bin fees dynamically in response to market velocity without relying on external oracle updates [6].
 
@@ -103,7 +115,9 @@ The true cost of liquidity provision against informed market participants is **L
 
 In a continuous-time model where price follows geometric Brownian motion with instantaneous volatility $\sigma$, the expected LVR rate for a pool is proportional to:
 
-$$\frac{d(\text{LVR})}{dt} = \frac{\sigma^2}{8} \cdot L \cdot \sqrt{P}$$
+$$
+\frac{d(\text{LVR})}{dt} = \frac{\sigma^2}{8} \cdot L \cdot \sqrt{P}
+$$
 
 Because concentrated liquidity amplifies virtual depth $L$ by the leverage multiplier $\mathcal{E}$, **it amplifies the absolute instantaneous rate of adverse selection by the exact same multiplier** [5] [7]. 
 

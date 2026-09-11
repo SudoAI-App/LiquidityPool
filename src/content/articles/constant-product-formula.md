@@ -39,33 +39,45 @@ This guide presents the mathematical derivation of execution prices and price im
 
 In a constant-product pool, a smart contract holds two token reserves: $x$ (representing token $X$) and $y$ (representing token $Y$). The contract enforces the invariant:
 
-$$x \cdot y = k$$
+$$
+x \cdot y = k
+$$
 
 The instantaneous exchange rate between the two assets is the marginal spot price ($P_{\text{spot}}$), defined as the infinitesimal ratio of reserves:
 
-$$P_{\text{spot}} = \frac{y}{x}$$
+$$
+P_{\text{spot}} = \frac{y}{x}
+$$
 
 When a trader swaps $\Delta x$ for token $Y$, the input amount increases reserve $x$ and decreases reserve $y$ while preserving the product $k$ before protocol fees [1] [2].
 
 ### Incorporating Swap Fees into Output Calculations
 In Uniswap v2 and equivalent constant-product architectures, a swap fee rate $f$ (e.g., 0.30% or $0.003$) is deducted from the input amount. The effective input added to the pool's reserves is:
 
-$$\Delta x_{\text{eff}} = \Delta x \cdot (1 - f)$$
+$$
+\Delta x_{\text{eff}} = \Delta x \cdot (1 - f)
+$$
 
 The conservation invariant requires that:
 
-$$(x + \Delta x_{\text{eff}}) \cdot (y - \Delta y_{\text{out}}) = k = x \cdot y$$
+$$
+(x + \Delta x_{\text{eff}}) \cdot (y - \Delta y_{\text{out}}) = k = x \cdot y
+$$
 
 Solving algebraically for the exact token output $\Delta y_{\text{out}}$ received by the trader:
 
-$$\Delta y_{\text{out}} = y - \frac{x \cdot y}{x + \Delta x_{\text{eff}}} = \frac{y \cdot \Delta x_{\text{eff}}}{x + \Delta x_{\text{eff}}}$$
+$$
+\Delta y_{\text{out}} = y - \frac{x \cdot y}{x + \Delta x_{\text{eff}}} = \frac{y \cdot \Delta x_{\text{eff}}}{x + \Delta x_{\text{eff}}}
+$$
 
 ### Marginal Spot Price vs. Average Execution Price
 Traders frequently confuse the spot price visible on dashboards with their actual execution price:
 - **Marginal Spot Price ($P_{\text{spot}}$)**: The instantaneous derivative $\frac{dy}{dx} = \frac{y}{x}$ before the swap executes.
 - **Average Execution Price ($\bar{P}$)**: The total quantity of input asset surrendered divided by the total output received:
 
-$$\bar{P} = \frac{\Delta x}{\Delta y_{\text{out}}} = \frac{x + \Delta x_{\text{eff}}}{y \cdot (1 - f)} = \frac{P_{\text{spot}}^{-1} + \frac{\Delta x_{\text{eff}}}{y}}{1 - f}$$
+$$
+\bar{P} = \frac{\Delta x}{\Delta y_{\text{out}}} = \frac{x + \Delta x_{\text{eff}}}{y \cdot (1 - f)} = \frac{P_{\text{spot}}^{-1} + \frac{\Delta x_{\text{eff}}}{y}}{1 - f}
+$$
 
 Because $\Delta x_{\text{eff}} > 0$, the average execution price is **strictly worse than the marginal spot price**. Price impact is not an exchange commission; it is the mathematical penalty imposed by traversing a convex hyperbolic curve [2] [3].
 
@@ -77,7 +89,9 @@ For an architectural breakdown of how modern singletons execute this math, see [
 
 When an order size $\Delta x$ is small relative to total reserves $x$ ($\Delta x_{\text{eff}} \ll x$), the denominator $(x + \Delta x_{\text{eff}})$ can be expanded using a first-order Taylor series [1]:
 
-$$\Delta y_{\text{out}} \approx \frac{y}{x} \cdot \Delta x_{\text{eff}} \cdot \left(1 - \frac{\Delta x_{\text{eff}}}{x}\right) \approx P_{\text{spot}} \cdot \Delta x \cdot (1 - f)$$
+$$
+\Delta y_{\text{out}} \approx \frac{y}{x} \cdot \Delta x_{\text{eff}} \cdot \left(1 - \frac{\Delta x_{\text{eff}}}{x}\right) \approx P_{\text{spot}} \cdot \Delta x \cdot (1 - f)
+$$
 
 In deep liquidity pools where trade size is negligible relative to reserves, price impact approaches zero, and the execution price converges to the marginal spot price scaled by the fee factor $(1 - f)$. In this regime, the protocol fee constitutes almost the entire difference between quote and execution [1] [3].
 
@@ -161,7 +175,7 @@ Execute this verification sequence before routing swaps through constant-product
 1. **Calculate Price Impact Independently**: Use the formula $\Delta y_{\text{out}} = \frac{y \cdot \Delta x_{\text{eff}}}{x + \Delta x_{\text{eff}}}$ to verify the interface's quoted output against raw contract reserves [1] [2].
 2. **Set a Mathematical Floor on Output**: Calculate the minimum acceptable output based on maximum allowable price impact, and pass that explicit value to `minAmountOut` [2].
 3. **Inspect Tick Density (Concentrated Pools)**: In Uniswap v3 and v4 pools, verify that the active tick and adjacent ticks hold sufficient liquidity $L$ to absorb your order without jumping across empty tick intervals [1].
-4. **Evaluate Private RPC Routing**: For trades exceeding $20,000, submit transactions through private RPC endpoints (e.g., Flashbots Protect) to prevent sandwich bots from exploiting your deterministic price impact [5].
+4. **Evaluate Private RPC Routing**: For trades exceeding \$20,000, submit transactions through private RPC endpoints (e.g., Flashbots Protect) to prevent sandwich bots from exploiting your deterministic price impact [5].
 
 For further analysis of LP rebalancing mechanics, consult our foundation guide: [Impermanent Loss Explained: Rebalancing, Relative Price, and LP Outcomes](/guides/impermanent-loss-explained/).
 

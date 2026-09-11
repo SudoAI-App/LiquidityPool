@@ -35,15 +35,21 @@ In Curve v1 (StableSwap), the invariant assumes assets trade permanently near a 
 
 The transformed reserve balances are defined in normalized space as:
 
-$$x_i' = p_i \cdot x_i$$
+$$
+x_i' = p_i \cdot x_i
+$$
 
 The Cryptoswap invariant then binds these normalized reserves through two governing parameters: the amplification coefficient $A$ and the transition parameter $\gamma$ (gamma) [3]:
 
-$$K = A \cdot K_0 \cdot \frac{\gamma^2}{(\gamma + 1 - K_0)^2}$$
+$$
+K = A \cdot K_0 \cdot \frac{\gamma^2}{(\gamma + 1 - K_0)^2}
+$$
 
 Where $K_0$ is the normalized geometric mean ratio:
 
-$$K_0 = \frac{\prod_{i=1}^n x_i' \cdot n^n}{D^n}$$
+$$
+K_0 = \frac{\prod_{i=1}^n x_i' \cdot n^n}{D^n}
+$$
 
 And $D$ is the total invariant measure, representing total pool depth when all normalized reserves are balanced [3].
 
@@ -64,7 +70,9 @@ Unlike centralized limit order book market makers who stream sub-second external
 
 Curve v2 achieves price discovery through an **internal Exponential Moving Average (EMA) price oracle** [3]:
 
-$$P_{\text{EMA}}(t) = \alpha \cdot P_{\text{last\_swap}} + (1 - \alpha) \cdot P_{\text{EMA}}(t - \Delta t)$$
+$$
+P_{\text{EMA}}(t) = \alpha \cdot P_{\text{last\_swap}} + (1 - \alpha) \cdot P_{\text{EMA}}(t - \Delta t)
+$$
 
 Where:
 - $P_{\text{last\_swap}}$ is the marginal clearing price of the most recent swap executed against the pool.
@@ -108,7 +116,9 @@ Curve v2 prevents rebalancing decay by enforcing a **strict profit amortization 
 3. When the protocol considers re-pegging the price scale $p$ toward $P_{\text{EMA}}$, it simulates the proposed price scale adjustment.
 4. **The Re-Peg Invariant Constraint**: The adjustment is executed *if and only if* the virtual price after re-pegging satisfies:
 
-$$VP_{\text{new}} \ge VP_{\text{initial}} \cdot (1 + \text{profit\_threshold})$$
+$$
+VP_{\text{new}} \ge VP_{\text{initial}} \cdot (1 + \text{profit\_threshold})
+$$
 
 If the re-pegging adjustment would decrease the virtual price of the pool token, **the protocol aborts the re-peg**. Re-pegging is delayed until additional trading volume generates sufficient fee profits to absorb the adjustment cost [3] [4].
 

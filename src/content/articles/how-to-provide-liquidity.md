@@ -27,7 +27,7 @@ In modern decentralized finance, providing liquidity involves concrete technical
 </figure>
 
 > **Desk Field Note from Siddharth Mehta:**
-> *"The moment you sign an approval and deposit liquidity into an onchain pool, you are running an active market-making business. Beginners frequently fail to account for the transaction cost friction of entering and exiting pools. On Ethereum mainnet, approving two ERC-20 tokens, minting a position NFT, and collecting fees can easily cost $80–$150 in gas. If your initial deposit is only $1,000, you are starting with an immediate 10% performance handicap."*
+> *"The moment you sign an approval and deposit liquidity into an onchain pool, you are running an active market-making business. Beginners frequently fail to account for the transaction cost friction of entering and exiting pools. On Ethereum mainnet, approving two ERC-20 tokens, minting a position NFT, and collecting fees can easily cost \$80–\$150 in gas. If your initial deposit is only \$1,000, you are starting with an immediate 10% performance handicap."*
 
 ## Start from the Pricing Rule: Invariant and Active Region
 
@@ -53,7 +53,7 @@ Every configuration decision in the deposit flow selects a specific contract exp
 
 ## Scenario 1: A Stablecoin Position Around Parity
 
-Consider supplying capital to a USDC/USDT pool, setting a narrow price band around parity (e.g., 0.9990 to 1.0010). The objective is capital efficiency: because pegged stablecoins rarely trade far from $1.00, concentrating capital into a 20-basis-point corridor delivers hundreds of times the fee density of a full-range position [1].
+Consider supplying capital to a USDC/USDT pool, setting a narrow price band around parity (e.g., 0.9990 to 1.0010). The objective is capital efficiency: because pegged stablecoins rarely trade far from \$1.00, concentrating capital into a 20-basis-point corridor delivers hundreds of times the fee density of a full-range position [1].
 
 Mechanics inside the contract:
 - While price fluctuates between 0.9990 and 1.0010, the position is active, capturing fees from swappers and aggregators [1].
@@ -102,7 +102,9 @@ Displayed APR figures on DEX interfaces are backward-looking metrics calculated 
 
 Net LP profitability is determined by:
 
-$$\text{Net Return} = \text{Fee Revenue} - \text{LVR} - \text{Gas \& Management Costs}$$
+$$
+\text{Net Return} = \text{Fee Revenue} - \text{LVR} - \text{Gas \& Management Costs}
+$$
 
 If fee revenue fails to exceed LVR, holding the underlying assets or deploying them into money market vaults yields a superior risk-adjusted return.
 

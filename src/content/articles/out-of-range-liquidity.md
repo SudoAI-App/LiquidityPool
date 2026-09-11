@@ -39,11 +39,15 @@ The trade-off is explicit at deposit time: narrowing a range multiplies fee capt
 
 In a tick-based automated market maker, a position is defined by a liquidity amount $L$ and two boundary prices $[p_a, p_b]$. Inside the interval the position holds both assets and the reserves satisfy the translated constant-product invariant introduced in Uniswap v3 [1]:
 
-$$\left(x + \frac{L}{\sqrt{p_b}}\right)\left(y + L\sqrt{p_a}\right) = L^2$$
+$$
+\left(x + \frac{L}{\sqrt{p_b}}\right)\left(y + L\sqrt{p_a}\right) = L^2
+$$
 
 Real reserves are derived from the current price $P$:
 
-$$x = L\left(\frac{1}{\sqrt{P}} - \frac{1}{\sqrt{p_b}}\right), \qquad y = L\left(\sqrt{P} - \sqrt{p_a}\right)$$
+$$
+x = L\left(\frac{1}{\sqrt{P}} - \frac{1}{\sqrt{p_b}}\right), \qquad y = L\left(\sqrt{P} - \sqrt{p_a}\right)
+$$
 
 Read those two expressions at the boundaries. When $P \to p_b$, the $x$ term collapses to zero and the position is entirely $y$, the quote asset. When $P \to p_a$, the $y$ term collapses and the position is entirely $x$, the base asset. Crossing the boundary is therefore not a discrete event that the LP must respond to; it is the endpoint of a continuous inventory rotation the invariant has been performing the whole time.
 

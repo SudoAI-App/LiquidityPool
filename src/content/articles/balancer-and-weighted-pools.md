@@ -33,14 +33,18 @@ Balancer generalizes automated market making by introducing the **constant-mean 
 
 The foundational mathematical primitive of Balancer is the constant-mean formula, first conceptualized in CFMM academic literature and implemented by Fernando Martinelli and Nikolai Mushegian [1] [4]:
 
-$$V = \prod_{i=1}^n B_i^{w_i}$$
+$$
+V = \prod_{i=1}^n B_i^{w_i}
+$$
 
 Where:
 - $n$ is the number of constituent tokens in the pool ($2 \le n \le 8$).
 - $B_i$ is the reserve balance of token $i$ held in the pool vault.
 - $w_i$ is the normalized weight of token $i$, strictly satisfying:
 
-$$\sum_{i=1}^n w_i = 1 \quad \text{where } w_i > 0$$
+$$
+\sum_{i=1}^n w_i = 1 \quad \text{where } w_i > 0
+$$
 
 - $V$ is the invariant value function, which remains constant during swaps (absent trading fees) [1].
 
@@ -48,11 +52,15 @@ $$\sum_{i=1}^n w_i = 1 \quad \text{where } w_i > 0$$
 
 The instantaneous marginal spot price $P_{i/j}$ of token $i$ denominated in token $j$ is derived analytically from the ratio of token balances normalized by their respective weights:
 
-$$P_{i/j} = \frac{B_j / w_j}{B_i / w_i} = \frac{B_j \cdot w_i}{B_i \cdot w_j}$$
+$$
+P_{i/j} = \frac{B_j / w_j}{B_i / w_i} = \frac{B_j \cdot w_i}{B_i \cdot w_j}
+$$
 
 Notice that if $w_i = w_j = 0.5$ (a standard 50/50 pool), the weights cancel out, reducing to the classical Uniswap spot price formula $P = B_j / B_i$. If a pool is configured as 80% Token A ($w_A = 0.80$) and 20% Token B ($w_B = 0.20$), the price equation becomes:
 
-$$P_{A/B} = \frac{B_B \cdot 0.80}{B_A \cdot 0.20} = 4 \cdot \frac{B_B}{B_A}$$
+$$
+P_{A/B} = \frac{B_B \cdot 0.80}{B_A \cdot 0.20} = 4 \cdot \frac{B_B}{B_A}
+$$
 
 The pool requires four times more balance of Token B per unit of Token A to maintain price parity, fundamentally altering inventory dynamics [1] [3]. To compare this with two-token virtual curves, review our technical guide on the [Constant Product Formula: Math and Mechanics](/guides/constant-product-formula/).
 
@@ -62,11 +70,15 @@ The pool requires four times more balance of Token B per unit of Token A to main
 
 When a trader swaps an amount $A_{\text{in}}$ of token $i$ into the pool, the pool must calculate the exact amount $A_{\text{out}}$ of token $j$ to return while preserving invariant $V$ [1]:
 
-$$(B_i + A_{\text{in}})^{w_i} \cdot (B_j - A_{\text{out}})^{w_j} \cdot \prod_{k \ne i, j} B_k^{w_k} = B_i^{w_i} \cdot B_j^{w_j} \cdot \prod_{k \ne i, j} B_k^{w_k}$$
+$$
+(B_i + A_{\text{in}})^{w_i} \cdot (B_j - A_{\text{out}})^{w_j} \cdot \prod_{k \ne i, j} B_k^{w_k} = B_i^{w_i} \cdot B_j^{w_j} \cdot \prod_{k \ne i, j} B_k^{w_k}
+$$
 
 Canceling invariant terms and isolating $A_{\text{out}}$ yields the closed-form trade execution formula:
 
-$$A_{\text{out}} = B_j \left( 1 - \left( \frac{B_i}{B_i + A_{\text{in}} \cdot (1 - f)} \right)^{\frac{w_i}{w_j}} \right)$$
+$$
+A_{\text{out}} = B_j \left( 1 - \left( \frac{B_i}{B_i + A_{\text{in}} \cdot (1 - f)} \right)^{\frac{w_i}{w_j}} \right)
+$$
 
 Where $f$ represents the pool swap fee percentage [1].
 
@@ -86,7 +98,9 @@ In a standard 50/50 pool, impermanent loss scales symmetrically. If an asset ral
 
 For an asymmetric pool with weight vector $(w_1, w_2)$ where $w_1 + w_2 = 1$, the portfolio value of the LP position at relative price change $k = P_1 / P_0$ compared to a hold-only baseline is given by [1] [3]:
 
-$$\text{IL}(k; w_1, w_2) = \frac{k^{w_1}}{w_1 \cdot k + w_2} - 1$$
+$$
+\text{IL}(k; w_1, w_2) = \frac{k^{w_1}}{w_1 \cdot k + w_2} - 1
+$$
 
 Let us compare the realized impermanent loss across different pool weight allocations:
 

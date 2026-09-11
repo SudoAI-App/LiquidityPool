@@ -35,7 +35,9 @@ Standard constant-product automated market makers ($x \cdot y = k$) produce exce
 
 To balance these extremes, Michael Egorov formulated the **Curve StableSwap invariant**, which combines constant-sum mechanics near balance with constant-product mechanics under extreme skew [2]:
 
-$$A \cdot n^n \sum_{i=1}^n x_i + D = A \cdot D \cdot n^n + \frac{D^{n+1}}{n^n \prod_{i=1}^n x_i}$$
+$$
+A \cdot n^n \sum_{i=1}^n x_i + D = A \cdot D \cdot n^n + \frac{D^{n+1}}{n^n \prod_{i=1}^n x_i}
+$$
 
 Where:
 - $n$ is the number of tokens in the pool (e.g., $n = 2$ for a USDC/USDT pair).
@@ -80,7 +82,7 @@ Maintained by pairing spot cryptocurrency collateral (e.g., stETH, BTC) with an 
 Institutional treasury funds (e.g., BlackRock's BUIDL, Ondo USDY) tokenized directly on public blockchains. These tokens accrue risk-free yield from underlying US sovereign debt. Because these assets require whitelist verification for peer-to-peer transfers, their AMM pools often rely on permissioned wrappers or specialized v4 hooks that enforce compliance checks at the `beforeSwap` lifecycle point [7].
 
 ### 4. Yield-Bearing LST and LRT Correlated Pools (wstETH/ETH, eETH/ETH)
-Liquid Staking Tokens (LSTs) and Liquid Restaking Tokens (LRTs) trade on modified StableSwap curves with dynamic exchange-rate multipliers that grow monotonically with staking rewards [2]. While these assets do not target a $1.00 peg, they exhibit correlated pricing. Their primary vulnerability stems from unstaking queue delays: when market turbulence triggers massive liquidations, users sell LSTs/LRTs on secondary AMMs rather than waiting in week-long redemption queues, driving pool reserves into severe imbalance.
+Liquid Staking Tokens (LSTs) and Liquid Restaking Tokens (LRTs) trade on modified StableSwap curves with dynamic exchange-rate multipliers that grow monotonically with staking rewards [2]. While these assets do not target a \$1.00 peg, they exhibit correlated pricing. Their primary vulnerability stems from unstaking queue delays: when market turbulence triggers massive liquidations, users sell LSTs/LRTs on secondary AMMs rather than waiting in week-long redemption queues, driving pool reserves into severe imbalance.
 
 | Stablecoin Category | Example Assets | Yield Source | Primary Depeg Vector | AMM Invariant Recommendation |
 |---|---|---|---|---|

@@ -41,7 +41,9 @@ In a standard automated market maker, the marginal price changes continuously wi
 
 Each bin $i$ is assigned an explicit, fixed exchange rate $P_i$. Within that bin, token reserves $x$ and $y$ satisfy a constant-sum invariant:
 
-$$P_i \cdot x + y = L_i$$
+$$
+P_i \cdot x + y = L_i
+$$
 
 Where:
 - $P_i$ is the price of token $X$ denominated in token $Y$ for bin $i$.
@@ -72,7 +74,9 @@ Spot Price                               Spot Price
 
 The price of bin $i$ is determined geometrically by a protocol parameter known as the **bin step** ($s$), expressed in basis points:
 
-$$P_i = (1 + s)^i = \left(1 + \frac{\text{binStep}}{10,000}\right)^i$$
+$$
+P_i = (1 + s)^i = \left(1 + \frac{\text{binStep}}{10,000}\right)^i
+$$
 
 For example, with a bin step of 10 basis points ($s = 0.0010$):
 - If bin $i$ corresponds to $P = 1,000.00$,
@@ -93,7 +97,9 @@ DLMM solves this adverse selection vulnerability through an **endogenous volatil
 
 The total swap fee $f_{\text{total}}$ charged by the active bin consists of a fixed base fee plus a dynamic variable fee:
 
-$$f_{\text{total}} = f_{\text{base}} + f_{\text{variable}}$$
+$$
+f_{\text{total}} = f_{\text{base}} + f_{\text{variable}}
+$$
 
 Where:
 - $f_{\text{base}} = \text{binStep} \times \text{baseFactor}$
@@ -105,7 +111,9 @@ Here, $A$ is a governance-configured scaling parameter, $s$ is the bin step, and
 
 The volatility accumulator measures how many bins the market traverses per unit of time:
 
-$$V_a(t) = \alpha \cdot V_a(t - \Delta t) + |i_t - i_{t - \Delta t}|$$
+$$
+V_a(t) = \alpha \cdot V_a(t - \Delta t) + |i_t - i_{t - \Delta t}|
+$$
 
 Where:
 - $|i_t - i_{t - \Delta t}|$ is the number of bins crossed by recent transactions.

@@ -19,7 +19,7 @@ faq:
 
 Cross-chain liquidity is not an undifferentiated global reserve pool; it is an asynchronous mesh of cryptographic messaging layers, intent-based solver balance sheets, and sovereign consensus environments. When assets transition between Layer 1 blockchains and Layer 2 rollups, capital does not physically travel between chains. Instead, protocols orchestrate custodial lock-and-mint wrapping, native issuer burn-and-mint attestations, or off-chain solver advances backed by optimistic dispute windows.
 
-Historically, cross-chain messaging has represented the single largest vulnerability vector in decentralized finance, responsible for over $2.8 billion in lost capital across high-profile bridge compromises [1] [2]. Evaluating cross-chain liquidity requires analyzing the demise of legacy lock-and-mint honeypots, the emergence of standardized intent frameworks (ERC-7683), canonical burn-and-mint primitives like Circle CCTP, and the persistent structural friction of liquidity fragmentation across the rollup ecosystem [1] [3] [4] [6].
+Historically, cross-chain messaging has represented the single largest vulnerability vector in decentralized finance, responsible for over \$2.8 billion in lost capital across high-profile bridge compromises [1] [2]. Evaluating cross-chain liquidity requires analyzing the demise of legacy lock-and-mint honeypots, the emergence of standardized intent frameworks (ERC-7683), canonical burn-and-mint primitives like Circle CCTP, and the persistent structural friction of liquidity fragmentation across the rollup ecosystem [1] [3] [4] [6].
 
 <figure class="article-figure">
   <img src="/images/guides/cross-chain-liquidity-explained.webp" alt="Separate reserve pools on islands connect through a central token bridge mechanism." width="1600" height="1067" loading="lazy" decoding="async" />
@@ -92,7 +92,7 @@ The rapid expansion of Ethereum Layer 2 rollups (Arbitrum, Optimism, Base, Blast
 
 In a single-chain environment, an AMM pool benefits from unified network effects: all traders interact with the same reserves, minimizing price impact and maximizing fee revenue. In a multi-chain environment:
 - Capital is divided across multiple disjointed pools.
-- A $10,000,000 liquidity deployment is split into ten $1,000,000 pools across ten rollups.
+- A \$10,000,000 liquidity deployment is split into ten \$1,000,000 pools across ten rollups.
 - Large swaps experience severe price impact on any individual rollup, driving trades away from AMMs [4].
 
 ```

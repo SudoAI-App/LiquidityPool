@@ -29,7 +29,7 @@ Evaluating capital across decentralized protocols requires deconstructing how TV
 </figure>
 
 > **Desk Field Note from Aria Chen:**
-> *"Total Value Locked (TVL) is the most easily manipulated vanity metric in DeFi. Through recursive borrowing in money markets and double-counting across wrapper tokens (e.g., ETH $\to$ stETH $\to$ eETH $\to$ pool), a single dollar of real capital can easily be reported as $4 to $6 of TVL. When evaluating protocol solvency and liquidity depth, always look at non-borrowed native liquidity and measure 24-hour fee generation relative to real TVL."*
+> *"Total Value Locked (TVL) is the most easily manipulated vanity metric in DeFi. Through recursive borrowing in money markets and double-counting across wrapper tokens (e.g., ETH $\to$ stETH $\to$ eETH $\to$ pool), a single dollar of real capital can easily be reported as \$4 to \$6 of TVL. When evaluating protocol solvency and liquidity depth, always look at non-borrowed native liquidity and measure 24-hour fee generation relative to real TVL."*
 
 ## TVL Is a Valuation Snapshot, Not a Score
 
@@ -44,7 +44,9 @@ Consequently, TVL should never be treated as a proxy for protocol safety, financ
 
 Mechanically, TVL aggregates contract balances, applies price feeds, and sums the result across pools:
 
-$$\text{TVL} = \sum_{i=1}^{n} B_i \times P_i$$
+$$
+\text{TVL} = \sum_{i=1}^{n} B_i \times P_i
+$$
 
 Where $B_i$ represents the balance of token $i$ locked in the protocol's contracts, and $P_i$ is its price. Three structural assumptions dictate the calculated output:
 
@@ -69,15 +71,15 @@ Where $B_i$ represents the balance of token $i$ locked in the protocol's contrac
 └────────────────────────────────────────────────────────────────────────┘
 ```
 
-This multi-counting cascade explains how ecosystem TVL can explode while net capital inflows remain modest. If a depeg or smart-contract exploit occurs at the foundation of the stack, the entire $245,000 TVL unwinds from a single $35,000 collateral base [1] [3].
+This multi-counting cascade explains how ecosystem TVL can explode while net capital inflows remain modest. If a depeg or smart-contract exploit occurs at the foundation of the stack, the entire \$245,000 TVL unwinds from a single \$35,000 collateral base [1] [3].
 
 For an analysis of how LP claims are accounted for across these layers, explore [Liquidity Pool Tokens Explained: What an LP Position Represents](/guides/liquidity-pool-tokens/).
 
 ## Scenario 1: Two Uniswap Pools, Identical TVL—Where Do You Route?
 
-Suppose you need to swap 100 ETH into USDC and compare two pools, each displaying $25,000,000 in headline TVL. Relying on TVL alone is a costly error. Instead, interrogate the tick distribution:
+Suppose you need to swap 100 ETH into USDC and compare two pools, each displaying \$25,000,000 in headline TVL. Relying on TVL alone is a costly error. Instead, interrogate the tick distribution:
 
-- **Active Tick Depth within ±1%**: In Uniswap v3 and v4, liquidity is allocated across discrete tick intervals $[P_{\text{lower}}, P_{\text{upper}}]$. In Pool 1, 80% of the TVL consists of wide-range passive capital or historical positions left out-of-range above current prices. Only $500,000 of executable depth sits near the spot price. In Pool 2, professional market makers have concentrated $12,000,000 within a tight ±1.5% band [2].
+- **Active Tick Depth within ±1%**: In Uniswap v3 and v4, liquidity is allocated across discrete tick intervals $[P_{\text{lower}}, P_{\text{upper}}]$. In Pool 1, 80% of the TVL consists of wide-range passive capital or historical positions left out-of-range above current prices. Only \$500,000 of executable depth sits near the spot price. In Pool 2, professional market makers have concentrated \$12,000,000 within a tight ±1.5% band [2].
 - **Realized Price Impact**: The 100 ETH swap through Pool 1 consumes all active depth within the tick, cascading into thin outer ticks and inflicting 2.5% price impact. The identical swap through Pool 2 experiences less than 0.05% price impact because depth is concentrated where the trade clears [2].
 - **Fee Tier Optimization**: A 0.05% fee pool with high concentration can deliver significantly superior net execution compared to a 0.30% fee pool with dispersed liquidity, even if the latter reports larger total TVL [2].
 
@@ -87,7 +89,7 @@ Headline TVL measures total balance; executable depth measures the capital that 
 
 Curve separates plain pools (which hold base assets directly) from lending pools and metapools (where pooled reserves are lent to external money markets like Aave or Compound to earn collateral interest) [3].
 
-Consider a lending pool showing $50,000,000 in TVL:
+Consider a lending pool showing \$50,000,000 in TVL:
 - **Custody and Re-hypothecation**: The pool contract does not hold physical USDC or DAI; it holds interest-bearing receipt tokens (aTokens or cTokens). The physical collateral has been borrowed by third parties on an external lending market [3].
 - **Liquidity Lockup & Bank Run Risk**: If the external lending protocol experiences high utilization or bad debt, withdrawals from the lending market freeze. Consequently, LPs cannot burn their Curve LP tokens to retrieve base assets, even though the Curve pool dashboard displays millions in TVL [3].
 - **Smart-Contract Attack Surface**: The pool's security is now conjoined to both the AMM contract and the external lending market's contract suite.
@@ -145,7 +147,7 @@ When reviewing a liquidity pool or protocol dashboard, execute this verification
 2. **Inspect Collateral Layering**: Is the TVL built from base assets (ETH, USDC) or multi-wrapped restaking claims (stETH, eETH, LRTs) [1] [3]?
 3. **Measure Active Depth at Spot**: On concentrated AMMs, measure liquidity within ±1% and ±2% ticks rather than accepting aggregate pool reserves [2].
 4. **Audit Oracle Pricing Sources**: Ensure asset prices are derived from robust, manipulation-resistant oracles rather than internal low-liquidity pools [1].
-5. **Evaluate Capital Velocity**: Divide 24-hour volume by TVL. A $5M pool processing $15M daily volume is far more economically vital than a $50M pool processing $100k [2].
+5. **Evaluate Capital Velocity**: Divide 24-hour volume by TVL. A \$5M pool processing \$15M daily volume is far more economically vital than a \$50M pool processing \$100k [2].
 
 ## What to Check Before You Act
 

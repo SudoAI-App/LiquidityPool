@@ -60,7 +60,9 @@ The adverse selection side of that trade is quantified in [Loss-Versus-Rebalanci
 
 Expected daily revenue for a position is:
 
-$$R = f \times V_f \times s_f$$
+$$
+R = f \times V_f \times s_f
+$$
 
 where $f$ is the tier, $V_f$ is the daily volume routed to that specific tier, and $s_f$ is your share of active liquidity in it. The tier choice moves all three terms, and they do not move together.
 

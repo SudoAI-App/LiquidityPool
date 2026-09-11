@@ -37,15 +37,21 @@ Start with a constant-product pool holding reserves $x$ and $y$ with invariant $
 
 Let the price move to $P_1$ and define the price ratio:
 
-$$k = \frac{P_1}{P_0}$$
+$$
+k = \frac{P_1}{P_0}
+$$
 
 Arbitrage keeps the pool's marginal price aligned with the market, which fixes the new reserves. Because the invariant holds and $P = y/x$, the reserves after the move are:
 
-$$x_1 = \frac{x_0}{\sqrt{k}}, \qquad y_1 = y_0 \sqrt{k}$$
+$$
+x_1 = \frac{x_0}{\sqrt{k}}, \qquad y_1 = y_0 \sqrt{k}
+$$
 
 The pool position is therefore worth $V_{\text{pool}} = x_1 P_1 + y_1$, while holding the original basket is worth $V_{\text{hold}} = x_0 P_1 + y_0$. Taking the ratio for a balanced 50/50 deposit gives the standard closed form:
 
-$$\text{IL}(k) = \frac{V_{\text{pool}}}{V_{\text{hold}}} - 1 = \frac{2\sqrt{k}}{1 + k} - 1$$
+$$
+\text{IL}(k) = \frac{V_{\text{pool}}}{V_{\text{hold}}} - 1 = \frac{2\sqrt{k}}{1 + k} - 1
+$$
 
 Three properties fall out immediately. The function is always less than or equal to zero, with equality only at $k = 1$. It is symmetric in log price, so a halving and a doubling produce the identical shortfall. And it depends only on the *relative* price of the two assets, not on whether the market went up or down in dollar terms.
 
@@ -78,13 +84,13 @@ Deposit into an ETH/USDC pool at 2,000 USDC per ETH:
 - **Deposit**: 1 ETH and 2,000 USDC, total \$4,000 at entry, a balanced 50/50 basket.
 - **Exit price**: 4,000 USDC per ETH, so $k = 2$.
 
-Step one, the hold benchmark. The unpooled basket is worth $1 \times 4{,}000 + 2{,}000 = \$6{,}000$.
+Step one, the hold benchmark. The unpooled basket is worth $1 \times 4{,}000 + 2{,}000 = 6{,}000$ dollars.
 
-Step two, the pool position. Reserves rotate to $1/\sqrt{2} = 0.7071$ ETH and $2{,}000 \times \sqrt{2} = 2{,}828$ USDC. Valued at the new price: $0.7071 \times 4{,}000 + 2{,}828 = \$5{,}657$.
+Step two, the pool position. Reserves rotate to $1/\sqrt{2} = 0.7071$ ETH and $2{,}000 \times \sqrt{2} = 2{,}828$ USDC. Valued at the new price: $0.7071 \times 4{,}000 + 2{,}828 = 5{,}657$ dollars.
 
 Step three, the divergence. $5{,}657 / 6{,}000 - 1 = -5.72\%$, or −\$343 in dollar terms, matching the formula exactly.
 
-Step four, the net result. Suppose the position collected \$420 in trading fees over the holding period. The net outcome against holding is $+\$77$, roughly +1.3%. The position was profitable in absolute terms and beat the hold benchmark, but only because fee income cleared the divergence with room to spare.
+Step four, the net result. Suppose the position collected \$420 in trading fees over the holding period. The net outcome against holding is +\$77, roughly +1.3%. The position was profitable in absolute terms and beat the hold benchmark, but only because fee income cleared the divergence with room to spare.
 
 That fourth step is the one that decides whether supplying liquidity was the right decision, and it is developed in [LP Fees vs Impermanent Loss: Finding the Break-Even](/guides/lp-fees-vs-impermanent-loss/).
 
@@ -96,7 +102,9 @@ A range position does not follow the unbounded curve. Inside its interval it exp
 
 For a position with bounds $[p_a, p_b]$ and entry price $P_0$, the value of the position at price $P$ inside the range can be computed from the reserve expressions:
 
-$$x(P) = L\left(\frac{1}{\sqrt{P}} - \frac{1}{\sqrt{p_b}}\right), \qquad y(P) = L\left(\sqrt{P} - \sqrt{p_a}\right)$$
+$$
+x(P) = L\left(\frac{1}{\sqrt{P}} - \frac{1}{\sqrt{p_b}}\right), \qquad y(P) = L\left(\sqrt{P} - \sqrt{p_a}\right)
+$$
 
 Two consequences follow. First, the divergence for a narrow band at a given price ratio is materially larger than the unbounded formula predicts, scaling roughly with the capital-efficiency multiplier of the range. Second, the loss is bounded: once price passes $p_b$, the position is entirely quote asset and its value is fixed in those units regardless of how much further the market runs.
 

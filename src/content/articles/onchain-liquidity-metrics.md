@@ -34,7 +34,7 @@ Liquidity is not an aggregate dollar balance. It is the **instantaneous, mechani
 Gross Total Value Locked measures the nominal dollar value of all ERC-20 tokens held within a pool's contract address. However, empirical academic research highlights severe structural distortions:
 
 1. **The Verifiability Gap**: A comprehensive 2025 Bank for International Settlements (BIS) study of 939 Ethereum decentralized finance protocols found that over 10.5% of protocols rely on opaque, off-chain data sources to calculate reported TVL [2]. Tokenized assets with thin or non-existent secondary markets are routinely marked at arbitrary oracle valuations.
-2. **The Idle Capital Illusion in Concentrated AMMs**: In Uniswap v3 and v4, capital is allocated across discrete price intervals $[P_l, P_u]$ [1]. If a provider deposits $10 million across a range of $[$4,000, 5,000$]$ while ETH trades at $3,000$, that entire $10 million is **completely inactive**. It provides zero execution depth to incoming swaps and earns zero trading fees [1]. A pool advertising $100M in TVL may possess less than $5M of active in-range depth.
+2. **The Idle Capital Illusion in Concentrated AMMs**: In Uniswap v3 and v4, capital is allocated across discrete price intervals $[P_l, P_u]$ [1]. If a provider deposits \$10 million across a range of \$4,000 to \$5,000 while ETH trades at \$3,000, that entire \$10 million is **completely inactive**. It provides zero execution depth to incoming swaps and earns zero trading fees [1]. A pool advertising \$100M in TVL may possess less than \$5M of active in-range depth.
 3. **Restaking Multi-Counting**: Liquid Restaking Tokens (LRTs) like eETH and ezETH recursively package underlying staked ETH, which is then deposited into AMMs and lending markets, artificially multiplying apparent DeFi TVL by 2x to 3x without introducing new external capital. To examine how multi-counting inflates protocol aggregates, read our foundation explainer on [TVL Explained: Capital Efficiency and Valuation](/guides/tvl-explained/).
 
 ## The Quantitative On-Chain Measurement Stack
@@ -54,14 +54,18 @@ Executable depth measures the precise capital required to push the marginal exec
 
 In a continuous concentrated pool with active liquidity $L$, the amount of quote asset $\Delta y$ required to move spot price upwards to $P_1 = 1.02 \cdot P_0$ is calculated analytically by integrating across active initialized ticks:
 
-$$\Delta y = L \cdot \left( \sqrt{1.02 \cdot P_0} - \sqrt{P_0} \right) = L \cdot \sqrt{P_0} \cdot (\sqrt{1.02} - 1) \approx 0.00995 \cdot L \cdot \sqrt{P_0}$$
+$$
+\Delta y = L \cdot \left( \sqrt{1.02 \cdot P_0} - \sqrt{P_0} \right) = L \cdot \sqrt{P_0} \cdot (\sqrt{1.02} - 1) \approx 0.00995 \cdot L \cdot \sqrt{P_0}
+$$
 
-Evaluating pools by executable depth reveals whether depth is durable or hollow. A pool with $20M in gross TVL but only $150,000 of depth within $\pm 2\%$ is structurally fragile, exposing large swaps to severe price impact.
+Evaluating pools by executable depth reveals whether depth is durable or hollow. A pool with \$20M in gross TVL but only \$150,000 of depth within $\pm 2\%$ is structurally fragile, exposing large swaps to severe price impact.
 
 ### 2. Capital Turnover Velocity ($\mathcal{V}$)
 Turnover velocity measures how intensively active capital is utilized:
 
-$$\mathcal{V} = \frac{\text{24h Trading Volume}}{\text{Active In-Range TVL}}$$
+$$
+\mathcal{V} = \frac{\text{24h Trading Volume}}{\text{Active In-Range TVL}}
+$$
 
 - **Low Velocity ($\mathcal{V} < 0.2$)**: Indicates stagnant, underutilized capital. Fee yields will be meager relative to inventory exposure.
 - **Moderate Velocity ($0.5 \le \mathcal{V} \le 2.0$)**: Optimal operational regime for major asset pairs, indicating consistent retail flow and tight spreads.
@@ -70,18 +74,24 @@ $$\mathcal{V} = \frac{\text{24h Trading Volume}}{\text{Active In-Range TVL}}$$
 ### 3. Loss-Versus-Rebalancing (LVR) Rate
 As established by Milionis, Moallemi, Roughgarden, and Timmer (2022), LVR represents the theoretical lower bound on the cost imposed on passive liquidity providers by latency arbitrageurs [4]:
 
-$$\frac{d(\text{LVR})}{dt} = \frac{\sigma^2}{8} \cdot L \cdot \sqrt{P}$$
+$$
+\frac{d(\text{LVR})}{dt} = \frac{\sigma^2}{8} \cdot L \cdot \sqrt{P}
+$$
 
 Where $\sigma$ is the instantaneous volatility of the pair. Dividing both sides by the total capital $V_{\text{LP}} = 2 L \sqrt{P}$ yields the annualized percentage hurdle rate:
 
-$$\text{Annual LVR Rate} \approx \frac{\sigma^2}{8}$$
+$$
+\text{Annual LVR Rate} \approx \frac{\sigma^2}{8}
+$$
 
 If an LP evaluates a volatile pair with annualized volatility $\sigma = 100\%$ ($\sigma = 1.0$), the LVR hurdle rate is $1.0^2 / 8 = 12.5\%$ annually. Any fee APR below 12.5% guarantees negative net expected return for the provider [4]. To master the economic derivation of this benchmark, explore our deep dive on [Impermanent Loss Explained: Rebalancing, Relative Price, and LP Outcomes](/guides/impermanent-loss-explained/).
 
 ### 4. Order Flow Toxicity Index (OFTI)
 Order flow toxicity measures the proportion of trading volume that originates from informed arbitrageurs versus uninformed retail traders [3]:
 
-$$\text{OFTI} = \frac{\text{Volume}_{\text{toxic}}}{\text{Volume}_{\text{total}}} = \frac{\text{Volume}_{\text{arbitrage}} + \text{Volume}_{\text{MEV}}}{\text{Volume}_{\text{total}}}$$
+$$
+\text{OFTI} = \frac{\text{Volume}_{\text{toxic}}}{\text{Volume}_{\text{total}}} = \frac{\text{Volume}_{\text{arbitrage}} + \text{Volume}_{\text{MEV}}}{\text{Volume}_{\text{total}}}
+$$
 
 Using on-chain transaction labeling:
 - Swaps originating from private solver contracts, DEX aggregators, or retail wallets are marked **Uninformed**.
@@ -92,7 +102,9 @@ If a pool exhibits an $\text{OFTI} > 0.70$, 70%+ of its volume is extracting val
 ### 5. Just-In-Time (JIT) Dilution Factor ($\mathcal{J}$)
 In concentrated liquidity AMMs, quantitative searchers deploy JIT liquidity to sandwich large trades [5]. The JIT Dilution Factor measures the percentage of total protocol trading fees captured by temporary, intra-block liquidity additions:
 
-$$\mathcal{J} = \frac{\sum \text{Fees}_{\text{JIT}}}{\sum \text{Fees}_{\text{total}}}$$
+$$
+\mathcal{J} = \frac{\sum \text{Fees}_{\text{JIT}}}{\sum \text{Fees}_{\text{total}}}
+$$
 
 A high dilution factor ($\mathcal{J} > 0.40$) indicates that passive liquidity providers are systematically stripped of high-value swap revenue while bearing 100% of underlying price risk between blocks [5]. Review our complete guide to [MEV and Liquidity Providers: Sandwich Attacks, JIT Liquidity, and Toxic Flow](/guides/mev-and-liquidity-providers/).
 
@@ -158,7 +170,7 @@ Before deploying capital or routing institutional swap volume, verify these five
 - [ ] **Active In-Range Capital**: What percentage of the pool's reported TVL resides within $\pm 2\%$ of the instantaneous spot tick?
 - [ ] **Annualized Volatility vs. Fee Yield**: Does the pool's organic retail fee APR exceed the asset pair's LVR hurdle ($\frac{\sigma^2}{8}$) [4]?
 - [ ] **Toxic Flow Proportion**: Does organic uninformed volume constitute at least 50% of total 24-hour volume?
-- [ ] **JIT Historical Incidence**: Over the past 1,000 blocks, what percentage of swaps over $50,000 were sandwiched by single-block JIT liquidity mints [5]?
+- [ ] **JIT Historical Incidence**: Over the past 1,000 blocks, what percentage of swaps over \$50,000 were sandwiched by single-block JIT liquidity mints [5]?
 - [ ] **Verifiable On-Chain Data**: Are reserve balances queried directly from immutable smart contract getters rather than unverified third-party indexer APIs [2]?
 
 Liquidity analysis is not an exercise in reading marketing scoreboards. Rigorous quantitative market making demands measuring executable depth, accounting for adverse selection, and demanding positive economic yield net of LVR.
