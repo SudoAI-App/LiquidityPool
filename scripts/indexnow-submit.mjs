@@ -28,6 +28,7 @@ const URLS = [
   `https://${HOST}/tools/impermanent-loss-calculator/`,
   `https://${HOST}/tools/liquidity-pool-calculator/`,
   `https://${HOST}/tools/lp-profit-calculator/`,
+  `https://${HOST}/tools/uniswap-v3-liquidity-calculator/`,
   ...articleSlugs.map((slug) => `https://${HOST}/guides/${slug}/`)
 ];
 
