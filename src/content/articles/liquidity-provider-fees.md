@@ -160,7 +160,7 @@ Use this operational troubleshooting flow when evaluating fee profitability:
 
 ## Where to Go Next
 
-Tier selection is the decision that moves this number most, and it is treated in [Uniswap Fee Tiers Explained](/guides/uniswap-fee-tiers-explained/). To model expected income from volume and liquidity share, use the [liquidity pool fee and APR calculator](/tools/liquidity-pool-calculator/). To read a quoted rate correctly, see [APR vs APY in DeFi](/guides/apr-vs-apy-in-defi/). For the net result once divergence and gas are included, use the [LP profit and return calculator](/tools/lp-profit-calculator/).
+Tier selection is the decision that moves this number most, and it is treated in [Uniswap Fee Tiers Explained](/guides/uniswap-fee-tiers-explained/). To model expected income from volume and liquidity share, use the [liquidity pool fee and APR calculator](/tools/liquidity-pool-calculator/). To read a quoted rate correctly, see [APR vs APY in DeFi](/guides/apr-vs-apy-in-defi/). For the net result once divergence and gas are included, use the [LP profit and return calculator](/tools/lp-profit-calculator/). For the decision that sits on top of all of it, see [Is Providing Liquidity Profitable?](/guides/is-providing-liquidity-profitable/).
 
 ## References
 

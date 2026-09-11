@@ -1,0 +1,418 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const title = 'Uniswap v3 Liquidity Calculator';
+const description = 'Model a concentrated liquidity range: token composition, capital efficiency, in-range state, estimated fees, impermanent loss and the comparison against holding.';
+
+const faq = [
+  {
+    q: 'What does this Uniswap v3 liquidity calculator do?',
+    a: 'It implements the tick mathematics of a bounded concentrated position. Given a price range, a deposit value and a current price, it derives the position liquidity L, the token amounts the position holds now and at any future price, the capital efficiency against a full-range position, estimated fee income, and the result against simply holding the deposited assets.'
+  },
+  {
+    q: 'How is capital efficiency calculated?',
+    a: 'As the ratio of liquidity achieved per unit of deposited value against a full-range position of the same value. For a range from Pa to Pb around a current price P, that is 2·√P divided by (2·√P − P/√Pb − √Pa). A ±10% band around spot gives roughly 20×, and a ±2% band roughly 100×.'
+  },
+  {
+    q: 'What happens when the price leaves my range?',
+    a: 'Below the lower bound the position is entirely the base asset, because the curve bought all the way down. Above the upper bound it is entirely the quote asset, because it sold all the way up. In both states fee accrual stops until price returns inside the bounds.'
+  },
+  {
+    q: 'Does this work for Raydium CLMM and PancakeSwap v3?',
+    a: 'Yes for the position mathematics. Raydium CLMM, PancakeSwap v3 and most concentrated designs use the same tick and liquidity accounting as Uniswap v3, so token composition, capital efficiency and range behaviour carry over. Fee tiers and incentive programmes differ by venue, so enter those from the pool you are modelling.'
+  },
+  {
+    q: 'Why does the fee estimate need active liquidity rather than TVL?',
+    a: 'Fees are split among liquidity active at the traded price, not among all deposits. On a concentrated pool much of the total value locked sits in ranges the market never visits and earns nothing, so it should not appear in the denominator of your share.'
+  },
+  {
+    q: 'Is the fee estimate a forecast?',
+    a: 'No. It is an arithmetic consequence of the volume, fee tier, liquidity share and time-in-range you enter. Change any input and it changes. It says what the position would have earned under those conditions, not what any pool will pay.'
+  }
+];
+
+const canonical = 'https://liquiditypools.app/tools/uniswap-v3-liquidity-calculator/';
+const appSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'WebApplication',
+  name: 'Uniswap v3 Liquidity Calculator',
+  url: canonical,
+  applicationCategory: 'FinanceApplication',
+  operatingSystem: 'Any',
+  browserRequirements: 'Requires JavaScript',
+  description,
+  isAccessibleForFree: true,
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+  publisher: { '@type': 'Organization', name: 'LiquidityPools.app', url: 'https://liquiditypools.app' }
+};
+const faqSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faq.map((item) => ({
+    '@type': 'Question',
+    name: item.q,
+    acceptedAnswer: { '@type': 'Answer', text: item.a }
+  }))
+};
+const breadcrumbSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://liquiditypools.app/' },
+    { '@type': 'ListItem', position: 2, name: 'Tools', item: 'https://liquiditypools.app/tools/' },
+    { '@type': 'ListItem', position: 3, name: title, item: canonical }
+  ]
+};
+---
+<BaseLayout title={`${title}: Range, Fees and IL — LiquidityPools.app`} description={description} image="/images/guides/uniswap-v3-liquidity-calculator.webp">
+  <Fragment slot="head">
+    <script is:inline type="application/ld+json" set:html={JSON.stringify(appSchema)} />
+    <script is:inline type="application/ld+json" set:html={JSON.stringify(faqSchema)} />
+    <script is:inline type="application/ld+json" set:html={JSON.stringify(breadcrumbSchema)} />
+  </Fragment>
+
+  <section class="page-hero">
+    <div class="container">
+      <div class="eyebrow eyebrow--mint">Research tools · Free, no wallet connection</div>
+      <h1 class="page-title">Uniswap v3 liquidity calculator.</h1>
+      <p>Set a price range and a deposit. The calculator returns what the position holds now and at each bound, how much depth it contributes against a full-range position, the fees the range would have earned, and the result against holding.</p>
+    </div>
+  </section>
+
+  <section class="section section--paper" style="padding-top:64px">
+    <div class="container">
+      <div class="tool-layout">
+        <form class="tool-panel" id="v3-form" novalidate>
+          <h2>Range and position</h2>
+          <p class="tool-panel__note">Defaults describe a $10,000 ETH/USDC position at 3,000 with a 2,500–3,600 range, priced 30 days later at 3,300. Every field updates the result immediately.</p>
+
+          <div class="tool-field">
+            <label for="price">Current price of the base asset</label>
+            <input id="price" name="price" type="number" inputmode="decimal" step="any" min="0" value="3000" />
+            <small>Quoted in the second asset of the pair. For ETH/USDC, the price of one ETH.</small>
+          </div>
+
+          <div class="tool-grid-2">
+            <div class="tool-field">
+              <label for="lower">Range lower bound</label>
+              <input id="lower" name="lower" type="number" inputmode="decimal" step="any" min="0" value="2500" />
+            </div>
+            <div class="tool-field">
+              <label for="upper">Range upper bound</label>
+              <input id="upper" name="upper" type="number" inputmode="decimal" step="any" min="0" value="3600" />
+            </div>
+          </div>
+
+          <div class="tool-presets" role="group" aria-label="Range width presets">
+            <button type="button" class="tool-preset" data-width="0.02">±2%</button>
+            <button type="button" class="tool-preset" data-width="0.05">±5%</button>
+            <button type="button" class="tool-preset" data-width="0.1">±10%</button>
+            <button type="button" class="tool-preset" data-width="0.25">±25%</button>
+            <button type="button" class="tool-preset" data-width="0.5">±50%</button>
+          </div>
+
+          <div class="tool-grid-2">
+            <div class="tool-field">
+              <label for="capital">Deposit value</label>
+              <input id="capital" name="capital" type="number" inputmode="decimal" step="any" min="0" value="10000" />
+            </div>
+            <div class="tool-field">
+              <label for="exit">Price at the end of the period</label>
+              <input id="exit" name="exit" type="number" inputmode="decimal" step="any" min="0" value="3300" />
+            </div>
+          </div>
+
+          <h2 style="margin-top:26px">Fee inputs</h2>
+
+          <div class="tool-grid-2">
+            <div class="tool-field">
+              <label for="tier">Fee tier</label>
+              <select id="tier" name="tier">
+                <option value="0.0001">0.01% (1 bp)</option>
+                <option value="0.0005" selected>0.05% (5 bp)</option>
+                <option value="0.003">0.30% (30 bp)</option>
+                <option value="0.01">1.00% (100 bp)</option>
+              </select>
+            </div>
+            <div class="tool-field">
+              <label for="days">Days held</label>
+              <input id="days" name="days" type="number" inputmode="numeric" step="1" min="1" value="30" />
+            </div>
+          </div>
+
+          <div class="tool-field">
+            <label for="volume">Pool daily routed volume</label>
+            <input id="volume" name="volume" type="number" inputmode="decimal" step="any" min="0" value="60000000" />
+            <small>From pool data for the specific pool, not an aggregate across fee tiers.</small>
+          </div>
+
+          <div class="tool-field">
+            <label for="activeliq">Value of liquidity active near the current price</label>
+            <input id="activeliq" name="activeliq" type="number" inputmode="decimal" step="any" min="0" value="25000000" />
+            <small>Not total value locked. Capital parked in distant ranges does not dilute your fee share.</small>
+          </div>
+
+          <div class="tool-field">
+            <label for="tir">Share of the period spent in range (%)</label>
+            <input id="tir" name="tir" type="number" inputmode="decimal" step="any" min="0" max="100" value="80" />
+            <small>Measure this on the pair's price history for the range above. It is a direct multiplier on fee income.</small>
+          </div>
+        </form>
+
+        <div class="tool-result" aria-live="polite">
+          <h2>Result</h2>
+          <div class="tool-headline">
+            <span>Net result vs. holding the deposit</span>
+            <strong id="out-net">+$151.29</strong>
+            <em id="out-state">Price is inside the range. The position is quoting and earning.</em>
+          </div>
+          <div class="tool-rows">
+            <div class="tool-row"><span>Capital efficiency vs. full range</span><strong id="out-eff">11.48×</strong></div>
+            <div class="tool-row"><span>Composition at deposit</span><strong id="out-comp0">50.0% base / 50.0% quote</strong></div>
+            <div class="tool-row"><span>Composition at the end price</span><strong id="out-comp1">24.7% base / 75.3% quote</strong></div>
+            <div class="tool-row"><span>Position value at the end price</span><strong id="out-pos">$10,363.29</strong></div>
+            <div class="tool-row"><span>Value if you had simply held</span><strong id="out-hodl">$10,500.00</strong></div>
+            <div class="tool-row tool-row--loss"><span>Impermanent loss vs. holding</span><strong id="out-il">−1.30%</strong></div>
+            <div class="tool-row"><span>Estimated fee income</span><strong id="out-fees">$288.00</strong></div>
+            <div class="tool-row"><span>Annualised fee yield on capital</span><strong id="out-apr">35.0%</strong></div>
+            <div class="tool-row tool-row--net"><span>Fee income needed to break even</span><strong id="out-breakeven">$136.71</strong></div>
+          </div>
+          <p class="tool-verdict" id="out-verdict">Estimated fee income covers the divergence over this holding period.</p>
+          <div class="tool-rows" style="margin-top:18px">
+            <div class="tool-row"><span>At the lower bound the position holds</span><strong id="out-atlow">3.492 base / 0 quote</strong></div>
+            <div class="tool-row"><span>At the upper bound the position holds</span><strong id="out-athigh">0 base / $10,477.23 quote</strong></div>
+          </div>
+          <p class="tool-disclaimer">Educational model only. Fee income is an arithmetic consequence of the inputs, not a forecast. Excludes gas, entry and exit price impact, emissions, rebalancing and the path taken between prices. Not investment advice.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--mist" style="padding-top:72px;padding-bottom:72px">
+    <div class="container">
+      <div class="guide-layout">
+        <aside class="guide-aside">
+          <h2>Related reading</h2>
+          <a href="/guides/concentrated-liquidity-explained/">Concentrated liquidity explained</a>
+          <a href="/guides/concentrated-liquidity-strategy/">Choosing a range width</a>
+          <a href="/guides/uniswap-v3-ticks-and-lp-nfts/">Ticks and position NFTs</a>
+          <a href="/guides/out-of-range-liquidity/">Out-of-range liquidity</a>
+          <a href="/guides/uniswap-fee-tiers-explained/">Uniswap fee tiers</a>
+          <a href="/guides/raydium-clmm-liquidity-guide/">Raydium CLMM</a>
+        </aside>
+        <div class="article-content">
+          <h2>The mathematics behind the number</h2>
+          <p>A concentrated position is described by a single scalar, its liquidity <strong>L</strong>. For a range between <code>Pa</code> and <code>Pb</code> at current price <code>P</code>, the token amounts held are:</p>
+          <p><code>x = L · (1/√P − 1/√Pb)</code> and <code>y = L · (√P − √Pa)</code></p>
+          <p>Valuing those at <code>P</code> and solving for a known deposit value <code>V</code> gives the liquidity the deposit buys:</p>
+          <p><code>L = V ÷ (2·√P − P/√Pb − √Pa)</code></p>
+          <p>Everything else on this page follows from that one line. Capital efficiency is the same expression compared against the full-range case, where the denominator collapses to <code>2·√P</code>. Token composition at any later price is the pair of amount formulas evaluated there, clamped to a single asset outside the bounds. The derivation is set out in the Uniswap v3 core whitepaper and worked through in <a href="/guides/uniswap-v3-ticks-and-lp-nfts/">Uniswap v3 Ticks and Position NFTs</a>.</p>
+
+          <h2>What each input means</h2>
+          <ul>
+            <li><strong>Current price</strong> — the base asset quoted in the second asset of the pair. The required deposit ratio follows from where this price sits inside the range, which is why a range skewed above spot needs mostly the base asset.</li>
+            <li><strong>Range bounds</strong> — the prices between which your liquidity is active. The contract stores them as ticks, so a real pool will round to the nearest usable tick for its spacing.</li>
+            <li><strong>Deposit value</strong> — total value supplied, in the quote currency. The split between the two assets is determined by the range, not chosen.</li>
+            <li><strong>Pool daily routed volume</strong> — the volume actually executing against this pool at this fee tier. Aggregated figures across all tiers of a pair overstate it substantially.</li>
+            <li><strong>Active liquidity</strong> — the value of liquidity quoting near the current price, which is the correct denominator for your share. <a href="/guides/liquidity-depth-and-execution/">Liquidity Depth and Execution</a> explains how to measure it.</li>
+            <li><strong>Time in range</strong> — the fraction of the period price spent inside your bounds. Multiply, do not ignore: a position earning well while active and in range 40% of the time earned 40% of that.</li>
+          </ul>
+
+          <h2>Capital efficiency against time in range</h2>
+          <p>The narrow end of this table is the figure marketing pages quote. The right-hand column is the one that decides outcomes, and it is specific to the pair rather than to the protocol.</p>
+          <table>
+            <thead><tr><th>Band around spot</th><th>Capital efficiency</th><th>What has to be true</th></tr></thead>
+            <tbody>
+              <tr><td>±2%</td><td>100.5×</td><td>A pegged pair, or a position you rebalance daily</td></tr>
+              <tr><td>±5%</td><td>40.5×</td><td>A tight correlated pair with an active operator</td></tr>
+              <tr><td>±10%</td><td>20.4×</td><td>A liquid major, monitored weekly</td></tr>
+              <tr><td>±25%</td><td>8.3×</td><td>A volatile pair held through normal movement</td></tr>
+              <tr><td>±50%</td><td>4.2×</td><td>A high-beta pair, or a long unattended horizon</td></tr>
+            </tbody>
+          </table>
+          <p>The product of efficiency and expected time in range peaks at an intermediate width, not at the narrow end. <a href="/guides/concentrated-liquidity-strategy/">Concentrated Liquidity Strategy</a> derives that objective function and the rebalancing rules that follow from it.</p>
+
+          <h2>Reading the result</h2>
+          <p>Three lines carry the decision. <strong>Composition at the end price</strong> tells you what you will actually be holding, which is frequently the part people discover after the fact rather than before. <strong>Fee income needed to break even</strong> is the revenue the range had to generate to offset the divergence it took. <strong>Net result versus holding</strong> is the only figure that answers whether the position was worth funding.</p>
+          <p>A negative net result on a strongly trending pair is expected behaviour rather than a mistake. The position sold the winner on the way up, which is what a bounded market-making range exists to do. The error is choosing that structure while holding a directional view that contradicts it.</p>
+
+          <h2>Limitations of this model</h2>
+          <ul>
+            <li><strong>Endpoint pricing.</strong> The divergence figure depends only on the start and end price. Two paths reaching the same place cost different amounts to market-make, a gap measured by <a href="/guides/loss-versus-rebalancing/">loss-versus-rebalancing</a>.</li>
+            <li><strong>Static liquidity share.</strong> Your share is held constant, when in practice other providers add and remove liquidity around the price, often crowding in exactly when fees are highest.</li>
+            <li><strong>Friction excluded.</strong> Gas, approvals, rebalances and exit price impact are outside the model. On smaller positions they dominate; see <a href="/guides/lp-gas-costs/">LP Gas Costs</a>.</li>
+            <li><strong>No incentives.</strong> Emission rewards are excluded deliberately, so that the fee-funded case is visible on its own. Value them separately at a realisable price, as set out in <a href="/guides/yield-farming-explained/">Yield Farming Explained</a>.</li>
+            <li><strong>Tick rounding.</strong> Real pools round bounds to usable ticks for the pool's spacing, so a live position will differ slightly from the exact bounds entered here.</li>
+          </ul>
+
+          <h2 id="sources">Sources</h2>
+          <p>The position mathematics, fee accounting and risk statements implemented here come from protocol specifications, peer-reviewed and preprint research, and public-sector analysis of automated market making.</p>
+          <ol class="tool-sources">
+            <li><a href="https://uniswap.org/whitepaper-v3.pdf" target="_blank" rel="noopener">Uniswap v3 Core Whitepaper (Adams et al., 2021)</a></li>
+            <li><a href="https://developers.uniswap.org/docs/get-started/concepts/liquidity-providers/concentrated-liquidity" target="_blank" rel="noopener">Concentrated Liquidity (Uniswap Developer Documentation)</a></li>
+            <li><a href="https://arxiv.org/abs/2111.09192" target="_blank" rel="noopener">Impermanent Loss in Uniswap v3 (Loesch et al., 2021)</a></li>
+            <li><a href="https://arxiv.org/abs/2205.08904" target="_blank" rel="noopener">Risks and Returns of Uniswap V3 Liquidity Providers (Heimbach et al., 2022)</a></li>
+            <li><a href="https://arxiv.org/abs/2208.06046" target="_blank" rel="noopener">Automated Market Making and Loss-Versus-Rebalancing (Milionis et al., 2022)</a></li>
+            <li><a href="https://www.bis.org/publ/bisbull58.htm" target="_blank" rel="noopener">Trading in the DeFi era: automated market maker (BIS Bulletin No 58, 2022)</a></li>
+          </ol>
+
+          <div class="faq-block">
+            <h2>Frequently asked questions</h2>
+            {faq.map((item) => (
+              <div class="faq-item">
+                <h3>{item.q}</h3>
+                <p>{item.a}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+        <aside class="guide-aside">
+          <h2>Method</h2>
+          <p style="font-size:12px;line-height:1.55;color:#5b7062">All calculations run in your browser. No inputs are transmitted, stored, or logged.</p>
+          <h2 style="margin-top:22px">Other calculators</h2>
+          <a href="/tools/impermanent-loss-calculator/">Impermanent loss calculator</a>
+          <a href="/tools/liquidity-pool-calculator/">Fee and APR calculator</a>
+          <a href="/tools/lp-profit-calculator/">LP profit calculator</a>
+          <h2 style="margin-top:22px">Verify onchain</h2>
+          <a href="https://revert.finance" target="_blank" rel="noopener">Revert Finance ↗</a>
+          <a href="https://dune.com" target="_blank" rel="noopener">Dune Analytics ↗</a>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <script is:inline>
+    (function () {
+      var ids = ['price', 'lower', 'upper', 'capital', 'exit', 'tier', 'days', 'volume', 'activeliq', 'tir'];
+      var el = {};
+      ids.forEach(function (id) { el[id] = document.getElementById(id); });
+      var out = {};
+      ['net', 'state', 'eff', 'comp0', 'comp1', 'pos', 'hodl', 'il', 'fees', 'apr', 'breakeven', 'verdict', 'atlow', 'athigh'].forEach(function (key) {
+        out[key] = document.getElementById('out-' + key);
+      });
+
+      function num(node, fallback) {
+        var value = parseFloat(node.value);
+        return isFinite(value) ? value : fallback;
+      }
+
+      function money(value) {
+        var sign = value < 0 ? '−' : '';
+        return sign + '$' + Math.abs(value).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      }
+
+      function signedMoney(value) {
+        if (Math.abs(value) < 0.005) return '$0.00';
+        return (value > 0 ? '+' : '−') + '$' + Math.abs(value).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      }
+
+      function percent(value) {
+        var sign = value < 0 ? '−' : value > 0 ? '+' : '';
+        return sign + Math.abs(value).toFixed(2) + '%';
+      }
+
+      function tokens(L, p, pa, pb) {
+        var sp = Math.sqrt(Math.min(Math.max(p, pa), pb));
+        var x = L * (1 / sp - 1 / Math.sqrt(pb));
+        var y = L * (sp - Math.sqrt(pa));
+        return { x: Math.max(0, x), y: Math.max(0, y) };
+      }
+
+      function render() {
+        var p = num(el.price, 0);
+        var pa = num(el.lower, 0);
+        var pb = num(el.upper, 0);
+        var capital = num(el.capital, 0);
+        var exit = num(el.exit, 0);
+        var tier = parseFloat(el.tier.value);
+        var days = Math.max(1, num(el.days, 1));
+        var volume = num(el.volume, 0);
+        var activeLiq = num(el.activeliq, 0);
+        var tir = Math.min(100, Math.max(0, num(el.tir, 0))) / 100;
+
+        if (p <= 0 || pa <= 0 || pb <= pa || capital <= 0 || exit <= 0) {
+          out.verdict.textContent = 'Enter a positive price, a lower bound below the upper bound, and a deposit value.';
+          return;
+        }
+
+        var sqrtP = Math.sqrt(Math.min(Math.max(p, pa), pb));
+        var denom = 2 * sqrtP - Math.min(Math.max(p, pa), pb) / Math.sqrt(pb) - Math.sqrt(pa);
+        if (!(denom > 0)) {
+          out.verdict.textContent = 'This range does not contain the current price in a way the model can value. Widen the bounds.';
+          return;
+        }
+
+        var L = capital / denom;
+        var eff = (2 * Math.sqrt(p)) / denom;
+
+        var now = tokens(L, p, pa, pb);
+        var valueNow = now.x * p + now.y;
+        var baseShare0 = valueNow > 0 ? (now.x * p) / valueNow * 100 : 0;
+
+        var later = tokens(L, exit, pa, pb);
+        var positionValue = later.x * exit + later.y;
+        var baseShare1 = positionValue > 0 ? (later.x * exit) / positionValue * 100 : 0;
+
+        var hodl = now.x * exit + now.y;
+        var il = hodl > 0 ? (positionValue / hodl - 1) * 100 : 0;
+        var divergence = positionValue - hodl;
+
+        var share = activeLiq > 0 ? capital / activeLiq : 0;
+        var fees = volume * days * tier * share * tir;
+        var apr = capital > 0 ? (fees / capital) * (365 / days) * 100 : 0;
+        var net = divergence + fees;
+
+        var atLow = tokens(L, pa, pa, pb);
+        var atHigh = tokens(L, pb, pa, pb);
+
+        out.eff.textContent = eff.toFixed(2) + '×';
+        out.comp0.textContent = baseShare0.toFixed(1) + '% base / ' + (100 - baseShare0).toFixed(1) + '% quote';
+        out.comp1.textContent = baseShare1.toFixed(1) + '% base / ' + (100 - baseShare1).toFixed(1) + '% quote';
+        out.pos.textContent = money(positionValue);
+        out.hodl.textContent = money(hodl);
+        out.il.textContent = percent(il);
+        out.fees.textContent = money(fees);
+        out.apr.textContent = (isFinite(apr) ? apr.toFixed(1) : '0.0') + '%';
+        out.breakeven.textContent = money(Math.abs(divergence));
+        out.net.textContent = signedMoney(net);
+        out.atlow.textContent = atLow.x.toLocaleString('en-US', { maximumFractionDigits: 3 }) + ' base / 0 quote';
+        out.athigh.textContent = '0 base / ' + money(atHigh.y);
+
+        if (exit < pa) {
+          out.state.textContent = 'Price is below the range. The position is entirely the base asset and has stopped earning.';
+        } else if (exit > pb) {
+          out.state.textContent = 'Price is above the range. The position is entirely the quote asset and has stopped earning.';
+        } else {
+          out.state.textContent = 'Price is inside the range. The position is quoting and earning.';
+        }
+
+        if (net > 0) {
+          out.verdict.textContent = 'Estimated fee income covers the divergence over this holding period. The position is ahead of holding the deposited assets.';
+        } else if (Math.abs(divergence) < 0.005) {
+          out.verdict.textContent = 'Relative prices are unchanged, so fee income is the entire result.';
+        } else {
+          out.verdict.textContent = 'Estimated fee income does not cover the divergence. Holding the deposited assets would have produced ' + money(Math.abs(net)) + ' more over this period.';
+        }
+      }
+
+      ids.forEach(function (id) {
+        el[id].addEventListener('input', render);
+        el[id].addEventListener('change', render);
+      });
+
+      Array.prototype.forEach.call(document.querySelectorAll('.tool-preset'), function (button) {
+        button.addEventListener('click', function () {
+          var width = parseFloat(button.getAttribute('data-width'));
+          var base = parseFloat(el.price.value);
+          if (isFinite(width) && isFinite(base) && base > 0) {
+            el.lower.value = String(Number((base * (1 - width)).toFixed(6)));
+            el.upper.value = String(Number((base * (1 + width)).toFixed(6)));
+            render();
+          }
+        });
+      });
+
+      render();
+    })();
+  </script>
+</BaseLayout>

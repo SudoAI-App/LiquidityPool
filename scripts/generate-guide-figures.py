@@ -32,7 +32,16 @@ INK = (233, 240, 236)
 MUTED = (138, 158, 178)
 ROSE = (244, 114, 132)
 
-FONT_DIR = "/usr/share/fonts/truetype/dejavu"
+# DejaVu ships at a fixed path on Debian-family CI images and nowhere on macOS.
+# GUIDE_FIGURE_FONT_DIR lets a local checkout point at its own copy.
+FONT_DIR = next(
+    (d for d in (
+        os.environ.get("GUIDE_FIGURE_FONT_DIR"),
+        "/usr/share/fonts/truetype/dejavu",
+        "/usr/local/share/fonts/dejavu",
+    ) if d and os.path.isdir(d)),
+    "/usr/share/fonts/truetype/dejavu",
+)
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUT_DIR = os.path.join(ROOT, "public/images/guides")
 
@@ -1001,6 +1010,140 @@ def fig_profit_calculator(d):
                   "from, after everything that was actually paid?")
 
 
+def fig_mining_vs_farming(d):
+    layout_rows(
+        d, "funding sources", "Three activities, three people paying",
+        "Staking, liquidity provision and liquidity mining are routinely quoted as one annualised number.",
+        [("STAKING", MINT), ("LIQUIDITY PROVISION", AMBER), ("LIQUIDITY MINING", ROSE)],
+        [
+            ("Who pays", "Network issuance and priority fees", "Traders, via the swap fee", "Token holders, via dilution"),
+            ("Assets committed", "One asset, quantity unchanged", "A pair, quantity rotates", "The LP claim, staked into a gauge"),
+            ("Divergence loss", "None", "Yes, on every relative move", "Inherited from the pool beneath"),
+            ("Durability", "Structural, while the chain runs", "While routed volume persists", "Programme-limited by design"),
+            ("What ends it", "Unbonding queue or exit", "Volume migrating elsewhere", "The emission schedule"),
+        ],
+        "Yield farming is the user-side strategy layered on top of these three. It is not a fourth source of money.",
+        label_w=340,
+    )
+
+
+def fig_lp_profitable(d):
+    layout_bars(
+        d, "the arithmetic", "Fee revenue is the only line most dashboards show",
+        "A $20,000 position over 90 days in a 30 bp volatile pool, with every deduction priced.",
+        [
+            ("FEE INCOME", "Routed volume x fee tier x liquidity share", 1.00, "+$2,190", MINT),
+            ("TIME IN RANGE", "Position inactive 39% of the period", 0.39, "-$854", AMBER),
+            ("DIVERGENCE", "The invariant rebalanced the basket", 0.78, "-$1,704", ROSE),
+            ("GAS AND CLAIMS", "Six transactions across the lifecycle", 0.03, "-$54", AMBER_DIM),
+            ("EMISSIONS REALISED", "Reward tokens sold, not accrued", 0.13, "+$290", MINT_DIM),
+            ("NET VS HOLDING", "The only figure that answers the question", 0.06, "-$132", ROSE),
+        ],
+        "The pool collected more than three times the fees of a stable pair over the same period and still lost to holding.",
+        axis_label="scaled against gross fee income",
+    )
+
+
+def fig_meteora_strategy(d):
+    chrome(d, "bin distribution", "Shape decides what the position does when price moves",
+           "The same bin range funded three ways: spot, curve and bid-ask.")
+    shapes = [
+        ("SPOT", MINT, lambda i, n: 1.0),
+        ("CURVE", AMBER, lambda i, n: math.exp(-((i - (n - 1) / 2) ** 2) / (2 * (n / 6.0) ** 2))),
+        ("BID-ASK", ROSE, lambda i, n: 0.18 + 0.82 * (abs(i - (n - 1) / 2) / ((n - 1) / 2)) ** 2),
+    ]
+    n = 17
+    for col, (name, colour, fn) in enumerate(shapes):
+        x0 = 100 + col * 480
+        panel(d, (x0, 258, x0 + 440, 700), fill=PANEL_ALT)
+        d.rectangle([x0, 258, x0 + 440, 265], fill=colour)
+        d.text((x0 + 22, 288), name, font=font(25, "mono-bold"), fill=colour)
+        base = 668
+        bw = 380 // n
+        for i in range(n):
+            h = int(300 * fn(i, n))
+            bx = x0 + 30 + i * bw
+            active = i == (n - 1) // 2
+            d.rectangle([bx, base - max(6, h), bx + bw - 4, base],
+                        fill=colour if not active else INK)
+        d.line([(x0 + 30, base + 4), (x0 + 30 + n * bw, base + 4)], fill=LINE, width=2)
+        d.text((x0 + 22, base + 16), "ACTIVE BIN IN WHITE", font=font(17, "mono"), fill=MUTED)
+    notes = [
+        "Spot tolerates being wrong about direction.",
+        "Curve earns most while price stays put.",
+        "Bid-ask is a pair of scaled limit orders.",
+    ]
+    for col, text in enumerate(notes):
+        paragraph(d, (122 + col * 480, 724), text, font(20), MUTED, 400, 26)
+    paragraph(d, (100, 812),
+              "Only the active bin earns fees on a swap. Capital in bins price never reaches contributes nothing, "
+              "and each bin crossed converts inventory from one asset to the other.",
+              font(22), MUTED, 1400)
+
+
+def fig_raydium_clmm(d):
+    layout_ledger(
+        d, "solana pool types", "Two designs, two entirely different jobs",
+        "Raydium runs constant-product and concentrated pools side by side.",
+        ("CPMM / constant product", MINT, [
+            ("Price coverage", "Every price from zero to infinity"),
+            ("Management", "None: the position cannot go inactive"),
+            ("Capital efficiency", "Low, most capital backs prices never traded"),
+            ("Divergence", "Standard constant-product divergence"),
+            ("Suits", "Long-tail pairs and unattended capital"),
+        ]),
+        ("CLMM / concentrated", AMBER, [
+            ("Price coverage", "Between the lower and upper tick only"),
+            ("Management", "Range monitoring and rebalance decisions"),
+            ("Capital efficiency", "20x at a ten percent band, while in range"),
+            ("Divergence", "Amplified inside the band, total at each edge"),
+            ("Suits", "Liquid pairs with an operator watching them"),
+        ]),
+        "Below the lower bound the position is entirely the base asset; above the upper bound, entirely the quote asset.",
+    )
+
+
+def fig_v3_calculator(d):
+    chrome(d, "range calculator", "What a bounded position holds, at every price",
+           "Token composition and fee state across a concentrated range [Pa, Pb].")
+    box = (100, 300, 1000, 740)
+    plot_frame(d, box, "PRICE", "SHARE OF POSITION VALUE IN THE BASE ASSET")
+    pa, pb = 0.75, 1.35
+
+    def share(p):
+        if p <= pa:
+            return 100.0
+        if p >= pb:
+            return 0.0
+        x = (1 / math.sqrt(p) - 1 / math.sqrt(pb))
+        y = (math.sqrt(p) - math.sqrt(pa))
+        return 100.0 * (x * p) / (x * p + y)
+
+    draw_curve(d, box, share, (0.55, 1.6), (-4, 104), MINT, 5)
+    for value, colour, label in ((pa, AMBER, "Pa"), (pb, AMBER, "Pb")):
+        gx = box[0] + (box[2] - box[0]) * (value - 0.55) / (1.6 - 0.55)
+        d.line([(gx, box[1] + 2), (gx, box[3] - 2)], fill=colour, width=2)
+        d.text((gx + 8, box[1] + 10), label, font=font(20, "mono-bold"), fill=colour)
+    ticks(d, box, (0.55, 1.6), (-4, 104),
+          ["0.55", "0.76", "0.97", "1.18", "1.39", "1.60"],
+          [(0, "0%"), (50, "50%"), (100, "100%")])
+    cards = [
+        ("BELOW Pa", "100% base asset. The curve bought all the way down. No fees accrue.", ROSE),
+        ("IN RANGE", "A mixture that shifts continuously. This is the only state that earns.", MINT),
+        ("ABOVE Pb", "100% quote asset. The curve sold all the way up. No fees accrue.", AMBER),
+    ]
+    y = 300
+    for heading, body, colour in cards:
+        panel(d, (1040, y, 1500, y + 132), fill=PANEL_ALT)
+        d.rectangle([1040, y, 1500, y + 7], fill=colour)
+        d.text((1064, y + 26), heading, font=font(22, "mono-bold"), fill=colour)
+        paragraph(d, (1064, y + 62), body, font(19), MUTED, 412, 25)
+        y += 154
+    paragraph(d, (100, 806),
+              "Concentration multiplies depth per dollar and shortens the price band over which the position exists "
+              "at all. Both effects are computable before the position is funded.",
+              font(22), MUTED, 1400)
+
 FIGURES = {
     "out-of-range-liquidity": fig_out_of_range,
     "uniswap-v3-vs-v4": fig_v3_vs_v4,
@@ -1036,6 +1179,11 @@ FIGURES = {
     "onchain-liquidity-explained": fig_onchain_liquidity,
     "pancakeswap-liquidity-pools": fig_pancakeswap,
     "lp-profit-calculator": fig_profit_calculator,
+    "liquidity-mining-vs-yield-farming": fig_mining_vs_farming,
+    "is-providing-liquidity-profitable": fig_lp_profitable,
+    "meteora-dlmm-strategy": fig_meteora_strategy,
+    "raydium-clmm-liquidity-guide": fig_raydium_clmm,
+    "uniswap-v3-liquidity-calculator": fig_v3_calculator,
 }
 
 

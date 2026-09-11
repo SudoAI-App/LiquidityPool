@@ -125,7 +125,7 @@ Farming is not a category error, and incentive programmes serve a real function 
 
 ## Where to Go Next
 
-Separate the durable part of any farm's yield using the [liquidity pool fee and APR calculator](/tools/liquidity-pool-calculator/), and read the protocol-side design in [Liquidity Mining Explained](/guides/liquidity-mining-explained/). A protocol-specific example of the same incentive structure is in [PancakeSwap Liquidity Pools](/guides/pancakeswap-liquidity-pools/).
+Separate the durable part of any farm's yield using the [liquidity pool fee and APR calculator](/tools/liquidity-pool-calculator/), and read the protocol-side design in [Liquidity Mining Explained](/guides/liquidity-mining-explained/). A protocol-specific example of the same incentive structure is in [PancakeSwap Liquidity Pools](/guides/pancakeswap-liquidity-pools/). For the side-by-side split of who funds each activity, see [Liquidity Mining vs Yield Farming vs Staking](/guides/liquidity-mining-vs-yield-farming/), and for whether the underlying position clears its costs at all, [Is Providing Liquidity Profitable?](/guides/is-providing-liquidity-profitable/).
 
 ## References
 

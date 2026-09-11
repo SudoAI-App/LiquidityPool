@@ -12,6 +12,7 @@ export const GET: APIRoute = () => {
     { url: `${baseUrl}/tools/impermanent-loss-calculator/`, priority: '0.9', changefreq: 'weekly', lastmod: '2026-09-10' },
     { url: `${baseUrl}/tools/liquidity-pool-calculator/`, priority: '0.9', changefreq: 'weekly', lastmod: '2026-09-11' },
     { url: `${baseUrl}/tools/lp-profit-calculator/`, priority: '0.9', changefreq: 'weekly', lastmod: '2026-09-11' },
+    { url: `${baseUrl}/tools/uniswap-v3-liquidity-calculator/`, priority: '0.9', changefreq: 'weekly', lastmod: '2026-09-11' },
     { url: `${baseUrl}/about/`, priority: '0.6', changefreq: 'monthly', lastmod: '2026-09-10' },
   ];
 

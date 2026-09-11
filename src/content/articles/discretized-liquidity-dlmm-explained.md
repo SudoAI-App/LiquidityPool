@@ -234,7 +234,7 @@ Use this diagnostic sequence when monitoring discrete bin liquidity positions:
 
 ## Where to Go Next
 
-For how bin-based designs compare with the other curve families, see [Types of Liquidity Pools](/guides/liquidity-pool-types/). For the shared boundary problem that every range-based design has, see [Out-of-Range Liquidity](/guides/out-of-range-liquidity/).
+For how bin-based designs compare with the other curve families, see [Types of Liquidity Pools](/guides/liquidity-pool-types/). For the shared boundary problem that every range-based design has, see [Out-of-Range Liquidity](/guides/out-of-range-liquidity/). For the operating decisions on top of the mechanism, bin step, shape and rebalance triggers, see [Meteora DLMM Strategy](/guides/meteora-dlmm-strategy/).
 
 ## References
 

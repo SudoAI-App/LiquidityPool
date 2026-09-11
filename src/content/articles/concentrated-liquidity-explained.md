@@ -218,7 +218,7 @@ Use this systematic diagnostic tree when monitoring concentrated liquidity posit
 
 ## Where to Go Next
 
-The boundary case deserves its own treatment: [Out-of-Range Liquidity](/guides/out-of-range-liquidity/) covers what happens when price leaves the interval and how to price a rebalance. For tier selection inside a concentrated pool, see [Uniswap Fee Tiers Explained](/guides/uniswap-fee-tiers-explained/), and for the architectural differences between versions, [Uniswap v3 vs v4 Liquidity](/guides/uniswap-v3-vs-v4/). For choosing the width itself, see [Concentrated Liquidity Strategy](/guides/concentrated-liquidity-strategy/), and for the contract internals behind a position see [Uniswap v3 Ticks and Position NFTs](/guides/uniswap-v3-ticks-and-lp-nfts/).
+The boundary case deserves its own treatment: [Out-of-Range Liquidity](/guides/out-of-range-liquidity/) covers what happens when price leaves the interval and how to price a rebalance. For tier selection inside a concentrated pool, see [Uniswap Fee Tiers Explained](/guides/uniswap-fee-tiers-explained/), and for the architectural differences between versions, [Uniswap v3 vs v4 Liquidity](/guides/uniswap-v3-vs-v4/). For choosing the width itself, see [Concentrated Liquidity Strategy](/guides/concentrated-liquidity-strategy/), and for the contract internals behind a position see [Uniswap v3 Ticks and Position NFTs](/guides/uniswap-v3-ticks-and-lp-nfts/). To put numbers on a specific range, use the [Uniswap v3 liquidity calculator](/tools/uniswap-v3-liquidity-calculator/).
 
 ## References
 

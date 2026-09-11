@@ -135,6 +135,10 @@ Anyone running more than a handful of positions should automate these reads rath
 
 None of this changes the economics of a position, which are decided by volume, volatility and range width. It changes whether you can diagnose the position accurately when the economics disappoint.
 
+## Where to Go Next
+
+Apply the tick mathematics to a concrete position in the [Uniswap v3 liquidity calculator](/tools/uniswap-v3-liquidity-calculator/). The same accounting underpins [Raydium Liquidity Pools](/guides/raydium-clmm-liquidity-guide/) on Solana.
+
 ## References
 
 1. [Uniswap v3 Core Whitepaper (Adams et al., 2021)](https://uniswap.org/whitepaper-v3.pdf)

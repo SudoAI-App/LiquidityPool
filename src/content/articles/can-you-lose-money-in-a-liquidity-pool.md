@@ -129,7 +129,7 @@ Working the list in order takes minutes and almost always terminates before step
 
 ## Where to Go Next
 
-Measure the second and third loss paths directly: divergence in the [impermanent loss calculator](/tools/impermanent-loss-calculator/), and the fee income that has to offset it in the [liquidity pool fee and APR calculator](/tools/liquidity-pool-calculator/).
+Measure the second and third loss paths directly: divergence in the [impermanent loss calculator](/tools/impermanent-loss-calculator/), and the fee income that has to offset it in the [liquidity pool fee and APR calculator](/tools/liquidity-pool-calculator/). For the same question asked from the revenue side, see [Is Providing Liquidity Profitable?](/guides/is-providing-liquidity-profitable/).
 
 ## References
 

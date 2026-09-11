@@ -141,6 +141,10 @@ The wider band earns less per day in range and is quoted nearly all month with t
 
 The width that maximises a spreadsheet is usually narrower than the width that survives a month of real price action. Choose for the second.
 
+## Where to Go Next
+
+Test a candidate band in the [Uniswap v3 liquidity calculator](/tools/uniswap-v3-liquidity-calculator/), which reports capital efficiency and what the position holds at each bound. For the bin-based version of the same decision, see [Meteora DLMM Strategy](/guides/meteora-dlmm-strategy/).
+
 ## References
 
 1. [Uniswap v3 Core Whitepaper (Adams et al., 2021)](https://uniswap.org/whitepaper-v3.pdf)

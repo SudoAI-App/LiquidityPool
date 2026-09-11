@@ -1,0 +1,85 @@
+priority,cluster,primary_keyword,secondary_keyword,intent,demand_evidence,current_coverage,recommended_url,action
+P0,Impermanent loss calculator,impermanent loss calculator,impermanent loss calculator crypto,Tool,Strong,Missing,/tools/impermanent-loss-calculator/,Build
+P0,Impermanent loss calculator,impermanent loss calculator,impermanent loss calculator uniswap,Tool,Strong,Missing,/tools/impermanent-loss-calculator/,Build
+P0,Impermanent loss calculator,impermanent loss calculator,impermanent loss calculator v3,Tool,Strong,Missing,/tools/impermanent-loss-calculator/,Build model selector
+P0,Impermanent loss calculator,impermanent loss calculator,impermanent loss calculator concentrated liquidity,Tool,Strong,Missing,/tools/impermanent-loss-calculator/,Build bounded-range model
+P0,Impermanent loss calculator,impermanent loss calculator,impermanent loss calculator with range,Tool,Strong,Missing,/tools/impermanent-loss-calculator/,Build bounded-range model
+P0,Impermanent loss calculator,impermanent loss calculator,impermanent loss calculator with apy,Tool,Strong,Missing,/tools/impermanent-loss-calculator/,Include fee and APY scenario
+P0,Impermanent loss calculator,impermanent loss calculator,LP vs HODL calculator,Tool,Medium,Missing,/tools/impermanent-loss-calculator/,Include benchmark
+P0,LP returns calculator,liquidity pool calculator,liquidity pool profit calculator,Tool,Strong,Missing,/tools/liquidity-pool-calculator/,Build
+P0,LP returns calculator,liquidity pool calculator,liquidity pool fee calculator,Tool,Strong,Missing,/tools/liquidity-pool-calculator/,Build
+P0,LP returns calculator,liquidity pool calculator,liquidity pool APY calculator,Tool,Strong,Missing,/tools/liquidity-pool-calculator/,Build
+P0,LP returns calculator,liquidity pool calculator,liquidity pool APR calculator,Tool,Strong,Missing,/tools/liquidity-pool-calculator/,Build
+P0,LP returns calculator,liquidity pool calculator,liquidity pool earnings calculator,Tool,Strong,Missing,/tools/liquidity-pool-calculator/,Build
+P0,LP returns calculator,liquidity pool calculator,liquidity pool daily yield,Tool,Medium,Missing,/tools/liquidity-pool-calculator/,Include scenario not promise
+P0,Uniswap calculator,Uniswap v3 liquidity calculator,Uniswap v3 fee calculator,Tool,Strong,Missing,/tools/uniswap-v3-liquidity-calculator/,Build
+P0,Uniswap calculator,Uniswap v3 liquidity calculator,Uniswap liquidity pool calculator,Tool,Strong,Missing,/tools/uniswap-v3-liquidity-calculator/,Build
+P0,Uniswap calculator,Uniswap v3 liquidity calculator,Uniswap v3 impermanent loss calculator,Tool,Strong,Missing,/tools/uniswap-v3-liquidity-calculator/,Build
+P0,Uniswap calculator,Uniswap v3 liquidity calculator,Uniswap v3 price range calculator,Tool,Strong,Missing,/tools/uniswap-v3-liquidity-calculator/,Build
+P0,Concentrated calculator,concentrated liquidity calculator,concentrated liquidity pool calculator,Tool,Strong,Partial,/tools/uniswap-v3-liquidity-calculator/,Model then generalize
+P0,Concentrated calculator,concentrated liquidity calculator,concentrated liquidity impermanent loss calculator,Tool,Strong,Partial,/tools/uniswap-v3-liquidity-calculator/,Model then generalize
+P1,Core pillar,what is a liquidity pool,liquidity pool crypto,Informational,Strong,Covered,/guides/what-is-a-liquidity-pool/,Optimize
+P1,Core pillar,what is a liquidity pool,liquidity pools explained,Informational,Strong,Covered,/guides/what-is-a-liquidity-pool/,Optimize
+P1,Core pillar,what is a liquidity pool,liquidity pool meaning crypto,Informational,Strong,Covered,/guides/what-is-a-liquidity-pool/,Answer in section
+P1,Core pillar,what is a liquidity pool,how do liquidity pools work,Informational,Strong,Covered,/guides/what-is-a-liquidity-pool/,Answer in section
+P1,Core pillar,what is a liquidity pool,liquidity pool example,Informational,Strong,Covered,/guides/what-is-a-liquidity-pool/,Add worked example
+P1,Core pillar,automated market maker,automated market maker crypto,Informational,Strong,Covered,/guides/automated-market-maker-explained/,Optimize
+P1,Core pillar,automated market maker,automated market maker formula,Informational,Strong,Covered,/guides/automated-market-maker-explained/,Link formula pillar
+P1,Core pillar,automated market maker,automated market maker vs order book,Comparison,Strong,Covered,/guides/amm-vs-order-book/,Optimize
+P1,Impermanent loss pillar,impermanent loss,impermanent loss crypto,Informational,Strong,Covered,/guides/impermanent-loss-explained/,Optimize
+P1,Impermanent loss pillar,impermanent loss,impermanent loss formula,Informational,Strong,Covered,/guides/impermanent-loss-explained/,Add calculator link
+P1,Impermanent loss pillar,impermanent loss,impermanent loss example,Informational,Strong,Covered,/guides/impermanent-loss-explained/,Add asymmetric example
+P1,Impermanent loss pillar,impermanent loss,impermanent loss graph,Informational,Strong,Covered,/guides/impermanent-loss-explained/,Add graph
+P1,Impermanent loss pillar,impermanent loss,impermanent loss liquidity pool,Informational,Strong,Covered,/guides/impermanent-loss-explained/,Optimize
+P1,Impermanent loss mitigation,how to reduce impermanent loss,impermanent loss hedging,How-to,Medium,Partial,/guides/impermanent-loss-explained/,Expand section
+P1,Impermanent loss mitigation,how to reduce impermanent loss,impermanent loss protection,How-to,Medium,Partial,/guides/impermanent-loss-explained/,Qualify protocol risk
+P1,LP profitability,is providing liquidity profitable,liquidity pool returns,Decision,Medium,Missing,/guides/is-providing-liquidity-profitable/,Build
+P1,LP profitability,is providing liquidity profitable,how much can you earn from liquidity pools,Decision,Medium,Missing,/guides/is-providing-liquidity-profitable/,Build
+P1,LP profitability,is providing liquidity profitable,how to make money with liquidity pools,Decision,Strong,Missing,/guides/is-providing-liquidity-profitable/,Build without promises
+P1,Comparison,liquidity pool vs staking,providing liquidity vs staking,Comparison,Strong,Missing,/guides/liquidity-pool-vs-staking/,Build
+P1,Comparison,liquidity mining vs yield farming,yield farming vs liquidity pool,Comparison,Strong,Partial,/guides/liquidity-mining-vs-yield-farming/,Build
+P1,Comparison,liquidity mining vs yield farming,liquidity mining vs staking,Comparison,Strong,Partial,/guides/liquidity-mining-vs-yield-farming/,Build
+P1,Pool selection,how to choose a liquidity pool,how to evaluate a liquidity pool,Decision,Medium,Covered,/guides/how-to-evaluate-a-liquidity-pool/,Optimize
+P1,Pool selection,how to choose a liquidity pool,best liquidity pool pairs,Decision,Strong,Partial,/guides/how-to-evaluate-a-liquidity-pool/,Answer framework only
+P1,Pool selection,how to choose a liquidity pool,liquidity pool checklist,Decision,Medium,Covered,/guides/liquidity-pool-research-checklist/,Optimize
+P1,Concentrated liquidity,concentrated liquidity,concentrated liquidity explained,Informational,Strong,Covered,/guides/concentrated-liquidity-explained/,Optimize
+P1,Concentrated liquidity,concentrated liquidity,concentrated liquidity strategy,Strategy,Strong,Partial,/guides/uniswap-v3-liquidity-strategy/,Build task page
+P1,Concentrated liquidity,concentrated liquidity,concentrated liquidity impermanent loss,Informational,Strong,Partial,/guides/concentrated-liquidity-explained/,Expand
+P1,Uniswap workflow,how to provide liquidity on Uniswap,provide liquidity Uniswap,How-to,Strong,Partial,/guides/how-to-provide-liquidity-on-uniswap/,Build maintained workflow
+P1,Uniswap strategy,Uniswap v3 liquidity strategy,Uniswap v3 liquidity range,Strategy,Strong,Partial,/guides/uniswap-v3-liquidity-strategy/,Build
+P1,Uniswap strategy,Uniswap v3 liquidity strategy,Uniswap v3 liquidity out of range,Troubleshooting,Medium,Partial,/guides/uniswap-v3-liquidity-strategy/,Add section
+P1,Uniswap strategy,Uniswap v3 liquidity strategy,Uniswap v3 fee tiers,Decision,Medium,Partial,/guides/uniswap-v3-liquidity-strategy/,Add section
+P1,LP tokens,LP tokens,LP token meaning,Informational,Strong,Covered,/guides/liquidity-pool-tokens/,Optimize
+P1,LP tokens,LP tokens,LP token staking,Informational,Medium,Partial,/guides/liquidity-pool-tokens/,Add risks section
+P1,Risk,liquidity pool risks,liquidity pool pros and cons,Decision,Strong,Covered,/guides/liquidity-pool-risks/,Optimize
+P1,Risk,liquidity pool risks,liquidity pool impermanent loss,Informational,Strong,Covered,/guides/liquidity-pool-risks/,Link IL calculator
+P1,Stablecoin pools,stablecoin liquidity pool,best stablecoin liquidity pools,Investigation,Strong,Partial,/research/stablecoin-liquidity-pools/,Build only with live data
+P1,Stablecoin pools,stablecoin liquidity pool,USDC USDT liquidity pool,Investigation,Medium,Partial,/guides/stablecoin-liquidity-pools/,Expand example
+P2,Meteora DLMM,Meteora DLMM strategy,Meteora DLMM guide,Strategy,Emerging,Partial,/guides/meteora-dlmm-strategy/,Build
+P2,Meteora DLMM,Meteora DLMM strategy,Meteora DLMM bin step,Decision,Emerging,Partial,/guides/meteora-dlmm-strategy/,Add section
+P2,Meteora DLMM,Meteora DLMM strategy,Meteora DLMM fees,Decision,Emerging,Partial,/guides/meteora-dlmm-strategy/,Add section
+P2,Meteora DLMM,Meteora DLMM strategy,Meteora DLMM impermanent loss,Risk,Emerging,Partial,/guides/meteora-dlmm-strategy/,Add section
+P2,Meteora DLMM,Meteora DLMM strategy,Meteora DLMM rebalance,Strategy,Emerging,Missing,/guides/meteora-dlmm-strategy/,Add section
+P2,Meteora calculator,Meteora DLMM calculator,Meteora DLMM simulator,Tool,Emerging,Missing,/tools/meteora-dlmm-calculator/,Build after generic tool
+P2,Meteora workflow,how to provide liquidity on Meteora,how to create a liquidity pool on Meteora,How-to,Emerging,Missing,/guides/how-to-provide-liquidity-on-meteora/,Prioritize LP not token launch
+P2,Raydium CLMM,Raydium liquidity pool,Raydium CLMM explained,Informational,Emerging,Missing,/guides/raydium-clmm-liquidity-guide/,Build
+P2,Raydium CLMM,Raydium liquidity pool,how to provide liquidity on Raydium,How-to,Emerging,Missing,/guides/raydium-clmm-liquidity-guide/,Build
+P2,Raydium CLMM,Raydium liquidity pool,Raydium liquidity pool fees,Decision,Emerging,Missing,/guides/raydium-clmm-liquidity-guide/,Add section
+P2,Raydium CLMM,Raydium liquidity pool,Raydium liquidity pool calculator,Tool,Emerging,Missing,/tools/concentrated-liquidity-calculator/,Reuse shared model
+P2,PancakeSwap,PancakeSwap liquidity pool,PancakeSwap v3 liquidity pool,How-to,Medium,Missing,/guides/pancakeswap-v3-liquidity-guide/,Build later
+P2,PancakeSwap,PancakeSwap liquidity pool,PancakeSwap liquidity pool calculator,Tool,Medium,Missing,/tools/concentrated-liquidity-calculator/,Reuse shared model
+P2,Curve,Curve liquidity pool,Curve Finance liquidity pool,Informational,Medium,Partial,/guides/curve-liquidity-pools/,Broaden beyond v2
+P2,Balancer,Balancer weighted pools,weighted pool impermanent loss,Informational,Medium,Covered,/guides/balancer-and-weighted-pools/,Add calculator mode
+P2,Pool discovery,best liquidity pools,best DeFi liquidity pools,Investigation,Strong,Missing,/research/best-liquidity-pools/,Only with live methodology
+P2,Pool discovery,best liquidity pools,liquidity pools with highest APY,Investigation,Strong,Missing,/research/best-liquidity-pools/,Do not publish static claims
+P2,Pool discovery,liquidity pool tracker,DeFi liquidity pool tracker,Tool,Medium,Missing,/tools/liquidity-pool-tracker/,Requires on-chain data
+P2,Pool discovery,liquidity pool screener,liquidity pool finder,Tool,Medium,Missing,/tools/liquidity-pool-screener/,Requires on-chain data
+P2,Pool safety,liquidity pool lock checker,liquidity pool checker,Tool,Medium,Missing,/tools/liquidity-pool-checker/,Clarify lock does not equal safety
+P3,Advanced LP,liquidity pool rebalancing,automated liquidity management,Strategy,Editorial,Partial,/guides/liquidity-pool-rebalancing/,Publish after utility pages
+P3,Advanced LP,delta neutral liquidity pool,liquidity pool hedging,Strategy,Medium,Partial,/guides/delta-neutral-liquidity-provision/,Publish after utility pages
+P3,Advanced LP,LVR,loss versus rebalancing,Research,Editorial,Partial,/guides/loss-versus-rebalancing/,Build citation asset
+P3,Advanced LP,JIT liquidity,JIT liquidity providers,Research,Editorial,Covered,/guides/mev-and-liquidity-providers/,Expand existing
+P3,Uniswap v4,Uniswap v4 hooks,Uniswap v4 dynamic fee hook,Technical,Emerging,Covered,/guides/uniswap-v4-architecture-and-hooks/,Expand with verified examples
+Exclude,Ambiguous forex,liquidity pools in trading,liquidity pool ICT,Forex,Strong,Wrong intent,None,Do not target on DeFi pages
+Exclude,Ambiguous forex,liquidity pool heatmap,liquidity sweep,Forex,Strong,Wrong intent,None,Do not target on DeFi pages
+Defer,Token launch,how to create a liquidity pool,create Raydium liquidity pool,Issuer how-to,Strong,Out of scope,None,Defer due positioning and safety risk
