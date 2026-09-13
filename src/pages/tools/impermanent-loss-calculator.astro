@@ -78,7 +78,7 @@ const breadcrumbSchema = {
   <section class="section section--paper" style="padding-top:64px">
     <div class="container">
       <div class="tool-layout">
-        <form class="tool-panel" id="il-form" novalidate>
+        <form class="tool-panel" id="il-form" data-calculator="impermanent_loss" novalidate>
           <h2>Position inputs</h2>
           <p class="tool-panel__note">Defaults describe a balanced ETH/USDC deposit where ETH has risen from 2,000 to 3,000. Every field updates the result immediately.</p>
 
@@ -148,6 +148,12 @@ const breadcrumbSchema = {
           </div>
           <p class="tool-verdict" id="out-verdict">Fee income has covered the divergence over this holding period.</p>
           <p class="tool-disclaimer">Educational model only. Excludes gas, price impact on entry and exit, emissions, and time spent out of range. Not investment advice.</p>
+          <nav class="tool-next" aria-label="Understand this result">
+            <span>Understand the number</span>
+            <a href="/guides/impermanent-loss-explained/" data-cta="calculator_result_link">Impermanent loss explained <span aria-hidden="true">↗</span></a>
+            <a href="/guides/lp-fees-vs-impermanent-loss/" data-cta="calculator_result_link">Do fees cover the loss? <span aria-hidden="true">↗</span></a>
+            <a href="/guides/how-to-avoid-impermanent-loss/" data-cta="calculator_result_link">How to reduce impermanent loss <span aria-hidden="true">↗</span></a>
+          </nav>
         </div>
       </div>
     </div>
@@ -220,10 +226,10 @@ const breadcrumbSchema = {
           <div class="faq-block">
             <h2>Frequently asked questions</h2>
             {faq.map((item) => (
-              <div class="faq-item">
-                <h3>{item.q}</h3>
+              <details class="faq-item">
+                <summary><h3>{item.q}</h3></summary>
                 <p>{item.a}</p>
-              </div>
+              </details>
             ))}
           </div>
         </div>

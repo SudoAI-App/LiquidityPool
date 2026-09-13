@@ -1,32 +1,85 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import ArticleCard from '../components/ArticleCard.astro';
-import { articles } from '../lib/articles';
+import { articles, articleBySlug } from '../lib/articles';
 import { authors } from '../lib/authors';
+import { toolCatalog } from '../lib/tools';
 const latest = articles.slice(0, 6);
 const authorList = Object.values(authors);
+const tools = [
+  { ...toolCatalog.impermanentLoss, eyebrow: 'Risk · Divergence' },
+  { ...toolCatalog.poolFees, eyebrow: 'Revenue · Fee modelling' },
+  { ...toolCatalog.lpProfit, eyebrow: 'Outcome · Net result' },
+  { ...toolCatalog.uniswapV3, eyebrow: 'Range · Concentrated positions' }
+];
+const questions = [
+  { slug: 'what-is-a-liquidity-pool', lead: 'New to DeFi?', ask: 'What is a liquidity pool?' },
+  { slug: 'can-you-lose-money-in-a-liquidity-pool', lead: 'Worried about losses?', ask: 'Can I lose money as an LP?' },
+  { slug: 'is-providing-liquidity-profitable', lead: 'Weighing the return?', ask: 'Is providing liquidity profitable?' }
+];
+// The questions readers search for most, one link each, so every cluster is reachable from the homepage.
+const commonQuestions = [
+  'how-to-provide-liquidity', 'automated-market-maker-explained', 'liquidity-pool-tokens', 'liquidity-pool-types',
+  'impermanent-loss-explained', 'impermanent-loss-formula', 'how-to-avoid-impermanent-loss', 'liquidity-pool-risks',
+  'concentrated-liquidity-explained', 'out-of-range-liquidity', 'apr-vs-apy-in-defi', 'liquidity-pool-vs-staking',
+  'slippage-and-price-impact', 'yield-farming-explained', 'uniswap-v3-vs-v4', 'liquidity-pools-for-beginners'
+].map((slug) => {
+  const article = articleBySlug(slug);
+  if (!article) throw new Error(`Homepage links to a guide that does not exist: ${slug}`);
+  return article;
+});
+for (const question of questions) {
+  if (!articleBySlug(question.slug)) throw new Error(`Homepage links to a guide that does not exist: ${question.slug}`);
+}
 ---
 <BaseLayout title="Liquidity Pools Explained: AMMs, Impermanent Loss & LP Risk" description="A precise field guide to liquidity pools, automated market makers, impermanent loss, and onchain liquidity research, with free calculators for LP fee income and divergence." image="/images/liquiditypool-hero.webp">
   <section class="hero">
     <div class="hero-visual" aria-hidden="true"></div>
     <div class="container hero-grid">
       <div class="hero-copy">
-        <div class="eyebrow eyebrow--mint">Independent DeFi Research · Est. 2026</div>
+        <div class="eyebrow eyebrow--mint">Free guides &amp; calculators for liquidity providers</div>
         <h1 class="display">Where liquidity<br />becomes <em>legible.</em></h1>
-        <p>LiquidityPools.app is a calm, precise field guide to the mechanics, risks, and research habits behind decentralized liquidity.</p>
-        <div class="hero-actions">
-          <a class="button button--mint" href="/guides/what-is-a-liquidity-pool/">Start with liquidity pools <span aria-hidden="true">↗</span></a>
-          <a class="button button--line" href="/tools/impermanent-loss-calculator/">Open the IL calculator</a>
-        </div>
+        <p>Plain-English guides to how liquidity pools work, what impermanent loss costs you and whether fees cover it, plus free calculators that run in your browser. No wallet, no sign-up.</p>
+        <nav class="hero-questions" aria-label="Start with a question">
+          {questions.map((item) => (
+            <a href={`/guides/${item.slug}/`} data-cta="home_question"><span>{item.lead}</span><strong>{item.ask} <em aria-hidden="true">↗</em></strong></a>
+          ))}
+        </nav>
       </div>
-      <aside class="hero-ledger">
-        <div class="eyebrow eyebrow--mint">The editorial premise</div>
-        <p>Less heat. More structure. Every guide distinguishes mechanism from outcome and education from recommendation.</p>
-        <strong>{articles.length} peer-reviewed guides</strong>
+      <aside class="hero-calc" aria-labelledby="hero-calc-title">
+        <form data-calculator="impermanent_loss_mini" novalidate>
+          <div class="eyebrow eyebrow--mint" id="hero-calc-title">Quick check · Impermanent loss</div>
+          <p class="hero-calc__note">Token price when you deposited, and now. Paired with a stablecoin.</p>
+          <div class="hero-calc__fields">
+            <label>At deposit<input id="mini-p0" type="number" inputmode="decimal" step="any" min="0" value="2000" /></label>
+            <label>Now<input id="mini-p1" type="number" inputmode="decimal" step="any" min="0" value="3000" /></label>
+          </div>
+          <output class="hero-calc__result" for="mini-p0 mini-p1" aria-live="polite"><strong id="mini-il">−2.02%</strong><span id="mini-note">A $10,000 deposit trails holding by $252.55 before fees.</span></output>
+          <a class="text-link" href="/tools/impermanent-loss-calculator/" data-cta="home_mini_calculator">Add fees in the full calculator <span aria-hidden="true">↗</span></a>
+        </form>
       </aside>
     </div>
   </section>
   <div class="ticker"><div class="container ticker-track"><span>Liquidity pools</span><span class="ticker-dot"></span><span>AMM mechanics</span><span class="ticker-dot"></span><span>Risk frameworks</span><span class="ticker-dot"></span><span>Onchain research</span><span class="ticker-dot"></span><span>Free LP calculators</span><span class="ticker-dot"></span><span>For learners &amp; builders</span></div></div>
+
+  <section class="section section--mist section--tight">
+    <div class="container">
+      <div class="section-head">
+        <div><div class="kicker">Calculators</div><h2 class="section-title display">Model the position before you fund it.</h2></div>
+        <p class="section-intro">Four calculators that state their formula and their limits on the same page. Everything runs locally; nothing is stored.</p>
+      </div>
+      <div class="article-grid article-grid--tools">
+        {tools.map((tool) => (
+          <a class="tool-card" href={tool.href} data-cta="home_tool_card">
+            <div class="feature-card__meta" style="color:#537063"><span>{tool.eyebrow}</span></div>
+            <h3>{tool.title}</h3>
+            <p>{tool.prompt}</p>
+            <span class="tool-card__status">Live · runs in your browser</span>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
 
   <section class="section section--paper">
     <div class="container">
@@ -53,32 +106,14 @@ const authorList = Object.values(authors);
     </div>
   </section>
 
-  <section class="section section--mist">
+  <section class="section section--mist section--tight">
     <div class="container">
-      <div class="section-head">
-        <div><div class="kicker">Calculators</div><h2 class="section-title display">Model the position before you fund it.</h2></div>
-        <p class="section-intro">Three calculators that state their formula and their limits on the same page. Everything runs locally; nothing is stored.</p>
-      </div>
-      <div class="article-grid" style="grid-template-columns:repeat(3, 1fr)">
-        <a class="tool-card" href="/tools/impermanent-loss-calculator/">
-          <div class="feature-card__meta" style="color:#537063"><span>Risk · Divergence</span></div>
-          <h3>Impermanent Loss Calculator</h3>
-          <p>Entry and exit prices in, divergence against holding out, with the fee income required to break even and the net result of the position.</p>
-          <span class="tool-card__status">Live · runs in your browser</span>
-        </a>
-        <a class="tool-card" href="/tools/liquidity-pool-calculator/">
-          <div class="feature-card__meta" style="color:#537063"><span>Revenue · Fee modelling</span></div>
-          <h3>Liquidity Pool Fee &amp; APR Calculator</h3>
-          <p>Fee tier, routed volume, liquidity share and time in range resolve into daily, period and annualised income, net of the gas your cadence costs.</p>
-          <span class="tool-card__status">Live · runs in your browser</span>
-        </a>
-        <a class="tool-card" href="/tools/lp-profit-calculator/">
-          <div class="feature-card__meta" style="color:#537063"><span>Outcome · Net result</span></div>
-          <h3>LP Profit &amp; Return Calculator</h3>
-          <p>Both sides of the ledger in one place: income against divergence and gas, benchmarked against holding the assets you deposited.</p>
-          <span class="tool-card__status">Live · runs in your browser</span>
-        </a>
-      </div>
+      <div class="section-head"><div><div class="kicker">Common questions</div><h2 class="section-title display">Find the guide for your question.</h2></div><a class="text-link" href="/topics/">See the reading order <span>↗</span></a></div>
+      <ul class="question-list">
+        {commonQuestions.map((article) => (
+          <li><a href={`/guides/${article.slug}/`} data-cta="home_common_question"><span>{article.category}</span>{article.title}</a></li>
+        ))}
+      </ul>
     </div>
   </section>
 
@@ -124,4 +159,32 @@ const authorList = Object.values(authors);
   </section>
 
   <section class="section section--paper"><div class="container"><div class="newsletter"><div><div class="eyebrow eyebrow--mint">The weekly brief</div><h2>One considered dispatch for people who prefer signal to churn.</h2></div><div class="newsletter-note"><strong>Coming soon.</strong><p>We are building a concise research note for builders, LPs, and serious learners. Until then, the entire launch library is open to read.</p><a class="button button--mint" href="/guides/">Read all {articles.length} guides <span>↗</span></a></div></div></div></section>
+  <script is:inline>
+    (function () {
+      var p0 = document.getElementById('mini-p0');
+      var p1 = document.getElementById('mini-p1');
+      var il = document.getElementById('mini-il');
+      var note = document.getElementById('mini-note');
+      if (!p0 || !p1) return;
+      function render() {
+        var a = parseFloat(p0.value), b = parseFloat(p1.value);
+        if (!(a > 0) || !(b >= 0)) {
+          il.textContent = '—';
+          note.textContent = 'Enter a positive deposit price.';
+          return;
+        }
+        var k = b / a;
+        var loss = k > 0 ? 2 * Math.sqrt(k) / (1 + k) - 1 : -1;
+        var hodl = 5000 * k + 5000;
+        var gap = Math.abs(hodl * loss);
+        il.textContent = (loss < -0.000005 ? '−' : '') + Math.abs(loss * 100).toFixed(2) + '%';
+        note.textContent = gap < 0.005
+          ? 'No divergence: prices have not moved relative to each other.'
+          : 'A $10,000 deposit trails holding by $' + gap.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' before fees.';
+      }
+      p0.addEventListener('input', render);
+      p1.addEventListener('input', render);
+      render();
+    })();
+  </script>
 </BaseLayout>

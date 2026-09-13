@@ -9,6 +9,22 @@
 // Measurement IDs are configurable via environment variables in Cloudflare backend:
 // - PUBLIC_GA_ID / GA_MEASUREMENT_ID
 // - PUBLIC_CLARITY_ID / CLARITY_PROJECT_ID
+//
+// Tags load only on the production hostname. Local builds (`astro preview`),
+// workers.dev and preview URLs are production builds too, and they were
+// reporting into the production property, so the gate is the hostname rather
+// than the build mode. Automated browsers (navigator.webdriver, headless UAs)
+// are skipped as well.
+//
+// Internal devices: open any page with `?lp_internal=1` once to tag that
+// browser as internal (GA `traffic_type=internal`, Clarity tag `internal=1`),
+// and `?lp_internal=0` to clear it. Pair with GA's "Internal traffic" data filter.
+//
+// Custom events (all sent to GA4 and mirrored to Clarity as custom events):
+// - calculator_used  { calculator }            first real input on a calculator, once per page view
+// - cta_click        { cta_id, link_url }      clicks on [data-cta] links and any link into /tools/
+// - outbound_click   { link_url, link_domain } clicks on links to another host
+// - guide_read       { guide_slug }            reader reaches the end of a guide body, once per page view
 
 const isProd = import.meta.env.PROD;
 const ga = (
@@ -26,25 +42,46 @@ const clarity = (
   process.env.CLARITY_PROJECT_ID ||
   (isProd ? 'yfnys7eeci' : '')
 )?.trim();
+
+const allowedHosts = ['liquiditypools.app', 'www.liquiditypools.app'];
 ---
 
-{ga && (
-  <script is:inline async src={`https://www.googletagmanager.com/gtag/js?id=${ga}`}></script>
-)}
-
 {(ga || clarity) && (
-  <script is:inline define:vars={{ ga, clarity }}>
+  <script is:inline define:vars={{ ga, clarity, allowedHosts }}>
     (function () {
+      var host = location.hostname;
+      var ua = navigator.userAgent || '';
+      var automated = navigator.webdriver === true
+        || /HeadlessChrome|Lighthouse|PhantomJS|Googlebot|bingbot|crawler|spider|\bbot\b/i.test(ua)
+        // 800x600 is the default headless screen; every such session in GA had zero engagement.
+        || (screen.width === 800 && screen.height === 600);
+      if (allowedHosts.indexOf(host) === -1 || automated) return;
+
+      var internal = false;
+      try {
+        var flag = new URLSearchParams(location.search).get('lp_internal');
+        if (flag === '1') localStorage.setItem('lp_internal', '1');
+        if (flag === '0') localStorage.removeItem('lp_internal');
+        internal = localStorage.getItem('lp_internal') === '1';
+      } catch (e) {}
+
       if (ga) {
+        var tag = document.createElement('script');
+        tag.async = true;
+        tag.src = 'https://www.googletagmanager.com/gtag/js?id=' + encodeURIComponent(ga);
+        document.head.appendChild(tag);
+
         window.dataLayer = window.dataLayer || [];
         function gtag() { window.dataLayer.push(arguments); }
         window.gtag = gtag;
         gtag('js', new Date());
-        gtag('config', ga, {
+        var config = {
           anonymize_ip: true,
           allow_google_signals: false,
           allow_ad_personalization_signals: false,
-        });
+        };
+        if (internal) config.traffic_type = 'internal';
+        gtag('config', ga, config);
       }
 
       if (clarity) {
@@ -53,7 +90,60 @@ const clarity = (
           var t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
           var y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
         })(window, document, "clarity", "script", clarity);
+        if (internal) window.clarity('set', 'internal', '1');
       }
+
+      function track(name, params) {
+        if (window.gtag) window.gtag('event', name, params || {});
+        if (window.clarity) window.clarity('event', name);
+      }
+
+      // calculator_used: first genuine interaction with a [data-calculator] form.
+      var calculatorsUsed = {};
+      function calculatorInteraction(event) {
+        var form = event.target && event.target.closest && event.target.closest('[data-calculator]');
+        if (!form) return;
+        if (event.type === 'click' && !event.target.closest('button')) return;
+        var name = form.getAttribute('data-calculator');
+        if (calculatorsUsed[name]) return;
+        calculatorsUsed[name] = true;
+        track('calculator_used', { calculator: name });
+        if (window.clarity) window.clarity('set', 'calculator', name);
+      }
+      document.addEventListener('input', calculatorInteraction, true);
+      document.addEventListener('change', calculatorInteraction, true);
+      document.addEventListener('click', calculatorInteraction, true);
+
+      // cta_click and outbound_click.
+      document.addEventListener('click', function (event) {
+        var link = event.target && event.target.closest && event.target.closest('a[href]');
+        if (!link) return;
+        var url;
+        try { url = new URL(link.getAttribute('href'), location.href); } catch (e) { return; }
+        if (url.protocol !== 'http:' && url.protocol !== 'https:') return;
+        if (allowedHosts.indexOf(url.hostname) === -1) {
+          track('outbound_click', { link_url: url.href, link_domain: url.hostname });
+          return;
+        }
+        var cta = link.getAttribute('data-cta');
+        if (cta || url.pathname.indexOf('/tools/') === 0) {
+          track('cta_click', { cta_id: cta || 'tool_link', link_url: url.pathname });
+        }
+      }, true);
+
+      // guide_read: the end-of-guide marker scrolls into view.
+      function watchGuideEnd() {
+        var marker = document.querySelector('[data-guide-end]');
+        if (!marker || !('IntersectionObserver' in window)) return;
+        var observer = new IntersectionObserver(function (entries) {
+          if (!entries.some(function (entry) { return entry.isIntersecting; })) return;
+          observer.disconnect();
+          track('guide_read', { guide_slug: marker.getAttribute('data-guide-end') });
+        });
+        observer.observe(marker);
+      }
+      if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', watchGuideEnd);
+      else watchGuideEnd();
     })();
   </script>
 )}

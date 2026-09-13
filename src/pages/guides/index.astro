@@ -2,6 +2,7 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import ArticleCard from '../../components/ArticleCard.astro';
 import { articles, categories, categoryArticles } from '../../lib/articles';
+import { toolCatalog } from '../../lib/tools';
 
 const breadcrumbSchema = {
   '@context': 'https://schema.org',
@@ -34,6 +35,6 @@ const collectionSchema = {
     <script is:inline type="application/ld+json" set:html={JSON.stringify(collectionSchema)} />
     <script is:inline type="application/ld+json" set:html={JSON.stringify(breadcrumbSchema)} />
   </Fragment>
-  <section class="page-hero"><div class="container"><div class="eyebrow eyebrow--mint">The complete launch library</div><h1 class="page-title">DeFi liquidity, made navigable.</h1><p>{articles.length} durable guides, arranged from first principles through to concentrated liquidity, onchain metrics, and market structure.</p><div class="category-nav">{categories.map((category) => <a class="category-pill" href={'#' + category.toLowerCase().replaceAll(' ', '-').replace('&', 'and')}>{category}</a>)}</div></div></section>
+  <section class="page-hero"><div class="container"><div class="eyebrow eyebrow--mint">The complete launch library</div><h1 class="page-title">DeFi liquidity, made navigable.</h1><p>{articles.length} durable guides, arranged from first principles through to concentrated liquidity, onchain metrics, and market structure.</p><div class="category-nav">{categories.map((category) => <a class="category-pill" href={'#' + category.toLowerCase().replaceAll(' ', '-').replace('&', 'and')}>{category}</a>)}</div><div class="hero-tools"><span>Prefer numbers?</span>{Object.values(toolCatalog).map((tool) => <a href={tool.href} data-cta="guides_hero_tool">{tool.title} <span aria-hidden="true">↗</span></a>)}</div></div></section>
   <section class="section section--paper"><div class="container"><div class="guide-layout"><aside class="guide-aside"><h2>Navigate by track</h2>{categories.map((category) => <a href={'#' + category.toLowerCase().replaceAll(' ', '-').replace('&', 'and')}>{category}</a>)}</aside><div>{categories.map((category) => <section id={category.toLowerCase().replaceAll(' ', '-').replace('&', 'and')} style="margin-bottom:68px"><div class="section-head"><div><div class="kicker">{category}</div><h2 class="display" style="font-size:42px;margin:10px 0 0">{category === 'Foundations' ? 'Learn the grammar of liquidity.' : category === 'LP Mechanics' ? 'Follow the position through the pool.' : category === 'Risk & Research' ? 'Build an opinion you can explain.' : 'Put the system into wider context.'}</h2></div></div><div class="guide-list">{categoryArticles(category).map((article) => <ArticleCard article={article} />)}</div></section>)}</div></div></div></section>
 </BaseLayout>

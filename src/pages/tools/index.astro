@@ -84,7 +84,7 @@ const breadcrumbSchema = {
         <div><div class="kicker">Interactive</div><h2 class="section-title display">Model the position before you fund it.</h2></div>
         <p class="section-intro">Each tool states its assumptions and links to the guide that derives them. A number without its model is not a result.</p>
       </div>
-      <div class="article-grid" style="grid-template-columns:repeat(2, 1fr)">
+      <div class="article-grid article-grid--two">
         {tools.map((tool) => (
           <a class="tool-card" href={tool.href}>
             <div class="feature-card__meta" style="color:#537063"><span>{tool.eyebrow}</span></div>
@@ -100,7 +100,7 @@ const breadcrumbSchema = {
   <section class="section section--ink">
     <div class="container">
       <div class="section-head"><div><div class="eyebrow eyebrow--mint">Frameworks</div><h2 class="section-title display">Checklists that do not need a calculator.</h2></div><a class="text-link" href="/guides/">Browse all guides <span>↗</span></a></div>
-      <div class="track-grid" style="grid-template-columns:repeat(3, 1fr)">
+      <div class="track-grid track-grid--three">
         {frameworks.map((item, index) => (
           <a class="track" href={item.href}>
             <span class="track__number">0{index + 1} / FRAMEWORK</span>

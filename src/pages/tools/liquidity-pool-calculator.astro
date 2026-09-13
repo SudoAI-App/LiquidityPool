@@ -78,7 +78,7 @@ const breadcrumbSchema = {
   <section class="section section--paper" style="padding-top:64px">
     <div class="container">
       <div class="tool-layout">
-        <form class="tool-panel" id="lp-form" novalidate>
+        <form class="tool-panel" id="lp-form" data-calculator="liquidity_pool_fee" novalidate>
           <h2>Pool inputs</h2>
           <p class="tool-panel__note">Use pool-level figures for the specific fee tier you intend to supply. Your capital is added to active liquidity automatically, because your deposit dilutes the pool you are joining.</p>
 
@@ -145,6 +145,12 @@ const breadcrumbSchema = {
           </div>
           <p class="tool-verdict" id="out-verdict">This is gross fee capture. Divergence against holding is measured separately and must be subtracted before calling any of it profit.</p>
           <p class="tool-disclaimer">Educational model only. Assumes constant volume, a stable share of liquidity, and no price impact on entry or exit. Not investment advice.</p>
+          <nav class="tool-next" aria-label="Understand this result">
+            <span>Understand the number</span>
+            <a href="/guides/liquidity-provider-fees/" data-cta="calculator_result_link">How LP fees are earned <span aria-hidden="true">↗</span></a>
+            <a href="/guides/apr-vs-apy-in-defi/" data-cta="calculator_result_link">APR vs APY in DeFi <span aria-hidden="true">↗</span></a>
+            <a href="/tools/lp-profit-calculator/" data-cta="calculator_result_link">Net the fees against divergence <span aria-hidden="true">↗</span></a>
+          </nav>
         </div>
       </div>
     </div>
@@ -201,10 +207,10 @@ const breadcrumbSchema = {
           <div class="faq-block">
             <h2>Frequently asked questions</h2>
             {faq.map((item) => (
-              <div class="faq-item">
-                <h3>{item.q}</h3>
+              <details class="faq-item">
+                <summary><h3>{item.q}</h3></summary>
                 <p>{item.a}</p>
-              </div>
+              </details>
             ))}
           </div>
         </div>

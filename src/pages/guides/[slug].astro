@@ -2,6 +2,7 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { articles, articleBySlug } from '../../lib/articles';
 import { getAuthor } from '../../lib/authors';
+import { toolForGuide } from '../../lib/tools';
 
 export function getStaticPaths() { return articles.map((article) => ({ params: { slug: article.slug } })); }
 const article = articleBySlug(Astro.params.slug!);
@@ -25,7 +26,7 @@ const articleSchema = {
     name: authorInfo.name,
     jobTitle: authorInfo.role,
     description: authorInfo.bio,
-    url: 'https://liquiditypools.app/about#' + authorInfo.id
+    url: 'https://liquiditypools.app/about/#' + authorInfo.id
   },
   publisher: {
     '@type': 'Organization',
@@ -61,20 +62,55 @@ const faqSchema = faq.length
   : null;
 const trackArticles = articles.filter((item) => item.category === article.category);
 const trackIndex = trackArticles.findIndex((item) => item.slug === article.slug) + 1;
+const trackAnchor = '/guides/#' + article.category.toLowerCase().replaceAll(' ', '-').replace('&', 'and');
+const tool = toolForGuide(article);
 ---
 <BaseLayout title={article.title + ' — LiquidityPools.app'} description={article.description} type="article" image={articleImage} author={authorInfo.name}>
   <Fragment slot="head"><link rel="stylesheet" href="/katex/katex.min.css" /><script is:inline type="application/ld+json" set:html={JSON.stringify(articleSchema)} /><script is:inline type="application/ld+json" set:html={JSON.stringify(breadcrumbSchema)} />{faqSchema && <script is:inline type="application/ld+json" set:html={JSON.stringify(faqSchema)} />}</Fragment>
-  <section class="article-hero"><div class="container article-hero__grid"><div><div class="eyebrow eyebrow--mint">{article.category} · Track Guide {trackIndex} of {trackArticles.length}</div><h1>{article.title}</h1><p class="dek">{article.description}</p></div><div class="article-meta"><div>Published<strong>{new Date(article.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</strong></div><div>Last reviewed<strong>{new Date(reviewedDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</strong></div><div>By<strong>{authorInfo.name}</strong></div><div>Reading time<strong>{article.readTime}</strong></div></div></div></section>
-  <article class="container article-layout"><aside class="article-rail"><div><h2>Track Progress</h2><p><strong>{article.category}</strong><br />Part {trackIndex} of {trackArticles.length} in this sequence.</p><p style="margin-top:6px"><a href="/topics/">View learning path ↗</a></p></div><div><h2>Research standard</h2><p>Mechanism first. Material claims are sourced. Outcomes remain conditional.</p></div><div><h2>Related in Track</h2>{related.map((item) => <a href={'/guides/' + item.slug + '/'}>{item.title}</a>)}</div></aside><div class="article-content"><Content />{faq.length > 0 && (
+  <section class="article-hero"><div class="container article-hero__grid"><div><div class="eyebrow eyebrow--mint"><a class="eyebrow-link" href={trackAnchor}>{article.category}</a> · Track Guide {trackIndex} of {trackArticles.length}</div><h1>{article.title}</h1><p class="dek">{article.description}</p></div><div class="article-meta"><div>Published<strong>{new Date(article.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</strong></div><div>Last reviewed<strong>{new Date(reviewedDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</strong></div><div>By<strong>{authorInfo.name}</strong></div><div>Reading time<strong>{article.readTime}</strong></div></div></div></section>
+  <article class="container article-layout"><aside class="article-rail"><div><h2>Track Progress</h2><p><strong>{article.category}</strong><br />Part {trackIndex} of {trackArticles.length} in this sequence.</p><p style="margin-top:6px"><a href="/topics/">View learning path ↗</a></p></div><div><h2>Research standard</h2><p>Mechanism first. Material claims are sourced. Outcomes remain conditional.</p></div><div><h2>Related in Track</h2>{related.map((item) => <a href={'/guides/' + item.slug + '/'}>{item.title}</a>)}</div></aside><div class="article-content"><Content /><aside class="tool-callout" data-tool-callout><div class="tool-callout__eyebrow">Run your own numbers</div><p><strong>{tool.title}.</strong> {tool.prompt}</p><a class="tool-callout__link" href={tool.href} data-cta="guide_tool_callout">Open the calculator <span aria-hidden="true">↗</span></a></aside><script is:inline>
+    (function () {
+      // Lift the calculator prompt to just before the guide's second section, so it sits in the
+      // first quarter of the read instead of after it. Without JS it stays at the end of the body.
+      var callout = document.currentScript.previousElementSibling;
+      var sections = callout.parentElement.querySelectorAll(':scope > h2');
+      if (sections.length > 2) sections[1].parentElement.insertBefore(callout, sections[1]);
+    })();
+  </script>{faq.length > 0 && (
     <div class="faq-block">
       <h2>Frequently asked questions</h2>
       {faq.map((item) => (
-        <div class="faq-item">
-          <h3>{item.q}</h3>
+        <details class="faq-item">
+          <summary><h3>{item.q}</h3></summary>
           <p>{item.a}</p>
-        </div>
+        </details>
       ))}
     </div>
-  )}<div class="article-author-card"><div class="article-author-card__avatar">{authorInfo.initials}</div><div class="article-author-card__content"><div class="article-author-card__eyebrow">Written &amp; Reviewed By</div><h3 class="article-author-card__name">{authorInfo.name}</h3><div class="article-author-card__role">{authorInfo.role}</div><div class="article-author-card__credentials">{authorInfo.credentials}</div><p class="article-author-card__bio">{authorInfo.bio}</p></div></div><div class="article-end"><h2 class="display">Keep the model, not just the answer.</h2><p>Every liquidity position has a context. Continue through the <a href="/guides/"><strong>full research library</strong></a> to connect this idea with the mechanism, risks, and market conditions around it.</p></div></div><aside class="article-rail"><div><h2>Author</h2><p><strong>{authorInfo.name}</strong><br /><span style="font-size:11px;color:#527366">{authorInfo.role}</span></p><p style="margin-top:8px"><a href="/about/#authors">Meet the research team ↗</a></p></div><div><h2>Onchain Tool Stack</h2><p style="font-size:11.5px;color:#55705e;margin-bottom:8px">Recommended research tools:</p><a href="https://revert.finance" target="_blank" rel="noopener">Revert Finance ↗</a><a href="https://dune.com" target="_blank" rel="noopener">Dune Analytics ↗</a><a href="https://defillama.com" target="_blank" rel="noopener">DeFiLlama Yields ↗</a></div><div><h2>Editorial note</h2><p>This guide is educational and general in nature. It is not investment, legal, tax, or financial advice.</p></div><div><h2>Method</h2><p><a href="/about/">How LiquidityPool sources, reviews, and updates its work.</a></p></div></aside></article>
+  )}<div class="article-author-card"><div class="article-author-card__avatar">{authorInfo.initials}</div><div class="article-author-card__content"><div class="article-author-card__eyebrow">Written &amp; Reviewed By</div><h3 class="article-author-card__name"><a href={'/about/#' + authorInfo.id}>{authorInfo.name}</a></h3><div class="article-author-card__role">{authorInfo.role}</div><div class="article-author-card__credentials">{authorInfo.credentials}</div><p class="article-author-card__bio">{authorInfo.bio}</p></div></div><div class="article-end" data-guide-end={article.slug}><h2 class="display">Keep the model, not just the answer.</h2><p>Every liquidity position has a context. Continue through the <a href="/guides/"><strong>full research library</strong></a> to connect this idea with the mechanism, risks, and market conditions around it.</p></div></div><aside class="article-rail"><div><h2>Author</h2><p><strong>{authorInfo.name}</strong><br /><span style="font-size:11px;color:#527366">{authorInfo.role}</span></p><p style="margin-top:8px"><a href="/about/#authors">Meet the research team ↗</a></p></div><div><h2>Onchain Tool Stack</h2><p style="font-size:11.5px;color:#55705e;margin-bottom:8px">Recommended research tools:</p><a href="https://revert.finance" target="_blank" rel="noopener">Revert Finance ↗</a><a href="https://dune.com" target="_blank" rel="noopener">Dune Analytics ↗</a><a href="https://defillama.com" target="_blank" rel="noopener">DeFiLlama Yields ↗</a></div><div><h2>Editorial note</h2><p>This guide is educational and general in nature. It is not investment, legal, tax, or financial advice.</p></div><div><h2>Method</h2><p><a href="/about/">How LiquidityPool sources, reviews, and updates its work.</a></p></div></aside></article>
+  <dialog class="figure-dialog" data-figure-dialog aria-label="Enlarged figure"><form method="dialog"><button class="figure-dialog__close" aria-label="Close enlarged figure">Close ✕</button></form><img alt="" /></dialog>
+  <script is:inline>
+    (function () {
+      // Readers click the editorial figures expecting to zoom in; give that click a result.
+      var dialog = document.querySelector('[data-figure-dialog]');
+      if (!dialog || typeof dialog.showModal !== 'function') return;
+      var large = dialog.querySelector('img');
+      Array.prototype.forEach.call(document.querySelectorAll('.article-content .article-figure img'), function (img) {
+        img.classList.add('is-zoomable');
+        img.setAttribute('tabindex', '0');
+        img.setAttribute('role', 'button');
+        img.setAttribute('aria-label', 'Enlarge figure: ' + (img.getAttribute('alt') || ''));
+        function open() {
+          large.src = img.currentSrc || img.src;
+          large.alt = img.alt;
+          dialog.showModal();
+        }
+        img.addEventListener('click', open);
+        img.addEventListener('keydown', function (event) {
+          if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); open(); }
+        });
+      });
+      dialog.addEventListener('click', function (event) { if (event.target === dialog || event.target === large) dialog.close(); });
+    })();
+  </script>
 </BaseLayout>
 

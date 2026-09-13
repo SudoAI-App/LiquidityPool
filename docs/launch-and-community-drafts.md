@@ -2,6 +2,19 @@
 
 This document contains pre-approved, high-signal promotional copy and distribution drafts tailored for technical, crypto-native, and developer communities.
 
+### Tracking links (required)
+
+GA4 attributes 95%+ of launch-week sessions to Direct because the links below carried no campaign tags. Every link posted from this playbook must carry the campaign suffix for its channel, and must keep the trailing slash so it does not pass through a redirect:
+
+| Channel | Suffix |
+| :--- | :--- |
+| Hacker News | `?utm_source=hn&utm_medium=social&utm_campaign=launch-2026-09` |
+| Reddit | `?utm_source=reddit&utm_medium=social&utm_campaign=launch-2026-09` |
+| X | `?utm_source=x&utm_medium=social&utm_campaign=launch-2026-09` |
+| Farcaster | `?utm_source=farcaster&utm_medium=social&utm_campaign=launch-2026-09` |
+
+Example: `https://liquiditypools.app/guides/impermanent-loss-explained/?utm_source=reddit&utm_medium=social&utm_campaign=launch-2026-09`
+
 ---
 
 ## 1. Hacker News "Show HN" (DR 90+)
@@ -9,7 +22,7 @@ This document contains pre-approved, high-signal promotional copy and distributi
 ### Post Details
 - **Target Subreddit / Forum**: [news.ycombinator.com/submit](https://news.ycombinator.com/submit)
 - **Title**: `Show HN: LiquidityPools.app – A calm, mechanism-first research library for DeFi liquidity`
-- **URL**: `https://liquiditypools.app`
+- **URL**: `https://liquiditypools.app/tools/impermanent-loss-calculator/?utm_source=hn&utm_medium=social&utm_campaign=launch-2026-09` (land Show HN on the calculator, which people can try immediately, rather than on the homepage)
 - **Optimal Posting Time**: Tuesday / Wednesday / Thursday 08:00–10:00 AM Eastern Time (20:00–22:00 Beijing Time)
 
 ### First Comment / Context Submission (By Founder)
@@ -24,7 +37,7 @@ What makes it different:
 1. Zero tokens, zero price calls, zero ads: No affiliate links, no yield farming promotions, no token emissions.
 2. Mechanism-first pedagogy: Every guide breaks down the core invariants (e.g. constant product x*y=k, concentrated liquidity tick math, and stable swap amplification coefficients).
 3. Honest risk modeling: Detailed teardowns of impermanent loss vs. buy-and-hold benchmarks, MEV sandwich extraction on LPs, and cross-chain fragmentation.
-4. Fast & Static: Built with Astro 7, pure SVG diagrams, zero tracking bloat, and deployed on edge infrastructure.
+4. Fast & Static: Built with Astro 7, static pages, privacy-configured analytics (IP anonymisation on, no Google Signals, no ads), and deployed on edge infrastructure.
 
 The initial library launches with 20 long-form guides across four tracks: Foundations, LP Mechanics, Risk & Research, and Advanced.
 

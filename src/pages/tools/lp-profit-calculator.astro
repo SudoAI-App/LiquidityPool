@@ -78,7 +78,7 @@ const breadcrumbSchema = {
   <section class="section section--paper" style="padding-top:64px">
     <div class="container">
       <div class="tool-layout">
-        <form class="tool-panel" id="profit-form" novalidate>
+        <form class="tool-panel" id="profit-form" data-calculator="lp_profit" novalidate>
           <h2>Position inputs</h2>
           <p class="tool-panel__note">Defaults describe a 10,000 dollar ETH/USDC position opened at 2,000 per ETH and held for 60 days while ETH rose to 2,800.</p>
 
@@ -157,6 +157,12 @@ const breadcrumbSchema = {
           </div>
           <p class="tool-verdict" id="out-verdict">Income cleared the divergence and the gas over this holding period.</p>
           <p class="tool-disclaimer">Educational model only. Assumes a balanced deposit on an unbounded constant-product curve, no intermediate withdrawals, and no price impact on entry or exit. Not investment advice.</p>
+          <nav class="tool-next" aria-label="Understand this result">
+            <span>Understand the number</span>
+            <a href="/guides/is-providing-liquidity-profitable/" data-cta="calculator_result_link">Is providing liquidity profitable? <span aria-hidden="true">↗</span></a>
+            <a href="/guides/lp-fees-vs-impermanent-loss/" data-cta="calculator_result_link">Fees vs impermanent loss <span aria-hidden="true">↗</span></a>
+            <a href="/guides/lp-gas-costs/" data-cta="calculator_result_link">Gas costs for LPs <span aria-hidden="true">↗</span></a>
+          </nav>
         </div>
       </div>
     </div>
@@ -215,10 +221,10 @@ const breadcrumbSchema = {
           <div class="faq-block">
             <h2>Frequently asked questions</h2>
             {faq.map((item) => (
-              <div class="faq-item">
-                <h3>{item.q}</h3>
+              <details class="faq-item">
+                <summary><h3>{item.q}</h3></summary>
                 <p>{item.a}</p>
-              </div>
+              </details>
             ))}
           </div>
         </div>

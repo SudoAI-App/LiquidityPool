@@ -82,7 +82,7 @@ const breadcrumbSchema = {
   <section class="section section--paper" style="padding-top:64px">
     <div class="container">
       <div class="tool-layout">
-        <form class="tool-panel" id="v3-form" novalidate>
+        <form class="tool-panel" id="v3-form" data-calculator="uniswap_v3_liquidity" novalidate>
           <h2>Range and position</h2>
           <p class="tool-panel__note">Defaults describe a $10,000 ETH/USDC position at 3,000 with a 2,500–3,600 range, priced 30 days later at 3,300. Every field updates the result immediately.</p>
 
@@ -183,6 +183,12 @@ const breadcrumbSchema = {
             <div class="tool-row"><span>At the upper bound the position holds</span><strong id="out-athigh">0 base / $10,477.23 quote</strong></div>
           </div>
           <p class="tool-disclaimer">Educational model only. Fee income is an arithmetic consequence of the inputs, not a forecast. Excludes gas, entry and exit price impact, emissions, rebalancing and the path taken between prices. Not investment advice.</p>
+          <nav class="tool-next" aria-label="Understand this result">
+            <span>Understand the number</span>
+            <a href="/guides/concentrated-liquidity-explained/" data-cta="calculator_result_link">Concentrated liquidity explained <span aria-hidden="true">↗</span></a>
+            <a href="/guides/concentrated-liquidity-strategy/" data-cta="calculator_result_link">Choosing a range width <span aria-hidden="true">↗</span></a>
+            <a href="/guides/out-of-range-liquidity/" data-cta="calculator_result_link">What happens out of range <span aria-hidden="true">↗</span></a>
+          </nav>
         </div>
       </div>
     </div>
@@ -259,10 +265,10 @@ const breadcrumbSchema = {
           <div class="faq-block">
             <h2>Frequently asked questions</h2>
             {faq.map((item) => (
-              <div class="faq-item">
-                <h3>{item.q}</h3>
+              <details class="faq-item">
+                <summary><h3>{item.q}</h3></summary>
                 <p>{item.a}</p>
-              </div>
+              </details>
             ))}
           </div>
         </div>
