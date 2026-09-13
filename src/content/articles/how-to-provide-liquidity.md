@@ -6,6 +6,7 @@ date: 2026-09-03
 lastReviewed: "2026-09-12"
 author: "Siddharth Mehta"
 readTime: "7 min read"
+primaryQuery: "how to provide liquidity"
 keywords: "how to provide liquidity, provide liquidity AMM, liquidity provider guide, DeFi LP, Permit2, hooks, how to provide liquidity on Uniswap, liquidity provision DeFi, do I need both tokens to provide liquidity"
 featured: true
 faq:

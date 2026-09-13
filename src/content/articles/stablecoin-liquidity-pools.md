@@ -6,6 +6,7 @@ date: 2026-08-30
 lastReviewed: "2026-09-12"
 author: "Aria Chen"
 readTime: "7 min read"
+primaryQuery: "stablecoin liquidity pool"
 keywords: "stablecoin liquidity pool, StableSwap invariant, Curve amplification factor, Ethena USDe, RWA treasury tokens, depeg risk, Uniswap v4 hooks, stablecoin pool risks, correlated asset liquidity pool, peg defense"
 featured: false
 faq:

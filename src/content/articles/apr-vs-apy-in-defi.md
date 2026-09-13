@@ -6,6 +6,7 @@ date: 2026-09-10
 lastReviewed: "2026-09-12"
 author: "Siddharth Mehta"
 readTime: "6 min read"
+primaryQuery: "APR vs APY"
 keywords: "APR vs APY, pool APR vs APY, what is the difference between APR and APY in DeFi, real yield liquidity pools, liquidity pool APY calculator, annualised yield"
 featured: false
 faq:

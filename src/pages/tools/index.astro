@@ -6,7 +6,7 @@ const tools = [
     href: '/tools/impermanent-loss-calculator/',
     eyebrow: 'Risk · Divergence',
     title: 'Impermanent Loss Calculator',
-    description: 'Enter entry and exit prices, capital and fees collected. Returns the divergence against holding, the break-even fee income, and the net result of the position.',
+    description: 'Compare 50/50, weighted, and concentrated range scenarios, chart the IL curve, and share the exact inputs by URL.',
     status: 'Live · runs in your browser'
   },
   {
@@ -19,15 +19,22 @@ const tools = [
   {
     href: '/tools/uniswap-v3-liquidity-calculator/',
     eyebrow: 'Range · Concentrated positions',
-    title: 'Uniswap v3 Liquidity Calculator',
+    title: 'Uniswap v3 & Concentrated Liquidity Calculator',
     description: 'Set a price range and a deposit. Returns token composition at every price, capital efficiency against a full-range position, estimated fees and the result against holding.',
     status: 'Live · runs in your browser'
   },
   {
     href: '/tools/liquidity-pool-calculator/',
     eyebrow: 'Revenue · Fee modelling',
-    title: 'Liquidity Pool Fee & APR Calculator',
-    description: 'Model fee income from fee tier, routed volume, your share of active liquidity and time in range, net of the gas your management cadence costs.',
+    title: 'Liquidity Pool Fees, Rewards & APR Calculator',
+    description: 'Model trading-fee APR and incentive APR separately, then combine them with time in range and gas.',
+    status: 'Live · runs in your browser'
+  },
+  {
+    href: '/tools/meteora-dlmm-calculator/',
+    eyebrow: 'Bins · Meteora DLMM',
+    title: 'Meteora DLMM Calculator',
+    description: 'Model discrete bin prices, Spot, Curve and Bid-Ask shapes, dynamic fees, range state and divergence against holding.',
     status: 'Live · runs in your browser'
   }
 ];
@@ -123,8 +130,8 @@ const breadcrumbSchema = {
         </aside>
         <div class="article-content">
           <h2 id="method">How these tools are built</h2>
-          <p>Every calculator here implements a published formula, states the inputs it needs in plain terms, and lists what it deliberately excludes. That last part matters more than the arithmetic: most disappointing liquidity positions were modelled correctly and scoped wrongly, with gas, time out of range or emission decay left outside the frame.</p>
-          <p>The Uniswap v3 liquidity calculator implements the tick mathematics of a bounded position, so it answers what the position holds at each bound rather than only what it is worth. The same accounting is used by Raydium CLMM and PancakeSwap v3, which is why one tool serves all three. The impermanent loss calculator implements the closed-form divergence expression for a constant-product pool and compares it against a hold benchmark. The liquidity pool fee calculator implements the revenue identity that fee tier, routed volume and liquidity share define, and doubles as an LP APY calculator once the period figure is annualised. The LP return calculator combines both sides into a single profit figure. Neither predicts the future, and none is a substitute for reading the pool's contracts.</p>
+          <p>Every calculator here implements a published formula, states the inputs it needs in plain terms, and lists what it deliberately excludes. The shared <a href="/methodology/">calculator methodology</a> publishes the formulas and the exact worked vectors used by the automated tests.</p>
+          <p>The concentrated-liquidity calculator implements bounded position mathematics shared by Uniswap v3-style pools. Meteora has a separate calculator because DLMM uses fixed-price, constant-sum bins and a protocol-specific dynamic-fee formula. The impermanent loss calculator covers full-range weighted pools and bounded scenarios. The fee calculator keeps trading fees and token incentives separate, while the LP return calculator combines observed income and costs against holding. None predicts the future or substitutes for reading a pool's current state.</p>
 
           <h2 id="trackers">What we do not build</h2>
           <p>There is no liquidity pool tracker or LP position tracker here, and there will not be one until it can be built on live data we control. A DeFi liquidity tracker that reports stale or partial position state is worse than no tracker at all, because it invites decisions on numbers nobody verified.</p>

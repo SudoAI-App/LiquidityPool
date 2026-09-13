@@ -6,6 +6,7 @@ date: 2026-09-06
 lastReviewed: "2026-09-12"
 author: "Dr. Elena Rostova"
 readTime: "8 min read"
+primaryQuery: "Balancer weighted pools"
 keywords: "Balancer weighted pools, 80/20 liquidity pools, constant mean formula, impermanent loss 80/20, Balancer v3, LBP, weighted liquidity pool, Balancer weighted pool, 80/20 liquidity pool"
 featured: false
 faq:

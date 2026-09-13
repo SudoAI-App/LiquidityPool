@@ -6,6 +6,7 @@ date: 2026-08-24
 lastReviewed: "2026-09-12"
 author: "Marcus Vance"
 readTime: "7 min read"
+primaryQuery: "onchain liquidity metrics"
 keywords: "onchain liquidity metrics, executable depth, AMM analytics, LVR rate, order flow toxicity, turnover velocity, JIT dilution factor, TVL verifiability, liquidity pool data, pool analytics DeFi, liquidity pool volume, how to research a DeFi pool"
 featured: false
 faq:

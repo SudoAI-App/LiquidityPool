@@ -6,6 +6,7 @@ date: 2026-09-05
 lastReviewed: "2026-09-12"
 author: "Dr. Kieran Thorne"
 readTime: "8 min read"
+primaryQuery: "liquidity pool tokens"
 keywords: "liquidity pool tokens, LP tokens explained, liquidity position NFT, DeFi LP token, ERC-6909, singleton accounting, what is an LP token, liquidity pool token, LP token risks, pool share crypto"
 featured: false
 faq:

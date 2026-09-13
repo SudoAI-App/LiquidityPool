@@ -6,6 +6,7 @@ date: 2026-08-27
 lastReviewed: "2026-09-12"
 author: "Marcus Vance"
 readTime: "7 min read"
+primaryQuery: "MEV liquidity providers"
 keywords: "MEV liquidity providers, JIT liquidity, sandwich attacks, LVR, toxic order flow, Uniswap v4 hooks, MEV-Share, PBS, how does MEV affect liquidity providers, sandwich attacks liquidity pools, adverse selection AMM"
 featured: false
 faq:

@@ -6,6 +6,7 @@ date: 2026-09-10
 lastReviewed: "2026-09-12"
 author: "Aria Chen"
 readTime: "7 min read"
+primaryQuery: "types of liquidity pools"
 keywords: "types of liquidity pools, liquidity pool types, stablecoin liquidity pool, weighted liquidity pool, correlated asset liquidity pool, lending pool vs liquidity pool"
 featured: false
 faq:

@@ -6,7 +6,8 @@ date: 2026-08-29
 lastReviewed: "2026-09-12"
 author: "Dr. Elena Rostova"
 readTime: "8 min read"
-keywords: "impermanent loss explained, Loss-Versus-Rebalancing, LVR, AMM market microstructure, Uniswap v3 IL, adverse selection, toxic flow, what is impermanent loss, how to avoid impermanent loss, impermanent loss calculator, divergence loss"
+primaryQuery: "impermanent loss explained"
+keywords: "impermanent loss explained, Loss-Versus-Rebalancing, LVR, AMM market microstructure, Uniswap v3 IL, adverse selection, toxic flow, what is impermanent loss, divergence loss"
 featured: true
 faq:
   - q: "What is impermanent loss?"

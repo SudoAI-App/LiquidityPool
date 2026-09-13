@@ -6,6 +6,7 @@ date: 2026-09-11
 lastReviewed: "2026-09-12"
 author: "Siddharth Mehta"
 readTime: "6 min read"
+primaryQuery: "gas fees providing liquidity"
 keywords: "gas fees providing liquidity, LP gas costs, minimum liquidity position size, rebalancing cost, liquidity pool withdrawal risk, cost of providing liquidity"
 featured: false
 faq:

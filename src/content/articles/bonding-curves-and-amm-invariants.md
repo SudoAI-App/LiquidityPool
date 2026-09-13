@@ -6,6 +6,7 @@ date: 2026-09-11
 lastReviewed: "2026-09-12"
 author: "Dr. Elena Rostova"
 readTime: "6 min read"
+primaryQuery: "bonding curve crypto"
 keywords: "bonding curve crypto, invariant AMM, constant sum market maker, constant product market maker, curve shape slippage, AMM invariant design"
 featured: false
 faq:

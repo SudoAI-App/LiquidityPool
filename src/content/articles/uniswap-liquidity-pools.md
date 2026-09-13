@@ -6,7 +6,8 @@ date: 2026-09-11
 lastReviewed: "2026-09-12"
 author: "Dr. Kieran Thorne"
 readTime: "7 min read"
-keywords: "Uniswap liquidity pools, Uniswap liquidity provider, how to provide liquidity on Uniswap, Uniswap pool fees, Uniswap price impact, Uniswap v3 price range, Uniswap v2 liquidity pool"
+primaryQuery: "Uniswap liquidity pools"
+keywords: "Uniswap liquidity pools, Uniswap liquidity provider, Uniswap pool fees, Uniswap price impact, Uniswap v3 price range, Uniswap v2 liquidity pool"
 featured: true
 faq:
   - q: "How do Uniswap liquidity pools work?"

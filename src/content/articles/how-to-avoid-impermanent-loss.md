@@ -6,6 +6,7 @@ date: 2026-09-11
 lastReviewed: "2026-09-12"
 author: "Dr. Elena Rostova"
 readTime: "6 min read"
+primaryQuery: "how to avoid impermanent loss"
 keywords: "how to avoid impermanent loss, reduce impermanent loss, impermanent loss protection, delta hedging LP, correlated asset liquidity pool, single sided liquidity"
 featured: false
 faq:

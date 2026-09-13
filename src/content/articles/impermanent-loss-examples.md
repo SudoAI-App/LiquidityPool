@@ -6,6 +6,7 @@ date: 2026-09-11
 lastReviewed: "2026-09-12"
 author: "Dr. Elena Rostova"
 readTime: "6 min read"
+primaryQuery: "impermanent loss example"
 keywords: "impermanent loss example, impermanent loss calculation example, IL worked example, divergence loss scenario, stablecoin depeg example, impermanent loss vs permanent loss"
 featured: false
 faq:

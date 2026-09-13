@@ -6,6 +6,7 @@ date: 2026-09-11
 lastReviewed: "2026-09-12"
 author: "Marcus Vance"
 readTime: "6 min read"
+primaryQuery: "dynamic fees AMM"
 keywords: "dynamic fees AMM, Uniswap v4 dynamic fee hook, volatility accumulator, fee tier vs dynamic fee, adverse selection pricing, AMM fee design"
 featured: false
 faq:

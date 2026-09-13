@@ -6,6 +6,7 @@ date: 2026-08-22
 lastReviewed: "2026-09-12"
 author: "Dr. Elena Rostova"
 readTime: "12 min read"
+primaryQuery: "market making AMM"
 keywords: "market making AMM, AMM liquidity provider, delta hedging AMM, automated liquidity management, LVR minimization, concentrated liquidity market maker, passive market making DeFi, liquidity pool vs market making, market making DeFi"
 featured: false
 faq:

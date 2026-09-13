@@ -6,6 +6,7 @@ date: 2026-09-11
 lastReviewed: "2026-09-12"
 author: "Aria Chen"
 readTime: "8 min read"
+primaryQuery: "Raydium liquidity pool"
 keywords: "Raydium liquidity pool, Raydium CLMM explained, how to provide liquidity on Raydium, Raydium liquidity pool fees, Raydium CPMM, Solana liquidity pools, Raydium liquidity pool rewards"
 featured: false
 faq:
@@ -172,7 +173,7 @@ Both designs are usable. They fail differently, and the failure that catches peo
 
 ## Where to go next
 
-Model the range decision in the [Uniswap v3 liquidity calculator](/tools/uniswap-v3-liquidity-calculator/), which implements the same tick mathematics Raydium uses, and the shortfall side in the [impermanent loss calculator](/tools/impermanent-loss-calculator/). For the Solana bin-based alternative, read [Meteora DLMM Strategy](/guides/meteora-dlmm-strategy/).
+Model the range decision in the [concentrated liquidity calculator](/tools/uniswap-v3-liquidity-calculator/), which implements the same tick mathematics Raydium uses, and the shortfall side in the [impermanent loss calculator](/tools/impermanent-loss-calculator/). For the Solana bin-based alternative, read [Meteora DLMM Strategy](/guides/meteora-dlmm-strategy/).
 
 ## References
 

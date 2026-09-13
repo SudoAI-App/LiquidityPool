@@ -6,6 +6,7 @@ date: 2026-09-11
 lastReviewed: "2026-09-12"
 author: "Dr. Kieran Thorne"
 readTime: "6 min read"
+primaryQuery: "rug pull liquidity pool"
 keywords: "rug pull liquidity pool, locked liquidity meaning, how to check locked liquidity, pool liquidity locked or unlocked, liquidity pool smart contract audit, how to check if a liquidity pool is safe"
 featured: false
 faq:

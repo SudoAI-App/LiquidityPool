@@ -6,6 +6,7 @@ date: 2026-09-09
 lastReviewed: "2026-09-12"
 author: "Dr. Kieran Thorne"
 readTime: "10 min read"
+primaryQuery: "what is a liquidity pool"
 keywords: "what is a liquidity pool, DeFi liquidity pool, automated market maker, AMM, singleton architecture, hooks, how do liquidity pools work, crypto liquidity pools, liquidity pool explained, liquidity pool meaning"
 featured: true
 faq:

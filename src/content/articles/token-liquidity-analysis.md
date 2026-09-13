@@ -6,7 +6,8 @@ date: 2026-09-11
 lastReviewed: "2026-09-12"
 author: "Marcus Vance"
 readTime: "6 min read"
-keywords: "token liquidity analysis, on-chain pool analytics, how to research a DeFi pool, exit liquidity, volume quality, holder concentration, liquidity pool data"
+primaryQuery: "token liquidity analysis"
+keywords: "token liquidity analysis, on-chain pool analytics, exit liquidity, volume quality, holder concentration"
 featured: false
 faq:
   - q: "How do you analyse a token's liquidity?"

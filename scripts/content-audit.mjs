@@ -4,7 +4,16 @@ import { join } from 'node:path';
 const root = process.cwd();
 const articlesDir = join(root, 'src/content/articles');
 const imagesDir = join(root, 'public/images/guides');
-const requiredFields = ['title', 'description', 'category', 'date', 'lastReviewed', 'author', 'readTime', 'keywords'];
+const requiredFields = ['title', 'description', 'category', 'date', 'lastReviewed', 'author', 'readTime', 'primaryQuery', 'keywords'];
+const toolPrimaryQueries = new Set([
+  'impermanent loss calculator',
+  'liquidity pool calculator',
+  'lp profit calculator',
+  'uniswap v3 liquidity calculator',
+  'concentrated liquidity calculator',
+  'meteora dlmm calculator',
+]);
+const primaryQueryOwners = new Map();
 const prohibitedPhrases = ['in the ever-evolving world', 'revolutionary', 'game-changer', 'unlock the', 'delve into'];
 // Financial-claim language the keyword research flagged as damaging to an educational position.
 // Sources that read as authoritative: research venues, standards bodies, public-sector analysis.
@@ -81,6 +90,18 @@ for (const file of readdirSync(articlesDir).filter((name) => name.endsWith('.md'
 
   for (const field of requiredFields) {
     if (!new RegExp(`^${field}:`, 'm').test(frontmatter[1])) errors.push(`${slug}: missing ${field}`);
+  }
+
+  const primaryQuery = (frontmatter[1].match(/^primaryQuery:\s*"([^"]+)"/m)?.[1] ?? '').trim().toLowerCase();
+  if (primaryQuery) {
+    const owner = primaryQueryOwners.get(primaryQuery);
+    if (owner) errors.push(`${slug}: primaryQuery “${primaryQuery}” is already owned by ${owner}`);
+    else primaryQueryOwners.set(primaryQuery, slug);
+  }
+  const keywordList = (frontmatter[1].match(/^keywords:\s*"([^"]+)"/m)?.[1] ?? '')
+    .split(',').map((keyword) => keyword.trim().toLowerCase()).filter(Boolean);
+  for (const keyword of keywordList) {
+    if (toolPrimaryQueries.has(keyword)) errors.push(`${slug}: guide keyword “${keyword}” collides with a calculator primary query`);
   }
 
   const body = source.slice(frontmatter[0].length);

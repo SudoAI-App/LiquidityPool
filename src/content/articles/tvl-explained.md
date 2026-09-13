@@ -6,7 +6,8 @@ date: 2026-09-04
 lastReviewed: "2026-09-12"
 author: "Aria Chen"
 readTime: "7 min read"
-keywords: "TVL explained, total value locked, DeFi TVL, liquidity pool TVL, restaking leverage, executable depth, TVL liquidity pool, liquidity pool depth, pool utilization DeFi, liquidity depth crypto"
+primaryQuery: "TVL explained"
+keywords: "TVL explained, total value locked, DeFi TVL, liquidity pool TVL, restaking leverage, TVL liquidity pool, pool utilization DeFi"
 featured: false
 faq:
   - q: "What does TVL mean in DeFi?"

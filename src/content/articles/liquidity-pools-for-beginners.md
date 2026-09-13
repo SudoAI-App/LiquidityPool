@@ -6,6 +6,7 @@ date: 2026-09-11
 lastReviewed: "2026-09-12"
 author: "Siddharth Mehta"
 readTime: "6 min read"
+primaryQuery: "liquidity pool for beginners"
 keywords: "liquidity pool for beginners, how to start providing liquidity, DeFi liquidity beginner guide, first liquidity position, liquidity pool basics"
 featured: false
 faq:

@@ -6,6 +6,7 @@ date: 2026-09-02
 lastReviewed: "2026-09-12"
 author: "Marcus Vance"
 readTime: "7 min read"
+primaryQuery: "liquidity provider fees"
 keywords: "liquidity provider fees, LP fees, AMM fee tier, liquidity pool APR, dynamic fees, LVR, liquidity pool fees explained, who pays liquidity pool fees, pool fee tier"
 featured: false
 faq:

@@ -6,6 +6,7 @@ date: 2026-09-07
 lastReviewed: "2026-09-12"
 author: "Dr. Elena Rostova"
 readTime: "7 min read"
+primaryQuery: "DLMM"
 keywords: "DLMM, discretized liquidity, Trader Joe Liquidity Book, Meteora DLMM, zero slippage bins, volatility accumulator, bin step, DLMM explained, DLMM vs concentrated liquidity, liquidity bins crypto, Liquidity Book, volatility accumulator DLMM"
 featured: false
 faq:

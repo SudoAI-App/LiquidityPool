@@ -1,0 +1,107 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const title = 'Meteora DLMM Calculator: Bins, Fees & IL';
+const description = 'Model Meteora DLMM bin prices, Spot, Curve, and Bid-Ask distributions, base and dynamic fees, range state, and divergence versus holding.';
+const canonical = 'https://liquiditypools.app/tools/meteora-dlmm-calculator/';
+const faq = [
+  { q: 'How is a DLMM bin different from a concentrated-liquidity tick?', a: 'Each DLMM bin trades at one fixed price with constant-sum liquidity. Price changes when a swap consumes a bin and advances to another bin. A tick range instead represents a segment of a continuous concentrated-liquidity curve.' },
+  { q: 'How does bin step change price?', a: 'A bin step is measured in basis points. Price at relative bin i is anchor price multiplied by (1 + bin step / 10,000) raised to i.' },
+  { q: 'Are Spot, Curve, and Bid-Ask weights exact deposit quotes?', a: 'No. This calculator uses explicit normalized analytical shapes: uniform, center-heavy, and edge-heavy. Meteora SDK deposit amounts also depend on token balances, active-bin state, integer rounding, and strategy helpers.' },
+  { q: 'Does this connect to Meteora?', a: 'No. This phase is pure client-side scenario maths. It does not call an API, read a wallet, quote a transaction, or recommend a pool.' },
+];
+const appSchema = {
+  '@context': 'https://schema.org', '@type': 'WebApplication', name: title, url: canonical,
+  applicationCategory: 'FinanceApplication', operatingSystem: 'Any', browserRequirements: 'Requires JavaScript',
+  dateModified: '2026-09-13', description, isAccessibleForFree: true,
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+  publisher: { '@type': 'Organization', name: 'LiquidityPools.app', url: 'https://liquiditypools.app' },
+};
+const faqSchema = { '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: faq.map((item) => ({ '@type': 'Question', name: item.q, acceptedAnswer: { '@type': 'Answer', text: item.a } })) };
+const breadcrumbSchema = { '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [
+  { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://liquiditypools.app/' },
+  { '@type': 'ListItem', position: 2, name: 'Tools', item: 'https://liquiditypools.app/tools/' },
+  { '@type': 'ListItem', position: 3, name: title, item: canonical },
+] };
+---
+<BaseLayout title={`${title} — LiquidityPools.app`} description={description}>
+  <Fragment slot="head"><script is:inline type="application/ld+json" set:html={JSON.stringify(appSchema)} /><script is:inline type="application/ld+json" set:html={JSON.stringify(faqSchema)} /><script is:inline type="application/ld+json" set:html={JSON.stringify(breadcrumbSchema)} /></Fragment>
+  <section class="page-hero tool-hero"><div class="container"><div class="eyebrow eyebrow--mint">Meteora DLMM · Discrete-bin model</div><h1 class="page-title">Meteora DLMM calculator.</h1><p>Inspect the actual geometric bin ladder, compare Spot, Curve, and Bid-Ask allocation shapes, and keep base fees separate from the volatility-driven variable fee.</p></div></section>
+
+  <section class="section section--paper tool-section--first"><div class="container"><div class="tool-layout">
+    <form class="tool-panel" id="dlmm-form" data-calculator="meteora_dlmm" novalidate>
+      <h2>Bin position</h2><p class="tool-panel__note">The active bin is zero. Enter an integer end-bin movement to model the final inventory state.</p>
+      <div class="tool-grid-2"><div class="tool-field"><label for="anchor">Active-bin price</label><input id="anchor" type="number" min="0" step="any" value="20" /></div><div class="tool-field"><label for="step">Bin step (bps)</label><input id="step" type="number" min="1" step="1" value="25" /></div></div>
+      <div class="tool-grid-2"><div class="tool-field"><label for="below">Bins below active</label><input id="below" type="number" min="0" step="1" value="10" /></div><div class="tool-field"><label for="above">Bins above active</label><input id="above" type="number" min="0" step="1" value="10" /></div></div>
+      <div class="tool-grid-2"><div class="tool-field"><label for="shape">Distribution shape</label><select id="shape"><option value="spot">Spot · uniform</option><option value="curve">Curve · center-heavy</option><option value="bidAsk">Bid-Ask · edge-heavy</option></select></div><div class="tool-field"><label for="endBin">End-price move (bins)</label><input id="endBin" type="number" step="1" value="4" /></div></div>
+      <div class="tool-grid-2"><div class="tool-field"><label for="capital">Position value at entry</label><input id="capital" type="number" min="0" step="any" value="10000" /></div><div class="tool-field"><label for="baseShare">Token X entry share (%)</label><input id="baseShare" type="number" min="0" max="100" step="any" value="50" /></div></div>
+      <h2 style="margin-top:24px">Fee scenario</h2>
+      <div class="tool-grid-2"><div class="tool-field"><label for="baseFactor">Base factor</label><input id="baseFactor" type="number" min="0" step="1" value="10000" /></div><div class="tool-field"><label for="power">Base-fee power factor</label><input id="power" type="number" min="0" step="1" value="0" /></div></div>
+      <div class="tool-grid-2"><div class="tool-field"><label for="variableControl">Variable fee control</label><input id="variableControl" type="number" min="0" step="1" value="400000" /></div><div class="tool-field"><label for="volatility">Volatility accumulator</label><input id="volatility" type="number" min="0" step="1" value="40000" /></div></div>
+      <div class="tool-grid-2"><div class="tool-field"><label for="volume">Daily volume through an active bin</label><input id="volume" type="number" min="0" step="any" value="10000000" /><small>Bin-level scenario input, not total pool volume.</small></div><div class="tool-field"><label for="activeLiquidity">Existing liquidity in that bin</label><input id="activeLiquidity" type="number" min="0" step="any" value="2000000" /></div></div>
+      <div class="tool-grid-2"><div class="tool-field"><label for="tir">Time in range (%)</label><input id="tir" type="number" min="0" max="100" step="any" value="70" /></div><div class="tool-field"><label for="days">Days held</label><input id="days" type="number" min="1" step="1" value="30" /></div></div>
+    </form>
+
+    <div class="tool-result tool-result--above-fold" aria-live="polite"><h2>Result</h2>
+      <div class="tool-headline"><span>Modeled divergence vs. holding</span><strong id="out-il">−0.10%</strong><em id="out-state">End price remains inside the selected bins.</em></div>
+      <div class="tool-rows"><div class="tool-row"><span>Price range</span><strong id="out-range">$19.51 – $20.51</strong></div><div class="tool-row"><span>End-bin price</span><strong id="out-exit">$20.20</strong></div><div class="tool-row"><span>Base fee</span><strong id="out-basefee">0.2500%</strong></div><div class="tool-row"><span>Variable fee</span><strong id="out-varfee">0.4000%</strong></div><div class="tool-row"><span>Total fee rate</span><strong id="out-totalfee">0.6500%</strong></div><div class="tool-row"><span>Position / hold value</span><strong id="out-values">$10,040.61 / $10,050.19</strong></div><div class="tool-row"><span>Estimated LP fee income</span><strong id="out-fees">$295.36</strong></div><div class="tool-row tool-row--net"><span>Net result vs. holding</span><strong id="out-net">+$285.79</strong></div></div>
+      <figure class="dlmm-chart"><div id="bin-chart" class="dlmm-bars" role="img" aria-label="Liquidity weight by discrete price bin"></div><figcaption>Each bar is a discrete fixed-price bin. Heights show the normalized analytical distribution.</figcaption></figure>
+      <p class="tool-verdict" id="out-verdict">This position is active in the modeled end bin.</p><p class="tool-disclaimer">Educational scenario only. Distribution weights follow the SDK shape and side-normalization rules before integer rounding; this is not a transaction quote. Excludes token transfer fees, composition fees, incentives, slippage, and rebalancing. Not financial advice.</p>
+      <nav class="tool-next" aria-label="Understand this result"><span>Verify the model</span><a href="/methodology/" data-cta="calculator_methodology">Formulas and worked test cases <span aria-hidden="true">↗</span></a><a href="/guides/meteora-dlmm-strategy/" data-cta="calculator_result_link">Meteora DLMM strategy <span aria-hidden="true">↗</span></a><a href="/guides/discretized-liquidity-dlmm-explained/" data-cta="calculator_result_link">How discrete bins work <span aria-hidden="true">↗</span></a></nav>
+    </div>
+  </div></div></section>
+
+  <section class="section section--mist" style="padding-top:72px;padding-bottom:72px"><div class="container"><div class="guide-layout"><aside class="guide-aside"><h2>Related reading</h2><a href="/guides/meteora-dlmm-strategy/">Meteora strategy guide</a><a href="/guides/discretized-liquidity-dlmm-explained/">DLMM mechanics</a><a href="/guides/out-of-range-liquidity/">Out-of-range risk</a></aside><div class="article-content">
+    <h2>The calculator uses the DLMM bin invariant</h2><p>Each relative bin has one fixed price and one constant-sum liquidity value:</p><p class="formula-display"><code>Pᵢ = P₀(1 + s/10,000)ⁱ; Lᵢ = Pᵢxᵢ + yᵢ</code></p><p><strong>Where:</strong></p><ul class="formula-glossary"><li><code>i</code> — relative bin ID.</li><li><code>s</code> — bin step in basis points.</li><li><code>Pᵢ</code> — fixed price of bin <code>i</code>.</li><li><code>Lᵢ</code> — constant-sum liquidity value in that bin.</li><li><code>xᵢ</code> and <code>yᵢ</code> — token reserves in that bin.</li></ul><p>A bin trades without price impact until one side is consumed; then execution advances to another bin.</p>
+    <h2>How the three shapes are represented</h2><p>Spot assigns the same raw weight to every selected bin. Curve uses the SDK helper’s Gaussian family centered on the active bin. Bid-Ask uses its inverse-Gaussian family to raise weights toward the edges. Token X and token Y weights are normalized separately on their respective sides, including half of the active-bin density on each side. The model omits only integer rounding and transaction construction.</p>
+    <h2>How fees are separated</h2><p>The program fee relationship is:</p><p class="formula-display"><code>total fee = min(base fee + variable fee, 10%)</code></p><p><strong>Where:</strong></p><ul class="formula-glossary"><li><code>base fee</code> — the base-factor, bin-step, and power-factor term.</li><li><code>variable fee</code> — the volatility accumulator and variable-control term.</li><li><code>10%</code> — the program’s maximum total fee rate.</li></ul><p>Estimated income uses volume and competing liquidity for the modeled active bin, then applies time in range and the standard-pool LP share.</p>
+    <h2>What this cannot predict</h2><p>Future volume, bin crossings, volatility decay, competing liquidity, token value, and rebalancing are unknown. A large modeled fee rate can coincide with rapid inventory conversion and loss against holding. No displayed figure is an expected return or a pool recommendation.</p>
+    <h2 id="sources">Official Meteora sources</h2><ol class="tool-sources"><li><a href="https://docs.meteora.ag/core-products/dlmm/formulas" target="_blank" rel="noopener">DLMM formulas: prices, constant-sum bins, and fees</a></li><li><a href="https://docs.meteora.ag/core-products/dlmm/strategies-and-use-cases" target="_blank" rel="noopener">DLMM Spot, Curve, and Bid-Ask strategies</a></li><li><a href="https://docs.meteora.ag/developer-guides/dlmm/typescript-sdk/reference" target="_blank" rel="noopener">Meteora DLMM TypeScript SDK reference</a></li></ol>
+    <div class="faq-block"><h2>Frequently asked questions</h2>{faq.map((item) => <details class="faq-item"><summary><h3>{item.q}</h3></summary><p>{item.a}</p></details>)}</div>
+  </div><aside class="guide-aside"><h2>Method</h2><p style="font-size:12px;line-height:1.55;color:#5b7062">Pure client-side maths. No wallet and no API calls.</p><a href="/methodology/">Review formulas and tests ↗</a></aside></div></div></section>
+
+  <script>
+    // @ts-nocheck -- DOM nodes are guaranteed by the static template above.
+    import { calculateDlmmScenario } from '../../lib/calculators/meteora-dlmm.mjs';
+    const inputIds = ['anchor', 'step', 'below', 'above', 'shape', 'capital', 'baseShare', 'endBin', 'baseFactor', 'power', 'variableControl', 'volatility', 'volume', 'activeLiquidity', 'tir', 'days'];
+    const inputs = Object.fromEntries(inputIds.map((id) => [id, document.getElementById(id)]));
+    const outputs = Object.fromEntries(['il', 'state', 'range', 'exit', 'basefee', 'varfee', 'totalfee', 'values', 'fees', 'net', 'verdict'].map((id) => [id, document.getElementById(`out-${id}`)]));
+    const readNumber = (id) => Number(inputs[id].value);
+    const money = (value) => `${value < 0 ? '−' : ''}$${Math.abs(value).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    const signedMoney = (value) => Math.abs(value) < .005 ? '$0.00' : `${value > 0 ? '+' : '−'}$${Math.abs(value).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    function render() {
+      try {
+        const result = calculateDlmmScenario({
+          anchorPrice: readNumber('anchor'), binStepBps: readNumber('step'), binsBelow: readNumber('below'), binsAbove: readNumber('above'),
+          shape: inputs.shape.value, capital: readNumber('capital'), initialBaseSharePercent: readNumber('baseShare'), endBin: readNumber('endBin'),
+          baseFactor: readNumber('baseFactor'), baseFeePowerFactor: readNumber('power'), variableFeeControl: readNumber('variableControl'),
+          volatilityAccumulator: readNumber('volatility'), dailyVolume: readNumber('volume'), activeLiquidity: readNumber('activeLiquidity'),
+          timeInRangePercent: readNumber('tir'), days: readNumber('days'),
+        });
+        outputs.il.textContent = `${result.impermanentLoss < 0 ? '−' : '+'}${Math.abs(result.impermanentLoss * 100).toFixed(2)}%`;
+        outputs.state.textContent = result.rangeState === 'inside' ? 'End price remains inside the selected bins.' : `End price is ${result.rangeState} the selected bins; the position is one-sided.`;
+        outputs.range.textContent = `${money(result.lowerPrice)} – ${money(result.upperPrice)}`;
+        outputs.exit.textContent = money(result.exitPrice);
+        outputs.basefee.textContent = `${result.baseFeePercent.toFixed(4)}%`;
+        outputs.varfee.textContent = `${result.variableFeePercent.toFixed(4)}%`;
+        outputs.totalfee.textContent = `${result.totalFeePercent.toFixed(4)}%`;
+        outputs.values.textContent = `${money(result.positionValue)} / ${money(result.holdValue)}`;
+        outputs.fees.textContent = money(result.feeIncome);
+        outputs.net.textContent = signedMoney(result.netVsHold);
+        outputs.verdict.textContent = result.rangeState === 'inside' ? 'The modeled end price remains active. Fee income is a scenario, not a forecast.' : 'The modeled end price is out of range, so future fees stop until price returns.';
+        const maximumWeight = Math.max(...result.bins.map((bin) => bin.weight));
+        document.getElementById('bin-chart').replaceChildren(...result.bins.map((bin) => {
+          const bar = document.createElement('span');
+          bar.style.height = `${Math.max(5, bin.weight / maximumWeight * 100)}%`;
+          bar.title = `Bin ${bin.id}: ${money(bin.price)}, ${(bin.weight * 100).toFixed(2)}% weight`;
+          bar.className = bin.id === readNumber('endBin') ? 'is-active' : '';
+          return bar;
+        }));
+      } catch (error) {
+        outputs.verdict.textContent = error instanceof Error ? error.message : 'Check the inputs and try again.';
+      }
+    }
+    inputIds.forEach((id) => { inputs[id].addEventListener('input', render); inputs[id].addEventListener('change', render); });
+    render();
+  </script>
+</BaseLayout>

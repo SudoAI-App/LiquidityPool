@@ -7,6 +7,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { staticRouteDefinitions } from '../src/lib/public-routes.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const HOST = 'liquiditypools.app';
@@ -19,16 +20,8 @@ const articleSlugs = fs.readdirSync(articlesDir)
   .map((file) => file.replace(/\.md$/, ''))
   .sort();
 
-const URLS = [
-  `https://${HOST}/`,
-  `https://${HOST}/about/`,
-  `https://${HOST}/guides/`,
-  `https://${HOST}/topics/`,
-  `https://${HOST}/tools/`,
-  `https://${HOST}/tools/impermanent-loss-calculator/`,
-  `https://${HOST}/tools/liquidity-pool-calculator/`,
-  `https://${HOST}/tools/lp-profit-calculator/`,
-  `https://${HOST}/tools/uniswap-v3-liquidity-calculator/`,
+export const URLS = [
+  ...staticRouteDefinitions.map((route) => `https://${HOST}${route.path}`),
   ...articleSlugs.map((slug) => `https://${HOST}/guides/${slug}/`)
 ];
 
@@ -82,4 +75,6 @@ async function main() {
   console.log(`\n🎉 IndexNow submission cycle finished.`);
 }
 
-main().catch(console.error);
+if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+  main().catch(console.error);
+}

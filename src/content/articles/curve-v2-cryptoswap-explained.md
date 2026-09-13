@@ -6,6 +6,7 @@ date: 2026-09-05
 lastReviewed: "2026-09-12"
 author: "Aria Chen"
 readTime: "7 min read"
+primaryQuery: "Curve v2"
 keywords: "Curve v2, Cryptoswap invariant, dynamic pegging, internal EMA oracle, TriCrypto pool, AMM repegging, Curve liquidity pool, volatile pair liquidity pool"
 featured: false
 faq:

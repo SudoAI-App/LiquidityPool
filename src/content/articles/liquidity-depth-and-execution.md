@@ -6,6 +6,7 @@ date: 2026-09-11
 lastReviewed: "2026-09-12"
 author: "Marcus Vance"
 readTime: "6 min read"
+primaryQuery: "liquidity depth crypto"
 keywords: "liquidity depth crypto, liquidity pool depth, executable depth, market depth DeFi, pool depth vs volume, spot price vs execution price AMM"
 featured: false
 faq:

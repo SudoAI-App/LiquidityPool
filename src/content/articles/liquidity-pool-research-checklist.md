@@ -6,6 +6,7 @@ date: 2026-08-21
 lastReviewed: "2026-09-12"
 author: "Siddharth Mehta"
 readTime: "8 min read"
+primaryQuery: "liquidity pool checklist"
 keywords: "liquidity pool checklist, DeFi liquidity research checklist, LP due diligence checklist, hook security audit, LVR hurdle test, flow toxicity check, liquidity pool audit checklist, how to check locked liquidity, DeFi pool risk assessment"
 featured: false
 faq:

@@ -6,6 +6,7 @@ date: 2026-09-11
 lastReviewed: "2026-09-12"
 author: "Dr. Elena Rostova"
 readTime: "6 min read"
+primaryQuery: "Uniswap v2 vs v3 liquidity"
 keywords: "Uniswap v2 vs v3 liquidity, Uniswap v2 liquidity pool, v2 vs v3 capital efficiency, full range liquidity, passive liquidity provision"
 featured: false
 faq:

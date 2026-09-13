@@ -6,6 +6,7 @@ date: 2026-09-08
 lastReviewed: "2026-09-12"
 author: "Dr. Kieran Thorne"
 readTime: "8 min read"
+primaryQuery: "automated market maker"
 keywords: "automated market maker, AMM explained, AMM pool, DeFi exchange, singleton contract, hooks, flash accounting, how does an AMM work, what is an AMM, AMM crypto, AMM liquidity pool"
 featured: true
 faq:

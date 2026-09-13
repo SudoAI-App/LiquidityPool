@@ -6,6 +6,7 @@ date: 2026-09-11
 lastReviewed: "2026-09-12"
 author: "Siddharth Mehta"
 readTime: "6 min read"
+primaryQuery: "liquidity mining vs yield farming"
 keywords: "liquidity mining vs yield farming, yield farming vs liquidity pool, staking vs yield farming, liquidity pool vs yield farming, liquidity mining vs staking, difference between yield farming and liquidity mining"
 featured: false
 faq:

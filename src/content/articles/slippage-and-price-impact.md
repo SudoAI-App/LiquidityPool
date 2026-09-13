@@ -6,6 +6,7 @@ date: 2026-09-10
 lastReviewed: "2026-09-12"
 author: "Marcus Vance"
 readTime: "6 min read"
+primaryQuery: "slippage in liquidity pools"
 keywords: "slippage in liquidity pools, price impact AMM, slippage tolerance, execution price vs spot price, sandwich attack, swap cost"
 featured: false
 faq:

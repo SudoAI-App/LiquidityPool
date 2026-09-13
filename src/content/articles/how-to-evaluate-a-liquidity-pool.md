@@ -6,6 +6,7 @@ date: 2026-08-25
 lastReviewed: "2026-09-12"
 author: "Siddharth Mehta"
 readTime: "6 min read"
+primaryQuery: "how to evaluate liquidity pool"
 keywords: "how to evaluate liquidity pool, DeFi LP due diligence, AMM pool evaluation, LVR hurdle rate, Uniswap v4 hook audit, active depth metrics, how to choose a liquidity pool, how to compare liquidity pools, liquidity pool due diligence, is providing liquidity profitable"
 featured: true
 faq:

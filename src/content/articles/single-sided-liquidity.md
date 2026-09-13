@@ -6,6 +6,7 @@ date: 2026-09-11
 lastReviewed: "2026-09-12"
 author: "Aria Chen"
 readTime: "6 min read"
+primaryQuery: "single-sided liquidity"
 keywords: "single-sided liquidity, one-sided liquidity provision, zap into liquidity pool, single asset deposit, range order conversion, do I need both tokens to provide liquidity"
 featured: false
 faq:

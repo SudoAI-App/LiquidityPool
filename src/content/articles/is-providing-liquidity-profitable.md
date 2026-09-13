@@ -6,6 +6,7 @@ date: 2026-09-11
 lastReviewed: "2026-09-12"
 author: "Siddharth Mehta"
 readTime: "7 min read"
+primaryQuery: "is providing liquidity profitable"
 keywords: "is providing liquidity profitable, are liquidity pools profitable, how do liquidity providers make money, are liquidity pools worth it, liquidity pool returns, how do liquidity pools make money"
 featured: true
 faq:

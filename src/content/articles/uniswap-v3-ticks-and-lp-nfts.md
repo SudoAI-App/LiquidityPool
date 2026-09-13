@@ -6,6 +6,7 @@ date: 2026-09-11
 lastReviewed: "2026-09-12"
 author: "Dr. Kieran Thorne"
 readTime: "6 min read"
+primaryQuery: "Uniswap v3 ticks explained"
 keywords: "Uniswap v3 ticks explained, tick spacing, Uniswap v3 positions NFT, LP NFT, fee growth accumulator, liquidity range Uniswap v3"
 featured: false
 faq:
@@ -147,7 +148,7 @@ None of this changes the economics, which are decided by volume, volatility and 
 
 ## Where to go next
 
-Apply the tick maths to a real position in the [Uniswap v3 liquidity calculator](/tools/uniswap-v3-liquidity-calculator/). The same accounting underpins [Raydium Liquidity Pools](/guides/raydium-clmm-liquidity-guide/) on Solana.
+Apply the tick maths to a real position in the [concentrated liquidity calculator](/tools/uniswap-v3-liquidity-calculator/). The same accounting underpins [Raydium Liquidity Pools](/guides/raydium-clmm-liquidity-guide/) on Solana.
 
 ## References
 

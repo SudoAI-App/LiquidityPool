@@ -6,6 +6,7 @@ date: 2026-09-11
 lastReviewed: "2026-09-12"
 author: "Siddharth Mehta"
 readTime: "6 min read"
+primaryQuery: "lending pool vs liquidity pool"
 keywords: "lending pool vs liquidity pool, Aave liquidity pool, DeFi lending vs liquidity provision, utilisation curve, supply APY, liquidity pool comparison"
 featured: false
 faq:

@@ -31,7 +31,7 @@ Hi HN,
 
 Most DeFi content is either hype-driven price prediction, protocol shilling, or impenetrable smart contract bytecode. When researching how automated market makers actually work under the hood—from invariant curves to impermanent loss accounting—we found a lack of calm, mathematically honest educational material.
 
-We built LiquidityPools.app (https://liquiditypools.app) as an independent, open-source research publication dedicated strictly to the mechanics and risks of decentralized liquidity.
+We built LiquidityPools.app (https://liquiditypools.app) as an independent research publication dedicated strictly to the mechanics and risks of decentralized liquidity.
 
 What makes it different:
 1. Zero tokens, zero price calls, zero ads: No affiliate links, no yield farming promotions, no token emissions.
@@ -39,15 +39,16 @@ What makes it different:
 3. Honest risk modeling: Detailed teardowns of impermanent loss vs. buy-and-hold benchmarks, MEV sandwich extraction on LPs, and cross-chain fragmentation.
 4. Fast & Static: Built with Astro 7, static pages, privacy-configured analytics (IP anonymisation on, no Google Signals, no ads), and deployed on edge infrastructure.
 
-The initial library launches with 20 long-form guides across four tracks: Foundations, LP Mechanics, Risk & Research, and Advanced.
+The library includes 59 long-form guides across four tracks: Foundations, LP Mechanics, Risk & Research, and Advanced.
 
 Key reading points:
+- Impermanent Loss Calculator: https://liquiditypools.app/tools/impermanent-loss-calculator/?utm_source=hn&utm_medium=social&utm_campaign=launch-2026-09
 - What Is a Liquidity Pool? https://liquiditypools.app/guides/what-is-a-liquidity-pool
 - The Constant Product Formula: https://liquiditypools.app/guides/constant-product-formula
 - Impermanent Loss Explained Without Hand-Waving: https://liquiditypools.app/guides/impermanent-loss-explained
 - Five-Part Due Diligence Framework for LPs: https://liquiditypools.app/guides/how-to-evaluate-a-liquidity-pool
 
-Open-source on GitHub: https://github.com/SudoAI-App/LiquidityPool
+Source repository (confirm it is public before posting): https://github.com/SudoAI-App/LiquidityPool
 
 We'd love feedback from traders, math nerds, and builders on whether our explanations and curve visualizations make these mechanisms legible.
 ```
@@ -62,15 +63,15 @@ We'd love feedback from traders, math nerds, and builders on whether our explana
 - **r/UniSwap** (Active LPs dealing with v3/v4 ranges)
 
 ### Post Title
-`Why 80% of Uniswap v3 LPs Underperform Holding: A Mathematical Teardown of Impermanent Loss & Fee Density`
+`Why 49.5% of Positions in One Uniswap v3 Study Underperformed Holding: An IL & Fee-Density Teardown`
 
 ### Post Body
 ```markdown
-There’s an uncomfortable statistic that every liquidity provider eventually confronts: multiple academic studies (including the Bancor/Topaz research) found that roughly 50% to 80% of concentrated liquidity providers in Uniswap v3 ended up with negative returns compared to simply holding their assets in a cold wallet.
+A 2021 analysis commissioned by Bancor and conducted by Topaze Blue reported that 49.5% of the Uniswap v3 positions in its sample underperformed simply holding the deposited assets. That result is one historical sample—not a universal failure rate—and the sponsor was a competing automated-market-maker protocol.
 
 Why does this happen despite headline APRs often exceeding 50% or 100%?
 
-Over the past few months, our team has been compiling a calm, mechanism-first research publication on AMMs (LiquidityPools.app). Here is the fundamental mismatch most LPs overlook:
+We built a calm, mechanism-first research publication on AMMs (LiquidityPools.app). Here is the fundamental mismatch LPs need to model:
 
 ### 1. The Asymmetric Rebalancing Trap
 In an AMM governed by invariant curves (like $x \cdot y = k$ or concentrated virtual reserves):
@@ -90,11 +91,12 @@ LPs do not trade against benevolent retail users; a significant portion of AMM v
 ---
 
 We wrote a complete, un-hyped breakdown of the mathematics, rebalancing formulas, and due diligence steps:
+- **Try the weighted and range calculator**: https://liquiditypools.app/tools/impermanent-loss-calculator/?utm_source=reddit&utm_medium=social&utm_campaign=launch-2026-09
 - **Impermanent Loss Explained**: https://liquiditypools.app/guides/impermanent-loss-explained
 - **Concentrated Liquidity & Range Management**: https://liquiditypools.app/guides/concentrated-liquidity-explained
 - **A 5-Step Due Diligence Framework Before Depositing**: https://liquiditypools.app/guides/how-to-evaluate-a-liquidity-pool
 
-The publication is completely free, non-commercial, and open-source (no tokens, no sponsors). Would love to hear how fellow LPs here model your range widths and hedge divergence loss.
+The publication is free and non-commercial (no tokens, no sponsors). The 49.5% figure above comes from the Bancor-commissioned Topaze Blue analysis: https://medium.com/bancor/half-of-uniswap-v3-liquidity-providers-are-losing-money-9e3e5f41e0b8. Would love to hear how fellow LPs here model range widths and hedge divergence loss.
 ```
 
 ---
@@ -104,7 +106,7 @@ The publication is completely free, non-commercial, and open-source (no tokens, 
 ### Tweet 1 (Hook)
 > Most people enter DeFi liquidity pools expecting "passive income."
 > 
-> In reality, 80% of Uniswap v3 LPs underperform simple buy-and-hold.
+> A Bancor-commissioned 2021 study found 49.5% of sampled Uniswap v3 positions underperformed holding.
 > 
 > Here are 7 counter-intuitive truths about AMMs, fees, and impermanent loss that every LP needs to understand: 🧵👇
 
@@ -143,13 +145,13 @@ The publication is completely free, non-commercial, and open-source (no tokens, 
 > Checklist: https://liquiditypools.app/guides/liquidity-pool-research-checklist
 
 ### Tweet 7 (Conclusion & Link)
-> We compiled 20 long-form, math-backed guides covering everything from AMM invariants to cross-chain liquidity.
+> We compiled 59 long-form, math-backed guides covering everything from AMM invariants to cross-chain liquidity.
 > 
 > No tokens. No price calls. No sponsored shills. Just clear, durable DeFi research.
 > 
-> Explore the complete library: https://liquiditypools.app
+> Try the calculator: https://liquiditypools.app/tools/impermanent-loss-calculator/?utm_source=x&utm_medium=social&utm_campaign=launch-2026-09
 > 
-> Open-source: https://github.com/SudoAI-App/LiquidityPool
+> Source repository (confirm it is public before posting): https://github.com/SudoAI-App/LiquidityPool
 
 ---
 
@@ -159,13 +161,13 @@ The publication is completely free, non-commercial, and open-source (no tokens, 
 ```
 Where liquidity becomes legible. 💧
 
-We just launched LiquidityPools.app—an open-source, mechanism-first research library breaking down the math and risks behind decentralized liquidity:
+We just launched LiquidityPools.app—a free, mechanism-first research library breaking down the math and risks behind decentralized liquidity:
 
 • Constant product & concentrated liquidity tick mechanics
 • Mathematical teardowns of Impermanent Loss vs HODL
 • MEV sandwich extraction and adverse selection on LPs
-• 20 long-form guides, zero tokens, zero ads.
+• 59 long-form guides, zero tokens, zero ads.
 
-Read: https://liquiditypools.app
+Try: https://liquiditypools.app/tools/impermanent-loss-calculator/?utm_source=farcaster&utm_medium=social&utm_campaign=launch-2026-09
 GitHub: https://github.com/SudoAI-App/LiquidityPool
 ```

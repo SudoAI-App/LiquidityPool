@@ -6,6 +6,7 @@ date: 2026-09-10
 lastReviewed: "2026-09-12"
 author: "Marcus Vance"
 readTime: "6 min read"
+primaryQuery: "LP fees vs impermanent loss"
 keywords: "LP fees vs impermanent loss, do liquidity pools make money, is providing liquidity profitable, fee yield break-even, LVR hurdle rate, liquidity provider profitability"
 featured: false
 faq:

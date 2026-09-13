@@ -6,7 +6,8 @@ date: 2026-08-23
 lastReviewed: "2026-09-12"
 author: "Siddharth Mehta"
 readTime: "6 min read"
-keywords: "liquidity mining, DeFi incentives, ve-tokenomics, bribe markets, Hidden Hand, Votium, points programs, Uniswap v4 hook incentives, mercenary capital, liquidity mining vs yield farming, liquidity incentives"
+primaryQuery: "liquidity mining"
+keywords: "liquidity mining, DeFi incentives, ve-tokenomics, bribe markets, Hidden Hand, Votium, points programs, Uniswap v4 hook incentives, mercenary capital, liquidity incentives"
 featured: false
 faq:
   - q: "What is liquidity mining?"

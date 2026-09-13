@@ -6,6 +6,7 @@ date: 2026-09-10
 lastReviewed: "2026-09-12"
 author: "Siddharth Mehta"
 readTime: "6 min read"
+primaryQuery: "can you lose money in a liquidity pool"
 keywords: "can you lose money in a liquidity pool, liquidity pool risks, why is my liquidity position losing money, what happens if one token goes to zero, is high APY safe, rug pull liquidity"
 featured: false
 faq:

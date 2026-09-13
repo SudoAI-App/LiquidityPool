@@ -36,6 +36,7 @@ const appSchema = {
   applicationCategory: 'FinanceApplication',
   operatingSystem: 'Any',
   browserRequirements: 'Requires JavaScript',
+  dateModified: '2026-09-13',
   description,
   isAccessibleForFree: true,
   offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
@@ -67,7 +68,7 @@ const breadcrumbSchema = {
     <script is:inline type="application/ld+json" set:html={JSON.stringify(breadcrumbSchema)} />
   </Fragment>
 
-  <section class="page-hero">
+  <section class="page-hero tool-hero">
     <div class="container">
       <div class="eyebrow eyebrow--mint">Research tools · Free, no wallet connection</div>
       <h1 class="page-title">LP profit &amp; return calculator.</h1>
@@ -75,7 +76,7 @@ const breadcrumbSchema = {
     </div>
   </section>
 
-  <section class="section section--paper" style="padding-top:64px">
+  <section class="section section--paper tool-section--first">
     <div class="container">
       <div class="tool-layout">
         <form class="tool-panel" id="profit-form" data-calculator="lp_profit" novalidate>
@@ -138,7 +139,7 @@ const breadcrumbSchema = {
           </div>
         </form>
 
-        <div class="tool-result" aria-live="polite">
+        <div class="tool-result tool-result--above-fold" aria-live="polite">
           <h2>Result</h2>
           <div class="tool-headline">
             <span>Net result versus holding the basket</span>
@@ -159,6 +160,7 @@ const breadcrumbSchema = {
           <p class="tool-disclaimer">Educational model only. Assumes a balanced deposit on an unbounded constant-product curve, no intermediate withdrawals, and no price impact on entry or exit. Not investment advice.</p>
           <nav class="tool-next" aria-label="Understand this result">
             <span>Understand the number</span>
+            <a href="/methodology/" data-cta="calculator_methodology">Formulas and worked test cases <span aria-hidden="true">↗</span></a>
             <a href="/guides/is-providing-liquidity-profitable/" data-cta="calculator_result_link">Is providing liquidity profitable? <span aria-hidden="true">↗</span></a>
             <a href="/guides/lp-fees-vs-impermanent-loss/" data-cta="calculator_result_link">Fees vs impermanent loss <span aria-hidden="true">↗</span></a>
             <a href="/guides/lp-gas-costs/" data-cta="calculator_result_link">Gas costs for LPs <span aria-hidden="true">↗</span></a>
@@ -240,7 +242,9 @@ const breadcrumbSchema = {
     </div>
   </section>
 
-  <script is:inline>
+  <script>
+    // @ts-nocheck -- DOM nodes are guaranteed by the static template above.
+    import { calculateLpProfit } from '../../lib/calculators/lp-profit.mjs';
     (function () {
       var ids = ['priceA0', 'priceA1', 'priceB0', 'priceB1', 'capital', 'fees', 'rewards', 'gas', 'txCount', 'days'];
       var el = {};
@@ -268,7 +272,9 @@ const breadcrumbSchema = {
         var a0 = num(el.priceA0, 0), a1 = num(el.priceA1, 0);
         var b0 = num(el.priceB0, 0), b1 = num(el.priceB1, 0);
         var capital = num(el.capital, 0);
-        var income = Math.max(0, num(el.fees, 0)) + Math.max(0, num(el.rewards, 0));
+        var fees = Math.max(0, num(el.fees, 0));
+        var rewards = Math.max(0, num(el.rewards, 0));
+        var income = fees + rewards;
         var gasCost = Math.max(0, num(el.gas, 0)) * Math.max(0, num(el.txCount, 0));
         var days = Math.max(1, num(el.days, 1));
 
@@ -277,15 +283,13 @@ const breadcrumbSchema = {
           return;
         }
 
-        var k = (a1 / b1) / (a0 / b0);
-        var il = k > 0 ? (2 * Math.sqrt(k) / (1 + k)) - 1 : -1;
-        var qtyA = (capital / 2) / a0;
-        var qtyB = (capital / 2) / b0;
-        var hodl = qtyA * a1 + qtyB * b1;
-        var pool = hodl * (1 + il);
-        var divergence = pool - hodl;
-        var net = divergence + income - gasCost;
-        var apr = (net / capital) * (365 / days) * 100;
+        var result = calculateLpProfit({ priceA0: a0, priceA1: a1, priceB0: b0, priceB1: b1, capital, feesEarned: fees, rewardsEarned: rewards, costs: gasCost, days });
+        var k = result.relativePriceRatio;
+        var hodl = result.holdValue;
+        var pool = result.poolValue;
+        var divergence = result.divergence;
+        var net = result.netVsHold;
+        var apr = result.annualizedNetReturnPercent;
 
         out.ratio.textContent = 'Relative price ratio k = ' + k.toFixed(4);
         out.hodl.textContent = money(hodl);

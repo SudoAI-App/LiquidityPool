@@ -6,6 +6,7 @@ date: 2026-09-11
 lastReviewed: "2026-09-12"
 author: "Aria Chen"
 readTime: "6 min read"
+primaryQuery: "on-chain liquidity"
 keywords: "on-chain liquidity, decentralized liquidity, onchain market structure, intent based liquidity, solver networks DeFi, liquidity fragmentation"
 featured: false
 faq:

@@ -6,6 +6,7 @@ date: 2026-09-08
 lastReviewed: "2026-09-12"
 author: "Dr. Kieran Thorne"
 readTime: "7 min read"
+primaryQuery: "Uniswap v4 architecture"
 keywords: "Uniswap v4 architecture, Uniswap v4 hooks, PoolManager.sol, transient storage EIP-1153, flash accounting, ERC-6909, dynamic fee hook, Uniswap v4 hooks liquidity pools, Uniswap v4 singleton, Uniswap v4 flash accounting, Uniswap v4 liquidity pool"
 featured: true
 faq:

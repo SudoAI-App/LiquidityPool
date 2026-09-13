@@ -6,6 +6,7 @@ date: 2026-09-11
 lastReviewed: "2026-09-12"
 author: "Siddharth Mehta"
 readTime: "6 min read"
+primaryQuery: "liquidity provider"
 keywords: "liquidity provider, what is an LP in crypto, how do liquidity providers make money, liquidity provision DeFi, LP role, how much can you earn providing liquidity"
 featured: false
 faq:

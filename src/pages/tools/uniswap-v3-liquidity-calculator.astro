@@ -1,8 +1,8 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 
-const title = 'Uniswap v3 Liquidity Calculator';
-const description = 'Model a concentrated liquidity range: token composition, capital efficiency, in-range state, estimated fees, impermanent loss and the comparison against holding.';
+const title = 'Uniswap v3 & Concentrated Liquidity Calculator';
+const description = 'Model Uniswap v3 and general concentrated-liquidity ranges: token mix, capital efficiency, fees, impermanent loss, and holding comparison.';
 
 const faq = [
   {
@@ -35,11 +35,12 @@ const canonical = 'https://liquiditypools.app/tools/uniswap-v3-liquidity-calcula
 const appSchema = {
   '@context': 'https://schema.org',
   '@type': 'WebApplication',
-  name: 'Uniswap v3 Liquidity Calculator',
+  name: title,
   url: canonical,
   applicationCategory: 'FinanceApplication',
   operatingSystem: 'Any',
   browserRequirements: 'Requires JavaScript',
+  dateModified: '2026-09-13',
   description,
   isAccessibleForFree: true,
   offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
@@ -64,22 +65,22 @@ const breadcrumbSchema = {
   ]
 };
 ---
-<BaseLayout title={`${title}: Range, Fees and IL — LiquidityPools.app`} description={description} image="/images/guides/uniswap-v3-liquidity-calculator.webp">
+<BaseLayout title={`${title} — LiquidityPools.app`} description={description} image="/images/guides/uniswap-v3-liquidity-calculator.webp">
   <Fragment slot="head">
     <script is:inline type="application/ld+json" set:html={JSON.stringify(appSchema)} />
     <script is:inline type="application/ld+json" set:html={JSON.stringify(faqSchema)} />
     <script is:inline type="application/ld+json" set:html={JSON.stringify(breadcrumbSchema)} />
   </Fragment>
 
-  <section class="page-hero">
+  <section class="page-hero tool-hero">
     <div class="container">
       <div class="eyebrow eyebrow--mint">Research tools · Free, no wallet connection</div>
-      <h1 class="page-title">Uniswap v3 liquidity calculator.</h1>
-      <p>Set a price range and a deposit. The calculator returns what the position holds now and at each bound, how much depth it contributes against a full-range position, the fees the range would have earned, and the result against holding.</p>
+      <h1 class="page-title">Uniswap v3 &amp; concentrated liquidity calculator.</h1>
+      <p>Model the shared bounded-liquidity maths used by Uniswap v3-style concentrated AMMs. Set a range and deposit to inspect token composition, capital efficiency, fees, and performance against holding.</p>
     </div>
   </section>
 
-  <section class="section section--paper" style="padding-top:64px">
+  <section class="section section--paper tool-section--first">
     <div class="container">
       <div class="tool-layout">
         <form class="tool-panel" id="v3-form" data-calculator="uniswap_v3_liquidity" novalidate>
@@ -159,11 +160,11 @@ const breadcrumbSchema = {
           </div>
         </form>
 
-        <div class="tool-result" aria-live="polite">
+        <div class="tool-result tool-result--above-fold" aria-live="polite">
           <h2>Result</h2>
           <div class="tool-headline">
             <span>Net result vs. holding the deposit</span>
-            <strong id="out-net">+$151.29</strong>
+            <strong id="out-net">+$151.17</strong>
             <em id="out-state">Price is inside the range. The position is quoting and earning.</em>
           </div>
           <div class="tool-rows">
@@ -173,11 +174,11 @@ const breadcrumbSchema = {
             <div class="tool-row"><span>Position value at the end price</span><strong id="out-pos">$10,363.29</strong></div>
             <div class="tool-row"><span>Value if you had simply held</span><strong id="out-hodl">$10,500.00</strong></div>
             <div class="tool-row tool-row--loss"><span>Impermanent loss vs. holding</span><strong id="out-il">−1.30%</strong></div>
-            <div class="tool-row"><span>Estimated fee income</span><strong id="out-fees">$288.00</strong></div>
+            <div class="tool-row"><span>Estimated fee income</span><strong id="out-fees">$287.88</strong></div>
             <div class="tool-row"><span>Annualised fee yield on capital</span><strong id="out-apr">35.0%</strong></div>
             <div class="tool-row tool-row--net"><span>Fee income needed to break even</span><strong id="out-breakeven">$136.71</strong></div>
           </div>
-          <p class="tool-verdict" id="out-verdict">Estimated fee income covers the divergence over this holding period.</p>
+          <p class="tool-verdict" id="out-verdict">Estimated fee income covers the divergence by $151.17 over this holding period.</p>
           <div class="tool-rows" style="margin-top:18px">
             <div class="tool-row"><span>At the lower bound the position holds</span><strong id="out-atlow">3.492 base / 0 quote</strong></div>
             <div class="tool-row"><span>At the upper bound the position holds</span><strong id="out-athigh">0 base / $10,477.23 quote</strong></div>
@@ -185,6 +186,7 @@ const breadcrumbSchema = {
           <p class="tool-disclaimer">Educational model only. Fee income is an arithmetic consequence of the inputs, not a forecast. Excludes gas, entry and exit price impact, emissions, rebalancing and the path taken between prices. Not investment advice.</p>
           <nav class="tool-next" aria-label="Understand this result">
             <span>Understand the number</span>
+            <a href="/methodology/" data-cta="calculator_methodology">Formulas and worked test cases <span aria-hidden="true">↗</span></a>
             <a href="/guides/concentrated-liquidity-explained/" data-cta="calculator_result_link">Concentrated liquidity explained <span aria-hidden="true">↗</span></a>
             <a href="/guides/concentrated-liquidity-strategy/" data-cta="calculator_result_link">Choosing a range width <span aria-hidden="true">↗</span></a>
             <a href="/guides/out-of-range-liquidity/" data-cta="calculator_result_link">What happens out of range <span aria-hidden="true">↗</span></a>
@@ -287,7 +289,9 @@ const breadcrumbSchema = {
     </div>
   </section>
 
-  <script is:inline>
+  <script>
+    // @ts-nocheck -- DOM nodes are guaranteed by the static template above.
+    import { calculateConcentratedPosition, concentratedTokenAmounts } from '../../lib/calculators/concentrated-liquidity.mjs';
     (function () {
       var ids = ['price', 'lower', 'upper', 'capital', 'exit', 'tier', 'days', 'volume', 'activeliq', 'tir'];
       var el = {};
@@ -317,13 +321,6 @@ const breadcrumbSchema = {
         return sign + Math.abs(value).toFixed(2) + '%';
       }
 
-      function tokens(L, p, pa, pb) {
-        var sp = Math.sqrt(Math.min(Math.max(p, pa), pb));
-        var x = L * (1 / sp - 1 / Math.sqrt(pb));
-        var y = L * (sp - Math.sqrt(pa));
-        return { x: Math.max(0, x), y: Math.max(0, y) };
-      }
-
       function render() {
         var p = num(el.price, 0);
         var pa = num(el.lower, 0);
@@ -341,48 +338,38 @@ const breadcrumbSchema = {
           return;
         }
 
-        var sqrtP = Math.sqrt(Math.min(Math.max(p, pa), pb));
-        var denom = 2 * sqrtP - Math.min(Math.max(p, pa), pb) / Math.sqrt(pb) - Math.sqrt(pa);
-        if (!(denom > 0)) {
-          out.verdict.textContent = 'This range does not contain the current price in a way the model can value. Widen the bounds.';
+        var result;
+        try {
+          result = calculateConcentratedPosition({
+            entryPrice: p, lowerPrice: pa, upperPrice: pb, exitPrice: exit, capital,
+            dailyVolume: volume, activeLiquidity: activeLiq, feeRate: tier,
+            timeInRange: tir, days,
+          });
+        } catch (error) {
+          out.verdict.textContent = error instanceof Error ? error.message : 'Check the range inputs.';
           return;
         }
+        var positionValue = result.positionValue;
+        var hodl = result.holdValue;
+        var divergence = result.divergence;
+        var fees = result.feeIncome;
+        var apr = result.feeAprPercent;
+        var net = result.netVsHold;
+        var atLow = concentratedTokenAmounts(result.liquidity, pa, pa, pb);
+        var atHigh = concentratedTokenAmounts(result.liquidity, pb, pa, pb);
 
-        var L = capital / denom;
-        var eff = (2 * Math.sqrt(p)) / denom;
-
-        var now = tokens(L, p, pa, pb);
-        var valueNow = now.x * p + now.y;
-        var baseShare0 = valueNow > 0 ? (now.x * p) / valueNow * 100 : 0;
-
-        var later = tokens(L, exit, pa, pb);
-        var positionValue = later.x * exit + later.y;
-        var baseShare1 = positionValue > 0 ? (later.x * exit) / positionValue * 100 : 0;
-
-        var hodl = now.x * exit + now.y;
-        var il = hodl > 0 ? (positionValue / hodl - 1) * 100 : 0;
-        var divergence = positionValue - hodl;
-
-        var share = activeLiq > 0 ? capital / activeLiq : 0;
-        var fees = volume * days * tier * share * tir;
-        var apr = capital > 0 ? (fees / capital) * (365 / days) * 100 : 0;
-        var net = divergence + fees;
-
-        var atLow = tokens(L, pa, pa, pb);
-        var atHigh = tokens(L, pb, pa, pb);
-
-        out.eff.textContent = eff.toFixed(2) + '×';
-        out.comp0.textContent = baseShare0.toFixed(1) + '% base / ' + (100 - baseShare0).toFixed(1) + '% quote';
-        out.comp1.textContent = baseShare1.toFixed(1) + '% base / ' + (100 - baseShare1).toFixed(1) + '% quote';
+        out.eff.textContent = result.capitalEfficiency.toFixed(2) + '×';
+        out.comp0.textContent = (result.entryBaseShare * 100).toFixed(1) + '% base / ' + ((1 - result.entryBaseShare) * 100).toFixed(1) + '% quote';
+        out.comp1.textContent = (result.exitBaseShare * 100).toFixed(1) + '% base / ' + ((1 - result.exitBaseShare) * 100).toFixed(1) + '% quote';
         out.pos.textContent = money(positionValue);
         out.hodl.textContent = money(hodl);
-        out.il.textContent = percent(il);
+        out.il.textContent = percent(result.impermanentLoss * 100);
         out.fees.textContent = money(fees);
         out.apr.textContent = (isFinite(apr) ? apr.toFixed(1) : '0.0') + '%';
         out.breakeven.textContent = money(Math.abs(divergence));
         out.net.textContent = signedMoney(net);
-        out.atlow.textContent = atLow.x.toLocaleString('en-US', { maximumFractionDigits: 3 }) + ' base / 0 quote';
-        out.athigh.textContent = '0 base / ' + money(atHigh.y);
+        out.atlow.textContent = atLow.base.toLocaleString('en-US', { maximumFractionDigits: 3 }) + ' base / 0 quote';
+        out.athigh.textContent = '0 base / ' + money(atHigh.quote);
 
         if (exit < pa) {
           out.state.textContent = 'Price is below the range. The position is entirely the base asset and has stopped earning.';

@@ -6,6 +6,7 @@ date: 2026-09-06
 lastReviewed: "2026-09-12"
 author: "Marcus Vance"
 readTime: "7 min read"
+primaryQuery: "AMM vs order book"
 keywords: "AMM vs order book, automated market maker vs order book, DEX market structure, intent solver, CLOB, AMM vs DEX, liquidity pool vs order book, AMM vs order book exchange"
 featured: false
 faq:

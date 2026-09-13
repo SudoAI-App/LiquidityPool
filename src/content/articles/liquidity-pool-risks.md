@@ -6,6 +6,7 @@ date: 2026-08-28
 lastReviewed: "2026-09-12"
 author: "Dr. Kieran Thorne"
 readTime: "8 min read"
+primaryQuery: "liquidity pool risks"
 keywords: "liquidity pool risks, DeFi risk management, Uniswap v4 hook security, restaking contagion, oracle manipulation, LVR, smart contract vulnerabilities, risks of providing liquidity, liquidity provider risks, can you lose money in a liquidity pool, smart contract risk liquidity pool, liquidity risk DeFi, liquidity pool withdrawal risk"
 featured: false
 faq:

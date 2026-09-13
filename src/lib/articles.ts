@@ -7,6 +7,7 @@ export type Article = {
   lastReviewed?: string;
   author?: string;
   readTime: string;
+  primaryQuery: string;
   keywords: string;
   faq?: { q: string; a: string }[];
   featured?: boolean;

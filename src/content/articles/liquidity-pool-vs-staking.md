@@ -6,6 +6,7 @@ date: 2026-09-10
 lastReviewed: "2026-09-12"
 author: "Siddharth Mehta"
 readTime: "6 min read"
+primaryQuery: "liquidity pool vs staking"
 keywords: "liquidity pool vs staking, staking vs liquidity provision, liquidity pool vs yield farming, single asset staking, LST, DeFi yield comparison"
 featured: false
 faq:

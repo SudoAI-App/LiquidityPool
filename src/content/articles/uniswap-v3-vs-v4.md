@@ -6,6 +6,7 @@ date: 2026-09-10
 lastReviewed: "2026-09-12"
 author: "Dr. Kieran Thorne"
 readTime: "6 min read"
+primaryQuery: "Uniswap v3 vs v4"
 keywords: "Uniswap v3 vs v4, Uniswap v4 liquidity pool, Uniswap v3 liquidity pool, singleton PoolManager, flash accounting, Uniswap v4 hooks, ERC-6909"
 featured: true
 faq:

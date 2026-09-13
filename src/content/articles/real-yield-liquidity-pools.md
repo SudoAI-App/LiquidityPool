@@ -6,6 +6,7 @@ date: 2026-09-11
 lastReviewed: "2026-09-12"
 author: "Siddharth Mehta"
 readTime: "6 min read"
+primaryQuery: "real yield liquidity pools"
 keywords: "real yield liquidity pools, real yield DeFi, fee yield vs emissions, emission funded yield, sustainable DeFi yield, is high APY liquidity pool safe"
 featured: false
 faq:

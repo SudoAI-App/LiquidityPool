@@ -6,6 +6,7 @@ date: 2026-09-10
 lastReviewed: "2026-09-12"
 author: "Dr. Elena Rostova"
 readTime: "6 min read"
+primaryQuery: "loss versus rebalancing"
 keywords: "loss versus rebalancing, LVR DeFi, what is LVR, adverse selection AMM, arbitrage profit LP, oracle AMM, dynamic fees"
 featured: false
 faq:

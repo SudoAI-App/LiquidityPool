@@ -6,6 +6,7 @@ date: 2026-09-11
 lastReviewed: "2026-09-12"
 author: "Aria Chen"
 readTime: "6 min read"
+primaryQuery: "PancakeSwap liquidity pool"
 keywords: "PancakeSwap liquidity pool, PancakeSwap v3, CAKE emissions, BNB Chain liquidity, farm liquidity pool, protocol comparison"
 featured: false
 faq:

@@ -6,6 +6,7 @@ date: 2026-09-10
 lastReviewed: "2026-09-12"
 author: "Dr. Elena Rostova"
 readTime: "6 min read"
+primaryQuery: "impermanent loss formula"
 keywords: "impermanent loss formula, how to calculate impermanent loss, impermanent loss example, IL calculation, divergence loss, HODL benchmark"
 featured: true
 faq:

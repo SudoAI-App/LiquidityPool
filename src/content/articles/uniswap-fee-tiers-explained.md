@@ -6,6 +6,7 @@ date: 2026-09-10
 lastReviewed: "2026-09-12"
 author: "Marcus Vance"
 readTime: "6 min read"
+primaryQuery: "Uniswap fee tiers explained"
 keywords: "Uniswap fee tiers explained, pool fee tier, what is a pool fee tier, liquidity pool fees explained, dynamic fees, who pays liquidity pool fees"
 featured: false
 faq:

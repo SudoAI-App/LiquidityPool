@@ -6,7 +6,8 @@ date: 2026-08-31
 lastReviewed: "2026-09-12"
 author: "Aria Chen"
 readTime: "7 min read"
-keywords: "range orders AMM, concentrated liquidity limit order, Uniswap v4 limit hook, Ambient knock-out liquidity, AMM order execution, LVR, range order liquidity, single-sided liquidity, one-sided liquidity provision"
+primaryQuery: "range orders AMM"
+keywords: "range orders AMM, concentrated liquidity limit order, Uniswap v4 limit hook, Ambient knock-out liquidity, AMM order execution, LVR, range order liquidity"
 featured: false
 faq:
   - q: "What is a range order?"

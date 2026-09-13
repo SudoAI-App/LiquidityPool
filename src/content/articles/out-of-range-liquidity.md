@@ -6,6 +6,7 @@ date: 2026-09-10
 lastReviewed: "2026-09-12"
 author: "Dr. Elena Rostova"
 readTime: "6 min read"
+primaryQuery: "out of range liquidity"
 keywords: "out of range liquidity, out of range position Uniswap v3, liquidity position not earning fees, liquidity range, concentrated liquidity risk, rebalancing cost"
 featured: true
 faq:

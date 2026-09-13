@@ -6,6 +6,7 @@ date: 2026-09-11
 lastReviewed: "2026-09-12"
 author: "Dr. Elena Rostova"
 readTime: "9 min read"
+primaryQuery: "Meteora DLMM strategy"
 keywords: "Meteora DLMM strategy, Meteora DLMM bin step, Meteora DLMM fees, how to provide liquidity on Meteora, DLMM rebalance, Meteora DLMM impermanent loss, Solana liquidity pools, spot curve bid-ask distribution"
 featured: false
 faq:

@@ -6,7 +6,8 @@ date: 2026-09-10
 lastReviewed: "2026-09-12"
 author: "Siddharth Mehta"
 readTime: "6 min read"
-keywords: "yield farming liquidity pools, yield farming explained, liquidity mining vs yield farming, farming emissions, real yield, mercenary capital"
+primaryQuery: "yield farming liquidity pools"
+keywords: "yield farming liquidity pools, yield farming explained, farming emissions, real yield, mercenary capital"
 featured: false
 faq:
   - q: "What is yield farming in DeFi?"

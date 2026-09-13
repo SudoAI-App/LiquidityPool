@@ -11,12 +11,12 @@ export const toolCatalog = {
   impermanentLoss: {
     href: '/tools/impermanent-loss-calculator/',
     title: 'Impermanent Loss Calculator',
-    prompt: 'Enter two prices and see how far a pooled position trails simply holding, and how much fee income closes the gap.'
+    prompt: 'Compare 50/50, weighted, and concentrated ranges against holding, then share the exact scenario by URL.'
   },
   poolFees: {
     href: '/tools/liquidity-pool-calculator/',
-    title: 'Liquidity Pool Fee & APR Calculator',
-    prompt: 'Turn fee tier, volume and your share of liquidity into daily and annualised income, net of gas.'
+    title: 'Liquidity Pool Fees, Rewards & APR Calculator',
+    prompt: 'Keep trading-fee APR and incentive APR separate before combining them net of gas.'
   },
   lpProfit: {
     href: '/tools/lp-profit-calculator/',
@@ -25,8 +25,13 @@ export const toolCatalog = {
   },
   uniswapV3: {
     href: '/tools/uniswap-v3-liquidity-calculator/',
-    title: 'Uniswap v3 Liquidity Calculator',
-    prompt: 'Set a price range and a deposit to see capital efficiency, token mix at each bound and fees against holding.'
+    title: 'Uniswap v3 & Concentrated Liquidity Calculator',
+    prompt: 'Set a bounded range to see capital efficiency, token mix at each bound and fees against holding.'
+  },
+  meteoraDlmm: {
+    href: '/tools/meteora-dlmm-calculator/',
+    title: 'Meteora DLMM Calculator',
+    prompt: 'Model discrete bin prices, allocation shapes, base and variable fees, and divergence against holding.'
   }
 } satisfies Record<string, Tool>;
 
@@ -66,7 +71,9 @@ const guideTool: Record<string, ToolKey> = {
   'out-of-range-liquidity': 'uniswapV3',
   'range-orders-on-amms': 'uniswapV3',
   'raydium-clmm-liquidity-guide': 'uniswapV3',
-  'pancakeswap-liquidity-pools': 'uniswapV3'
+  'pancakeswap-liquidity-pools': 'uniswapV3',
+  'meteora-dlmm-strategy': 'meteoraDlmm',
+  'discretized-liquidity-dlmm-explained': 'meteoraDlmm'
 };
 
 const trackTool: Record<string, ToolKey> = {

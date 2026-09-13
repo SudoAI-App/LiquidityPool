@@ -6,6 +6,7 @@ date: 2026-09-07
 lastReviewed: "2026-09-12"
 author: "Dr. Elena Rostova"
 readTime: "6 min read"
+primaryQuery: "constant product formula"
 keywords: "constant product formula, x y k AMM, Uniswap formula, AMM pricing curve, virtual reserves, constant product AMM, constant product market maker, pool reserves AMM, bonding curve crypto"
 featured: false
 faq:

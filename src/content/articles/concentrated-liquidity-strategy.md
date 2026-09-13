@@ -6,6 +6,7 @@ date: 2026-09-11
 lastReviewed: "2026-09-12"
 author: "Dr. Elena Rostova"
 readTime: "6 min read"
+primaryQuery: "concentrated liquidity strategy"
 keywords: "concentrated liquidity strategy, liquidity range width, how to choose a price range, rebalancing strategy LP, time in range, Uniswap v3 price range"
 featured: false
 faq:
@@ -164,7 +165,7 @@ The width that maximises a spreadsheet is almost always narrower than the width 
 
 ## Where to go next
 
-Test a candidate band in the [Uniswap v3 liquidity calculator](/tools/uniswap-v3-liquidity-calculator/), which reports the efficiency and what you hold at each bound. For the bin-based version of the same decision, see [Meteora DLMM Strategy](/guides/meteora-dlmm-strategy/).
+Test a candidate band in the [concentrated liquidity calculator](/tools/uniswap-v3-liquidity-calculator/), which reports the efficiency and what you hold at each bound. For the bin-based version of the same decision, see [Meteora DLMM Strategy](/guides/meteora-dlmm-strategy/).
 
 ## References
 

@@ -6,6 +6,7 @@ date: 2026-08-26
 lastReviewed: "2026-09-12"
 author: "Aria Chen"
 readTime: "6 min read"
+primaryQuery: "cross-chain liquidity"
 keywords: "cross-chain liquidity, bridge risk, intent-based bridging, Circle CCTP, Chainlink CCIP, ERC-7683, liquidity fragmentation, LayerZero OFT, cross-chain liquidity pool, bridge liquidity risk, omnichain liquidity, intent based liquidity"
 featured: false
 faq:
