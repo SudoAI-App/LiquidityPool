@@ -1,11 +1,11 @@
 ---
 title: "Liquidity Depth and Execution: The Only Number That Trades"
-description: "Why liquidity depth, not total value locked, decides execution quality. How to measure depth within a price band, read a depth chart, and size orders against it."
+description: "Two pools of the same size can cost seven times as much to trade against. How to measure what actually fills your order, and why it vanishes under stress."
 category: "Risk & Research"
 date: 2026-09-11
-lastReviewed: "2026-09-11"
+lastReviewed: "2026-09-12"
 author: "Marcus Vance"
-readTime: "11 min read"
+readTime: "6 min read"
 keywords: "liquidity depth crypto, liquidity pool depth, executable depth, market depth DeFi, pool depth vs volume, spot price vs execution price AMM"
 featured: false
 faq:
@@ -21,9 +21,11 @@ faq:
     a: "As much as your tolerance for price impact allows. A practical cap for most participants is the size that moves price by two to five percent, computed from active depth rather than from the pool's total value."
 ---
 
-Total value locked counts deposits. Depth counts what can actually be traded. On concentrated pools those two numbers routinely differ by an order of magnitude, and only the second one has any bearing on what a trade costs or what a position can earn.
+The headline figure counts deposits. Depth counts what can actually be traded right now. On range-based pools those two routinely differ by a factor of ten.
 
-Measuring depth properly takes a few minutes and changes both trading and liquidity decisions.
+Only the second one has any bearing on what a trade costs or what a position earns.
+
+Measuring it properly takes a few minutes. This guide shows you how, works two pools that look identical and are not, and covers the moment when depth vanishes.
 
 <figure class="article-figure">
   <img src="/images/guides/liquidity-depth-and-execution.webp" alt="Price impact curves against order size for three pools with different active depth." width="1600" height="1067" loading="lazy" decoding="async" />
@@ -31,108 +33,132 @@ Measuring depth properly takes a few minutes and changes both trading and liquid
 </figure>
 
 > **Desk Field Note from Marcus Vance:**
-> *"We size every position from the two percent depth on both sides, never from total value locked. It is the number that tells you what happens when you need to leave in a hurry, and it is usually a fraction of what the front page of an analytics site displays."*
+> *"We size every position from the depth within 2% on both sides, never from the headline. It is the number that tells you what happens when you need to leave in a hurry, and it is usually a fraction of what the front page of an analytics site shows."*
 
-## 1. Defining Depth Precisely
+## Defining it properly
 
-Depth is a function of a price band, so it is meaningless without one. The standard formulation: the notional value that can be traded before the price moves by $\delta$ percent from the current level.
+Depth is meaningless without a price band attached. The question is always: how much can be traded before the price moves by some amount?
 
-For a constant-product pool, depth follows directly from the reserves, and a trade of size $\Delta x$ against reserve $x$ produces roughly:
+In an ordinary pool the answer comes straight from the balances:
 
 $$
 \text{impact} \approx \frac{\Delta x / x}{1 + \Delta x / x}
 $$
 
-For a concentrated pool the calculation runs over ticks. Liquidity is constant within each tick range, so depth within a band is the sum of liquidity across the ticks it spans, converted to notional at the prices involved. Bin-based designs are simpler still: each bin holds a known amount at a known price, and depth is the sum across bins in the band.
+Where:
 
-The mechanics of tick-level accounting are covered in [Uniswap v3 Ticks and Position NFTs](/guides/uniswap-v3-ticks-and-lp-nfts/).
+- $\Delta x$ is your order size.
+- $x$ is the pool's balance of what you are paying in.
 
----
+In a range-based pool it takes more work. Liquidity is constant within each price step, so depth across a band is the sum across the steps it covers, converted to a value at the prices involved.
 
-## 2. Why It Diverges From TVL
+Bin designs are simplest. Each bin holds a known amount at a known price, so you add them up. See [Uniswap v3 Ticks and Position NFTs](/guides/uniswap-v3-ticks-and-lp-nfts/).
 
-Four effects separate deposits from executable depth:
+## Turning depth into a maximum order
 
-1. **Range placement.** Capital in ranges far from the current price contributes nothing to current execution.
-2. **Asymmetry.** Depth above the price and below it are different numbers, often very different after a trend.
-3. **Fragmentation.** The same pair split across fee tiers, chains and venues has less usable depth at any single one than the aggregate suggests.
-4. **Just-in-time liquidity.** Some depth appears only for the block containing a large trade and disappears immediately after, which flatters measured depth without helping anyone else.
+The useful output is not a depth figure. It is the largest order you can send at a price impact — how far your own order pushes the rate — that you are willing to pay.
 
-The TVL side of this distinction is developed in [TVL Explained](/guides/tvl-explained/).
+In an ordinary pool you can read it straight off the balance of the token you are paying in.
 
----
+| Worst price you will accept, against the quote | Largest order, as a share of that balance |
+| :--- | ---: |
+| 0.5% worse | about 0.5% |
+| 1% worse | about 1.0% |
+| 2% worse | about 2.0% |
+| 5% worse | about 5.3% |
 
-## 3. A Worked Measurement
+So a pool holding \$4M of USDC takes roughly a \$40,000 buy before your average price is 1% worse than the screen, before fees. In a range-based pool, use only the balance sitting inside the band your order will cross, which is usually much smaller than the headline.
 
-Two pools on the same pair, both showing \$40m in an analytics interface.
+## Four reasons it differs from the headline
+
+1. **Where the money sits.** Capital in ranges far from the price contributes nothing to what you can trade today.
+2. **It is lopsided.** Depth above the price and below it are different numbers, often very different after a trend.
+3. **It is split.** The same pair across several tiers, chains and venues has less usable depth at any one of them than the total implies.
+4. **Some of it is fake.** Liquidity that appears only for the block containing a large trade and vanishes immediately flatters the measurement without helping anybody else.
+
+See [TVL Explained](/guides/tvl-explained/).
+
+## Two pools, same headline
+
+Both showing \$40M on the same pair.
 
 | | Pool A | Pool B |
 | :--- | ---: | ---: |
-| Total value locked | \$40m | \$40m |
-| Liquidity within ±2% | \$26m | \$3.5m |
-| Trade moving price 1% | \$1.9m | \$260,000 |
-| Cost of a \$500k buy | roughly 0.27% | roughly 1.9% |
-| Cost of a \$2m buy | roughly 1.05% | roughly 6.8% |
+| Headline size | \$40M | \$40M |
+| Working within 2% of the price | \$26M | \$3.5M |
+| What moves the price 1% | about \$3.2M | about \$440,000 |
+| Cost of a \$500,000 buy, before fees | about 0.08% | about 0.6% |
+| Cost of a \$2M buy, before fees | about 0.3% | over 5%, because it runs past the band |
 
-Pool B is not defective. It may hold most of its liquidity in ranges placed for a different price regime, or it may be a wide-range pool on a volatile pair. But a router will send size to Pool A, which means Pool A's providers earn the fees, and anyone assuming the two pools were interchangeable pays the difference.
+Pool B is not broken. It may hold most of its liquidity in ranges placed for a different price, or be a wide-range pool on a volatile pair.
 
-For traders, the same measurement sets the maximum order that should be routed to a single venue, discussed in [Slippage and Price Impact](/guides/slippage-and-price-impact/).
+But routers send size to Pool A, which means Pool A's providers earn the fees. And anyone who assumed the two were interchangeable pays the difference in price impact — the way an order pushes the rate against itself — plus slippage, the gap between the quote and the fill. See [Slippage and Price Impact](/guides/slippage-and-price-impact/).
 
----
+## Depth from the other side of the trade
 
-## 4. Depth From the Provider's Side
+If you are supplying, depth is the denominator of your fee share. Put money into a band that is already full and you capture a small fraction of what happens there.
 
-Depth is the denominator of your fee share. Supplying into a band that already holds substantial liquidity means your position captures a small fraction of the fees generated there.
+That gives a counterintuitive result. A pool with thin depth can be a better place to supply than a deep one, as long as the volume still routes to it.
 
-That produces a specific, counterintuitive result: a pool with thin active depth can be more attractive to supply than a deep one, provided volume still routes to it. The quantity to compare is fee revenue per unit of liquidity in the band, not pool size, which is exactly what the [liquidity pool fee and APR calculator](/tools/liquidity-pool-calculator/) computes.
+The number to compare is fee revenue per unit of liquidity in the band, not the pool's size. That is exactly what the [liquidity pool fee and APR calculator](/tools/liquidity-pool-calculator/) works out.
 
-The competitive dynamic matters too. Depth in a band is not static: an incentive campaign or a large mint can double it overnight, halving everyone's share without any change in volume.
+The competition matters too. Depth in a band is not fixed. A reward programme or one large deposit can double it overnight, halving everybody's share with no change in volume at all.
 
----
+## When depth disappears
 
-## 5. Reading Depth in Practice
+Everything above is a snapshot, and the moments that matter most are exactly the ones where a snapshot is least useful.
 
-- **Pool interfaces** publish a liquidity distribution chart. Read the ticks around the current price rather than the shape as a whole.
-- **Analytics dashboards** on [Dune Analytics](https://dune.com) expose tick-level liquidity for major pools, which allows a proper band calculation.
-- **Aggregator quotes** are a practical shortcut: request quotes for several sizes and observe where the marginal cost curve steepens.
-- **Direct contract reads** give the authoritative answer: current tick, liquidity, and the initialised ticks around it.
+During a sharp move, three things happen at once:
 
-Whichever source, take the measurement at the moment you intend to act. Depth changes with every block, and it thins fastest during exactly the conditions where you are most likely to want it.
+- **Range positions get pushed out and stop quoting.** The depth was there yesterday and is not there now.
+- **Active providers withdraw** rather than hold inventory through it.
+- **The trades arriving are larger**, because everybody reacts at the same time.
 
----
+So depth measured on a quiet afternoon overstates what will be there during the window you actually need it. A pool showing \$26M within 2% on a Tuesday may show a small fraction of that during a liquidation cascade, and no average will show you that.
 
-## 6. Depth and Volatility Together
+Two defences:
 
-Depth alone is incomplete. A pool with substantial depth on a pair with very high volatility still produces poor outcomes for providers, because the same depth is repeatedly arbitraged.
+- **Size against a stressed assumption**, discounting the calm measurement substantially.
+- **Look at historical depth during past volatile episodes.** That history is available and is a far better guide to your exit than today's reading.
 
-The pairing that matters is depth against turnover and turnover against volatility:
+## What people get wrong about depth
 
-- **Deep, high turnover, moderate volatility.** The healthy case for both traders and providers.
-- **Deep, low turnover.** Good execution, thin fee income; capital is idle.
-- **Thin, high turnover.** Excellent fee density, severe execution costs, fragile in stress.
-- **Thin, high volatility.** Avoid supplying, and route trades elsewhere.
+| What people assume | What actually happens |
+| :--- | :--- |
+| A big pool means a cheap trade | Only money near the price fills your order. The rest is decoration |
+| Depth is symmetric | After a trend, the side you need is usually the thin one |
+| Today's depth is tomorrow's | It thins fastest in exactly the conditions where you want it |
+| Deep is always better to supply | A thin pool that still gets volume pays you far more per dollar |
 
-### What depth looks like when it disappears
+## Depth and volatility together
 
-The measurement above is a snapshot, and the moments that matter most are the ones where the snapshot is least representative.
+Depth on its own is incomplete. A deep pool on a wildly volatile pair still produces bad outcomes for providers, because that same depth gets arbitraged over and over.
 
-During a sharp move, three things happen simultaneously. Active liquidity thins as concentrated positions are pushed out of range and stop quoting. Providers who monitor actively withdraw rather than hold inventory through the move. And the trades arriving are larger than usual, because everyone reacts at once.
+| | High turnover | Low turnover |
+| :--- | :--- | :--- |
+| **Deep** | The healthy case for everybody | Good fills, thin fees, idle capital |
+| **Thin** | Great fee density, bad fills, fragile under stress | Avoid entirely |
 
-The result is that depth measured in calm conditions can overstate what is available during the exact window you would need it. A pool showing \$26m within two percent on a quiet afternoon may show a small fraction of that during a liquidation cascade, and the difference is not visible in any average.
+Add volatility as the third axis. Thin and volatile is the one combination where you should neither supply nor route trades.
 
-Two defences follow. Size positions against a stressed depth assumption rather than a current one, discounting the calm-market measurement substantially. And check historical depth during previous volatile episodes, which is available from tick-level history and is a far better guide to exit conditions than today's reading.
+## The checklist
 
----
+1. **Measure within 2% on both sides**, before trading or supplying.
+2. **Convert that into a maximum order size** at the impact you will tolerate.
+3. **Compare across tiers and venues** for the same pair, never in aggregate.
+4. **If supplying, compute revenue per unit of liquidity** in your intended band.
+5. **Re-measure after any reward programme starts.** Depth moves before volume does.
+6. **Check the asymmetry after a trend.** The side you need may be the thin one.
+7. **Never use the headline figure** as a proxy for any of this.
 
-## 7. Checklist
+## Where to read it
 
-- [ ] Measure depth within ±2% on both sides before trading or supplying.
-- [ ] Convert depth into a maximum order size at your tolerated price impact.
-- [ ] Compare depth across fee tiers and venues for the same pair, not in aggregate.
-- [ ] For supplying, compute fee revenue per unit of liquidity in your intended band.
-- [ ] Re-measure after any incentive programme starts, since depth moves before volume does.
-- [ ] Check depth asymmetry after a trend; the side you need may be the thin one.
-- [ ] Never treat total value locked as a proxy for any of the above.
+- **Pool interfaces** publish a liquidity distribution chart. Read the steps around the current price, not the overall shape.
+- **[Dune Analytics](https://dune.com)** exposes step-level liquidity for major pools, which lets you do the band calculation properly.
+- **Aggregator quotes** are a practical shortcut. Request quotes at several sizes and see where the cost curve turns up.
+- **Reading the contract** gives the authoritative answer: current price, liquidity, and the initialised steps around it.
+
+Whichever you use, measure at the moment you intend to act. Depth changes every block.
 
 Depth is the only liquidity number that participates in a trade. Everything else is an accounting summary of capital that may or may not be standing where the market is.
 
@@ -140,16 +166,16 @@ Depth is the only liquidity number that participates in a trade. Everything else
 
 1. [Uniswap v3 Core Whitepaper (Adams et al., 2021)](https://uniswap.org/whitepaper-v3.pdf)
 2. [Uniswap v2 Core Whitepaper (Adams et al., 2020)](https://uniswap.org/whitepaper.pdf)
-3. [Trading in the DeFi era: automated market maker (BIS Bulletin No 58, 2022)](https://www.bis.org/publ/bisbull58.htm)
+3. [Miners as intermediaries: extractable value and market manipulation in crypto and DeFi (BIS Bulletin No 58, 2022)](https://www.bis.org/publ/bisbull58.htm)
 4. [Quantifying Blockchain Extractable Value: How dark is the forest? (Qin et al., 2021)](https://arxiv.org/abs/2101.05511)
 5. [On the Quality of Cryptocurrency Markets: Centralized versus Decentralized Exchanges (Barbon & Ranaldo, 2021)](https://arxiv.org/abs/2112.07386)
-6. [SoK: Decentralized Exchanges with Automated Market Maker Protocols (Xu et al., 2021)](https://arxiv.org/abs/2103.12732)
+6. [SoK: Decentralized Exchanges (DEX) with Automated Market Maker (AMM) Protocols (Xu et al., 2021)](https://arxiv.org/abs/2103.12732)
 7. [DeFi risks and the decentralisation illusion (BIS Quarterly Review, December 2021)](https://www.bis.org/publ/qtrpdf/r_qt2112b.htm)
 
 [1]: https://uniswap.org/whitepaper-v3.pdf "Uniswap v3 Core Whitepaper"
 [2]: https://uniswap.org/whitepaper.pdf "Uniswap v2 Core Whitepaper"
-[3]: https://www.bis.org/publ/bisbull58.htm "Trading in the DeFi era: automated market maker (BIS Bulletin No 58, 2022)"
+[3]: https://www.bis.org/publ/bisbull58.htm "Miners as intermediaries: extractable value and market manipulation in crypto and DeFi (BIS Bulletin No 58, 2022)"
 [4]: https://arxiv.org/abs/2101.05511 "Quantifying Blockchain Extractable Value: How dark is the forest?"
 [5]: https://arxiv.org/abs/2112.07386 "On the Quality of Cryptocurrency Markets: Centralized versus Decentralized Exchanges (Barbon & Ranaldo, 2021)"
-[6]: https://arxiv.org/abs/2103.12732 "SoK: Decentralized Exchanges with Automated Market Maker Protocols (Xu et al., 2021)"
+[6]: https://arxiv.org/abs/2103.12732 "SoK: Decentralized Exchanges (DEX) with Automated Market Maker (AMM) Protocols (Xu et al., 2021)"
 [7]: https://www.bis.org/publ/qtrpdf/r_qt2112b.htm "DeFi risks and the decentralisation illusion (BIS Quarterly Review, December 2021)"

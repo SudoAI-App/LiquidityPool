@@ -1,11 +1,11 @@
 ---
 title: "How to Provide Liquidity: A Mechanism-First Walkthrough"
-description: "Providing liquidity is choosing an exposure to a pricing rule. Learn how ranges, Permit2 approvals, hooks, fees, and order flow shape your inventory."
+description: "Every choice in the deposit screen is a decision about what you will be holding later. What each one does, two worked scenarios, and the sums that decide it."
 category: "LP Mechanics"
 date: 2026-09-03
-lastReviewed: "2026-09-10"
+lastReviewed: "2026-09-12"
 author: "Siddharth Mehta"
-readTime: "11 min read"
+readTime: "7 min read"
 keywords: "how to provide liquidity, provide liquidity AMM, liquidity provider guide, DeFi LP, Permit2, hooks, how to provide liquidity on Uniswap, liquidity provision DeFi, do I need both tokens to provide liquidity"
 featured: true
 faq:
@@ -17,9 +17,11 @@ faq:
     a: "When the reason for the position no longer holds: the pair's volatility has risen beyond what the fee tier compensates, volume has migrated elsewhere, the incentive programme has ended, or you no longer want exposure to either asset."
 ---
 
-Providing liquidity to an automated market maker (AMM) is not a passive yield deposit; it is an active underwriting agreement in which a capital allocator authorizes an immutable smart contract to trade against inventory at deterministic price levels. In return for collecting swap fee cash flow, the liquidity provider (LP) accepts directional inventory drift, continuous options-like adverse selection (Loss-Versus-Rebalancing), and transaction ordering risk from arbitrageurs [1] [2] [4].
+The deposit screen makes this look like choosing a savings account. Pick a pool, pick an amount, confirm.
 
-In modern decentralized finance, providing liquidity involves concrete technical choices: selecting between full-range curves and tick-based concentrated intervals, auditing singleton contracts with programmable hooks, executing signature-based Permit2 authorizations, and managing inventory decay through automated vault managers. This walkthrough details each step of the capital lifecycle—from token authorization to exit settlement—providing an institutional framework for deploying capital on-chain [1] [2] [4].
+What you are actually doing is hiring a contract to trade your money, all day, at prices you agreed in advance, against anyone who wants to. Every setting on that screen decides what you will be holding when you come back.
+
+This guide walks through what each choice does, two scenarios worked end to end, and the sums that tell you whether the position makes sense at all.
 
 <figure class="article-figure">
   <img src="/images/guides/how-to-provide-liquidity.webp" alt="Two assets enter a pool through a chosen active price range and produce a position receipt." width="1600" height="1067" loading="lazy" decoding="async" />
@@ -27,172 +29,150 @@ In modern decentralized finance, providing liquidity involves concrete technical
 </figure>
 
 > **Desk Field Note from Siddharth Mehta:**
-> *"The moment you sign an approval and deposit liquidity into an onchain pool, you are running an active market-making business. Beginners frequently fail to account for the transaction cost friction of entering and exiting pools. On Ethereum mainnet, approving two ERC-20 tokens, minting a position NFT, and collecting fees can easily cost \$80–\$150 in gas. If your initial deposit is only \$1,000, you are starting with an immediate 10% performance handicap."*
+> *"The moment you sign that approval you are running a small market-making business. Beginners forget the cost of getting in and out. On Ethereum, approving two tokens, minting the position and claiming fees can cost a few dollars on a quiet day and well over \$100 on a busy one. On a \$1,000 deposit, a busy day starts you 10% behind."*
 
-## Start from the Pricing Rule: Invariant and Active Region
+## What the pool does with your money
 
-Most decentralized exchanges execute trades through automated market makers. In a standard constant-product AMM, the pool enforces the invariant $x \cdot y = k$. When traders purchase one token, they deposit the other, shifting the marginal price along the hyperbolic curve. Whenever external market prices shift, arbitrageurs trade against the pool to bring its quotes back into line with external reference venues. In doing so, the pool continuously sells the appreciating asset and accumulates the depreciating asset, inflicting divergence loss (impermanent loss) relative to holding the original tokens [4].
+A pool holds two tokens and follows one rule. When somebody buys one, they leave the other behind, and the price moves.
 
-In concentrated-liquidity protocols (Uniswap v3 and v4), an LP specifies a finite price interval $[P_{\text{lower}}, P_{\text{upper}}]$. Within that interval, capital acts as a dense virtual constant-product curve, earning a share of fees from trades crossing the chosen ticks [1]. Outside that interval, liquidity is completely inactive: it facilitates zero trades and earns zero fees [1].
+When the price moves somewhere else first, arbitrage traders come and trade against your pool until it catches up. The pool sells whichever token went up and buys whichever went down. That is where impermanent loss comes from — the gap between what you end up with and what holding would have given you [4].
 
-As trades push spot price through your interval, inventory composition migrates deterministically:
-- As spot price rises toward $P_{\text{upper}}$, traders buy the base asset (e.g., ETH) from the position and deposit the quote asset (e.g., USDC). At the upper boundary, the position becomes 100% USDC [2].
-- As spot price falls toward $P_{\text{lower}}$, traders buy USDC and deposit ETH. At the lower boundary, the position becomes 100% ETH [2].
+In a range-based pool you also choose two prices, and your money only works between them [1]. Outside, it fills nothing and earns nothing.
 
-An LP position's balance is not static; it is a mathematical function of current spot price relative to initialized tick boundaries.
+| Where the price goes | What happens to your position |
+| :--- | :--- |
+| Rises toward your upper bound | Traders buy your ETH, leave dollars. At the top, you hold only dollars [2] |
+| Sits inside your band | A mix that shifts with every trade, earning fees |
+| Falls toward your lower bound | Traders sell you ETH. At the bottom, you hold only ETH [2] |
 
-## Map Interface Choices to Contract Exposures
+So your balance is not something you set. It is a function of where the price is relative to the bounds you chose.
 
-Every configuration decision in the deposit flow selects a specific contract exposure:
+## What each setting on the screen actually does
 
-- **Pool Architecture**: A classic full-range pool spreads capital across $0 \to \infty$, minimizing maintenance at the expense of capital efficiency. A concentrated pool packs depth into tight bands, dramatically increasing fee capture but requiring active monitoring [1] [2].
-- **Permit2 and Token Approvals**: Modern protocols utilize Uniswap's Permit2 standard. Rather than granting unlimited ERC-20 allowances directly to router contracts, you sign an off-chain EIP-712 permit that grants temporary, time-bound transfer rights, reducing gas overhead and smart-contract exposure [1].
-- **Fee Tier Selection**: Standard fee tiers (0.01%, 0.05%, 0.30%, 1.00%) reflect expected asset volatility. In hook-enabled pools (Uniswap v4), pools can implement dynamic fee algorithms that raise fees during volatile market conditions to offset adverse selection [1].
-- **Hook Contract Inspection**: When depositing into modern singleton pools, verify the associated hook address. Hooks have rights to intercept pool operations and can alter swap fees, implement withdrawal conditions, or allocate idle liquidity to external lending markets [1].
-- **Redemption & Exit**: Withdrawing burns your LP claim (ERC-721 NFT or ERC-6909 tokens) and returns your current inventory. If the spot price has exited your range, you will withdraw 100% of the underperforming asset [2].
+| The choice | What it decides |
+| :--- | :--- |
+| Full range or a band | Full range needs no attention and uses your money poorly. A band earns far more and needs watching [1] [2] |
+| The approval you sign | Sign a scoped, expiring permission rather than an unlimited one. It costs less gas and exposes less [1] |
+| The fee tier | 0.01% to 1.00%, reflecting how much the pair moves. Some newer pools let code move the fee with volatility [1] |
+| The hook, if there is one | Custom code that can change fees, restrict withdrawals, or lend out idle reserves. Read it first [1] |
+| How you exit | Burning your claim returns whatever you hold now. Outside your range, that is all of one token [2] |
 
-## Scenario 1: A Stablecoin Position Around Parity
+## Scenario one: a tight band on a stablecoin pair
 
-Consider supplying capital to a USDC/USDT pool, setting a narrow price band around parity (e.g., 0.9990 to 1.0010). The objective is capital efficiency: because pegged stablecoins rarely trade far from \$1.00, concentrating capital into a 20-basis-point corridor delivers hundreds of times the fee density of a full-range position [1].
+You supply USDC and USDT, with a band from 0.9990 to 1.0010. Twenty basis points wide.
 
-Mechanics inside the contract:
-- While price fluctuates between 0.9990 and 1.0010, the position is active, capturing fees from swappers and aggregators [1].
-- If an asset depegs (for example, if USDT trades down to 0.9850), the market sweeps through your lower boundary. Your position is rapidly converted 100% into USDT, and fee accrual stops entirely [2].
-- You are now fully exposed to the distressed asset. The position will not automatically rebalance itself back into USDC; it sits idle unless price recovers or you pay transaction fees to close the position and accept the realized loss.
+The logic is sound. These tokens rarely move far from a dollar, so packing everything into a tiny corridor makes your money work about two thousand times harder than a full-range position [1].
 
-When is this useful? When you have strong structural confidence that both assets will maintain their pegs. Where does it fail? When an asset suffers credit impairment, concentrated liquidity transforms into concentrated exposure to the impaired token [2] [4].
+**While it works:** the price wanders inside your band, and you collect fees on everything that crosses you.
 
-## Scenario 2: Volatile ETH/USDC Pair—Wide Range vs Narrow Range
+**When it breaks:** one token drops to 0.9850. The market sweeps straight through your lower bound. You now hold only the distressed token, and fees have stopped [2].
 
-Consider supplying liquidity to an ETH/USDC pool. You face a strategic trade-off:
+**What happens next:** nothing. It does not rebalance itself. It sits there until the price recovers or you pay gas to close it and take the loss.
 
-```
-┌────────────────────────────────────────────────────────────────────────┐
-│                   Wide Range vs. Narrow Range Trade-off                │
-├──────────────────────────┬─────────────────────────────────────────────┤
-│ Wide Range (e.g. ±50%)   │ Narrow Range (e.g. ±5%)                     │
-├──────────────────────────┼─────────────────────────────────────────────┤
-│ • Stays in-range longer  │ • High fee density per dollar deployed      │
-│ • Low management burden  │ • Rapidly exits range during trends         │
-│ • Lower capital yield    │ • Severe adverse selection during breakouts │
-│ • Slower inventory drift │ • Requires automated rebalancing or vaults  │
-│ └──────────────────────────┴─────────────────────────────────────────────┘
-```
+Use this when you genuinely believe both tokens will hold. Understand that if one has a real problem, your tight band has concentrated your exposure to precisely that token [2] [4].
 
-With a narrow range, an LP collects higher fee cash flow during quiet, range-bound market regimes. However, during momentum breakouts, the position becomes single-sided in seconds, forfeiting fee income while suffering full divergence loss [2] [4].
+## Scenario two: wide or narrow on a volatile pair
 
-For allocators unable to adjust tick ranges continuously, utilizing an **Automated Liquidity Management (ALM) vault** (such as Arrakis or Gamma) or choosing a wider interval calibrated to historical volatility is required [1].
+ETH against dollars. The choice is a real trade, not a preference.
 
-For a deeper dive into range boundaries and execution math, explore [Concentrated Liquidity Explained: Range, Capital Efficiency, and Risk](/guides/concentrated-liquidity-explained/).
+| | Wide, say plus or minus 50% | Narrow, say plus or minus 5% |
+| :--- | :--- | :--- |
+| Time spent earning | Most of it | Often very little |
+| Fee income per dollar | Low | High, while it lasts |
+| How fast it converts | Slowly | In seconds during a breakout |
+| What you must do | Almost nothing | Watch it, or automate it |
 
-## Stable-Swap Pools: Amplification and Imbalance Tolerance
+A narrow band pays well in a quiet, range-bound market. During a trend it goes one-sided in seconds, stops earning, and takes the full divergence anyway [2] [4].
 
-Curve Finance uses a hybrid invariant designed specifically for correlated assets (stablecoins, liquid staking tokens, wrapped assets). The amplification coefficient ($A$) controls how flat the curve remains near parity [3]:
-- A high $A$ parameter allows the pool to absorb large trades with negligible slippage [3].
-- However, if the fundamental backing of one asset deteriorates, the high $A$ parameter delays price discovery, causing the pool to absorb enormous amounts of the depegging asset before the curve steepens [3].
+If you cannot watch it, either widen the band to match how much the pair actually moves, or use a vault such as Arrakis or Gamma that moves it for you [1]. See [Concentrated Liquidity Explained](/guides/concentrated-liquidity-explained/).
 
-When providing liquidity to Curve pools, check the pool's reserve balance. If a pool is already 80/20 skewed, new LPs are essentially taking on immediate depeg risk [3].
+## If you are using a stable-pair pool
 
-## Fees Versus Divergence: Evaluating Real Profitability
+Curve-style pools use a different curve for assets meant to track each other, controlled by a setting called amplification [3].
 
-Displayed APR figures on DEX interfaces are backward-looking metrics calculated from past 24-hour volume. They do not account for:
-1. **Divergence Loss (Impermanent Loss)**: The reduction in portfolio value caused by asset price movement along the curve [4].
-2. **Loss-Versus-Rebalancing (LVR)**: The continuous value leaked to informed arbitrageurs who exploit stale pool prices [4].
-3. **Out-of-Range Inactivity**: Time spent outside your chosen price ticks where your capital generates zero yield [1] [2].
+Turn it up and the pool absorbs huge trades with almost no cost. Turn it up and, if one asset's backing deteriorates, the pool delays reacting and absorbs an enormous amount of the failing token before the price moves [3].
 
-Net LP profitability is determined by:
+One check before you deposit: look at the current balance. If a pool is already 80/20 skewed, you are not earning fees. You are buying the skew [3].
+
+## The sum that decides it
+
+The rate on the screen is yesterday's volume projected forward. It ignores three things:
+
+- **Divergence.** The gap between your position and simply holding [4].
+- **What arbitrage takes.** The value that leaks continuously because your quote is a block behind [4].
+- **Time out of range.** Hours or weeks earning nothing at all [1] [2].
 
 $$
-\text{Net Return} = \text{Fee Revenue} - \text{LVR} - \text{Gas \& Management Costs}
+\text{Net} = \text{fees} - \text{arbitrage losses} - \text{gas and management}
 $$
 
-If fee revenue fails to exceed LVR, holding the underlying assets or deploying them into money market vaults yields a superior risk-adjusted return.
+Where:
 
-For a detailed analysis of fee mechanics and accrual models, see [Liquidity Provider Fees: How LP Revenue Is Generated and Measured](/guides/liquidity-provider-fees/).
+- **Fees** is your share of trading fees while you were actually in range.
+- **Arbitrage losses** is roughly the pair's annual volatility, squared, divided by eight, as a yearly share of a full-range position. A band loses faster, in proportion to its multiplier.
+- **Gas and management** is every transaction from approval to exit.
 
-## Monitoring & Onchain Tooling Stack
+If that comes out negative, holding the tokens or lending them out beats the pool. See [Liquidity Provider Fees](/guides/liquidity-provider-fees/).
 
-To execute and manage liquidity provision operations efficiently:
+## Who is trading against you
 
-- **Position Management & Auto-Compounding**: Track open positions, fee accrual, and net return vs. HODL via [Revert Finance](https://revert.finance).
-- **Gas Profiling & Simulation**: Simulate deposit transactions and estimate exact execution gas costs using [Tenderly](https://tenderly.co).
-- **Pool TVL & Volume Monitoring**: Audit target pool health and fee tiers on [DeFiLlama](https://defillama.com).
+The flow reaching your pool changes your return, and it has been getting worse for passive positions [5].
 
-## Common Operational Mistakes & Pre-Deposit Failures
+**Public transactions attract fee sniping.** Somebody sees a large swap coming, mints a very tight position right where it will execute, takes almost the whole fee, and pulls out in the same block.
 
-| Operational Mistake | Contract-Level Consequence | Institutional Risk Mitigation |
-|---|---|---|
-| **Depositing into Unverified Hook Contracts** | In Uniswap v4, malicious or upgradeable hooks can siphon fees or restrict withdrawals. | Audit the hook bytecode and permissions bitmask; verify hooks are verified and immutable on Etherscan. |
-| **Granting Unlimited Infinite Approvals** | Stale unlimited ERC-20 allowances expose wallet balances to router contract vulnerabilities. | Use Permit2 signed allowances with explicit expiration timestamps and deposit allowances capped to exact size. |
-| **Entering Heavily Skewed Correlated Pools** | Depositing 50/50 into an 85/15 StableSwap pool instantly trades your healthy tokens for depegged inventory at unfavorable rates. | Inspect current pool reserves; avoid depositing healthy assets into pools exhibiting structural depeg skew. |
-| **Ignoring Range Boundary Liquidation Decay** | Leaving an out-of-range volatile position unattended during an adverse trend turns an LP into a bag-holder of declining assets. | Implement automated stop-loss thresholds or use automated liquidity vaults with dynamic rebalancing logic. |
+**Good flow is leaving.** Ordinary traders increasingly route through solver networks that match orders off-chain. Solvers only send you the trades they cannot match elsewhere, which are disproportionately the ones that cost you.
 
-## Transaction Ordering and Execution Flow
+## How pool designs differ in one table
 
-How trades reach your pool directly affects LP returns:
-- **Public Mempool Swaps**: Public trades expose LPs to **Just-In-Time (JIT) Liquidity**. Searchers observe pending swaps, mint a hyper-concentrated position in the active tick immediately ahead of the swap, extract the fee, and burn the position in the same block, diluting passive LP earnings [5].
-- **Intent-Based Solver Flow (UniswapX, CoW Swap)**: Retail traders increasingly route orders through off-chain solver networks. Solvers match benign orders off-chain and only route difficult or arbitrage trades through on-chain AMMs, increasing the proportion of toxic flow that hits passive pools [5].
+| Design | Where your money works | What happens to your holdings | When earning stops | What you are really exposed to |
+| :--- | :--- | :--- | :--- | :--- |
+| Full range, v2 | Everywhere | Rotates continuously [1] | Never [1] | Broad divergence over large moves [4] |
+| Narrow band, v3 or v4 | Your band [1] | Flips to one token at the edge [2] | The moment you exit the band [1] | Idle time plus faster bleed [2] |
+| Hook pools, v4 | Your band, plus custom rules [1] | Depends on the hook [1] | Set by your band and the code [1] | Whatever that code can do [1] |
+| Stable pairs, Curve | Clustered near the peg [3] | Flat near balance, steep when skewed [3] | Never stops, but fees dry up [3] | A peg breaking [3] |
 
-## Compact Comparison: How Designs Shape Inventory and Activity
+## Step by step
 
-| Pool Design | Where Liquidity is Active | Inventory Behavior | When Fee Accrual Stops | Primary Exposure |
-|---|---|---|---|---|
-| Uniswap v2 | $0 \to \infty$ full range | Continuous rebalancing along $x \cdot y = k$ [1] | Never; always active [1] | Broad divergence loss across large price trends [4] |
-| Uniswap v3/v4 Narrow | Custom tick interval $[P_a, P_b]$ [1] | Rapidly flips to single asset at edge [2] | Immediately upon exiting interval [1] | Inactivity periods and adverse selection [2] |
-| Uniswap v4 Hook Pools | Custom tick interval with hook logic [1] | Dynamic fees, lending hooks, or limit logic [1] | Controlled by tick range and hook rules [1] | Smart-contract hook security and parameters [1] |
-| Curve StableSwap | Clustered near peg via parameter $A$ [3] | Flatter near balance; steepens under skew [3] | Never halts, but fees shrink if volume dries up [3] | Depeg events and asset correlation collapse [3] |
+1. **Pick the pair, and check both tokens.** Look at how much they have actually moved, and how closely they track each other [1] [3].
+2. **Sign a scoped approval**, for the amount you are depositing, with an expiry [1].
+3. **Set the bounds from volatility**, not from a yield you would like. If there is a hook, read what it can do [1] [2].
+4. **Watch the price against your bounds.** Track fees earned against what the pair is costing you [4].
+5. **Exit deliberately.** Decrease liquidity, claim fees, and note what you actually received [2].
 
-## From Approval to Exit: Trace the State Changes
+## What to check before you deposit
 
-1. **Asset Selection & Diligence**: Identify the pair, verify token contracts, and evaluate historical volatility and correlation [1] [3].
-2. **Permit2 Authorization**: Sign an EIP-712 permit granting the router permission to transfer specified token quantities [1].
-3. **Tick Interval Selection**: Define price bounds that reflect your volatility horizon. For hook pools, audit hook parameters [1] [2].
-4. **Active Position Monitoring**: Monitor spot price relative to tick boundaries. Track collected fees and calculate net return against LVR [4].
-5. **Withdrawal and Settlement**: Call the exit function to decrease liquidity, collect accrued fees, and receive your final token inventory [2].
+1. **Exactly which prices will your position earn between [1]?**
+2. **If it breaks through, which token will you hold, and would you want it [2]?**
+3. **Is there a hook, and what is it allowed to do [1]?**
+4. **For a pegged pair, how skewed is the pool right now, and can you redeem directly [3]?**
+5. **Does the fee volume plausibly beat what volatility costs you [4]?**
 
-## What to Check Before You Act
+## When something goes wrong
 
-- What is the exact price interval where my position will earn swap fees [1]?
-- If spot price breaks through my bounds, which asset will I be left holding, and am I prepared to hold it [2]?
-- In Uniswap v4, does the pool have a hook contract attached, and what permissions does that hook possess [1]?
-- For stablecoin or pegged asset pools, what is the current reserve balance skew, and what are the underlying redemption mechanisms [3]?
-- Does historical pool fee volume plausibly exceed the cost of adverse selection (LVR) [4]?
+- **Your deposit reverts with a price error.** The price moved while your transaction waited. Widen the tolerance slightly, or send it through a private relay so nobody trades in front of you.
+- **You went out of range immediately.** Your band was tighter than a normal day for this pair. Do not panic and re-range. Look at how much it actually moves first, then decide.
+- **Gas is eating the fees.** The position is too small for how often you are touching it. Batch your fee claims, and do not claim until the amount is at least five times the gas.
 
-## Diagnostic Troubleshooting Decision Tree
+## Where to go next
 
-Use this operational troubleshooting tree when executing liquidity deposits:
-
-1. **Deposit Transaction Reverts with Slippage Error**:
-   - *Diagnostic*: Spot price moved during transaction confirmation, violating the minimum token amounts (amount0Min, amount1Min) specified in the call.
-   - *Action*: Increase slippage tolerance slightly (e.g., from 0.1% to 0.5%) or submit transaction through a private RPC to eliminate mempool frontrunning.
-2. **Position Immediately Exits Active Range After Deposit**:
-   - *Diagnostic*: Tick range was configured too narrowly without accounting for intraday market volatility.
-   - *Action*: Do not panic rebalance; assess trailing volatility on Dune before deciding whether to expand range boundaries or hold converted inventory.
-3. **Fee Accruals Lagging Behind Gas Expenditure**:
-   - *Diagnostic*: Position capital size is too small relative to onchain transaction costs.
-   - *Action*: Batch fee collection operations; do not claim fees until accumulated yield exceeds at least 5x transaction gas costs.
-
-## Where to Go Next
-
-Before choosing bounds, price the boundary case in [Out-of-Range Liquidity](/guides/out-of-range-liquidity/) and the tier in [Uniswap Fee Tiers Explained](/guides/uniswap-fee-tiers-explained/). Then run the two numbers that decide the position: expected fees in the [liquidity pool fee and APR calculator](/tools/liquidity-pool-calculator/) and expected divergence in the [impermanent loss calculator](/tools/impermanent-loss-calculator/). For depositing with one asset, see [Single-Sided Liquidity](/guides/single-sided-liquidity/); for the protocol-level walkthrough, see [Uniswap Liquidity Pools](/guides/uniswap-liquidity-pools/).
+Price the boundary case in [Out-of-Range Liquidity](/guides/out-of-range-liquidity/) and the tier in [Uniswap Fee Tiers Explained](/guides/uniswap-fee-tiers-explained/). Then run the two numbers: expected fees in the [liquidity pool fee and APR calculator](/tools/liquidity-pool-calculator/), expected divergence in the [impermanent loss calculator](/tools/impermanent-loss-calculator/). For depositing one asset, see [Single-Sided Liquidity](/guides/single-sided-liquidity/), and for the protocol walkthrough, [Uniswap Liquidity Pools](/guides/uniswap-liquidity-pools/).
 
 ## References
-
 
 1. [Concentrated Liquidity | Uniswap Developers](https://developers.uniswap.org/docs/get-started/concepts/liquidity-providers/concentrated-liquidity)
 2. [Uniswap v3 Core Whitepaper](https://uniswap.org/whitepaper-v3.pdf)
 3. [StableSwap pools (Curve Documentation)](https://docs.curve.finance/developer/amm/legacy/stableswap-overview)
-4. [Trading in the DeFi era: automated market maker (BIS Bulletin No 58, 2022)](https://www.bis.org/publ/bisbull58.htm)
+4. [Miners as intermediaries: extractable value and market manipulation in crypto and DeFi (BIS Bulletin No 58, 2022)](https://www.bis.org/publ/bisbull58.htm)
 5. [Maximal Extractable Value (MEV) | ethereum.org](https://ethereum.org/en/developers/docs/mev/)
 6. [Risks and Returns of Uniswap V3 Liquidity Providers (Heimbach et al., 2022)](https://arxiv.org/abs/2205.08904)
-7. [SoK: Decentralized Exchanges with Automated Market Maker Protocols (Xu et al., 2021)](https://arxiv.org/abs/2103.12732)
+7. [SoK: Decentralized Exchanges (DEX) with Automated Market Maker (AMM) Protocols (Xu et al., 2021)](https://arxiv.org/abs/2103.12732)
 8. [Gas and Fees (Ethereum Foundation Documentation)](https://ethereum.org/en/developers/docs/gas/)
 
 [1]: https://developers.uniswap.org/docs/get-started/concepts/liquidity-providers/concentrated-liquidity "Concentrated Liquidity | Uniswap Developers"
 [2]: https://uniswap.org/whitepaper-v3.pdf "Uniswap v3 Core Whitepaper"
 [3]: https://docs.curve.finance/developer/amm/legacy/stableswap-overview "StableSwap pools (Curve Documentation)"
-[4]: https://www.bis.org/publ/bisbull58.htm "Trading in the DeFi era: automated market maker (BIS Bulletin No 58, 2022)"
+[4]: https://www.bis.org/publ/bisbull58.htm "Miners as intermediaries: extractable value and market manipulation in crypto and DeFi (BIS Bulletin No 58, 2022)"
 [5]: https://ethereum.org/en/developers/docs/mev/ "Maximal Extractable Value (MEV) | ethereum.org"
 [6]: https://arxiv.org/abs/2205.08904 "Risks and Returns of Uniswap V3 Liquidity Providers (Heimbach et al., 2022)"
-[7]: https://arxiv.org/abs/2103.12732 "SoK: Decentralized Exchanges with Automated Market Maker Protocols (Xu et al., 2021)"
+[7]: https://arxiv.org/abs/2103.12732 "SoK: Decentralized Exchanges (DEX) with Automated Market Maker (AMM) Protocols (Xu et al., 2021)"
 [8]: https://ethereum.org/en/developers/docs/gas/ "Gas and Fees (Ethereum Foundation Documentation)"

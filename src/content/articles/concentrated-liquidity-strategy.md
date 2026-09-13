@@ -1,11 +1,11 @@
 ---
 title: "Concentrated Liquidity Strategy: Choosing a Range Width"
-description: "How to choose a liquidity range width from realised volatility, expected time in range and rebalancing cost, with a worked framework and the rules that keep it honest."
+description: "The width is the only thing you control. Set it from how much the pair actually moves and how much attention you have, not from a yield you would like."
 category: "LP Mechanics"
 date: 2026-09-11
-lastReviewed: "2026-09-11"
+lastReviewed: "2026-09-12"
 author: "Dr. Elena Rostova"
-readTime: "12 min read"
+readTime: "6 min read"
 keywords: "concentrated liquidity strategy, liquidity range width, how to choose a price range, rebalancing strategy LP, time in range, Uniswap v3 price range"
 featured: false
 faq:
@@ -21,9 +21,11 @@ faq:
     a: "It removes the operational burden and adds a contract plus a fee. Automated managers rebalance on rules that may not match your view, and frequent re-centring in choppy markets crystallises divergence repeatedly."
 ---
 
-Range width is the only parameter a concentrated liquidity provider genuinely controls, and it is usually chosen from a yield target rather than from the pair's behaviour. That is backwards. The width determines how much of the time the position exists as a market participant at all.
+The width of your band is the only thing you genuinely control. And most people pick it from a yield they would like rather than from what the pair actually does.
 
-A defensible framework needs three inputs, all measurable, and one decision about how much work you will do.
+That is backwards. The width decides how much of the time your position is even participating in the market.
+
+This guide gives you three measurable inputs, a table for how long each width survives, and four strategies that need no price forecast at all.
 
 <figure class="article-figure">
   <img src="/images/guides/concentrated-liquidity-strategy.webp" alt="Indexed curves for fee density, time in range and the net product against band width." width="1600" height="1067" loading="lazy" decoding="async" />
@@ -31,119 +33,138 @@ A defensible framework needs three inputs, all measurable, and one decision abou
 </figure>
 
 > **Desk Field Note from Dr. Elena Rostova:**
-> *"Ask what the position does if you go on holiday for three weeks. If the honest answer is that it converts on day four and sits idle, the width was chosen for a spreadsheet rather than for the market. Width should be set so the position survives your own attention span."*
+> *"Ask what the position does if you go away for three weeks. If the honest answer is that it converts on day four and then sits there, the width was chosen for a spreadsheet rather than for the market. Set it so the position survives your own attention span."*
 
-## 1. The Three Inputs
+## Three things to measure first
 
-**Realised volatility.** Compute it from recent returns on the pair, not from an implied figure or a memory of last year. Seven-day and thirty-day windows together show whether the current regime is unusual.
+**How much the pair actually moves.** Compute it from recent returns, not from memory or an implied figure. Look at seven days and thirty days together, so you can see whether right now is unusual.
 
-**Fee density.** The capital efficiency multiplier for a symmetric band is approximately:
+**What the width buys you.**
 
 $$
 C = \frac{1}{1 - \left(\frac{p_a}{p_b}\right)^{1/4}}
 $$
 
-which gives roughly 20 times for a ±10% band and 100 times for ±2%. That multiplier applies only while the position is in range.
+Where:
 
-**Cost per management cycle.** Gas for a rebalance, plus swap fees and price impact on any rebalancing trade, plus the divergence realised at each re-centre. This is a fixed cost per cycle, so it scales inversely with position size, as set out in [Gas Costs for Liquidity Providers](/guides/lp-gas-costs/).
+- $p_a$ and $p_b$ are your two bounds.
+- $C$ is how many times harder your money works.
 
----
+Roughly twenty times at plus or minus 10%, a hundred at plus or minus 2%. That multiplier only applies while you are actually in range.
 
-## 2. Estimating Time in Range
+**What one management cycle costs.** Gas for the rebalance, plus the swap fee and the rate moving against you, plus the divergence you lock in at each re-centre. Fixed per cycle, so it scales inversely with your size. See [Gas Costs for Liquidity Providers](/guides/lp-gas-costs/).
 
-For a band of ±$w$ percent and daily volatility $\sigma_d$, the probability of remaining inside the band over $T$ days can be approximated with a random walk. A workable heuristic without simulation:
+## How long each width survives
 
-| Band width | Daily volatility 2% | Daily volatility 4% | Daily volatility 7% |
+Roughly how long before the price touches a boundary, by width and by how much the pair moves in a typical day:
+
+| Band | Moves 2% a day | Moves 4% a day | Moves 7% a day |
 | :--- | ---: | ---: | ---: |
-| ±2% | roughly 2 days | roughly 1 day | under a day |
-| ±5% | roughly 8 days | roughly 3 days | roughly 1 day |
-| ±10% | roughly 30 days | roughly 9 days | roughly 3 days |
-| ±20% | months | roughly 30 days | roughly 10 days |
+| Plus or minus 2% | about 1 day | about 6 hours | about 2 hours |
+| Plus or minus 5% | about 6 days | about 1.5 days | about half a day |
+| Plus or minus 10% | about 25 days | about 6 days | about 2 days |
+| Plus or minus 20% | about 3 months | about 25 days | about 8 days |
 
-These are expected times to first touch a boundary, not guarantees. The important pattern is that halving the band roughly quarters the expected time in range, while only doubling the fee density. That asymmetry is why very narrow bands underperform expectations so often.
+These are average times for a price with no trend, worked out as the band width divided by the daily move, squared. A real trend gets you out sooner. They are not guarantees.
 
----
+The pattern is the whole point. Halving the band roughly quarters how long it survives, while only doubling what it earns. That asymmetry is why very tight bands disappoint so reliably.
 
-## 3. The Objective Function
-
-What you actually want to maximise over the holding period is:
+## What you are actually maximising
 
 $$
-\text{net} = (\text{fee density}) \times (\text{time in range}) - (\text{cycles} \times \text{cost per cycle}) - (\text{realised divergence})
+\text{net} = F \times C \times t - (n \times c) - D
 $$
 
-Every term is estimable in advance. The first two pull in opposite directions, the third rises as the band narrows because rebalancing becomes more frequent, and the fourth grows with both amplification and the number of re-centres.
+Where:
 
-The result is an interior optimum: neither the tightest nor the widest band, and a peak that shifts wider as volatility rises or as position size falls. The shape is plotted in the figure above.
+- $F$ is what the same money would earn in fees across the full price range.
+- $C$ is the efficiency multiplier from the width.
+- $t$ is the fraction of the period you are in range.
+- $n$ is how many times you re-centre.
+- $c$ is what one re-centre costs.
+- $D$ is the divergence you realise.
 
----
+Every term is estimable before you start. The multiplier and the time in range pull against each other. The re-centring cost rises as the band narrows, because you re-centre more. The divergence grows with both the multiplier and the number of moves.
 
-## 4. Four Workable Strategies
+So there is an optimum in the middle. Neither the tightest band nor the widest, and it shifts wider as volatility rises or as your position gets smaller.
 
-**Passive wide band.** Set the width to two or three months of expected movement and leave it. Low fee density, very high time in range, one or two transactions per quarter. Suits smaller positions and providers who will not monitor.
+## Four strategies, none needing a forecast
 
-**Volatility-scaled band.** Set width to roughly two standard deviations of expected movement over the intended horizon, and re-centre only when price exits. Suits medium positions on liquid pairs.
+**A wide band you leave alone.** Set it to two or three months of expected movement and forget it. Low income per dollar, almost always in range, one or two transactions a quarter. Suits smaller positions and anyone who will not monitor.
 
-**Dual-band.** Split capital between a wide base position and a narrow one near the current price. The base keeps earning when the narrow one converts, which reduces the urgency of every rebalance decision.
+**A band scaled to volatility.** Roughly two standard deviations of expected movement over your intended period, re-centred only when the price actually leaves. Suits medium positions on liquid pairs.
 
-**Directional single-sided.** Place liquidity entirely on one side to accumulate or distribute an asset across a chosen band, as covered in [Single-Sided Liquidity](/guides/single-sided-liquidity/).
+**Two bands.** Split between a wide base and a narrow one near the price. The base keeps earning when the narrow one converts, which takes the urgency out of every rebalancing decision.
 
-None of these requires a price forecast. Each one requires an honest estimate of volatility and of your own management capacity.
+**One-sided.** Place everything on one side to accumulate or distribute across a chosen band. See [Single-Sided Liquidity](/guides/single-sided-liquidity/).
 
----
+None of these requires knowing where the price is going. All of them require an honest estimate of volatility and of how much attention you actually have.
 
-## 5. Rebalancing Rules That Survive Contact
+## Rebalancing rules that survive contact
 
-The decision to re-centre should be made in advance, not while watching a chart.
+Decide these before you mint, not while watching a chart.
 
-1. **Trigger on exit plus persistence.** Re-centre only after price has been outside the band for a defined period, filtering transient spikes.
-2. **Require a payback test.** Expected fee income in the new band over the intended horizon must exceed the full cost of the move, including realised divergence.
-3. **Cap the frequency.** A hard limit of one or two re-centres per month prevents the reactive churn that destroys returns in choppy markets.
-4. **Prefer widening to chasing.** If the pair's volatility has changed regime, widen the band rather than re-centring at the same width and repeating the exit.
-5. **Have a stop.** Define what evidence would end the strategy entirely: sustained volume decline, a volatility regime the fee tier cannot support, or a measured shortfall against holding.
+1. **Trigger on exit plus time.** Re-centre only after the price has been outside for a defined period, which filters out spikes.
+2. **Require a payback test.** Expected fees in the new band must exceed the full cost of moving, including the divergence you lock in.
+3. **Cap the frequency.** One or two re-centres a month, hard limit. That alone prevents the reactive churn that destroys returns in choppy markets.
+4. **Widen rather than chase.** If volatility has changed regime, widen. Re-centring at the same width just repeats the exit.
+5. **Have a stop.** Write down what would end the strategy: volume drying up, a volatility regime this tier cannot support, or a measured shortfall against holding.
 
-The diagnostic sequence when a position exits its band is in [Out-of-Range Liquidity](/guides/out-of-range-liquidity/).
+See [Out-of-Range Liquidity](/guides/out-of-range-liquidity/) for the diagnostic sequence when it does exit.
 
----
+## A width decision, worked
 
-## 6. Automated Managers
+\$60,000 into ETH against dollars at the 0.05% tier, for a month. Thirty-day volatility is 52% annualised, which is about 2.7% a day.
 
-Vaults and managers automate the mechanics: monitoring, re-centring, compounding. They charge a performance or management fee and add a contract to the trust chain.
+| | Plus or minus 15% | Plus or minus 5% |
+| :--- | ---: | ---: |
+| Efficiency multiplier | about 14x | about 40x |
+| Expected time before touching a bound | Most of the month | About three days |
+| Re-centres in the month | 0 | About 8 |
+| Gas, at \$14 a transaction | \$28 to enter and exit | about \$250 |
+| Plus swap costs and locked-in divergence | Once | About eight times |
 
-What they solve: operational burden, gas efficiency through batching, and consistent execution of a rule.
+The wide band earns less per day and is quoted almost the whole month with two transactions total. Run both through the arithmetic above and the wider band wins at this volatility and this size.
 
-What they do not solve: the rule itself may not match your view, frequent re-centring in choppy conditions crystallises divergence repeatedly, and the manager's incentive is often assets under management rather than net performance against a hold benchmark.
+Halve the volatility or triple the position and the answer flips. Which is exactly why this has to be computed per pair rather than adopted as a rule of thumb.
 
-If you use one, benchmark it exactly as you would benchmark yourself: net result against holding the deposited basket, after fees, on your own data.
+## What people get wrong choosing a width
 
-### A worked width decision
+| What people assume | What actually happens |
+| :--- | :--- |
+| Tighter earns more | Tighter earns more per day and far fewer days. Multiply the two |
+| I can just re-centre when it moves | Each re-centre locks in a loss and pays gas. Six of those is a bad month |
+| A wide band is lazy | It is often the correct answer, especially on a small position |
+| A vault removes the decision | It makes the decision for you, on rules that may not be yours |
 
-An ETH/USDC position of \$60,000 at a 5 bps tier, intended to run for a month. Thirty-day realised volatility is 52% annualised, which is roughly 2.7% per day.
+## If you use an automated manager
 
-Two standard deviations of movement over thirty days is approximately 30%, so a band of roughly ±15% would be expected to hold for most of the period. That width gives a capital multiplier near 13 times.
+Vaults handle the monitoring, re-centring and compounding. They charge a fee and add a contract.
 
-A ±5% band gives roughly 40 times the density and would be expected to touch a boundary within four days at this volatility, implying six or seven re-centres in the month. At \$14 per transaction and two transactions per re-centre, that is roughly \$190 of gas, plus swap costs and the divergence realised each time.
+| What they solve | What they do not |
+| :--- | :--- |
+| The operational burden | The rule itself may not match your view |
+| Gas efficiency, through batching | Frequent re-centring in choppy markets locks in losses repeatedly |
+| Consistent execution | Their incentive is often size, not your net result |
 
-The wider band earns less per day in range and is quoted nearly all month with two transactions total. Running both estimates through the objective function, the wider band wins at this volatility and this position size. Halve the volatility or triple the position size and the answer flips, which is exactly why the calculation has to be redone per pair rather than adopted as a rule of thumb.
+If you use one, benchmark it exactly as you would benchmark yourself. Net result against holding the two tokens, after fees, on your own data.
 
----
+## Setting a range, step by step
 
-## 7. Checklist for Setting a Range
+1. **Compute seven-day and thirty-day volatility** for the pair.
+2. **Choose your holding period** before you choose a width.
+3. **Set the band to about two standard deviations** of movement over that period.
+4. **Compute the multiplier and the expected time in range** for that width.
+5. **Estimate the number of cycles and what each costs** at your size.
+6. **Compute what you hold at both bounds**, and confirm you accept both.
+7. **Write the rebalancing rule and the stop rule down** before minting.
+8. **Record what you deposited**, so you can judge this against holding later.
 
-- [ ] Compute 7-day and 30-day realised volatility for the pair.
-- [ ] Choose an intended holding period before choosing a width.
-- [ ] Set the band to roughly two standard deviations of movement over that period.
-- [ ] Compute the capital multiplier and the expected time in range for that width.
-- [ ] Estimate cycles and cost per cycle at your position size.
-- [ ] Compute holdings at both bounds and confirm you accept both outcomes.
-- [ ] Write the rebalancing rule and the stop rule down before minting.
-- [ ] Record entry state so the strategy can be evaluated against the benchmark later.
+The width that maximises a spreadsheet is almost always narrower than the width that survives a month of real prices. Choose for the second one.
 
-The width that maximises a spreadsheet is usually narrower than the width that survives a month of real price action. Choose for the second.
+## Where to go next
 
-## Where to Go Next
-
-Test a candidate band in the [Uniswap v3 liquidity calculator](/tools/uniswap-v3-liquidity-calculator/), which reports capital efficiency and what the position holds at each bound. For the bin-based version of the same decision, see [Meteora DLMM Strategy](/guides/meteora-dlmm-strategy/).
+Test a candidate band in the [Uniswap v3 liquidity calculator](/tools/uniswap-v3-liquidity-calculator/), which reports the efficiency and what you hold at each bound. For the bin-based version of the same decision, see [Meteora DLMM Strategy](/guides/meteora-dlmm-strategy/).
 
 ## References
 
@@ -151,16 +172,16 @@ Test a candidate band in the [Uniswap v3 liquidity calculator](/tools/uniswap-v3
 2. [Uniswap v4 Core Whitepaper (Adams et al., 2024)](https://uniswap.org/whitepaper-v4.pdf)
 3. [What are the risks when providing liquidity? (Uniswap Labs)](https://support.uniswap.org/hc/en-us/articles/37113550065549-What-are-the-risks-when-providing-liquidity)
 4. [Automated Market Making and Loss-Versus-Rebalancing (Milionis et al., 2022)](https://arxiv.org/abs/2208.06046)
-5. [Strategic Liquidity Provision in Uniswap v3 (Neuder et al., 2021)](https://arxiv.org/abs/2106.12033)
+5. [Strategic Liquidity Provision in Uniswap v3 (Fan et al., 2021)](https://arxiv.org/abs/2106.12033)
 6. [Risks and Returns of Uniswap V3 Liquidity Providers (Heimbach et al., 2022)](https://arxiv.org/abs/2205.08904)
 7. [Impermanent Loss in Uniswap v3 (Loesch et al., 2021)](https://arxiv.org/abs/2111.09192)
-8. [Trading in the DeFi era: automated market maker (BIS Bulletin No 58, 2022)](https://www.bis.org/publ/bisbull58.htm)
+8. [Miners as intermediaries: extractable value and market manipulation in crypto and DeFi (BIS Bulletin No 58, 2022)](https://www.bis.org/publ/bisbull58.htm)
 
 [1]: https://uniswap.org/whitepaper-v3.pdf "Uniswap v3 Core Whitepaper"
 [2]: https://uniswap.org/whitepaper-v4.pdf "Uniswap v4 Core Whitepaper"
 [3]: https://support.uniswap.org/hc/en-us/articles/37113550065549-What-are-the-risks-when-providing-liquidity "What are the risks when providing liquidity?"
 [4]: https://arxiv.org/abs/2208.06046 "Automated Market Making and Loss-Versus-Rebalancing"
-[5]: https://arxiv.org/abs/2106.12033 "Strategic Liquidity Provision in Uniswap v3 (Neuder et al., 2021)"
+[5]: https://arxiv.org/abs/2106.12033 "Strategic Liquidity Provision in Uniswap v3 (Fan et al., 2021)"
 [6]: https://arxiv.org/abs/2205.08904 "Risks and Returns of Uniswap V3 Liquidity Providers (Heimbach et al., 2022)"
 [7]: https://arxiv.org/abs/2111.09192 "Impermanent Loss in Uniswap v3 (Loesch et al., 2021)"
-[8]: https://www.bis.org/publ/bisbull58.htm "Trading in the DeFi era: automated market maker (BIS Bulletin No 58, 2022)"
+[8]: https://www.bis.org/publ/bisbull58.htm "Miners as intermediaries: extractable value and market manipulation in crypto and DeFi (BIS Bulletin No 58, 2022)"

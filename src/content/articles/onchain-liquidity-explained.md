@@ -1,11 +1,11 @@
 ---
 title: "Onchain Liquidity: How Decentralized Markets Are Assembled"
-description: "How decentralized liquidity is organised across pools, routers, solvers and arbitrage, why it is not one order book, and what that structure means for traders and LPs."
+description: "There is no single market. Five layers stitch thousands of independent pools into something that behaves like one, and each layer takes a share of your trade."
 category: "Foundations"
 date: 2026-09-11
-lastReviewed: "2026-09-11"
+lastReviewed: "2026-09-12"
 author: "Aria Chen"
-readTime: "11 min read"
+readTime: "6 min read"
 keywords: "on-chain liquidity, decentralized liquidity, onchain market structure, intent based liquidity, solver networks DeFi, liquidity fragmentation"
 featured: false
 faq:
@@ -23,9 +23,11 @@ faq:
     a: "AMM liquidity fragmentation is the splitting of a pair's depth across many pools, fee tiers and chains. Routers and arbitrage make the pieces behave like one market at execution time, but depth at any single venue is smaller than the aggregate, and providers compete for a routing decision rather than for trades directly."
 ---
 
-Onchain liquidity is not a market in the way an exchange is a market. It is a set of independent contracts, each quoting from its own reserves, made to behave consistently by routers that split orders and arbitrageurs who profit from any disagreement between them.
+There is no single onchain market. There are thousands of separate contracts, each quoting from its own reserves, none of them talking to each other.
 
-Understanding that assembly explains most of what seems strange about DeFi execution, including why the best price is rarely at any single venue.
+What makes them behave like one market is two things sitting on top: routers that split your order across them, and traders who profit whenever any two of them disagree.
+
+Understanding that assembly explains most of what looks strange about trading here, starting with why the best price is almost never at one venue.
 
 <figure class="article-figure">
   <img src="/images/guides/onchain-liquidity-explained.webp" alt="Five-layer flow from deposits through pools, routers, solvers and arbitrage." width="1600" height="1067" loading="lazy" decoding="async" />
@@ -33,117 +35,116 @@ Understanding that assembly explains most of what seems strange about DeFi execu
 </figure>
 
 > **Desk Field Note from Aria Chen:**
-> *"People describe fragmentation as a flaw to be fixed. It is closer to a property of permissionless deployment: anyone can create a market, so many markets exist. The interesting engineering is not consolidation, it is making dispersed liquidity behave like one venue at the moment of execution."*
+> *"People call fragmentation a flaw to be fixed. It is closer to a property of letting anyone deploy a market. The interesting engineering is not consolidating it. It is making scattered liquidity behave like one venue at the moment somebody trades."*
 
-## 1. Layer One: Deposits
+## The five layers
 
-Everything starts with liquidity providers committing assets to a pool contract. Those deposits are not orders; they are inventory placed under a pricing rule that will quote continuously without further instruction.
+| Layer | What it does | What it costs |
+| :--- | :--- | :--- |
+| Deposits | Somebody commits tokens under a pricing rule | The quote cannot be cancelled |
+| Pools | Each one quotes from its own reserves | They do not talk to each other |
+| Routers | Search across them and split orders | Fee tiers now compete directly for your flow |
+| Solvers | Fill your stated outcome however they can | An intermediary who sees the order first |
+| Arbitrage | Keeps every venue agreeing on a price | Paid for out of depositor inventory |
 
-Two properties follow. The quote is always live, which is why an automated market maker can serve a trade at three in the morning when no human market maker is watching. And the quote cannot be pulled, which is why providers carry adverse selection, as set out in [What Is a Liquidity Provider?](/guides/what-is-a-liquidity-provider/).
+## One: somebody puts money in
 
----
+Everything starts with deposits into a pool contract. Those are not orders. They are inventory placed under a rule that will quote continuously, forever, without anybody supervising it.
 
-## 2. Layer Two: Pools
+Two things follow. The quote is always live, which is why you can trade at three in the morning with no human on the other side. And the quote cannot be pulled, which is why depositors get picked off. See [What Is a Liquidity Provider?](/guides/what-is-a-liquidity-provider/).
 
-Each pool prices trades from its reserves using an invariant. The choice of invariant determines where depth sits and how reserves rotate, which is the subject of [Bonding Curves and AMM Invariants](/guides/bonding-curves-and-amm-invariants/).
+## Two: each pool quotes alone
 
-Critically, pools do not communicate. Two pools on the same pair with different fee tiers are separate markets with separate prices, kept aligned only by traders acting on the difference. The same is true across protocols and across chains.
+Every pool prices trades from its own balances using its own rule. That rule decides where the depth sits and how the holdings rotate. See [Bonding Curves and AMM Invariants](/guides/bonding-curves-and-amm-invariants/).
 
----
+The crucial point: **pools do not communicate.** Two pools on the same pair at different fee tiers are separate markets with separate prices, kept in line only by traders acting on the gap. Same across protocols. Same across chains.
 
-## 3. Layer Three: Routers and Aggregators
+## Three: routers search across them
 
-Because pools are independent, finding the best execution means searching across them. Aggregators do this at execution time: they enumerate paths, split an order across several pools when convexity makes splitting cheaper, and return a single quote to the user.
+Because the pools are independent, finding the best price means looking everywhere. Aggregators do that at the moment you trade: enumerate the paths, split your order when splitting is cheaper, and hand you one quote.
 
-This has three consequences worth noting:
+Three consequences:
 
-- **Depth is effectively pooled at execution**, even though it is fragmented at rest.
-- **Fee tiers compete directly.** A pool that raises its fee loses routed volume to a cheaper path with sufficient depth, which is why tier selection is a bid for flow rather than a yield setting. See [Uniswap Fee Tiers Explained](/guides/uniswap-fee-tiers-explained/).
-- **Providers cannot rely on advertised pool volume.** What matters is volume routed to their specific pool and range.
+- **Depth is effectively pooled when you trade**, even though it sits scattered the rest of the time.
+- **Fee tiers compete head to head.** Raise your fee and you lose volume to a cheaper path with enough depth. That is why choosing a tier is a bid for flow rather than a yield setting. See [Uniswap Fee Tiers Explained](/guides/uniswap-fee-tiers-explained/).
+- **Advertised pool volume is not your volume.** What matters is what routes to your specific pool and your specific band.
 
----
+## Four: solvers skip the question entirely
 
-## 4. Layer Four: Intents and Solvers
+A newer layer asks you to state an outcome rather than a route. Solvers then compete to deliver it, using pools, their own inventory, or by matching you against somebody wanting the opposite trade.
 
-A newer layer asks the user to state an outcome rather than a route. Solvers compete to fill that intent, sourcing liquidity from pools, from their own inventory, or by netting the order against other users' opposing intents.
+**What it gives you:** matched trades never touch a market at all, competition can beat any single pool's quote, and nobody can trade in front of you because execution is settled before anything is public.
 
-The structural advantages are real: netting removes trades from the market entirely, competition among solvers can beat any single pool quote, and the user is insulated from ordering games because execution is committed before the transaction is public.
+**What it costs:** solvers are intermediaries with their own economics, the settlement contract joins your trust chain, and orders they match internally never reach any pool, which removes that fee income from depositors entirely. See [Cross-Chain Liquidity Explained](/guides/cross-chain-liquidity-explained/).
 
-The costs are equally real. Solvers are intermediaries with their own economics, the settlement contract becomes part of the trust chain, and orders that solvers net internally never reach the pools, which removes fee income from liquidity providers. The cross-chain version of this design is examined in [Cross-Chain Liquidity Explained](/guides/cross-chain-liquidity-explained/).
+## Five: arbitrage holds it together
 
----
+Nothing forces two pools to agree. Arbitrage traders do, by buying where something is cheap and selling where it is dear until the gap is smaller than their costs.
 
-## 5. Layer Five: Arbitrage as the Consistency Mechanism
+This is the layer that turns a collection of contracts into a market, and depositors pay for it. Every trade that corrects a stale quote moves value from pool inventory to the trader. That is exactly what loss-versus-rebalancing measures — what a pool pays out because its quote runs a block late [4].
 
-Nothing forces two pools to agree on a price. Arbitrageurs do, by buying where an asset is cheap and selling where it is expensive until the difference is smaller than their costs.
+The trade-off is structural rather than fixable. Consistent prices across every venue are a service, and the bill goes to whoever is standing still.
 
-This is the layer that makes the whole system function as a market, and it is paid for by liquidity providers. Every arbitrage trade that aligns a stale pool quote transfers value from the pool's inventory to the searcher, which is precisely what loss-versus-rebalancing measures [4].
+## What each layer takes from a \$100,000 trade
 
-The trade-off is structural rather than fixable: consistent prices across venues are a service, and the fee for that service is charged to whoever is standing still.
-
-### Where the liquidity actually lives
-
-A useful exercise for any major pair is to write down where its depth sits, because the answer is rarely what an interface implies.
-
-For a large asset against a dollar stablecoin, depth is typically split across two or three fee tiers on the dominant protocol, a competing protocol on the same chain, several deployments on layer two networks, and centralised venues that most onchain routers cannot reach. Each pocket serves different flow, and the price differences between them are the arbitrage opportunity that keeps them aligned.
-
-For a long-tail token the picture inverts. Depth concentrates in one pool on one chain, often at a high fee tier, with a thin secondary venue that exists mainly to be arbitraged. There is no meaningful routing decision to make, and the single pool's health is the token's liquidity in its entirety.
-
-Knowing which picture applies changes the research. In the first case, measure routed volume per venue. In the second, measure the one pool carefully and check who controls it.
-
----
-
-## 6. What This Means for Participants
-
-**For traders.** The best price is a routing result, not a venue. Requesting a single-pool quote and accepting it means paying for convexity that a split order would have avoided.
-
-**For liquidity providers.** Your revenue depends on where routers send flow, which depends on depth, fee and the pair's competitive structure. Choosing a pool means choosing a position in the routing table.
-
-**For protocol designers.** Fragmentation is not eliminated by building another venue. It is addressed by making liquidity reachable, which is why singleton architectures, hooks, and intent settlement all target the cost of reaching liquidity rather than the amount of it.
-
-### Why the layers keep multiplying
-
-Each layer above exists because the one below it left a cost unaddressed, and that pattern is worth naming because it predicts what comes next.
-
-Pools solved the problem of needing a counterparty at all, at the cost of quoting continuously into informed flow. Routers solved the problem of fragmented pools, at the cost of making fee tiers compete directly for flow. Solvers solved the problem of public ordering, at the cost of introducing an intermediary who sees the order first. Each addition improved execution for the user and moved the cost somewhere less visible.
-
-For a liquidity provider, the practical implication is that the amount of flow reaching a pool is decided further and further away from the pool itself. A decade ago, depth attracted trades directly. Today, depth attracts trades through a routing decision made by software that compares it against every alternative in milliseconds, and increasingly through a solver who may not touch a pool at all.
-
-That does not make providing liquidity worse. It does mean that competitiveness is a systems question, not a capital question, and that pools which are hard to reach lose flow regardless of how much capital sits in them.
-
-### What the layers cost, roughly
-
-Each layer takes a share of the same trade. For a \$100,000 swap on a deep pair, a representative breakdown:
-
-| Layer | What it charges | Typical share of the trade |
+| Layer | What it charges | Roughly |
 | :--- | :--- | ---: |
-| Pool fee | Paid to liquidity providers | 0.05% |
-| Price impact | Movement along the curve | 0.10% to 0.40% |
-| Routing gain | Saved by splitting across venues | −0.05% to −0.20% |
-| Priority fee and gas | Paid to the block producer | 0.01% to 0.05% |
-| Arbitrage after the trade | Paid out of LP inventory | Not charged to the trader |
+| The pool's fee | Goes to depositors | 0.05% |
+| Price impact | Your own order moving the rate | 0.10% to 0.40% |
+| Routing | Saved by splitting across venues | -0.05% to -0.20% |
+| Gas and priority | Goes to whoever builds the block | 0.01% to 0.05% |
+| Arbitrage afterwards | Comes out of depositor inventory | Never shown to the trader |
 
-The last row is the one that never appears on a confirmation screen. It is the cost of keeping every venue's quote consistent, and it is settled from the inventory of whoever was standing still.
+That last row is the one that appears on no confirmation screen. It is the price of keeping every venue's quote consistent, and it is settled from the inventory of whoever was not paying attention.
 
----
+## Where the liquidity actually lives
 
-## 7. Reading the Structure for a Specific Pair
+Worth writing down for any pair you care about, because the answer is rarely what an interface implies.
 
-- [ ] List the venues holding meaningful depth in the pair, across protocols and chains.
-- [ ] Measure active depth at each, within a defined price band.
-- [ ] Check where routed volume actually lands over thirty days, not aggregate pair volume.
-- [ ] Look for persistent price differences between venues, which indicate weak arbitrage linkage.
-- [ ] Estimate what share of volume is arbitrage rather than organic flow.
-- [ ] For providers, compute fee revenue per unit of liquidity at each venue and compare.
-- [ ] For traders, compare an aggregator quote against the best single-pool quote at your size.
+**For a major token against dollars**, depth splits across two or three fee tiers on the dominant protocol, a competitor on the same chain, several rollup deployments, and centralised venues most routers cannot reach. Each pocket serves different flow, and the differences between them are what the arbitrage is feeding on.
 
-Decentralized liquidity works well when its layers are understood as separate systems with separate incentives. Treating the whole thing as one exchange produces expectations it was never built to meet.
+**For a long-tail token**, it inverts. Almost everything sits in one pool on one chain, often at a high fee tier, with a thin second venue that mainly exists to be arbitraged. There is no routing decision to make, and that one pool's health is the token's entire liquidity.
+
+Knowing which picture you are in changes the research. In the first case, measure routed volume per venue. In the second, measure that one pool carefully and find out who controls it.
+
+## Why the layers keep multiplying
+
+Each layer exists because the one below left a cost unaddressed. That pattern is worth naming, because it predicts what comes next.
+
+Pools removed the need for a counterparty, at the cost of quoting continuously into informed flow. Routers fixed fragmentation, at the cost of making fee tiers compete directly. Solvers fixed public ordering, at the cost of an intermediary who sees your order first.
+
+Each addition improved execution for the trader and moved the cost somewhere less visible.
+
+For anyone supplying liquidity, the practical implication is that how much flow reaches your pool is decided further and further away from your pool. A decade ago, depth attracted trades directly. Now depth attracts trades through a routing decision made in milliseconds against every alternative, and increasingly through a solver who may never touch a pool at all.
+
+That does not make supplying liquidity worse. It means competitiveness is a systems question rather than a capital question, and pools that are hard to reach lose flow regardless of how much money is sitting in them.
+
+## What people get wrong about the structure
+
+| What people assume | What actually happens |
+| :--- | :--- |
+| It is one market | Thousands of separate contracts, stitched together at execution |
+| The best price is at the biggest venue | It is a routing result, usually split across several |
+| My pool's volume is the pair's volume | Only what routes to your specific pool and band counts |
+| Arbitrage is somebody else's problem | It is paid out of depositor inventory, including yours |
+
+## Reading the structure for a specific pair
+
+1. **List the venues** holding real depth, across protocols and chains.
+2. **Measure depth at each**, within a defined price band.
+3. **Check where volume actually lands** over thirty days, not the pair's total.
+4. **Look for persistent price gaps** between venues, which mean weak arbitrage linkage.
+5. **Estimate what share of volume is arbitrage** rather than real flow.
+6. **If supplying, compute fee revenue per unit of liquidity** at each venue and compare.
+7. **If trading, compare an aggregator quote** against the best single pool at your size.
+
+This all works well when you treat the layers as separate systems with separate incentives. Treating the whole thing as one exchange produces expectations it was never built to meet.
 
 ## References
 
 1. [Uniswap v3 Core Whitepaper (Adams et al., 2021)](https://uniswap.org/whitepaper-v3.pdf)
 2. [Uniswap v4 Core Whitepaper (Adams et al., 2024)](https://uniswap.org/whitepaper-v4.pdf)
-3. [Trading in the DeFi era: automated market maker (BIS Bulletin No 58, 2022)](https://www.bis.org/publ/bisbull58.htm)
+3. [Miners as intermediaries: extractable value and market manipulation in crypto and DeFi (BIS Bulletin No 58, 2022)](https://www.bis.org/publ/bisbull58.htm)
 4. [Automated Market Making and Loss-Versus-Rebalancing (Milionis et al., 2022)](https://arxiv.org/abs/2208.06046)
 5. [Flash Boys 2.0: Frontrunning, Transaction Reordering, and Consensus Instability in Decentralized Exchanges (Daian et al., 2019)](https://arxiv.org/abs/1904.05234)
 6. [SoK: Decentralized Finance (DeFi) (Werner et al., 2021)](https://arxiv.org/abs/2101.08778)
@@ -152,7 +153,7 @@ Decentralized liquidity works well when its layers are understood as separate sy
 
 [1]: https://uniswap.org/whitepaper-v3.pdf "Uniswap v3 Core Whitepaper"
 [2]: https://uniswap.org/whitepaper-v4.pdf "Uniswap v4 Core Whitepaper"
-[3]: https://www.bis.org/publ/bisbull58.htm "Trading in the DeFi era: automated market maker (BIS Bulletin No 58, 2022)"
+[3]: https://www.bis.org/publ/bisbull58.htm "Miners as intermediaries: extractable value and market manipulation in crypto and DeFi (BIS Bulletin No 58, 2022)"
 [4]: https://arxiv.org/abs/2208.06046 "Automated Market Making and Loss-Versus-Rebalancing"
 [5]: https://arxiv.org/abs/1904.05234 "Flash Boys 2.0"
 [6]: https://arxiv.org/abs/2101.08778 "SoK: Decentralized Finance (DeFi) (Werner et al., 2021)"

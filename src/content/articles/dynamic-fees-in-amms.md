@@ -1,11 +1,11 @@
 ---
 title: "Dynamic Fees in AMMs: Charging for Volatility"
-description: "How dynamic fee mechanisms work in automated market makers, what they are trying to price, where they help liquidity providers, and what a fee hook can and cannot fix."
+description: "A fixed fee is wrong most of the time. Too dear in calm markets, far too cheap when somebody is picking you off. What moving fees fix, and what they cannot."
 category: "Advanced"
 date: 2026-09-11
-lastReviewed: "2026-09-11"
+lastReviewed: "2026-09-12"
 author: "Marcus Vance"
-readTime: "11 min read"
+readTime: "6 min read"
 keywords: "dynamic fees AMM, Uniswap v4 dynamic fee hook, volatility accumulator, fee tier vs dynamic fee, adverse selection pricing, AMM fee design"
 featured: false
 faq:
@@ -21,9 +21,11 @@ faq:
     a: "In Uniswap v4 through hooks that set the fee per swap, in discrete bin designs that derive a fee from a volatility accumulator, and in several protocol-specific implementations that adjust fees from realised volatility or pool imbalance."
 ---
 
-A fixed fee tier prices every trade the same way, which means it is wrong most of the time. It is too expensive for ordinary flow in calm markets and far too cheap for the arbitrage trade that reprices a stale quote after a sharp move.
+A fixed fee charges everybody the same, which means it is wrong almost all the time.
 
-Dynamic fees are the attempt to close that gap inside the pool, rather than asking liquidity providers to absorb it.
+Too expensive for ordinary traders on a quiet day, so they route elsewhere. Far too cheap for the trade that picks off your stale quote after a sharp move, which is exactly when you needed the money.
+
+Moving fees are the attempt to fix that inside the pool rather than asking you to absorb it. This guide covers how they work, what one is actually worth in numbers, and the four things they cannot fix.
 
 <figure class="article-figure">
   <img src="/images/guides/dynamic-fees-in-amms.webp" alt="Chart comparing two fixed fee tiers against a dynamic fee that rises with realised volatility." width="1600" height="1067" loading="lazy" decoding="async" />
@@ -31,129 +33,129 @@ Dynamic fees are the attempt to close that gap inside the pool, rather than aski
 </figure>
 
 > **Desk Field Note from Marcus Vance:**
-> *"From a searcher's perspective, a fixed-fee pool during a volatile minute is the cheapest inventory on the market. You are paying five basis points to take a quote that is thirty basis points stale. A fee that moves with realised volatility does not stop the trade; it just means the pool keeps a larger share of what the trade was worth."*
+> *"From the other side of the trade, a fixed-fee pool during a volatile minute is the cheapest inventory on the market. You pay five basis points to take a quote that is thirty basis points stale. A fee that moves with volatility does not stop that trade. It just means the pool keeps more of what the trade was worth."*
 
-## 1. What the Fee Is Actually Pricing
+## What the fee is actually paying for
 
-A pool fee compensates liquidity providers for two distinct services, and they have different costs.
+A pool fee covers two completely different services, and they cost different amounts.
 
-**Supplying depth to uninformed flow.** A trader who wants to swap for their own reasons pays the fee and leaves. This is the profitable half of the business, and it is not very sensitive to volatility.
+**Serving ordinary traders.** Somebody swaps for their own reasons, pays the fee, and leaves. This is the profitable half, and it barely changes with volatility.
 
-**Standing still while informed traders reprice you.** Someone who knows the external price has moved trades against the pool until the quote catches up. The value transferred grows with the square of volatility, as formalised by loss-versus-rebalancing [4].
+**Standing still while somebody reprices you.** A trader who knows the price moved elsewhere trades against you until your quote catches up. What they take grows with the square of volatility [4].
 
-A single fixed fee has to cover both. Set it low and the second group extracts freely; set it high and the first group routes elsewhere. Dynamic fees separate the two by charging more in exactly the conditions where the second group is active.
+One fixed number has to cover both. Set it low and the second group takes freely. Set it high and the first group goes somewhere cheaper. A moving fee separates them by charging more precisely when the second group is active.
 
----
+## Three ways it is done
 
-## 2. How Implementations Work
+| Mechanism | How it decides | Where you find it |
+| :--- | :--- | :--- |
+| Counting price movement | How many price steps have been crossed recently, decaying over time | Bin designs. See [DLMM Explained](/guides/discretized-liquidity-dlmm-explained/) |
+| Custom code per swap | Whatever the code can observe on chain | Uniswap v4 hooks [2] |
+| Imbalance | How far the pool's balances have skewed | Some stable-pair designs |
 
-Three mechanisms appear in production.
+All three share one limitation. They can only react to what has already happened on chain, so the fee is always slightly behind the move that triggered it.
 
-**Volatility accumulators.** Discrete bin designs track how many bins price has crossed in a recent window, decaying the measure over time. Rapid movement raises the accumulator, which raises the fee; calm lets it decay to a floor. The design is described in [Discretized Liquidity (DLMM)](/guides/discretized-liquidity-dlmm-explained/).
+## What it is actually worth
 
-**Fee hooks.** Uniswap v4 allows a pool to delegate its fee to a hook contract that can set it per swap [2]. The function can reference recent price movement, trade size, oracle deviation, or anything else the hook can observe onchain.
+A pool where both sides are measurable over a month, at a fixed 0.05%:
 
-**Imbalance-linked fees.** Some stable pool designs raise the fee as reserves skew away from balance, which charges more for the trades that push the pool toward its dangerous region.
-
-All three share a limitation: they can only react to what has already happened onchain. A fee that responds to realised volatility is always slightly behind the move that motivated it.
-
----
-
-## 3. What It Is Worth to a Liquidity Provider
-
-Consider a pool where fee income and adverse selection are both measurable over a month.
-
-| Regime | Days | Fixed 5 bps fee income | Adverse selection | Net |
+| | Days | Fees earned | What arbitrage took | Net |
 | :--- | ---: | ---: | ---: | ---: |
 | Calm | 22 | \$4,400 | \$900 | +\$3,500 |
-| Volatile | 8 | \$3,200 | \$5,600 | −\$2,400 |
-| Month total | 30 | \$7,600 | \$6,500 | +\$1,100 |
+| Volatile | 8 | \$3,200 | \$5,600 | -\$2,400 |
+| **Month** | 30 | \$7,600 | \$6,500 | **+\$1,100** |
 
-Now apply a dynamic fee that averages 5 bps in calm conditions and 22 bps during the volatile days. Assume the higher fee costs some volume, say a third of it.
+The volatile week wiped out most of the calm month. Now apply a fee averaging 0.05% when quiet and 0.22% during those eight days, and assume the higher fee costs a third of the volume:
 
-| Regime | Fee income | Adverse selection | Net |
+| | Fees earned | What arbitrage took | Net |
 | :--- | ---: | ---: | ---: |
 | Calm | \$4,400 | \$900 | +\$3,500 |
 | Volatile | \$9,400 | \$5,600 | +\$3,800 |
-| Month total | \$13,800 | \$6,500 | +\$7,300 |
+| **Month** | \$13,800 | \$6,500 | **+\$7,300** |
 
-The volume lost during the volatile period is the cost. The arithmetic favours the dynamic fee here because the trades that left were the expensive ones. Whether it does in a specific pool depends on the mix of informed and uninformed flow, which is measurable with the tools listed in [Onchain Liquidity Metrics](/guides/onchain-liquidity-metrics/).
+The lost volume is the cost, and it was worth paying because the trades that left were the expensive ones.
 
----
+Whether it works out this way in a specific pool depends entirely on the mix of ordinary and informed flow, which is measurable. See [Onchain Liquidity Metrics](/guides/onchain-liquidity-metrics/).
 
-## 4. Where It Fails
+## Four things it cannot fix
 
-Dynamic fees are not a solution to adverse selection, only a partial repricing of it. Four limitations are structural:
+1. **It reacts late.** The fee rises after the move starts, so the first and most valuable arbitrage trade still pays the floor.
+2. **Routers notice immediately.** A pool whose fee has spiked gets skipped, including by flow that would have been profitable for you.
+3. **It is code with settings.** Those settings can be chosen badly, or changed later by a vote.
+4. **It does not touch who goes first.** The searcher still chooses when to trade. Auctions and batch settlement address that. A fee does not.
 
-1. **Reaction lag.** The fee rises after the move begins, so the first and most valuable arbitrage trade still pays the floor rate.
-2. **Routing sensitivity.** Aggregators compare paths at execution time. A pool whose fee has spiked is skipped, including by flow that would have been profitable.
-3. **Parameter risk.** The function that sets the fee is code with parameters, and those parameters can be set badly or changed by governance.
-4. **It does not touch the ordering advantage.** The searcher still chooses when to trade. Auctions and batch settlement address that; a fee does not.
+## The two settings that decide everything
 
----
+Every implementation reduces to a function turning some observation into a fee, usually with a floor and a cap. Two parameters do most of the work.
 
-## 5. What a Provider Should Check
+**How fast it decays.** Too fast and the pool goes back to underpricing before the volatility has actually finished. Too slow and it stays expensive through the calm period afterwards, driving away exactly the benign flow it wanted.
 
-Before supplying a dynamic-fee pool:
+**The cap.** Set it high enough to matter during a genuine dislocation and it is also high enough to make the pool uncompetitive when the mechanism mistakes ordinary movement for informed flow.
 
-- **Read the hook or fee contract.** What inputs does it use, what is the floor, what is the cap, and can either be changed?
-- **Check the upgrade authority.** A fee function behind an upgradeable proxy is a live governance exposure.
-- **Look at the realised distribution, not the mean.** A pool that spends most of its life at the floor and spikes occasionally behaves very differently from one sitting near its cap.
-- **Compare against the fixed-tier alternative on the same pair.** If a fixed 30 bps pool holds the volume, the dynamic pool may be an interesting design with no flow.
-- **Confirm the hook's other permissions.** Fee setting is often bundled with lifecycle callbacks that can affect liquidity operations, as covered in [Uniswap v4 Architecture and Hooks](/guides/uniswap-v4-architecture-and-hooks/).
+Neither has a universally correct value, and both are usually set once at deployment for a pair whose behaviour will change.
 
----
+So ask when they were last reviewed and against what data. A fee function tuned for one volatility regime is just a differently wrong fixed fee in another.
 
-## 6. How This Fits the Broader Design Space
+## Reading a pool's fee history
 
-Dynamic fees are one of four families of response to the same problem, and they are the least invasive.
+Before you trust a moving fee, pull a month of what it actually charged, swap by swap. The shape of that record tells you more than the settings do.
 
-| Approach | What it changes | Cost |
+| What the record looks like | What it tells you |
+| :--- | :--- |
+| At the floor almost always, with short spikes | Working as intended. Calm traders get a good rate, and fast moves get charged |
+| Near the cap much of the time | Either the pair is extremely volatile, or the settings mistake normal movement for danger. Routers are probably skipping the pool |
+| Flat at one level | The moving part never moves. You have a fixed tier with extra code attached |
+| Spikes that start well after big price moves | The fee reacts too slowly. The valuable arbitrage trade has already paid the floor |
+
+Then line the spikes up against the pool's volume. If volume collapses every time the fee rises, the pool is protecting depositors from arbitrage by also turning away the customers who pay them.
+
+## What people get wrong about moving fees
+
+| What people assume | What actually happens |
+| :--- | :--- |
+| It protects me from arbitrage | It charges arbitrage more. The trade still happens |
+| Higher fees always mean more income | Routers skip you. Lost volume is the cost |
+| The average fee is what I earn | Look at the distribution. Floor most of the time with spikes behaves very differently from sitting near the cap |
+| It is a protocol feature | It is somebody's code, with settings, possibly changeable |
+
+## Where dynamic fees sit among the alternatives
+
+| Approach | What it changes | What it costs |
 | :--- | :--- | :--- |
-| Dynamic fees | Price of the arbitrage trade | Lost volume when the fee spikes |
-| First-trade auctions | Who captures the arbitrage | Auction infrastructure and latency |
-| Oracle-referenced pricing | The quote itself | Oracle dependency and manipulation surface |
-| Batch settlement | The ordering advantage | Execution moves off the curve |
+| Moving fees | The price of the arbitrage trade | Volume lost when the fee spikes |
+| Auctioning the first trade | Who keeps the arbitrage profit | Infrastructure, and a delay |
+| Quoting around an outside price | The quote itself | A price feed you now depend on |
+| Batch settlement | The advantage of going first | Execution moves off the curve |
+
+If you are choosing between two pools on the same pair, one fixed and one moving, compare them over the same month on three numbers. Fees earned per dollar of liquidity. The share of volume that was arbitrage. And how often routers skipped the moving pool when its fee was high. The moving pool should win the first two by more than it loses on the third.
 
 None removes the underlying condition, which is that a passive quote cannot be cancelled. They redistribute who keeps the value that condition creates.
 
-### The parameter that decides everything
+## Before you supply a dynamic-fee pool
 
-Every dynamic fee implementation reduces to a function mapping some observable to a fee. The observable is usually recent price movement; the function is usually monotonic with a floor and a cap. Two parameters do most of the work.
+1. **Read the fee code.** What does it look at, what is the floor, what is the cap, and can either change?
+2. **Check who can upgrade it.** A fee function behind a proxy is a live governance exposure.
+3. **Get the realised distribution, not the average.** At least a month of it.
+4. **Compare routed volume against the fixed-tier pool** on the same pair. An interesting design with no flow pays nothing.
+5. **Check the hook's other permissions.** Fee setting is often bundled with callbacks that can affect your liquidity. See [Uniswap v4 Architecture and Hooks](/guides/uniswap-v4-architecture-and-hooks/).
+6. **Re-evaluate after any parameter change.** The pool you deposited into is defined by that function.
 
-**The decay rate** sets how quickly the fee falls after a volatile period. Decay too fast and the pool returns to underpricing before the volatility has actually finished. Decay too slowly and the pool stays expensive through the calm period that follows, losing exactly the benign flow it wanted.
-
-**The cap** sets the worst case for traders and the best case for providers. A cap set high enough to matter during a genuine dislocation is also high enough to make the pool uncompetitive at moments when the mechanism has misread ordinary movement as informed flow.
-
-Neither parameter has a universally correct value, and both are usually set once at deployment for a pair whose behaviour will change. Ask when the parameters were last reviewed and against what data, because a fee function tuned for one volatility regime is simply a differently wrong fixed fee in another.
-
----
-
-## 7. Checklist
-
-- [ ] Identify whether the pool's fee is fixed or hook-set before comparing yields.
-- [ ] Read the fee function's inputs, floor, cap and governance controls.
-- [ ] Request or reconstruct the realised fee distribution over at least a month.
-- [ ] Compare routed volume against fixed-tier pools on the same pair.
-- [ ] Check the hook's full permission set, not only its fee behaviour.
-- [ ] Re-evaluate after any parameter change, since the pool you deposited into is defined by that function.
-
-A dynamic fee is a better instrument than a fixed tier for pairs whose volatility varies. It is not protection, and a pool advertising one still needs the same volume and security checks as any other.
+A moving fee is a better instrument than a fixed tier for pairs whose volatility varies. It is not protection, and a pool advertising one still needs every other check.
 
 ## References
 
 1. [Uniswap v3 Core Whitepaper (Adams et al., 2021)](https://uniswap.org/whitepaper-v3.pdf)
 2. [Uniswap v4 Core Whitepaper (Adams et al., 2024)](https://uniswap.org/whitepaper-v4.pdf)
-3. [Trader Joe Liquidity Book documentation](https://docs.traderjoexyz.com/concepts/concentrated-liquidity)
+3. [Liquidity Book DLMM: Primer (LFJ, formerly Trader Joe, Documentation)](https://docs.lfj.gg/lfj-dex/liquidity/liquidity_book-_primer_6893873)
 4. [Automated Market Making and Loss-Versus-Rebalancing (Milionis et al., 2022)](https://arxiv.org/abs/2208.06046)
 5. [Optimal Fees for Geometric Mean Market Makers (Evans et al., 2021)](https://arxiv.org/abs/2104.00446)
 6. [Automated Market Making and Arbitrage Profits in the Presence of Fees (Milionis et al., 2023)](https://arxiv.org/abs/2305.14604)
-7. [Trading in the DeFi era: automated market maker (BIS Bulletin No 58, 2022)](https://www.bis.org/publ/bisbull58.htm)
+7. [Miners as intermediaries: extractable value and market manipulation in crypto and DeFi (BIS Bulletin No 58, 2022)](https://www.bis.org/publ/bisbull58.htm)
 
 [1]: https://uniswap.org/whitepaper-v3.pdf "Uniswap v3 Core Whitepaper"
 [2]: https://uniswap.org/whitepaper-v4.pdf "Uniswap v4 Core Whitepaper"
-[3]: https://docs.traderjoexyz.com/concepts/concentrated-liquidity "Trader Joe Liquidity Book documentation"
+[3]: https://docs.lfj.gg/lfj-dex/liquidity/liquidity_book-_primer_6893873 "Liquidity Book DLMM: Primer (LFJ, formerly Trader Joe, Documentation)"
 [4]: https://arxiv.org/abs/2208.06046 "Automated Market Making and Loss-Versus-Rebalancing"
 [5]: https://arxiv.org/abs/2104.00446 "Optimal Fees for Geometric Mean Market Makers (Evans et al., 2021)"
 [6]: https://arxiv.org/abs/2305.14604 "Automated Market Making and Arbitrage Profits in the Presence of Fees (Milionis et al., 2023)"
-[7]: https://www.bis.org/publ/bisbull58.htm "Trading in the DeFi era: automated market maker (BIS Bulletin No 58, 2022)"
+[7]: https://www.bis.org/publ/bisbull58.htm "Miners as intermediaries: extractable value and market manipulation in crypto and DeFi (BIS Bulletin No 58, 2022)"

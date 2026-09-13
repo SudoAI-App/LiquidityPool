@@ -1,11 +1,11 @@
 ---
 title: "Uniswap v3 Ticks and Position NFTs Explained"
-description: "How Uniswap v3 ticks, tick spacing, fee growth accumulators and the ERC-721 position NFT work, and why each one shows up in day-to-day LP operations."
+description: "Why your range moved from what you typed, why your fees stopped, and why your position is an NFT. Four contract details that explain most operational surprises."
 category: "LP Mechanics"
 date: 2026-09-11
-lastReviewed: "2026-09-11"
+lastReviewed: "2026-09-12"
 author: "Dr. Kieran Thorne"
-readTime: "11 min read"
+readTime: "6 min read"
 keywords: "Uniswap v3 ticks explained, tick spacing, Uniswap v3 positions NFT, LP NFT, fee growth accumulator, liquidity range Uniswap v3"
 featured: false
 faq:
@@ -21,9 +21,9 @@ faq:
     a: "No. Fees sit outside the position as claimable balances until you collect them, and turning them into more liquidity requires a separate transaction that costs gas. Advertised annual percentage yields usually assume compounding you have to perform yourself."
 ---
 
-Every operational surprise in a Uniswap v3 position traces back to four contract-level mechanics: ticks, tick spacing, the position NFT and the fee growth accumulators. None of them are visible in the deposit interface, and all of them decide what the position can do.
+You typed \$2,350 and the position shows \$2,344. Your fees stopped without warning. Your position is an NFT and no lending market will take it.
 
-This guide covers what each one is, and where it shows up when something looks wrong.
+All three trace back to four things the contract does that no deposit screen shows you. This guide covers each one, and where it turns up when something looks wrong.
 
 <figure class="article-figure">
   <img src="/images/guides/uniswap-v3-ticks-and-lp-nfts.webp" alt="Six cards describing ticks, tick spacing, the position NFT, fee growth accumulators, tick crossing and fee claiming." width="1600" height="1067" loading="lazy" decoding="async" />
@@ -31,113 +31,123 @@ This guide covers what each one is, and where it shows up when something looks w
 </figure>
 
 > **Desk Field Note from Dr. Kieran Thorne:**
-> *"When someone says their range was rejected or their bounds moved slightly from what they typed, it is always tick spacing. The contract stores integers, not prices. Anything you enter is rounded to the nearest usable tick for that fee tier, and on a 100 basis point pool that rounding can be a couple of percent."*
+> *"When somebody says their range was rejected or their bounds moved slightly, it is always tick spacing. The contract stores whole numbers, not prices. Whatever you type gets rounded to the nearest usable one for that fee tier, and on the widest tier that rounding can be about a percent."*
 
-## 1. Prices Are Stored as Integers
+## The contract stores whole numbers, not prices
 
-Uniswap v3 does not store prices as floating-point numbers. It stores a tick index $i$, where the price is defined as [1]:
+Uniswap v3 does not store prices. It stores an index, and the price is worked out from it [1]:
 
 $$
 p(i) = 1.0001^{i}
 $$
 
-One tick is therefore one basis point of price movement, and the whole usable range of prices maps to integers roughly between −887,272 and 887,272. Internally the contract works with the square root of price in Q64.96 fixed-point format, because the range mathematics needs $\sqrt{P}$ rather than $P$ and fixed-point arithmetic avoids rounding drift.
+Where:
 
-Two consequences follow for anyone reading pool state directly. The current price is exposed as `sqrtPriceX96` and a `tick` value, not as a human-readable number, and converting between the two requires the same exponentiation the contract uses.
+- $i$ is the tick index, a whole number.
+- $p(i)$ is the price that index represents.
 
----
+So one tick is one hundredth of a percent of price movement, and every price you could care about maps to a whole number roughly between minus 887,272 and plus 887,272.
 
-## 2. Tick Spacing Constrains What You Can Mint
+Internally the contract works with the square root of price in a fixed-point format, because the range maths needs the square root and fixed-point arithmetic avoids drift.
 
-Not every tick is usable. Each fee tier defines a spacing, and positions must start and end on a multiple of it [1]:
+Two consequences if you read pool state directly. The current price comes out as a square-root value and a tick, not as a readable number, and converting needs the same exponentiation.
 
-| Fee tier | Tick spacing | Narrowest legal band |
+## Not every price is available
+
+Each fee tier defines a spacing, and your bounds have to land on a multiple of it [1].
+
+| Fee tier | Spacing | Narrowest band you can mint |
 | :--- | ---: | :--- |
-| 1 bps | 1 | roughly 0.01% |
-| 5 bps | 10 | roughly 0.1% |
-| 30 bps | 60 | roughly 0.6% |
-| 100 bps | 200 | roughly 2% |
+| 0.01% | 1 | about 0.01% |
+| 0.05% | 10 | about 0.1% |
+| 0.30% | 60 | about 0.6% |
+| 1.00% | 200 | about 2% |
 
-The design reason is gas. Crossing a tick during a swap costs storage operations, so coarser spacing on volatile pairs keeps swaps affordable. The practical consequence is that a strategy requiring a very tight band cannot be expressed on a high fee tier, and any bounds you enter are snapped to the nearest usable tick.
+The reason is gas. Crossing a step during a swap costs storage writes, so coarser spacing on volatile pairs keeps trading affordable.
 
-This interacts directly with range selection, covered in [Concentrated Liquidity Strategy](/guides/concentrated-liquidity-strategy/).
+The consequence for you: a strategy needing a very tight band simply cannot be expressed on a high fee tier, and whatever you type gets snapped to the nearest usable step. See [Concentrated Liquidity Strategy](/guides/concentrated-liquidity-strategy/).
 
----
+## Why your range moved
 
-## 3. The Position NFT
+Say you enter a band from \$2,350 to \$2,650 on a 0.30% pool. With a spacing of 60, the nearest usable steps land at roughly \$2,344 and \$2,657.
 
-Because each position carries its own bounds, positions are not interchangeable. Uniswap v3 records each one as an ERC-721 token minted by the position manager, storing the pool key, lower tick, upper tick, liquidity, and the fee growth snapshots taken at the last update [1].
+That is close enough to be invisible in an interface and far enough to matter if your strategy assumed exact bounds. On a 1.00% pool, where steps are about 2% apart, the same request can round by up to about a percent in each direction.
 
-What this means in practice:
+Anyone building something systematic should compute the usable steps first and design the band around them, rather than picking round numbers and accepting whatever the contract does.
 
-- **Transferring the NFT transfers the position**, including any uncollected fees, which are computed from the snapshots rather than held as a balance.
-- **Two positions with identical bounds are separate NFTs.** Adding to an existing position and minting a new one are different operations with different gas costs.
-- **Approvals matter.** Granting an approval on a position NFT to a management contract grants control of the underlying liquidity, which is a permission worth reading carefully before signing.
-- **Composability is limited.** A range position cannot be used as fungible collateral the way a v2 claim can, which is why automated management vaults wrap positions rather than pooling them directly.
+The same rounding explains why two positions that look identical on a dashboard can have slightly different edges, and therefore different time in range.
 
-The full comparison of claim types is in [Liquidity Pool Tokens Explained](/guides/liquidity-pool-tokens/).
+## Why your position is an NFT
 
----
+Because every position has its own bounds, no two are interchangeable. So each one is recorded as an NFT holding the pool, the two bounds, the size, and a snapshot of the fee accounting at the last update [1].
 
-## 4. How Fees Are Attributed
+Four practical consequences:
 
-The pool maintains a global accumulator of fees earned per unit of liquidity, and each initialised tick stores a snapshot of that accumulator. To compute the fees owed to a position, the contract takes global growth and subtracts the growth recorded outside the position's range, then multiplies the difference by the position's liquidity [1].
+- **Transferring the NFT transfers everything**, including uncollected fees, which are computed from the snapshot rather than held as a balance.
+- **Two positions with the same bounds are still two NFTs.** Adding to an existing one and minting a new one are different operations with different costs.
+- **An approval on the NFT is an approval over the money.** Granting one to a management contract gives it control of the underlying liquidity. Read that carefully before signing.
+- **It does not travel.** A range position cannot be used as fungible collateral, which is why vaults wrap positions rather than pooling them.
 
-Three implications an LP notices:
+See [Liquidity Pool Tokens Explained](/guides/liquidity-pool-tokens/).
 
-1. **Fees accrue only while the active tick is inside the range.** Time out of range contributes nothing, as covered in [Out-of-Range Liquidity](/guides/out-of-range-liquidity/).
-2. **Fees are not reinvested.** They sit as owed amounts until collected, so a quoted annual percentage yield assuming compounding requires you to collect and redeposit, paying gas each time.
-3. **Collection is a separate transaction.** Withdrawing liquidity and collecting fees are distinct operations, which is why some interfaces show a position at zero liquidity with a fee balance still attached.
+## How the contract knows what you are owed
 
----
+The pool keeps a running total of fees earned per unit of liquidity, and each price step stores a snapshot of it. Your fees are the global total, minus whatever accumulated outside your range, times your size [1].
 
-## 5. Tick Crossing During a Swap
+Three things you will notice:
 
-When a swap consumes all the liquidity available at the current tick, the pool moves to the next initialised tick, updates the fee growth accumulators, and applies the net liquidity change recorded at that boundary [1].
+1. **Fees accrue only while the price is inside your band.** Time outside contributes exactly nothing. See [Out-of-Range Liquidity](/guides/out-of-range-liquidity/).
+2. **They do not reinvest.** They sit as an amount owed until you claim, so any quoted compounded rate assumes you do that yourself and pay gas each time.
+3. **Claiming is a separate transaction from withdrawing.** That is why an interface can show a position with zero liquidity and a fee balance still attached.
 
-This is the mechanism behind several observable behaviours:
+## What happens when a swap crosses a step
 
-- **Liquidity depth is a step function.** Depth can change abruptly as price crosses a boundary where a large position starts or ends.
-- **Large swaps cost more than the marginal price suggests**, because they cross several ticks and consume progressively thinner liquidity.
-- **Gas for a swap depends on how many ticks it crosses.** A trade during a volatile period on a fine-spacing pool can be materially more expensive than the same trade in calm conditions.
+When a swap eats all the liquidity at the current step, the pool moves to the next one, updates the fee totals, and applies the net change in liquidity recorded at that boundary [1].
 
-The execution consequences are worked through in [Liquidity Depth and Execution](/guides/liquidity-depth-and-execution/).
+That mechanism explains three things you can observe:
 
-### Why ranges drift from what you typed
+- **Depth changes in jumps.** It can shift abruptly as the price crosses a boundary where a large position starts or ends.
+- **Large swaps cost more than the quoted price suggests**, because they cross several steps and eat progressively thinner liquidity.
+- **Gas depends on how many steps a swap crosses.** The same trade during a volatile hour on a fine-spaced pool costs meaningfully more than in calm conditions.
 
-A provider enters a band from 2,350 to 2,650 on a 30 basis point ETH/USDC pool. The contract stores ticks, and with a spacing of 60 the nearest usable ticks correspond to roughly 2,344 and 2,657. The position is minted at those prices instead, which is close enough to be invisible in an interface and far enough to matter if the strategy assumed exact bounds.
+See [Liquidity Depth and Execution](/guides/liquidity-depth-and-execution/).
 
-On a 100 basis point pool the same request rounds by more than a percent in each direction. Anyone building a systematic strategy should compute the usable ticks first and design the band around them, rather than choosing round numbers and accepting whatever the contract snaps to. The same rounding explains why two positions that look identical in a dashboard can have slightly different boundaries and therefore different time in range.
+## Reading your own position without trusting a dashboard
 
----
+Three reads do it:
 
-## 6. Reading Position State Directly
+1. **The pool's current state** gives you the live price and tick. Compare it to your bounds to know whether you are in range.
+2. **The position manager, by token ID**, returns your bounds, size, fee snapshots and what you are owed.
+3. **The pool's data at each of your bounds** shows how much liquidity shares that boundary with you.
 
-Verifying a position without trusting an interface takes three reads:
+A worked read makes this concrete. Say the pool reports tick 77,640 and your bounds are ticks 77,520 and 77,760, on a pool with a spacing of 60. You are in range, 120 ticks from each edge, which is about 1.2% of price either way. If the pool reached tick 77,760 exactly, you would already be out of range and holding only the quote token.
 
-1. **The pool contract's `slot0`** gives the current `sqrtPriceX96` and tick. Compare that tick with your bounds to establish whether the position is in range.
-2. **The position manager's `positions(tokenId)`** returns bounds, liquidity, and the fee growth snapshots plus tokens owed.
-3. **The pool's `ticks(tick)`** for each bound shows the liquidity gross and net recorded there, which indicates how much competing liquidity shares your boundary.
+Anyone running more than a handful of positions should automate those reads. A position that looks healthy on a dashboard and one that is actually accruing fees are different things.
 
-Anyone running more than a handful of positions should automate these reads rather than relying on a dashboard, if only because a position that appears healthy in an interface and one that is actually accruing fees are different claims.
+## What people get wrong about the internals
 
----
+| What people assume | What actually happens |
+| :--- | :--- |
+| My bounds are the numbers I typed | They snap to usable steps, by up to about a percent on the widest tier |
+| Uncollected fees are safe in the position | They travel with the NFT if you transfer it. Collect first |
+| Approving the NFT is like approving a token | It hands over control of the underlying money |
+| The dashboard knows if I am in range | Read the pool's current tick. Interfaces cache |
 
-## 7. Checklist for Working With v3 Positions
+## The working checklist
 
-- [ ] Confirm the tick spacing for your fee tier before designing a range width.
-- [ ] Expect entered bounds to be snapped to usable ticks, and check the resulting prices.
-- [ ] Record the token ID, bounds and mint transaction for every position you open.
-- [ ] Collect fees on a schedule that makes sense against gas, not on every visit.
-- [ ] Treat any approval over a position NFT as an approval over the underlying assets.
-- [ ] Verify in-range status from the pool's current tick rather than from a cached interface value.
-- [ ] Before migrating or transferring, collect outstanding fees so the accounting is clean.
+1. **Check the tick spacing** for your fee tier before designing a band width.
+2. **Expect your bounds to move**, and check the resulting prices.
+3. **Record the token ID, bounds and mint transaction** for every position.
+4. **Claim on a schedule that makes sense against gas**, not every time you look.
+5. **Treat any approval over the NFT as an approval over the assets.**
+6. **Verify in-range status from the pool**, not from a cached figure.
+7. **Collect before transferring or migrating**, so the accounting stays clean.
 
-None of this changes the economics of a position, which are decided by volume, volatility and range width. It changes whether you can diagnose the position accurately when the economics disappoint.
+None of this changes the economics, which are decided by volume, volatility and band width. It changes whether you can diagnose the position accurately when the economics disappoint.
 
-## Where to Go Next
+## Where to go next
 
-Apply the tick mathematics to a concrete position in the [Uniswap v3 liquidity calculator](/tools/uniswap-v3-liquidity-calculator/). The same accounting underpins [Raydium Liquidity Pools](/guides/raydium-clmm-liquidity-guide/) on Solana.
+Apply the tick maths to a real position in the [Uniswap v3 liquidity calculator](/tools/uniswap-v3-liquidity-calculator/). The same accounting underpins [Raydium Liquidity Pools](/guides/raydium-clmm-liquidity-guide/) on Solana.
 
 ## References
 
@@ -146,7 +156,7 @@ Apply the tick mathematics to a concrete position in the [Uniswap v3 liquidity c
 3. [How Uniswap Works (Uniswap Developer Documentation)](https://developers.uniswap.org/docs/get-started/concepts/how-uniswap-works)
 4. [What are the risks when providing liquidity? (Uniswap Labs)](https://support.uniswap.org/hc/en-us/articles/37113550065549-What-are-the-risks-when-providing-liquidity)
 5. [EIP-721: Non-Fungible Token Standard (Ethereum Improvement Proposals)](https://eips.ethereum.org/EIPS/eip-721)
-6. [Strategic Liquidity Provision in Uniswap v3 (Neuder et al., 2021)](https://arxiv.org/abs/2106.12033)
+6. [Strategic Liquidity Provision in Uniswap v3 (Fan et al., 2021)](https://arxiv.org/abs/2106.12033)
 7. [Concentrated Liquidity (Uniswap Developer Documentation)](https://developers.uniswap.org/docs/get-started/concepts/liquidity-providers/concentrated-liquidity)
 
 [1]: https://uniswap.org/whitepaper-v3.pdf "Uniswap v3 Core Whitepaper"
@@ -154,5 +164,5 @@ Apply the tick mathematics to a concrete position in the [Uniswap v3 liquidity c
 [3]: https://developers.uniswap.org/docs/get-started/concepts/how-uniswap-works "How Uniswap Works"
 [4]: https://support.uniswap.org/hc/en-us/articles/37113550065549-What-are-the-risks-when-providing-liquidity "What are the risks when providing liquidity?"
 [5]: https://eips.ethereum.org/EIPS/eip-721 "EIP-721: Non-Fungible Token Standard (Ethereum Improvement Proposals)"
-[6]: https://arxiv.org/abs/2106.12033 "Strategic Liquidity Provision in Uniswap v3 (Neuder et al., 2021)"
+[6]: https://arxiv.org/abs/2106.12033 "Strategic Liquidity Provision in Uniswap v3 (Fan et al., 2021)"
 [7]: https://developers.uniswap.org/docs/get-started/concepts/liquidity-providers/concentrated-liquidity "Concentrated Liquidity (Uniswap Developer Documentation)"

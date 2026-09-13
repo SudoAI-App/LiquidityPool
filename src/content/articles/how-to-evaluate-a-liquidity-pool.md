@@ -1,11 +1,11 @@
 ---
 title: "How to Evaluate a Liquidity Pool: A Five-Part Research Framework"
-description: "A 5-part institutional framework to evaluate DeFi liquidity pools: invariant models, ±2% active depth, LVR hurdle rates, MEV leakage, and hook security."
+description: "Five questions that tell you whether a pool is worth your money, in the order that matters, with the arithmetic that settles most cases in under a minute."
 category: "Risk & Research"
 date: 2026-08-25
-lastReviewed: "2026-09-10"
+lastReviewed: "2026-09-12"
 author: "Siddharth Mehta"
-readTime: "12 min read"
+readTime: "6 min read"
 keywords: "how to evaluate liquidity pool, DeFi LP due diligence, AMM pool evaluation, LVR hurdle rate, Uniswap v4 hook audit, active depth metrics, how to choose a liquidity pool, how to compare liquidity pools, liquidity pool due diligence, is providing liquidity profitable"
 featured: true
 faq:
@@ -19,18 +19,13 @@ faq:
     a: "It is worth it when fee income over your holding period exceeds the divergence the pair generates plus the gas your management cadence costs. That comparison is computable in advance for any pool with published volume data, and it answers the question far better than a quoted yield does."
   - q: "What is a good liquidity pool?"
     a: "One where the curve matches the pair, routed volume is high relative to the liquidity competing for it, the contracts are verified and unprivileged, and you would be content holding either asset alone. A high advertised rate is not on that list."
-  - q: "Is high APY liquidity pool safe?"
-    a: "A persistently high rate is compensation for something specific: volatility, thin liquidity, emissions that will taper, or an unreviewed contract. Identify which one before deciding whether the rate is adequate for the exposure it carries."
 ---
 
-Headline yield figures displayed on decentralized exchange analytics dashboards routinely mislead capital allocators. An advertised 38% annual percentage rate (APR) paired with a \$50 million Total Value Locked (TVL) metric conveys an illusion of safety, but reveals virtually nothing about actual market making viability. Headline APR is a backward-looking historical extrapolation that ignores inventory conversion, adverse selection, and boundary deactivation. Gross TVL is routinely inflated by recursive restaking loops and idle out-of-range capital parked miles away from current spot prices.
+A pool showing 38% on \$50M looks like an easy decision. It tells you almost nothing.
 
-Providing liquidity to an automated market maker (AMM) is an active quantitative underwriting operation. Evaluating whether a pool offers sustainable, risk-adjusted returns requires an **institutional five-part research framework**:
-1. **Invariant and Execution Architecture**
-2. **Active Executable Depth versus Gross TVL**
-3. **Microstructure Economics: Fee Generation versus Loss-Versus-Rebalancing (LVR)**
-4. **Mempool Environment and MEV Extraction**
-5. **Smart Contract, Hook Permissions, and Collateral Contagion** [1] [2] [3]
+That rate is yesterday's fees projected forward as though nothing changes. The \$50M counts money parked at prices nobody trades at. Neither number says whether you will make money.
+
+Five questions do. This guide works through them in order, and the third one settles most cases on its own.
 
 <figure class="article-figure">
   <img src="/images/guides/how-to-evaluate-a-liquidity-pool.webp" alt="A central pool is examined by connected instruments for assets, depth, fees, incentives, and controls." width="1600" height="1067" loading="lazy" decoding="async" />
@@ -38,187 +33,140 @@ Providing liquidity to an automated market maker (AMM) is an active quantitative
 </figure>
 
 > **Desk Field Note from Siddharth Mehta:**
-> *"Institutional allocators never look at headline APR in isolation. An advertised 80% APR pool is often a capital trap: if 60% of that yield consists of inflationary farm tokens with continuous sell pressure, and the remaining 20% is trading fees on an unhedged volatile pair, your net real return will be negative. Always decompose yield into pure swap fee yield versus emission subsidies, and stress-test the position against a 20% drawdown in the underlying asset."*
+> *"A pool advertising 80% is usually a trap. If 60 points of that is a farm token being sold as fast as it is issued, and the other 20 is fees on a wildly volatile pair, your real return is negative. Split the yield into real trading fees and token issuance every time, then ask what the position looks like after a 20% drawdown."*
 
-## Part 1: Invariant and Execution Architecture
+## One: does the curve match the pair?
 
-The first step in evaluating any pool is to dissect its mathematical invariant and contract execution model. Different invariants dictate fundamentally different inventory risks under market stress:
+Different pool designs fail in different ways. Putting a pair into the wrong one is the mistake that no amount of monitoring fixes.
 
-### Continuous Tick AMMs (Uniswap v3 / v4)
-Operate along virtual constant-product curves $(x + L/\sqrt{P_u})(y + L\sqrt{P_l}) = L^2$ bounded by logarithmic price ticks [1] [4].
-- **Inventory Mechanics**: Capital rebalances continuously. If price traverses your boundary ticks, your position converts 100% into the depreciating asset and immediately stops earning fees.
-- **Uniswap v4 Singleton Engine**: Consolidates all pools into `PoolManager.sol` using transient storage (EIP-1153) flash accounting [4]. Evaluate whether the pool incorporates custom lifecycle hooks that alter swap pricing or liquidity withdrawal logic.
+| Pool design | What it does well | How it fails you |
+| :--- | :--- | :--- |
+| Range-based, Uniswap v3 and v4 | Packs money where trading happens | Price leaves your band, you hold the loser and earn nothing [1] [4] |
+| Bin-based, Liquidity Book | Flat pricing inside each step, fees that adapt | Fast moves skip through empty steps [5] |
+| Stable-pair, Curve | Near-zero cost around a peg | Past a certain imbalance the cost explodes and you hold the broken token [2] |
+| Full range, Uniswap v2 | Nothing to manage, never runs dry | Most of your money never does any work |
 
-### Discrete Bin Invariants (Trader Joe Liquidity Book)
-Discretizes liquidity into explicit constant-sum bins ($x + P_{\text{bin}} \cdot y = L_{\text{bin}}$) [5].
-- **Inventory Mechanics**: Zero slippage occurs within the active bin. The pool transitions discretely from bin to bin, with an endogenous volatility accumulator adjusting bin fees dynamically without relying on external oracle feeds.
+The test is simple. Ask what this pair actually does, then ask which design is built for that. A high-amplification stable curve on two tokens that might genuinely diverge is not a yield opportunity. It is a wager that they will not. See [Constant Product Formula](/guides/constant-product-formula/).
 
-### Hybrid Correlated Invariants (Curve StableSwap)
-Blends constant-sum and constant-product curves governed by an amplification parameter $A$ [2].
-- **Inventory Mechanics**: Delivers sub-basis-point slippage near parity. However, if reserves cross a severe imbalance threshold, the curve hits a "liquidity cliff," rapidly transitioning to constant-product behavior and locking remaining LPs into the declining asset.
+## Two: how much of the money is actually working?
 
-To examine the underlying invariant formulas, review our technical breakdown on the [Constant Product Formula: Math and Mechanics](/guides/constant-product-formula/).
+The headline total counts everything in the contract. Only the part near the current price fills trades or earns fees [6].
 
-## Part 2: Active Executable Depth versus Gross TVL
+| Pool holding \$50,000,000 | |
+| :--- | ---: |
+| Parked in ranges nowhere near the price | \$35,000,000, earning nothing |
+| Working within reach of the price | \$15,000,000, doing all the work |
 
-Gross Total Value Locked (TVL) is one of the most misleading metrics in decentralized finance [6]. When evaluating a pool, discard gross TVL in favor of **active executable depth**:
+So read the liquidity-by-price chart, not the headline. Two things to pull from it:
 
-```
-Gross TVL: Total collateral sitting in the pool contract ($50,000,000)
-    |
-    +---> Idle Out-of-Range Capital ($35,000,000) -> 0% fee capture, 0% trade support
-    |
-    +---> Active In-Range Depth ($15,000,000)      -> Real liquidity facilitating swaps
-```
+- **How much sits within 2% of the price?** That is what absorbs a real order. A pool with \$10M on the dashboard and \$200,000 near the price is thin, and a single trade will prove it.
+- **How busy is that money?** Divide daily volume by the money near the price. Between 0.2 and 5 is healthy. Below 0.2 and your capital is sitting still while carrying full risk [6].
 
-### Depth within $\pm 1\%$ and $\pm 2\%$ Bands
-Institutional routers route swaps based on depth available within narrow price corridors around spot price. Query on-chain tick states to calculate:
-- **Executable Depth ($\pm 2\%$)**: The dollar value of inventory required to push spot price 2% in either direction. A pool with \$10M in gross TVL but only \$200k within $\pm 2\%$ is illiquid and highly vulnerable to price slippage and manipulation.
-- **Turnover Velocity**: The ratio of daily trading volume to active liquidity ($V / L_{\text{active}}$). A healthy pool exhibits steady turnover velocity (e.g., 0.5x to 3.0x daily), indicating that capital is actively working rather than sitting stagnant [6].
+See [TVL Explained](/guides/tvl-explained/).
 
-For an exhaustive audit of TVL distortions and multi-counting loops, explore our guide on [TVL Explained: Capital Efficiency and Valuation](/guides/tvl-explained/).
+## Three: does the fee income beat the bleed?
 
-## Part 3: Microstructure Economics: Fees versus LVR Hurdle Rates
+This is the question that decides most pools, and it takes about a minute.
 
-A high headline fee APR is meaningless if adverse selection destroys more capital than the fee stream generates. To evaluate a pool's economic viability, apply the **Loss-Versus-Rebalancing (LVR) hurdle framework** [3] [7]:
-
-### 1. Calculate the LVR Hurdle Rate
-As formulated by Milionis et al. (2022), the instantaneous cost extracted from an AMM pool by latency arbitrageurs scales with the square of market volatility ($\sigma^2$) [3]:
+Your pool quotes a price one block behind the real market. Faster traders take the difference all day. That cost is loss-versus-rebalancing, or LVR — value handed over purely because the quote is late [3].
 
 $$
-\text{Expected Annual LVR Rate} \approx \frac{\sigma^2}{8}
+\text{Annual bleed} \approx \frac{\sigma^2}{8}
 $$
 
-If an asset pair exhibits an annualized volatility $\sigma = 80\%$ ($\sigma = 0.80$):
+Where:
 
-$$
-\text{LVR Hurdle} = \frac{0.80^2}{8} = \frac{0.64}{8} = 8.0\% \text{ per annum}
-$$
+- $\sigma$ is the pair's annual volatility, so 80% means $\sigma = 0.80$.
 
-If the pool's gross trading fee yield from organic retail volume is only 5.0%, **the pool has a structural negative expected return of -3.0% per year**. Every day capital remains in the pool, arbitrageurs extract more value than retail fees compensate.
+This is the yearly bleed as a share of a full-range position. A concentrated band bleeds faster, in proportion to how much harder its money works.
 
-### 2. Decompose Volume: Uninformed vs. Toxic Flow
-Inspect on-chain transactions to verify who is generating pool volume [7]:
-- **Uninformed Flow**: Orders submitted by DEX aggregators (1inch, ParaSwap), Telegram trading bots, and retail wallets. These trades pay full fees without possessing latency information.
-- **Toxic Flow**: Swaps executed by MEV searcher contracts at the top of blocks to arbitrage AMM prices against Binance or Coinbase.
+Work it for a real pair. At 80% volatility the bleed is 8.0% a year. If the pool earns 5.0% from actual trading fees, it loses 3.0% a year on average. Every day the money stays there, arbitrage takes more than trading pays.
 
-If toxic arbitrage volume accounts for more than 70% of total pool volume, the fee pool is predominantly subsidized by LP principal erosion. For mathematical derivations and benchmark comparisons, read [Impermanent Loss Explained: Rebalancing, Relative Price, and LP Outcomes](/guides/impermanent-loss-explained/).
+| Pair volatility | Full-range fee yield you need to break even |
+| :--- | ---: |
+| 40% | 2.0% |
+| 60% | 4.5% |
+| 80% | 8.0% |
+| 100% | 12.5% |
+| 150% | 28.1% |
 
-## Part 4: Mempool Environment and MEV Exposure
+Then check where the volume comes from [7]. Trades routed by aggregators, bots people use to buy tokens, and ordinary wallets are customers. Trades placed by arbitrage contracts at the top of blocks are not. Above roughly 70% of the second kind and the fee pool is being funded out of your principal. That is a harsher measure than impermanent loss — the simple gap between a pool position and holding — which at least reverses if the price returns. See [Impermanent Loss Explained](/guides/impermanent-loss-explained/).
 
-How orders are sequenced on the host blockchain directly dictates whether passive LPs capture projected yields:
+## Four: who else is taking a cut?
 
-### JIT Liquidity Dilution Audit
-In concentrated liquidity pools, audit historical block data for **Just-In-Time (JIT) liquidity attacks** [8]. 
-- If algorithmic searchers routinely inject massive liquidity in front of large swaps and burn it immediately after, the displayed pool fee APR is largely captured by searchers.
-- Passive in-range LPs are left with the crumbs of low-volume blocks while absorbing continuous price volatility.
+How transactions get ordered on a given chain changes what actually reaches you.
 
-### Blockchain Sequencer and Ordering Architecture
-- **Ethereum Mainnet**: Highly competitive Proposer-Builder Separation (PBS) ecosystem. Latency arbitrage and sandwiches hit with sub-second precision.
-- **Layer 2 Rollups (Arbitrum, Base, Optimism)**: Single sequencer architectures with priority gas auctions or first-come-first-served mempools. L2s often exhibit lower sandwich frequency but can suffer from sequencer downtime, trapping LP capital during volatile market shifts.
+In range-based pools, check for fee sniping [8]. A bot sees a large trade coming, floods the exact price with liquidity, takes almost the whole fee, and withdraws in the same block. Where that happens regularly, the advertised rate is mostly going to searchers while passive depositors carry the volatility.
 
-Learn how transaction ordering and private order flow reshape market making in our guide to [MEV and Liquidity Providers: Sandwich Attacks, JIT Liquidity, and Toxic Flow](/guides/mev-and-liquidity-providers/).
+The chain matters too. Ethereum has a mature, aggressive market for transaction ordering, so arbitrage and sandwiching are fast and precise. Rollups usually have a single sequencer, which means less sandwiching but a new risk: if the sequencer goes down during a volatile hour, your money is stuck. All of this is MEV — value taken by controlling the order transactions run in. See [MEV and Liquidity Providers](/guides/mev-and-liquidity-providers/).
 
-## Part 5: Smart Contract, Hook Permissions, and Collateral Contagion
+## Five: what can go wrong with the code and the tokens?
 
-The final and most critical pillar of pool evaluation is the technical and collateral dependency stack:
+Four layers, each of which can fail on its own: the chain, the core pool contract, any code attached to the pool, and the tokens themselves.
 
-```
-[Layer 1: Host Blockchain] ---> [Layer 2: Core AMM Contract / Singleton]
-                                          |
-                                          v
-                                [Layer 3: Hook Logic & Permissions]
-                                          |
-                                          v
-                                [Layer 4: Token Collateral & Oracles]
-```
+**If it is a v4 pool, read the hook** [4]. Can it interfere with adding or removing liquidity? Is it behind an upgradeable proxy with a key somebody holds? Can it change the fee without limit?
 
-### 1. Uniswap v4 Hook Security Audit
-If the pool is deployed on Uniswap v4, inspect the hook contract address bitmask flags [4]:
-- Does the hook have permission to intercept liquidity additions or withdrawals (`beforeAddLiquidity`, `beforeRemoveLiquidity`)?
-- Does the hook contract rely on an upgradeable proxy pattern with a centralized multisig key?
-- Can the hook modify pool fee tiers dynamically without constraints?
+**Trace each token to what backs it.** For staked and restaked ETH tokens, how long is the redemption queue and what can go wrong upstream? For synthetic dollars, where is the hedge held and what happens if funding inverts [2]? For tokenised real-world assets, can a transfer restriction freeze your withdrawal?
 
-### 2. Collateral Backing and Unstaking Queues
-Trace the underlying tokens to their primary issuance layer:
-- **Liquid Restaking Tokens (LRTs)**: Check redemption queue length, AVS slashing mechanisms, and secondary market liquidity depth.
-- **Synthetic Dollars (Ethena USDe)**: Inspect centralized exchange counterparty exposure, perpetual futures funding rate regimes, and protocol reserve fund ratios [2].
-- **Tokenized RWAs**: Confirm whitelist compliance requirements and transfer restrictions that could freeze LP withdrawals.
+See [Liquidity Pool Risks](/guides/liquidity-pool-risks/).
 
-Review our complete architectural taxonomy in [Liquidity Pool Risks: A Complete Framework for LP Due Diligence](/guides/liquidity-pool-risks/).
+## What people get wrong when evaluating pools
 
-## Monitoring & Onchain Tooling Stack
+| What people assume | What actually happens |
+| :--- | :--- |
+| The rate on the dashboard is the rate | It extrapolates yesterday forward and counts none of the bleed or range breaches |
+| An audited protocol means an audited pool | The core is audited. The hook attached to your pool is somebody else's code |
+| A stable-pair curve prevents depegs | It holds the price flat until roughly 85/15 imbalance, then falls away suddenly |
+| A staked token is as liquid as the real thing | It trades near par until people want out, then the queue is the whole story |
 
-To conduct institutional due diligence on candidate liquidity pools:
+## The scorecard
 
-- **Cross-Protocol Pool Screening**: Use [DeFiLlama Yields](https://defillama.com/yields) to compare 30-day trailing TVL stability, volume-to-TVL ratios, and emission schedules.
-- **Contract Security & Ownership Audits**: Inspect pool smart contracts, admin multi-sig keys, and timelocks on [Etherscan](https://etherscan.io).
-- **Historical PnL & Divergence Analysis**: Backtest historical LP returns and fee capture on candidate pairs using [Revert Finance](https://revert.finance).
+| The question | What you are checking | Reject if |
+| :--- | :--- | :--- |
+| Does the curve fit | The design matches what the pair does | A flat stable curve on tokens that can genuinely diverge |
+| Is the money working | Depth within 2% of the price | Big headline, almost nothing near the price [6] |
+| Does the maths work | Real fee yield against the bleed | Fee yield under half the bleed, or volume over 70% arbitrage [3] [7] |
+| Who takes a cut | Fee sniping and ordering | Regular same-block fee capture in recent history [8] |
+| What can break | Hooks, tokens, price feeds | A mutable hook nobody audited, or a multi-week redemption queue [4] |
 
-## Common Due Diligence Errors & Pool Evaluation Traps
+See the [Liquidity Pool Research Checklist](/guides/liquidity-pool-research-checklist/) for the operational version.
 
-| Diligence Error | Data Distortion | Institutional Correction Protocol |
-|---|---|---|
-| **Relying on Dashboard APR** | Extrapolates past 24-hour fee volume forward, ignoring range breaches, LVR drag, and token price drops. | Compute historical net yield by deducting realized divergence and LVR from earned fees. |
-| **Trusting Unaudited Hook Proxies** | A hook in Uniswap v4 can execute arbitrary code during swaps or liquidity removals, potentially draining fees. | Inspect hook address bitmask flags and verify the contract has no unconstrained admin multisig keys. |
-| **Assuming StableSwap Invariants Prevent Depegs** | Curve's flat invariant holds prices stable until reserves reach ~85/15 skew, after which slippage explodes abruptly. | Set automated balance alerts: exit pool when any single collateral exceeds 65% of total pool depth. |
-| **Overlooking Illiquid Redemption Queues** | Staked assets (LSTs, LRTs) trade near parity on AMMs until panic strikes, creating multi-week withdrawal backlogs. | Benchmark secondary DEX exit depth against the protocol's primary unbonding queue capacity. |
+## Where to watch the numbers
 
-## The Five-Part Diligence Scorecard
+- **Comparing pools across protocols:** [DeFiLlama Yields](https://defillama.com/yields) for stability, volume against size, and reward schedules.
+- **Contracts, keys and delays:** [Etherscan](https://etherscan.io).
+- **Backtesting what a position would have done:** [Revert Finance](https://revert.finance).
 
-Before committing capital to any pool, score the opportunity across the five pillars:
+## When a pool fails a check
 
-| Diligence Pillar | Key Diagnostic Question | Red Flag / Disqualifier |
-|---|---|---|
-| 1. Invariant | Does the curve match the expected price relationship of the pair? | Using high-$A$ StableSwap for tokens with unhedged insolvency risk |
-| 2. Active Depth | What is the executable depth within $\pm 2\%$ of spot price? | High gross TVL but near-zero depth around active ticks [6] |
-| 3. Microstructure | Does the retail fee yield exceed the LVR hurdle ($\sigma^2 / 8$)? | Fee APR < 0.5x annualized variance; volume > 70% toxic arbitrage [3] [7] |
-| 4. MEV Exposure | Are passive LPs diluted by JIT liquidity bots or sandwich churn? | Regular atomic JIT sandwiching detected in recent block history [8] |
-| 5. Dependencies | Does the pool rely on upgradeable hooks, illiquid LRTs, or oracle feeds? | Unaudited mutable hook proxy; multi-week redemption queues [4] |
+- **Volume against pool size is under 0.05.** The capital is not being used. Reject it, unless rewards are large and durable enough to justify locking money up.
+- **One address holds over 40% of the pool.** When they leave, depth collapses and your exit gets expensive. Watch that address, and size so you can get out first.
+- **Rewards are over 70% of the advertised rate.** This is money chasing issuance. When it stops, the pool empties and you are holding a depreciating farm token. Harvest and sell daily, or avoid it.
 
-For a step-by-step checklist to run during live market operations, consult our companion reference on the [Liquidity Pool Research Checklist](/guides/liquidity-pool-research-checklist/).
+## Where to go next
 
-Evaluating a liquidity pool is not about chasing yield; it is about establishing a rigorous quantitative margin of safety where fee income reliably compensates for adverse selection and technical execution risk.
-
-## Diagnostic Troubleshooting Decision Tree
-
-Follow this diagnostic checklist when screening potential pools for capital allocation:
-
-1. **Volume-to-TVL Ratio is Below 0.05**:
-   - *Diagnostic*: Capital turnover is stagnant; capital deposited into the pool will earn negligible organic trading fees relative to inventory risk.
-   - *Action*: Reject pool or require high non-inflationary emissions to justify locking capital.
-2. **Single Entity Controls Over 40% of Total Pool Liquidity**:
-   - *Diagnostic*: High whale concentration risk; a sudden liquidity withdrawal by the dominant LP will radically distort pool depth and spike slippage.
-   - *Action*: Monitor the dominant address via onchain alert bots; restrict your allocation size to maintain easy exit capability.
-3. **Emission Rewards Represent >70% of Advertised APY**:
-   - *Diagnostic*: The pool relies on inflationary mercenary capital; once reward emissions decay, TVL will collapse, leaving late LPs with depreciated farm tokens.
-   - *Action*: Implement daily harvesting and liquidation rules, or allocate strictly to pools where organic trading fees constitute the majority of yield.
-
-## Where to Go Next
-
-Match the curve to the pair using [Types of Liquidity Pools](/guides/liquidity-pool-types/), then quantify the income side with the [liquidity pool fee and APR calculator](/tools/liquidity-pool-calculator/) and the cost side with the [impermanent loss calculator](/tools/impermanent-loss-calculator/). For the hurdle that decides whether a pool is worth supplying at all, see [LP Fees vs Impermanent Loss](/guides/lp-fees-vs-impermanent-loss/). Token-level exit capacity is measured in [Token Liquidity Analysis](/guides/token-liquidity-analysis/), and the yield-provenance test is in [Real Yield in Liquidity Pools](/guides/real-yield-liquidity-pools/).
+Match the curve to the pair in [Types of Liquidity Pools](/guides/liquidity-pool-types/), then price the income with the [liquidity pool fee and APR calculator](/tools/liquidity-pool-calculator/) and the cost with the [impermanent loss calculator](/tools/impermanent-loss-calculator/). The decisive comparison is in [LP Fees vs Impermanent Loss](/guides/lp-fees-vs-impermanent-loss/). Exit capacity is in [Token Liquidity Analysis](/guides/token-liquidity-analysis/), and the yield-provenance test in [Real Yield in Liquidity Pools](/guides/real-yield-liquidity-pools/).
 
 ## References
 
-
-1. [Uniswap v3 Concentrated Liquidity Documentation](https://developers.uniswap.org/docs/protocols/v3/concepts/concentrated-liquidity)
+1. [Concentrated Liquidity (Uniswap Developer Documentation)](https://developers.uniswap.org/docs/get-started/concepts/liquidity-providers/concentrated-liquidity)
 2. [Curve StableSwap Exchange Architecture Overview](https://docs.curve.finance/developer/amm/legacy/stableswap-overview)
 3. [Automated Market Making and Loss-Versus-Rebalancing (Milionis et al., 2022)](https://arxiv.org/abs/2208.06046)
 4. [Uniswap v4 Core Whitepaper](https://uniswap.org/whitepaper-v4.pdf)
-5. [Liquidity Book: concentrated liquidity in bins (Trader Joe Documentation)](https://docs.traderjoexyz.com/concepts/concentrated-liquidity)
+5. [Liquidity Book DLMM: Primer (LFJ, formerly Trader Joe, Documentation)](https://docs.lfj.gg/lfj-dex/liquidity/liquidity_book-_primer_6893873)
 6. [DeFi risks and the decentralisation illusion (BIS Quarterly Review, December 2021)](https://www.bis.org/publ/qtrpdf/r_qt2112b.htm)
-7. [Measuring Arbitrage Losses and Profitability of AMM Liquidity (Fritsch, 2024)](https://arxiv.org/abs/2404.05803)
-8. [Just-In-Time Liquidity: Characteristics and Impact on Concentrated AMMs](https://arxiv.org/abs/2305.19211)
-9. [SoK: Decentralized Exchanges with Automated Market Maker Protocols (Xu et al., 2021)](https://arxiv.org/abs/2103.12732)
+7. [Measuring Arbitrage Losses and Profitability of AMM Liquidity (Fritsch & Canidio, 2024)](https://arxiv.org/abs/2404.05803)
+8. [Just-In-Time Liquidity on the Uniswap Protocol (Wan & Adams, Uniswap Labs, 2022)](https://blog.uniswap.org/jit-liquidity)
+9. [SoK: Decentralized Exchanges (DEX) with Automated Market Maker (AMM) Protocols (Xu et al., 2021)](https://arxiv.org/abs/2103.12732)
 10. [The Financial Stability Risks of Decentralised Finance (Financial Stability Board, 2023)](https://www.fsb.org/2023/02/the-financial-stability-risks-of-decentralised-finance/)
 
-[1]: https://developers.uniswap.org/docs/protocols/v3/concepts/concentrated-liquidity "Uniswap v3 Concentrated Liquidity Documentation"
+[1]: https://developers.uniswap.org/docs/get-started/concepts/liquidity-providers/concentrated-liquidity "Concentrated Liquidity (Uniswap Developer Documentation)"
 [2]: https://docs.curve.finance/developer/amm/legacy/stableswap-overview "Curve StableSwap Exchange Architecture Overview"
 [3]: https://arxiv.org/abs/2208.06046 "Automated Market Making and Loss-Versus-Rebalancing (Milionis et al., 2022)"
 [4]: https://uniswap.org/whitepaper-v4.pdf "Uniswap v4 Core Whitepaper"
-[5]: https://docs.traderjoexyz.com/concepts/concentrated-liquidity "Liquidity Book: concentrated liquidity in bins (Trader Joe Documentation)"
+[5]: https://docs.lfj.gg/lfj-dex/liquidity/liquidity_book-_primer_6893873 "Liquidity Book DLMM: Primer (LFJ, formerly Trader Joe, Documentation)"
 [6]: https://www.bis.org/publ/qtrpdf/r_qt2112b.htm "DeFi risks and the decentralisation illusion (BIS Quarterly Review, December 2021)"
-[7]: https://arxiv.org/abs/2404.05803 "Measuring Arbitrage Losses and Profitability of AMM Liquidity (Fritsch, 2024)"
-[8]: https://arxiv.org/abs/2305.19211 "Just-In-Time Liquidity: Characteristics and Impact on Concentrated AMMs"
-[9]: https://arxiv.org/abs/2103.12732 "SoK: Decentralized Exchanges with Automated Market Maker Protocols (Xu et al., 2021)"
+[7]: https://arxiv.org/abs/2404.05803 "Measuring Arbitrage Losses and Profitability of AMM Liquidity (Fritsch & Canidio, 2024)"
+[8]: https://blog.uniswap.org/jit-liquidity "Just-In-Time Liquidity on the Uniswap Protocol (Wan & Adams, Uniswap Labs, 2022)"
+[9]: https://arxiv.org/abs/2103.12732 "SoK: Decentralized Exchanges (DEX) with Automated Market Maker (AMM) Protocols (Xu et al., 2021)"
 [10]: https://www.fsb.org/2023/02/the-financial-stability-risks-of-decentralised-finance/ "The Financial Stability Risks of Decentralised Finance (Financial Stability Board, 2023)"

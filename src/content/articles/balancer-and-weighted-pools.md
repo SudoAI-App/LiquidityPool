@@ -1,11 +1,11 @@
 ---
-title: "Balancer Weighted Pools: The Mathematics of Multi-Asset AMMs and 80/20 Reserves"
-description: "A comprehensive technical guide to Balancer weighted pools: constant-mean invariant math, 80/20 impermanent loss derivation, LBPs, and Balancer v3 hooks."
+title: "Balancer Weighted Pools: How 80/20 and Multi-Asset Pools Work"
+description: "Why an 80/20 pool sells less of your token on the way up, how weighted pricing works, what a liquidity bootstrapping pool does, and what Balancer v3 changed."
 category: "LP Mechanics"
 date: 2026-09-06
-lastReviewed: "2026-09-10"
+lastReviewed: "2026-09-12"
 author: "Dr. Elena Rostova"
-readTime: "13 min read"
+readTime: "8 min read"
 keywords: "Balancer weighted pools, 80/20 liquidity pools, constant mean formula, impermanent loss 80/20, Balancer v3, LBP, weighted liquidity pool, Balancer weighted pool, 80/20 liquidity pool"
 featured: false
 faq:
@@ -17,225 +17,169 @@ faq:
     a: "A weighted pool whose weights shift over time, typically starting heavily weighted toward the token being sold. The shifting weights create downward price pressure that discourages early buying at inflated prices."
 ---
 
-Most automated market makers constrain liquidity providers to equal 50/50 value pairings. While the classical constant-product formula ($x \cdot y = k$) functions reliably for standard trading pairs, it forces liquidity providers to take on substantial 50% exposure to quote assets (such as USDC) when market making their preferred native token. Furthermore, during aggressive price rallies, a 50/50 pool mechanically sells off half of the appreciating inventory, inflicting severe divergence loss [1] [2].
+Say you hold a token you believe in and you want to earn fees on it. A normal pool makes you put in half your money in USDC, then sells your token every time it goes up. You wanted exposure. The pool keeps taking it away.
 
-Balancer generalizes automated market making by introducing the **constant-mean invariant**. Rather than restricting pools to two assets in equal proportions, Balancer enables pools composed of up to eight arbitrary tokens with custom weights, such as 80/20 or 90/10 configurations. This mathematical architecture dramatically reduces impermanent loss for long-term token holders, powers fair-launch Liquidity Bootstrapping Pools (LBPs), and establishes self-rebalancing index funds natively on-chain [1] [3].
+Balancer lets you set the split yourself. An 80/20 pool holds 80% of its value in your token and 20% in the quote asset. When the price rises, it still sells. But if your token doubles, a 50/50 pool sells about 29% of your tokens and an 80/20 pool sells about 13%.
+
+That one change is why treasuries, DAOs and long-term holders use these pools. This guide covers how weighted pricing works, how much less it costs you, how token launches use shifting weights, and what to check before you deposit.
 
 <figure class="article-figure">
-  <img src="/images/guides/balancer-and-weighted-pools.webp" alt="Isometric illustration of Balancer multi-asset weighted pool with 80/20 balance scale, value function formula, and token spheres." width="1600" height="1067" loading="lazy" decoding="async" />
-  <figcaption>Balancer weighted pools decouple reserve ratios from 50/50 symmetry, allowing custom weight vectors to dampen divergence loss. <span class="article-figure__credit">Original editorial illustration by LiquidityPools.app.</span></figcaption>
+  <img src="/images/guides/balancer-and-weighted-pools.webp" alt="Table comparing 50/50, 80/20 and 95/5 pools on shortfall against holding, tokens sold when the price doubles, and price impact." width="1600" height="1067" loading="lazy" decoding="async" />
+  <figcaption>Heavier weighting cuts the shortfall against holding, and pays for it with thinner depth on the light side. <span class="article-figure__credit">Original editorial illustration by LiquidityPools.app.</span></figcaption>
 </figure>
 
 > **Desk Field Note from Dr. Elena Rostova:**
-> *"Balancer's multi-token weighted invariant $\prod B_i^{w_i} = k$ is fundamentally an automated continuous rebalancing engine that replicates Constant Proportion Portfolio Insurance (CPPI). In an 80/20 pool, an LP naturally reduces maximum impermanent loss to approximately one-third of a 50/50 pool because the position only sells 20% of the appreciating asset. However, LPs must recognize that lower impermanent loss is directly offset by reduced capital efficiency and lower gross fee capture per unit of total committed capital."*
+> *"An 80/20 pool is a rebalancing rule with a fee stream bolted on. It sells well under half of what a 50/50 pool sells on the same move, so the drag against holding roughly halves. But nothing is free. Your money is spread thinner, routers send you less flow, and the fee income falls with it. You are buying exposure and paying for it in yield."*
 
-## 1. The Generalized Constant-Mean Invariant
+## How a weighted pool sets its price
 
-The foundational mathematical primitive of Balancer is the constant-mean formula, first conceptualized in CFMM academic literature and implemented by Fernando Martinelli and Nikolai Mushegian [1] [4]:
+Every pool has an invariant — the one relationship between its token balances that it refuses to break. An ordinary pool keeps two balances multiplied together at a fixed number. A weighted pool does the same thing, except each balance is raised to the power of its weight first [1] [4].
 
 $$
 V = \prod_{i=1}^n B_i^{w_i}
 $$
 
 Where:
-- $n$ is the number of constituent tokens in the pool ($2 \le n \le 8$).
-- $B_i$ is the reserve balance of token $i$ held in the pool vault.
-- $w_i$ is the normalized weight of token $i$, strictly satisfying:
+
+- $B_i$ is how much of token $i$ the pool holds.
+- $w_i$ is that token's share of the pool's value, and all the weights add up to 1.
+- $n$ is how many tokens are in the pool, from two up to eight.
+- $V$ is the number the pool keeps level as it trades.
+
+You do not need to compute that to use it. What matters is the consequence: the pool always steers its holdings back toward the value split you chose. Token doubles in price? The pool sells just enough to get back to 80/20, and no more.
+
+Price works out the same way. Divide each balance by its weight, then compare the two.
+
+In a 50/50 pool the weights cancel and you get the familiar ratio of balances. In an 80/20 pool they do not cancel. At any given price the heavy side holds four times the value of the light side, so the light side is the one that runs out first [1] [3]. The two-token version is covered in [Constant Product Formula](/guides/constant-product-formula/).
+
+## Why the smaller side sets your trading cost
+
+A weighted pool is only as deep as its smaller side. In an 80/20 pool that is the 20% slice, and it limits trades in both directions.
+
+Here is what a trade moves the rate by, before fees, in two pools holding the same total value.
+
+| Trade size, as a share of the pool | 50/50 pool | 80/20, buying the heavy token | 80/20, selling the heavy token |
+| :--- | ---: | ---: | ---: |
+| 1% | 2.0% | 3.0% | 3.0% |
+| 10% | 16.7% | 22.9% | 24.9% |
+| 20% | 28.6% | 36.4% | 41.0% |
+
+Two things stand out. The same money buys you less depth in an 80/20 pool, whichever way you trade. And at size, selling the heavy token gets expensive faster than buying it, because every sale drains the small slice.
+
+Plan your exit before your entry. A large holder leaving an 80/20 pool in a hurry pays for that thin side.
+
+## How much less an 80/20 pool costs you
+
+Impermanent loss is the gap between what your deposit is worth and what the same tokens would have been worth if you had just held them [2]. Weighting shrinks that gap, because the pool sells less on the way up.
+
+The numbers are worth sitting with. Each row is the same price move, measured against holding.
+
+| Token price moves | 50/50 pool | 80/20 pool | 90/10 pool | 95/5 pool |
+| :--- | ---: | ---: | ---: | ---: |
+| Up 25% | -0.62% | -0.38% | -0.21% | -0.11% |
+| Up 50% | -2.02% | -1.20% | -0.66% | -0.35% |
+| Doubles | -5.72% | -3.27% | -1.79% | -0.93% |
+| Up 4x | -20.00% | -10.84% | -5.89% | -3.06% |
+| Up 5x | -25.46% | -13.72% | -7.46% | -3.89% |
+
+Read the bottom row. Your token goes up fivefold. In a 50/50 pool you end up about 25% behind simply holding. In an 80/20 pool you end up about 14% behind. That is a real difference on a treasury position, and it is still not zero.
+
+Here is the rule behind the table:
 
 $$
-\sum_{i=1}^n w_i = 1 \quad \text{where } w_i > 0
+\text{IL} = \frac{k^{w}}{w \cdot k + (1 - w)} - 1
 $$
 
-- $V$ is the invariant value function, which remains constant during swaps (absent trading fees) [1].
+Where:
 
-### Spot Price Derivation
+- $k$ is the price now divided by the price when you deposited.
+- $w$ is the weight of the token that moved, so 0.8 in an 80/20 pool.
+- The result is negative, and it is how far behind holding you are.
 
-The instantaneous marginal spot price $P_{i/j}$ of token $i$ denominated in token $j$ is derived analytically from the ratio of token balances normalized by their respective weights:
+Push $w$ toward 1 and the whole expression goes to zero. A pool that is 100% one token never sells anything, so it never falls behind. It also never earns a fee. Everything in between is that trade-off priced out. See [Impermanent Loss Explained](/guides/impermanent-loss-explained/) for the same idea from the 50/50 side.
 
-$$
-P_{i/j} = \frac{B_j / w_j}{B_i / w_i} = \frac{B_j \cdot w_i}{B_i \cdot w_j}
-$$
+## What you give up for that protection
 
-Notice that if $w_i = w_j = 0.5$ (a standard 50/50 pool), the weights cancel out, reducing to the classical Uniswap spot price formula $P = B_j / B_i$. If a pool is configured as 80% Token A ($w_A = 0.80$) and 20% Token B ($w_B = 0.20$), the price equation becomes:
+Lower drag is not free, and the cost shows up in three places.
 
-$$
-P_{A/B} = \frac{B_B \cdot 0.80}{B_A \cdot 0.20} = 4 \cdot \frac{B_B}{B_A}
-$$
+- **Thinner depth.** Only a fifth of the pool sits on the quote side, so large sells run out of room quickly.
+- **Less routing.** Aggregators send trades where the fill is best. A lopsided pool often loses that comparison, so volume and fees go elsewhere.
+- **Kept exposure.** You still hold 80% of a falling token on the way down. Weighting cuts the selling, not the risk.
 
-The pool requires four times more balance of Token B per unit of Token A to maintain price parity, fundamentally altering inventory dynamics [1] [3]. To compare this with two-token virtual curves, review our technical guide on the [Constant Product Formula: Math and Mechanics](/guides/constant-product-formula/).
+## How token launches use shifting weights
 
----
+A liquidity bootstrapping pool, or LBP, is a weighted pool whose weights move on a schedule [5]. Projects use it to sell a new token without needing much cash up front.
 
-## 2. Trade Execution and the Out-Given-In Equation
+The usual problem with a launch is that a project must fund half the pool in stablecoins, and bots buy the first block cheaply and sell into the crowd. Shifting weights fix both.
 
-When a trader swaps an amount $A_{\text{in}}$ of token $i$ into the pool, the pool must calculate the exact amount $A_{\text{out}}$ of token $j$ to return while preserving invariant $V$ [1]:
+| Point in a 72-hour sale | Weights | What it does |
+| :--- | :--- | :--- |
+| Start | 95% token, 5% USDC | High starting price, almost no cash needed |
+| Halfway | 60% token, 40% USDC | Price drifts down on its own |
+| End | 50% token, 50% USDC | Normal trading from here |
 
-$$
-(B_i + A_{\text{in}})^{w_i} \cdot (B_j - A_{\text{out}})^{w_j} \cdot \prod_{k \ne i, j} B_k^{w_k} = B_i^{w_i} \cdot B_j^{w_j} \cdot \prod_{k \ne i, j} B_k^{w_k}
-$$
+As the contract walks the weights down, the quoted price falls unless people buy. That constant downward pull does three useful things. Bots that snipe the open are immediately underwater. Buyers can wait for a price they think is fair. And the project launches deep liquidity with a fraction of the usual collateral.
 
-Canceling invariant terms and isolating $A_{\text{out}}$ yields the closed-form trade execution formula:
+If you are buying in one of these, the first two hours are the worst time to do it.
 
-$$
-A_{\text{out}} = B_j \left( 1 - \left( \frac{B_i}{B_i + A_{\text{in}} \cdot (1 - f)} \right)^{\frac{w_i}{w_j}} \right)
-$$
+## What Balancer v3 changed under the hood
 
-Where $f$ represents the pool swap fee percentage [1].
+Balancer v3 moved every pool into one vault contract, a design called a singleton — all pools living in a single contract rather than one contract per pool [3] [6].
 
-### Effective Price Impact Across Asymmetric Weights
+- **One place for the tokens.** Pool logic and token custody are separate now, so a trade routed through several pools moves tokens once at the end rather than at every hop.
+- **Pools can run custom code.** Hooks let a pool change its own behaviour: raising the fee when the market gets jumpy, sending arbitrage profit back to depositors, or lending idle reserves out for extra yield.
 
-The ratio of weights $\frac{w_i}{w_j}$ dictates the curvature of the trade execution curve:
-- **Selling into Heavy Weights ($w_{\text{in}} < w_{\text{out}}$)**: When swapping Token B (20% weight) into Token A (80% weight), the exponent $\frac{0.20}{0.80} = 0.25$ is less than 1. Price impact escalates slowly, allowing large inflows of the minority asset without extreme slippage.
-- **Selling into Light Weights ($w_{\text{in}} > w_{\text{out}}$)**: When swapping Token A (80% weight) into Token B (20% weight), the exponent $\frac{0.80}{0.20} = 4.0$ is greater than 1. Slippage accelerates exponentially as the minority asset is drained [1] [3].
+A hook is code somebody wrote, and it can change fees or restrict withdrawals. Find out whether it is fixed or can be changed later. [Uniswap v4 Architecture](/guides/uniswap-v4-architecture-and-hooks/) covers the same shift on the other side of the market.
 
----
+## What people get wrong about weighted pools
 
-## 3. Impermanent Loss in Weighted Pools: The 80/20 Advantage
+| What people assume | What actually happens |
+| :--- | :--- |
+| The weights drift as prices move | The weights are fixed. The pool moves the token quantities to keep the value split, which means selling the winner |
+| More tokens in a pool means more safety | One broken token in an eight-token pool drains the rest, because traders dump it in and take the good assets out |
+| An LBP is a cheap way to buy early | The price is designed to fall. Buying at the open means buying the highest price of the sale |
+| Exiting is as cheap as entering | Pulling out one-sided from the heavy side runs straight into the thin side and costs you |
 
-In a standard 50/50 pool, impermanent loss scales symmetrically. If an asset rallies 5x (+400%), a 50/50 liquidity provider suffers a -25.5% divergence loss relative to simply holding the tokens in cold storage [2].
+## What to check before you deposit
 
-### Generalized Impermanent Loss Derivation
+1. **Does the split match what you want to hold?** An 80/20 pool keeps you long. That is the point, and it is also the risk if you are not sure about the token.
+2. **Have you looked at every token in the pool?** In a pool with more than two assets, one bad contract puts all of them at risk. Check each one for mint and blacklist powers.
+3. **Does the fee income justify it?** Compare the pool's daily fees against how much the pair moves. Thin routing plus a volatile token is a losing combination [7].
+4. **Can the hooks change?** In v3, find out whether a hook is fixed forever or sits behind a key somebody holds [6].
+5. **How will you get out?** Model a proportional exit and a single-token exit. The difference is usually larger than people expect.
 
-For an asymmetric pool with weight vector $(w_1, w_2)$ where $w_1 + w_2 = 1$, the portfolio value of the LP position at relative price change $k = P_1 / P_0$ compared to a hold-only baseline is given by [1] [3]:
+## Where to watch the numbers
 
-$$
-\text{IL}(k; w_1, w_2) = \frac{k^{w_1}}{w_1 \cdot k + w_2} - 1
-$$
+- **Live pool balances, invariant values and fee yields:** [Balancer Analytics](https://dune.com/balancer).
+- **Pool size and incentive flows across protocols:** [DeFiLlama](https://defillama.com).
+- **Position modelling across different weightings:** [Revert Finance](https://revert.finance).
 
-Let us compare the realized impermanent loss across different pool weight allocations:
+## When something goes wrong
 
-| Price Change ($k = P_1 / P_0$) | 50/50 Pool ($w_1=0.5$) | 80/20 Pool ($w_1=0.8$) | 90/10 Pool ($w_1=0.9$) | 95/5 Pool ($w_1=0.95$) |
-|---|---|---|---|---|
-| **+25% (1.25x)** | -0.60% | -0.21% | -0.11% | -0.06% |
-| **+50% (1.50x)** | -2.02% | -0.73% | -0.38% | -0.20% |
-| **+100% (2.00x)** | -5.72% | -2.14% | -1.13% | -0.59% |
-| **+300% (4.00x)** | -20.00% | -8.11% | -4.38% | -2.31% |
-| **+400% (5.00x)** | -25.46% | -10.66% | -5.81% | -3.08% |
+- **One token in the pool is draining fast.** Its market price is falling and traders are dumping it into the pool to take out the healthy assets. If the damage looks permanent, exit before the reserve runs dry.
+- **Fees are lower than a plain 50/50 pool.** Heavy weighting made the pool unattractive to routers. Move toward 80/20, or use a fee that rises with volatility.
+- **Your allocation has drifted from what you wanted.** A strong trend has pushed the dollar split away from target. Rebalance, or offset the exposure elsewhere.
 
-```
-Impermanent Loss Comparison: 50/50 vs 80/20 Pool:
-Divergence Loss (%)
-  0% +---------------------------------------------------+ 90/10 Pool (-5.8%)
-     |                                          ...---''
-     |                             ...---''''''           80/20 Pool (-10.7%)
--10% +               ...---''''''''
-     |  ...---'''''''
--20% +-'
-     |
--30% +---------------------------------------------------+ 50/50 Pool (-25.5%)
-    1x         2x                  3x                  4x         5x Price Ratio (k)
-```
+## Where to go next
 
-In an 80/20 pool, **impermanent loss is reduced by approximately 60% to 70%** relative to a traditional 50/50 AMM [3]. For decentralized autonomous organizations (DAOs) and institutional treasuries seeking to maintain exposure to their native governance asset while earning liquidity provider fees, 80/20 pools provide superior capital efficiency with dramatically reduced sell-off drag [3]. For deeper analysis on how adverse selection compounds over time, explore our guide on [Impermanent Loss Explained: Rebalancing, Relative Price, and LP Outcomes](/guides/impermanent-loss-explained/).
-
----
-
-## 4. Liquidity Bootstrapping Pools (LBPs): Dynamic Weight Traversal
-
-One of the most powerful applications of the constant-mean invariant is the **Liquidity Bootstrapping Pool (LBP)**, pioneered by Balancer for fair token launches [5].
-
-In a traditional 50/50 pool, launching a new token requires a project to supply 50% of the initial capital in stablecoins or ETH, tying up millions in liquid reserves. Furthermore, high-speed frontrunning bots routinely snipe the initial block, acquiring cheap tokens and dumping them on retail participants.
-
-An LBP solves this by programmatically adjusting weights over time $t \in [0, T]$ [5]:
-
-```
-LBP Weight Schedule (e.g., 72-Hour Token Launch):
-Start (t = 0):   95% Project Token / 5% USDC  ---> High starting price, low capital requirement
-Middle (t = 36h): 60% Project Token / 40% USDC ---> Continuous algorithmic downward price pressure
-End (t = 72h):   50% Project Token / 50% USDC ---> Normal trading equilibrium established
-```
-
-### The Continuous Dutch Auction Dynamic
-
-As the smart contract gradually shifts weights from 95/5 to 50/50, the marginal spot price naturally declines along a predetermined curve if no swaps occur. This creates continuous downward price pressure that:
-1. **Deters Frontrunning Snipers**: Bots that purchase tokens at the open face immediate paper losses as the invariant weights adjust downward.
-2. **Facilitates Natural Price Discovery**: Rational market participants wait until the price decays to a level they deem fair before submitting buy orders.
-3. **Minimizes Initial Capital**: A project can launch deep liquidity with only 5% to 10% quote collateral.
-
----
-
-## 5. Balancer v3 Architecture: Singleton Vault and Lifecycle Hooks
-
-Balancer v3 modernizes multi-asset liquidity infrastructure by consolidating pools into an audited singleton vault (`Vault.sol`) inspired by Uniswap v4 and EIP-1153 [3] [6]:
-
-- **Singleton Flash Accounting**: Balancer v3 decouples pool logic from token custody. All token balances reside in a single vault contract, enabling multi-hop internal balance transfers with zero intermediate ERC-20 transfers [6].
-- **Custom Pool Hooks**: Similar to Uniswap v4, Balancer v3 introduces hook interfaces (`onRegister`, `onSwap`, `onComputeDynamicSwapFee`) allowing developers to customize execution rules:
-  - **Dynamic Volatility Fees**: Scaling swap fees automatically when rolling tick variance increases.
-  - **MEV Capture Hooks**: Directing arbitrageur arbitrage fees back to pool LPs.
-  - **Yield-Bearing Boosted Pools**: Sweeping idle pool collateral into Aave or Compound to earn money market yields while remaining available for swaps.
-
-To evaluate how singleton models reshape liquidity architecture, review [Uniswap v4 Architecture: Singleton Design, Hooks, and Flash Accounting](/guides/uniswap-v4-architecture-and-hooks/).
-
----
-
-## 6. Common Multi-Asset & Weighted Pool Pitfalls
-
-| Weighted Pool Pitfall | Mathematical & Microstructure Reality | Operational Safeguard |
-|---|---|---|
-| **Weight Drift Fallacy** | Assuming weights drift automatically as token prices move. Balancer smart contract weights $w_i$ are fixed; the pool rebalances *token quantities* $B_i$ to maintain constant value proportions. | Account for continuous inventory selling during token appreciation. |
-| **Long-Tail Contamination in 8-Token Pools** | If a single token in an 8-asset pool collapses to zero, arbitrageurs dump that token into the pool, draining valuable assets until the pool reaches catastrophic imbalance. | Limit multi-token pools to highly correlated or vetted blue-chip assets; avoid illiquid microcaps in multi-asset vaults. |
-| **Buying the Open in an LBP** | Purchasing tokens in the first 2 hours of a Liquidity Bootstrapping Pool when weights are 95/5 guarantees immediate decay as weights trend downward. | Wait for the LBP Dutch auction curve to reach market consensus before committing capital. |
-| **Ignoring Asymmetric Slippage on Exits** | Attempting to withdraw single-sided liquidity from an 80/20 pool incurs significant internal swap fees and slippage on the 80% component. | Execute proportional multi-token withdrawals or route exits through intent solvers. |
-
----
-
-## 7. Pre-Deployment Diligence Checklist for Weighted Pool LPs
-
-Before supplying capital to a Balancer weighted pool, execute this quantitative review:
-
-- [ ] **Weight Vector Alignment**: Does the pool's weight configuration (e.g., 80/20 vs. 50/50) align with your directional inventory preference and volatility tolerance?
-- [ ] **Asset Quality Across All Constituents**: If deploying into an $N$-token pool ($N > 2$), have you audited every single token contract for blacklist or minting exploits?
-- [ ] **LVR Hurdle vs. Asymmetric Yield**: Does the pool's trading fee volume compensate for Loss-Versus-Rebalancing ($\frac{\sigma^2}{8}$) across the minority asset [7]?
-- [ ] **Hook and Factory Permissions**: In Balancer v3, does the pool utilize custom hooks, and are those hooks immutable or behind multisig proxies [6]?
-- [ ] **Exit Route Evaluation**: Have you modeled the slippage of proportional multi-asset withdrawals versus single-token exits?
-
-Balancer weighted pools liberate decentralized finance from rigid 50/50 constraints. By mastering the constant-mean invariant, liquidity allocators can dramatically reduce divergence loss, engineer fair token distributions, and build robust on-chain index strategies.
-
----
-
-## Monitoring & Onchain Tooling Stack
-
-To analyze weighted pool reserve dynamics, swap routing, and asset drift:
-
-- **Balancer Subgraph & Analytics**: Inspect real-time multi-asset pool balances, invariant values, and fee yields on [Balancer Analytics](https://dune.com/balancer).
-- **Multi-Asset Protocol TVL**: Track pool liquidity flows and incentive reward distributions on [DeFiLlama Pools](https://defillama.com).
-- **Custom Invariant Simulation**: Model portfolio rebalancing behavior and divergence loss across arbitrary asset weightings using [Revert Finance](https://revert.finance).
-
-## Diagnostic Troubleshooting Decision Tree
-
-Follow this diagnostic protocol when managing multi-token weighted liquidity positions:
-
-1. **Single Asset in Pool Depleting Rapidly**:
-   - *Diagnostic*: The market price of one underlying asset is plummeting due to external fundamental risks, causing arbitrageurs to dump the depreciating token into the pool to extract healthier collateral.
-   - *Action*: Review the pool's collateral composition; if an asset suffers permanent structural impairment, immediately withdraw liquidity before reserves reach the invariant's boundary limits.
-2. **Gross Fee Accrual Underperforming Benchmark 50/50 Pools**:
-   - *Diagnostic*: High weight asymmetry (e.g., 90/10 or 95/5) dampens capital efficiency, leading DEX aggregators to route trades through tighter, higher-liquidity 50/50 or concentrated pools.
-   - *Action*: Adjust pool weights toward 80/20 or implement dynamic swap fees to incentivize aggregators during elevated volatility regimes.
-3. **Weight Drift Creating Unintended Directional Exposure**:
-   - *Diagnostic*: Extreme price trends have shifted the pool's dollar-weighted allocation away from target portfolio parameters.
-   - *Action*: Trigger a rebalancing swap or reallocate liquidity across secondary hedging pools to restore target asset weightings.
-
-## Where to Go Next
-
-For how weighted pools sit alongside the other invariants, see [Types of Liquidity Pools](/guides/liquidity-pool-types/). For the divergence arithmetic that 80/20 weighting dampens rather than removes, see [The Impermanent Loss Formula](/guides/impermanent-loss-formula/).
+For where weighted pools sit among the other designs, see [Types of Liquidity Pools](/guides/liquidity-pool-types/). For the arithmetic that weighting softens but never removes, see [The Impermanent Loss Formula](/guides/impermanent-loss-formula/).
 
 ## References
 
-
 1. [Balancer: A Non-Custodial Portfolio Manager, Liquidity Provider, and Price Sensor (Martinelli & Mushegian, 2019)](https://balancer.fi/whitepaper.pdf)
 2. [Uniswap v3 Core Whitepaper](https://uniswap.org/whitepaper-v3.pdf)
-3. [Balancer Documentation: Weighted Pools Architecture](https://docs.balancer.fi/concepts/pools/weighted.html)
+3. [Weighted Pool (Balancer Documentation)](https://docs.balancer.fi/concepts/explore-available-balancer-pools/weighted-pool/weighted-pool.html)
 4. [Constant Function Market Makers: Multi-asset Trades via Convex Optimization (Angeris et al., 2020)](https://web.stanford.edu/~boyd/papers/pdf/cfmm.pdf)
-5. [Liquidity Bootstrapping Pools (LBPs) Mechanism Design](https://docs.balancer.fi/concepts/pools/liquidity-bootstrapping.html)
+5. [Liquidity Bootstrapping Pool (Balancer Documentation)](https://docs.balancer.fi/concepts/explore-available-balancer-pools/liquidity-bootstrapping-pool/liquidity-bootstrapping-pool.html)
 6. [Balancer v3 Core Architecture and Monorepo](https://github.com/balancer/balancer-v3-monorepo)
 7. [Automated Market Making and Loss-Versus-Rebalancing (Milionis et al., 2022)](https://arxiv.org/abs/2208.06046)
 8. [Why Decentralised Finance (DeFi) Matters and the Policy Implications (OECD, 2022)](https://www.oecd.org/daf/fin/financial-markets/Why-Decentralised-Finance-DeFi-Matters-and-the-Policy-Implications.pdf)
 
 [1]: https://balancer.fi/whitepaper.pdf "Balancer: A Non-Custodial Portfolio Manager, Liquidity Provider, and Price Sensor (Martinelli & Mushegian, 2019)"
 [2]: https://uniswap.org/whitepaper-v3.pdf "Uniswap v3 Core Whitepaper"
-[3]: https://docs.balancer.fi/concepts/pools/weighted.html "Balancer Documentation: Weighted Pools Architecture"
+[3]: https://docs.balancer.fi/concepts/explore-available-balancer-pools/weighted-pool/weighted-pool.html "Weighted Pool (Balancer Documentation)"
 [4]: https://web.stanford.edu/~boyd/papers/pdf/cfmm.pdf "Constant Function Market Makers: Multi-asset Trades via Convex Optimization (Angeris et al., 2020)"
-[5]: https://docs.balancer.fi/concepts/pools/liquidity-bootstrapping.html "Liquidity Bootstrapping Pools (LBPs) Mechanism Design"
+[5]: https://docs.balancer.fi/concepts/explore-available-balancer-pools/liquidity-bootstrapping-pool/liquidity-bootstrapping-pool.html "Liquidity Bootstrapping Pool (Balancer Documentation)"
 [6]: https://github.com/balancer/balancer-v3-monorepo "Balancer v3 Core Architecture and Monorepo"
 [7]: https://arxiv.org/abs/2208.06046 "Automated Market Making and Loss-Versus-Rebalancing (Milionis et al., 2022)"
 [8]: https://www.oecd.org/daf/fin/financial-markets/Why-Decentralised-Finance-DeFi-Matters-and-the-Policy-Implications.pdf "Why Decentralised Finance (DeFi) Matters and the Policy Implications (OECD, 2022)"

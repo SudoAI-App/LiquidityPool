@@ -1,11 +1,11 @@
 ---
-title: "AMM vs. Order Book: Two Ways to Organize a Market"
-description: "How AMMs, order books, and intent-based solver networks turn liquidity into executable prices. Compare execution paths, MEV, and adverse selection."
+title: "AMM vs. Order Book: Three Ways to Get a Trade Done"
+description: "Three ways to get a trade done, what each costs, and a decision rule you can actually remember. Plus why the good flow is quietly leaving pools."
 category: "Foundations"
 date: 2026-09-06
-lastReviewed: "2026-09-10"
+lastReviewed: "2026-09-12"
 author: "Marcus Vance"
-readTime: "11 min read"
+readTime: "7 min read"
 keywords: "AMM vs order book, automated market maker vs order book, DEX market structure, intent solver, CLOB, AMM vs DEX, liquidity pool vs order book, AMM vs order book exchange"
 featured: false
 faq:
@@ -19,9 +19,11 @@ faq:
     a: "A liquidity pool vs exchange comparison comes down to who quotes. On a centralised exchange, market makers post and cancel orders continuously. In a pool, deposited capital quotes automatically from an invariant and cannot be cancelled, which is why pools serve any size at any hour and why their providers carry adverse selection."
 ---
 
-Financial market architecture defines how buyer and seller liquidity is converted into executable clearing prices. In modern decentralized finance, execution venues have evolved into a three-way market microstructure taxonomy: continuous Automated Market Makers (AMMs), Central Limit Order Books (CLOBs) operating on dedicated high-throughput appchains, and off-chain Intent-Based Request-for-Quote (RFQ) solver auctions.
+There are three ways to get a trade done onchain now, and most people only know one of them.
 
-The fundamental distinction between these architectures is not philosophical; it is an engineering trade-off across execution latency, capital efficiency, adverse selection (Loss-Versus-Rebalancing), and transaction ordering risk. Evaluating which venue to trade on or provide liquidity to requires understanding how each mechanism prices order size $Q$, allocates inventory risk, and protects participants against mempool exploitation [1] [2] [3].
+A pool quotes you a price from a formula, always, instantly, whatever you ask. An order book matches you against somebody who actually wants the other side. An intent network lets professionals bid for your business while you do nothing.
+
+Each one is better at something different. This guide covers how each works, what each actually costs you, and a decision rule short enough to remember.
 
 <figure class="article-figure">
   <img src="/images/guides/amm-vs-order-book.webp" alt="A continuous AMM curve is contrasted with discrete stacked order-book levels." width="1600" height="1067" loading="lazy" decoding="async" />
@@ -29,160 +31,130 @@ The fundamental distinction between these architectures is not philosophical; it
 </figure>
 
 > **Desk Field Note from Marcus Vance:**
-> *"When institutional trading desks compare central limit order books to automated market makers, they often focus solely on headline trading fees. In reality, onchain AMMs charge an invisible execution tax through deterministic execution latency. Because AMM quotes remain static until a transaction updates onchain state, high-frequency searchers can extract zero-risk value whenever external prices move faster than block intervals. If your LP fee does not exceed this adverse selection drag, you are providing subsidized liquidity to latency arbitrageurs."*
+> *"Desks comparing these usually look at the headline fee and stop. The real cost in a pool is invisible: its quote does not move until somebody trades, so anyone faster gets free money whenever the market shifts. If your fee does not cover that, you are subsidising them."*
 
-## The Three-Way Market Taxonomy: AMMs, CLOBs, and Intent Solvers
+## Three mechanisms, side by side
 
-Market venues organize buyer and seller liquidity through distinct algorithmic rules:
+| | Pool | Order book | Intent network |
+| :--- | :--- | :--- | :--- |
+| Where the price comes from | A formula on its own balances | Whatever people have posted | Professionals bidding to fill you |
+| Who provides it | Anyone who deposited | Active market makers | Solvers, using any source |
+| Can they cancel | No, ever | Yes, in milliseconds | Not applicable |
+| Their main problem | Getting picked off on stale quotes | Needing fast infrastructure | Needing enough solvers |
+| Your main problem | Your order moves the price | Nobody may be there | Waiting for the auction |
 
-```
-┌────────────────────────────────────────────────────────────────────────┐
-│                      Modern Market Structure Spectrum                  │
-├──────────────────┬──────────────────┬──────────────────────────────────┤
-│ Mechanism        │ Execution Rule   │ Liquidity & Sourcing             │
-├──────────────────┼──────────────────┼──────────────────────────────────┤
-│ 1. AMM           │ Invariant curve  │ Passive pooled liquidity         │
-│    (Uniswap/     │ $x \cdot y = k$  │ Always quotes; takes inventory   │
-│     Curve)       │ Continuous ticks │ Exposed to LVR & adverse select  │
-├──────────────────┼──────────────────┼──────────────────────────────────┤
-│ 2. CLOB          │ Discrete bids/   │ Active market makers             │
-│    (Hyperliquid/ │ asks in price-   │ Posts limit orders; cancels fast │
-│     dYdX)        │ time queue       │ Requires high TPS / low latency  │
-├──────────────────┼──────────────────┼──────────────────────────────────┤
-│ 3. Intent RFQ    │ Off-chain Dutch  │ Solvers & private market makers  │
-│    (UniswapX/    │ auction / batch  │ Aggregates CEX, PMM, and AMMs    │
-│     CoW Swap)    │ solver matching  │ MEV-protected for retail users   │
-└──────────────────┴──────────────────┴──────────────────────────────────┘
-```
+### Pools
 
-### 1. Automated Market Makers (AMMs)
-AMMs hold pooled reserves in smart contracts and use a deterministic invariant (such as constant-product or StableSwap) to generate a continuous quote. In concentrated systems like Uniswap v3 and v4, liquidity is allocated across discrete tick intervals $[P_{\text{lower}}, P_{\text{upper}}]$ [1]. 
-- **Core strength**: Always-available execution. Anyone can swap at any time without waiting for an active counterparty.
-- **Core weakness**: Passive LPs quote stale prices that latency arbitrageurs pick off when external market prices move, creating continuous Loss-Versus-Rebalancing (LVR).
+Money sits in a contract, and a formula turns the balances into a price [1]. Somebody can always trade, at any hour, in any size.
 
-### 2. Central Limit Order Books (CLOBs)
-In a CLOB, market participants post bids and offers at discrete prices. A matching engine executes trades based on price-time priority. Traditionally confined to centralized exchanges due to blockchain latency and gas costs, on-chain CLOBs now thrive on dedicated high-performance Layer 1s and appchains (e.g., Hyperliquid, dYdX v4, Phoenix on Solana) [4].
-- **Core strength**: Explicit limit price control, zero price impact for resting orders, and tight spreads supported by professional algorithmic market makers.
-- **Core weakness**: High operational overhead (continuous quote cancellation and replacement) and vulnerability to illiquidity during rapid market crashes when market makers pull quotes.
+That availability is the point, and it is also the flaw. The quote does not update until a transaction happens, so whenever a real market moves, the pool is briefly wrong and somebody takes the difference.
 
-### 3. Intent-Based Solver Networks (UniswapX, CoW Swap)
-Rather than submitting a transaction directly to a contract, a user signs an off-chain message specifying their intended trade (e.g., "swap 5 ETH for at least 15,000 USDC"). Specialized actors known as "solvers" or "fillers" compete in off-chain Dutch auctions or batch auctions to fill the order using private inventory, CEX liquidity, or on-chain AMMs [3].
-- **Core strength**: Complete protection against public mempool sandwich attacks; gasless execution for the user (fillers pay gas and absorb revert costs).
-- **Core weakness**: Reliance on an active off-chain filler ecosystem; potential latency while the auction resolves.
+### Order books
 
-For a deeper inspection of how AMM invariants operate mathematically, explore our guide on [Automated Market Makers Explained: The Engine Behind AMM Pools](/guides/automated-market-maker-explained/).
+People post prices they are willing to trade at, and an engine matches them by price and time. This used to be impossible onchain because of speed and cost, and now runs on purpose-built chains such as Hyperliquid and dYdX [4].
 
-## Execution Path and the Price You Actually Get
+You get exact control over your price and no cost from your own order sitting there. The catch is that liquidity is voluntary. In a crash, market makers pull their quotes in milliseconds and the book empties exactly when you need it.
 
-The journey of an order reveals where execution frictions occur:
+### Intent networks
 
-- **AMM execution path**: You query a quote derived from local pool balances. Your transaction is broadcast to the network. Before it is included, intervening transactions in the block can shift pool reserves. Your execution is whatever the curve outputs at inclusion, net of fees. If submitted publicly, searchers can sandwich your trade unless you set strict slippage bounds or route via private relays like Flashbots [3].
-- **CLOB execution path**: A market order crosses the spread and consumes resting limit orders up the book. You pay the visible spread plus book depth degradation. Alternatively, posting a limit order guarantees your fill price but leaves execution time uncertain; if market momentum moves away, your order remains unfilled.
-- **Intent solver execution path**: Your signed intent enters an off-chain auction. The winning solver submits a settlement transaction on-chain that satisfies or exceeds your signed limit price. The solver absorbs all execution and reordering risk, insulating you from frontrunning [3].
+You sign a message rather than a transaction: swap 5 ETH for at least \$15,000, before this time. Solvers compete to fill it, using their own inventory, a centralised exchange, or a pool [3].
 
-Decision takeaway: AMMs offer deterministic algorithmic immediacy; CLOBs offer price precision and queue management; intent solvers offer MEV-protected aggregation.
+Nobody can trade in front of you because nobody sees it until it is done. The solver pays the gas and eats the cost if it fails. See [Automated Market Makers Explained](/guides/automated-market-maker-explained/).
 
-## Scenario 1: Stablecoin-to-Stablecoin Near the Peg
+## What actually happens to your order
 
-Situation: You want to swap 250,000 USDC into USDT near parity.
+**Through a pool.** You get a quote from the current balances. Your transaction goes out. Anything that lands before it changes the balances, so your fill is whatever the formula says at that moment. Submitted publicly with a loose tolerance, somebody can wrap your trade and take the difference [3].
 
-- **On an AMM (Curve StableSwap)**: Curve’s amplification coefficient $A$ makes the invariant flatter around 1.00, reducing slippage dramatically relative to a constant-product pool [2]. However, if the pool is heavily imbalanced (e.g., 85% USDT and 15% USDC), pushing more USDC into the pool traverses into the steep segment of the curve, causing slippage to escalate rapidly [2].
-- **On a CLOB**: Stable pairs trade with tight tick spacing (e.g., 0.9999 / 1.0001). A large marketable order sweeps resting depth. If resting depth at 1.0000 is deep, your trade fills with negligible impact. If book depth is thin, a resting limit order will save fees but takes time to fill.
-- **Through an Intent Solver**: Solvers can source liquidity from both centralized market makers and decentralized stable pools, delivering near-zero fee execution without exposing your transaction to public mempool arbitrage [3].
+**Through an order book.** A market order eats resting offers up the book, so you pay the spread plus whatever depth you consume. A limit order guarantees your price and guarantees nothing about whether it fills.
 
-Decision rule: If the AMM pool is balanced, StableSwap provides reliable on-chain execution. If the AMM is skewed, an intent solver or deep CLOB prevents overpaying into an imbalanced curve [2] [3].
+**Through an intent network.** Your signed order goes into an auction. The winner settles it onchain at or better than your limit. They carry all the execution risk [3].
 
-## Scenario 2: Volatile Token Swap Large Relative to Nearby Liquidity
+Short version: pools give you certainty of execution, books give you certainty of price, intents give you protection and competition.
 
-Situation: You need to sell a sizable position of a volatile token for stablecoins in an illiquid market.
+## Scenario one: swapping \$250,000 between stablecoins
 
-- **AMM path**: In Uniswap v3/v4, liquidity is concentrated in ranges. Your execution climbs the piecewise curve defined by active ticks. If your order exhausts active depth, price impact jumps sharply into thin adjacent bands [1].
-- **CLOB path**: Sweeping the book reveals exactly what levels you hit. If resting bids are shallow, your market order experiences severe slippage. Posting a limit order avoids market impact but risks remaining unfilled if the token dumps.
-- **Intent path**: A Dutch auction starts at a favorable price and gradually decays until a filler can profitably match it. This allows the market to discover the optimal clearing price across multiple venues without leaving an exposed order on-chain [3].
+| Route | What happens | When it is right |
+| :--- | :--- | :--- |
+| Stable-pair pool | Nearly free if the pool is balanced. Expensive fast if it is 85/15 skewed [2] | Check the balance first. If it is even, this is the cleanest route |
+| Order book | Fills against resting depth at 0.9999 or 1.0001. Fine if the depth is real | When the book is deep and you can see it |
+| Intent network | Solvers source from exchanges and pools at once, with no public exposure [3] | When the pool is skewed or you want the best of both |
 
-## Inventory Exposure: Liquidity Providers vs. Order Book Makers
+The decision rule: look at the pool's balance before anything else. A balanced stable pool is hard to beat. A skewed one will cost you far more than it looks like it should [2] [3].
 
-The economic profile of market makers differs across venues:
+## Scenario two: selling a large position in a thin token
 
-- **AMM Liquidity Providers**: LPs deposit assets and accept automated, continuous execution against incoming order flow. In concentrated pools, tighter ranges deliver higher fee density but increase the likelihood of becoming inactive when price breaks out [1]. Because AMMs quote stale prices until an external transaction executes, LPs suffer continuous adverse selection from arbitrageurs (Loss-Versus-Rebalancing, or LVR) [4].
-- **CLOB Market Makers**: Professional market makers stream two-sided quotes, actively adjusting bid-ask spreads and cancelling orders within milliseconds when market information shifts. They avoid quoting when latency is high, avoiding adverse selection at the cost of sophisticated infrastructure and continuous compute [4].
-- **Intent Solvers & Fillers**: Rather than maintaining permanent on-chain inventory, solvers frequently operate just-in-time, hedging their fills immediately on external venues (e.g., Binance or Bybit) or matching opposing user intents off-chain (CoW batch auctions) [3].
+| Route | What happens | The risk |
+| :--- | :--- | :--- |
+| Pool | You climb through the liquidity that exists. When it runs out, the cost jumps sharply [1] | Exhausting the active depth and paying for the gap |
+| Order book | You can see exactly what you will hit | Shallow bids, or your limit order never filling while the token drops |
+| Intent auction | The price starts favourable and walks down until somebody can fill it [3] | Waiting, and the market moving while you do |
 
-Academic research modeling coexisting AMMs and order books demonstrates that informed traders exploit latency on AMMs, while uninformed noise traders benefit from the simplicity of AMM quotes [4]. However, the rise of intent-based architectures has initiated **order flow segmentation**: uninformed retail flow is increasingly intercepted off-chain by solvers, leaving on-chain AMMs with an even higher proportion of toxic, informed arbitrage flow [3] [4].
+For anything large and illiquid, the auction usually wins. It finds the clearing price across every venue without leaving your order sitting in public for somebody to trade against.
 
-For an in-depth analysis of transaction ordering risks and adverse flow, consult [MEV and Liquidity Providers: Sandwich Attacks, JIT Liquidity, and Toxic Flow](/guides/mev-and-liquidity-providers/).
+## What it is like to provide liquidity in each
 
-## Information Leakage and Transaction-Ordering Risk
+This is where the differences matter most, and it explains a trend worth knowing about.
 
-Public blockchains leak information prior to execution. When you submit a transaction to the public mempool:
-- **AMM swaps** reveal size, destination pool, and slippage tolerance. Searchers simulate the price movement and construct sandwich bundles [3] [5].
-- **On-chain CLOB orders** reveal limit prices and size upon posting. While resting orders can be cancelled, network congestion can prevent cancellations from landing before an informed taker sweeps the quote.
-- **Private relays and intents** mitigate this leakage. By routing transactions directly to block builders via MEV-Share or private endpoints (e.g., Flashbots Protect), or by using EIP-712 intent signatures, traders prevent public mempool exploitation [3].
+**In a pool**, you deposit and the contract quotes on your behalf forever. A tighter range earns more and goes inactive more often [1]. Because your quote is always a block behind, you bleed continuously to faster traders. That cost is loss-versus-rebalancing — what a pool pays out for quoting late [4].
 
-## Monitoring & Onchain Tooling Stack
+**On an order book**, professionals stream two-sided quotes and cancel them in milliseconds when something changes. They avoid the bleed entirely, at the cost of serious infrastructure and constant attention [4].
 
-To track order book versus AMM execution efficiency and monitor toxic latency arbitrage, integrate the following tools:
+**As a solver**, you hold almost nothing. You fill an order and hedge it immediately somewhere else, or match it against somebody wanting the opposite [3].
 
-- **Toxic Flow & MEV Extraction**: Use [EigenPhi](https://eigenphi.io) to audit the percentage of volume driven by atomic cross-DEX arbitrageurs and sandwich searchers.
-- **Liquidity Depth & Tick Skew**: Query [Dune Analytics](https://dune.com) for tick liquidity concentration and slippage curves across competing DEX venues.
-- **Order Routing & Solver Execution**: Inspect [CowSwap Explorer](https://explorer.cow.fi) to observe how batch auctions and intent-based solvers route order flow between offchain order books and onchain pools.
+Now the trend. Research on venues coexisting shows informed traders exploit the pool's latency while ordinary traders like its simplicity [4]. But intent networks are now intercepting the ordinary traders off-chain. Solvers match the easy orders themselves and only route the hard ones to pools.
 
-## Common Execution Mistakes & Venue Selection Pitfalls
+So the mix hitting pools is getting worse. Less of the flow that pays you, more of the flow that costs you [3] [4]. Much of that cost is MEV — value taken by controlling the order transactions run in. See [MEV and Liquidity Providers](/guides/mev-and-liquidity-providers/).
 
-| Mistake / Pitfall | Mechanism Breakdown | Correct Routing Strategy |
-|---|---|---|
-| **Submitting Large Swaps to Skewed AMMs** | An imbalanced Curve or Uniswap pool has exhausted its flat curve segment; price impact spikes exponentially. | Check pool asset ratios; route via an intent solver (UniswapX/CoW Swap) that aggregates cross-venue liquidity. |
-| **Using High Slippage on Public AMMs** | A 1.0% slippage tolerance on a public mempool swap is an open invitation for MEV searchers to extract an atomic sandwich. | Set slippage below 0.2% or route exclusively through private builder endpoints (MEV-Blocker, Flashbots Protect). |
-| **Assuming CLOBs Guarantee Liquidity During Crashing Markets** | In extreme volatility, CLOB market makers pull quotes within milliseconds, causing the order book spread to widen dramatically. | Compare depth across both order book and automated invariant reserves during stress events. |
-| **Treating AMMs as Low-Maintenance Market Making** | Concentrated AMM ticks concentrate adverse selection and require continuous active rebalancing against informed flow. | Model LVR drag and monitor tick transitions; consider automated liquidity vaults or dynamic fee pools. |
+## Everyone can see your order before it happens
 
-## Compact Comparison
+Public chains leak your intentions.
 
-| Microstructure Dimension | AMM (e.g., Uniswap v3/v4) | CLOB (e.g., Hyperliquid) | Intent Solver (e.g., UniswapX) |
-|---|---|---|---|
-| Quote Mechanism | Continuous algorithmic invariant [1] | Discrete bids/asks in order book | Off-chain Dutch auction / RFQ [3] |
-| Execution Certainty | Immediate fill; price varies by curve | Immediate if marketable; uncertain if limit | Fills when a solver's threshold is met |
-| Price Sensitivity | Governed by active tick depth [1] | Governed by visible order book depth | Solvers aggregate across venues [3] |
-| Inventory Risk | Borne passively by pool LPs [1] | Borne actively by professional MMs | Hedged just-in-time by solvers [3] |
-| MEV Vulnerability | High in public mempools (sandwiching) [5] | Moderate (latency racing / frontrunning) | Minimal (solvers absorb execution risk) [3] |
-| Primary Innovation | Programmable Hooks & Singletons | High-throughput dedicated appchains [4] | Gasless, off-chain liquidity aggregation |
+- **A pool swap** shows the size, the pool, and your tolerance setting. That is everything somebody needs to wrap it [3] [5].
+- **An onchain limit order** shows your price and size the moment you post it. You can cancel, unless the network is busy and somebody takes it first.
+- **A private relay or an intent** shows nothing until it is settled [3].
 
-## What to Check Before You Act
+## What people get wrong choosing a venue
 
-- For your trade size, what is the active depth within $\pm1\%$ across AMM ticks versus visible CLOB order book depth [1]?
-- If using an AMM, is the pool balanced, or will your size push the price into an inactive or steep curve segment [1] [2]?
-- Would an intent-based solver network provide better net execution by aggregating cross-venue liquidity and eliminating gas fees [3]?
-- If you are an LP, are you prepared for order flow segmentation, where solvers take benign retail trades off-chain and leave your pool with informed arbitrage flow [3] [4]?
-- How will the order be submitted: through the public mempool, an on-chain matching engine, or an MEV-shielded private relay [3] [5]?
+| What people assume | What actually happens |
+| :--- | :--- |
+| A big pool will fill anything | Only the money near the current price fills your trade |
+| A loose tolerance is convenient | It is an open offer. Set it as tight as the pair allows, or route privately |
+| Order books always have liquidity | Makers pull quotes in a crash, exactly when you want to trade |
+| A pool is low-maintenance market making | A tight range concentrates the bleed and needs constant attention |
 
-## The Decision Rule You Can Keep
+## The rule worth keeping
 
-- **Choose an AMM** when you need deterministic, guaranteed on-chain execution for standard pairs with healthy active reserves, and you can submit via private RPC or strict slippage bounds [1].
-- **Choose a CLOB** when you demand exact limit price control, deep resting liquidity, or high-frequency order management without paying curve-based price impact [4].
-- **Choose an Intent Solver Network** when swapping sizable retail orders where you want cross-venue routing, zero gas costs on reverts, and complete protection against mempool sandwich attacks [3].
+- **Use a pool** when you want guaranteed execution on a normal pair with real depth, and you can send it privately or set a tight tolerance [1].
+- **Use an order book** when you want an exact price, deep resting liquidity, or to manage orders actively without paying a curve [4].
+- **Use an intent network** for anything sizeable, when you want competition across venues, no gas on failure, and nobody trading in front of you [3].
 
-Market design is not a religious debate; it is an engineering trade-off. Evaluate each route through the lens of active depth, execution latency, and ordering risk [1] [2] [3] [4] [5].
+This is an engineering trade-off, not a debate about ideology. Judge each route on depth, speed, and who gets to see your order first.
 
-## Diagnostic Troubleshooting Decision Tree
+## What to check before you trade
 
-Follow this diagnostic framework when evaluating whether to route flow or provide liquidity on an AMM versus an onchain order book:
+1. **How much depth is within 1% of the price**, in the pool and in the book [1]?
+2. **Is the pool balanced**, or will your size push it into the steep part of the curve [1] [2]?
+3. **Would an auction beat both**, by aggregating venues and costing no gas [3]?
+4. **If you supply liquidity, do you understand the flow shift?** Solvers are taking the good trades off-chain [3] [4].
+5. **How are you sending it?** Public queue, matching engine, or private relay [3] [5]?
 
-1. **High Slippage on Small-to-Medium Trade Sizes**:
-   - *Diagnostic*: The AMM virtual liquidity depth $L$ within the active price tick is insufficient relative to trade size $\Delta x$.
-   - *Action*: Route orders through offchain batch auctions or an intent-based solver network that aggregates offchain limit order books.
-2. **LPs Suffering Persistent Negative Returns Despite High Trading Volume**:
-   - *Diagnostic*: The pool is dominated by toxic flow from latency arbitrageurs backrunning CEX price movements.
-   - *Action*: Migrate liquidity to a higher fee tier or select an AMM featuring dynamic volatility-adjusted fees or private order flow auctions (OFAs).
-3. **Severe Order Cancellation Overhead on Onchain CLOBs**:
-   - *Diagnostic*: Layer-1 gas fees exceed the bid-ask spread profits of active market making.
-   - *Action*: Transition market making strategies to Layer-2 rollups with dedicated sub-second block times or appchains with offchain matching and onchain settlement.
+## Where to watch the numbers
 
-## Where to Go Next
+- **How much of a pool's volume is arbitrage:** [EigenPhi](https://eigenphi.io).
+- **Where the depth actually sits across venues:** [Dune Analytics](https://dune.com).
+- **How solvers are routing real orders:** [CowSwap Explorer](https://explorer.cow.fi).
 
-The execution-cost comparison in practice is worked through in [Slippage and Price Impact](/guides/slippage-and-price-impact/). The structural disadvantage of a quote that cannot be cancelled is quantified in [Loss-Versus-Rebalancing](/guides/loss-versus-rebalancing/). The assembly of routers, solvers and arbitrage around pools is described in [Onchain Liquidity](/guides/onchain-liquidity-explained/).
+## When something goes wrong
+
+- **A modest trade cost far more than expected.** There was not enough depth at the price. Route through an auction that can aggregate several venues.
+- **Your pool position loses money despite heavy volume.** The volume is arbitrage. Move to a higher fee tier, or a pool whose fee rises with volatility.
+- **Market making on an order book is eaten by gas.** Cancellations cost more than the spread earns. Move to a chain with sub-second blocks, or one that matches off-chain and settles on-chain.
+
+## Where to go next
+
+The cost comparison — price impact, meaning the way your own order moves the rate, against slippage, the gap between quote and fill — is worked through in [Slippage and Price Impact](/guides/slippage-and-price-impact/). What a quote that cannot be cancelled costs is measured in [Loss-Versus-Rebalancing](/guides/loss-versus-rebalancing/). The wider system of routers and solvers is described in [Onchain Liquidity](/guides/onchain-liquidity-explained/).
 
 ## References
-
 
 1. [Concentrated Liquidity | Uniswap Developers](https://developers.uniswap.org/docs/get-started/concepts/liquidity-providers/concentrated-liquidity)
 2. [StableSwap pools (Curve Documentation)](https://docs.curve.finance/developer/amm/legacy/stableswap-overview)
@@ -191,7 +163,7 @@ The execution-cost comparison in practice is worked through in [Slippage and Pri
 5. [Maximal Extractable Value (MEV) | ethereum.org](https://ethereum.org/en/developers/docs/mev/)
 6. [On the Quality of Cryptocurrency Markets: Centralized versus Decentralized Exchanges (Barbon & Ranaldo, 2021)](https://arxiv.org/abs/2112.07386)
 7. [The Adoption of Blockchain-based Decentralized Exchanges (Capponi & Jia, 2021)](https://arxiv.org/abs/2103.08842)
-8. [Trading in the DeFi era: automated market maker (BIS Bulletin No 58, 2022)](https://www.bis.org/publ/bisbull58.htm)
+8. [Miners as intermediaries: extractable value and market manipulation in crypto and DeFi (BIS Bulletin No 58, 2022)](https://www.bis.org/publ/bisbull58.htm)
 
 [1]: https://developers.uniswap.org/docs/get-started/concepts/liquidity-providers/concentrated-liquidity "Concentrated Liquidity | Uniswap Developers"
 [2]: https://docs.curve.finance/developer/amm/legacy/stableswap-overview "StableSwap pools (Curve Documentation)"
@@ -200,4 +172,4 @@ The execution-cost comparison in practice is worked through in [Slippage and Pri
 [5]: https://ethereum.org/en/developers/docs/mev/ "Maximal Extractable Value (MEV) | ethereum.org"
 [6]: https://arxiv.org/abs/2112.07386 "On the Quality of Cryptocurrency Markets: Centralized versus Decentralized Exchanges (Barbon & Ranaldo, 2021)"
 [7]: https://arxiv.org/abs/2103.08842 "The Adoption of Blockchain-based Decentralized Exchanges (Capponi & Jia, 2021)"
-[8]: https://www.bis.org/publ/bisbull58.htm "Trading in the DeFi era: automated market maker (BIS Bulletin No 58, 2022)"
+[8]: https://www.bis.org/publ/bisbull58.htm "Miners as intermediaries: extractable value and market manipulation in crypto and DeFi (BIS Bulletin No 58, 2022)"

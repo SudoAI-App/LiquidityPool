@@ -1,11 +1,11 @@
 ---
 title: "Uniswap Liquidity Pools: How v2, v3 and v4 Pools Work"
-description: "How Uniswap liquidity pools work across v2, v3 and v4: pricing, fee tiers, price impact, what an LP position holds, and how to provide liquidity on Uniswap."
+description: "Three generations of Uniswap pools run side by side. What each one asks you to decide, what your position actually holds, and how to pick a tier and a range."
 category: "Advanced"
 date: 2026-09-11
-lastReviewed: "2026-09-11"
+lastReviewed: "2026-09-12"
 author: "Dr. Kieran Thorne"
-readTime: "12 min read"
+readTime: "7 min read"
 keywords: "Uniswap liquidity pools, Uniswap liquidity provider, how to provide liquidity on Uniswap, Uniswap pool fees, Uniswap price impact, Uniswap v3 price range, Uniswap v2 liquidity pool"
 featured: true
 faq:
@@ -23,9 +23,11 @@ faq:
     a: "The pair of prices between which your liquidity is active. The contract stores them as ticks, and the position holds both assets inside the range, entirely the base asset below it, and entirely the quote asset above it."
 ---
 
-Uniswap pools are the reference implementation most other automated market makers are measured against, and three generations of them are in production simultaneously. They share one pricing idea and differ in what they ask the liquidity provider to decide.
+Three generations of Uniswap pools are live at the same time, and the interface does not make the difference obvious. Pick the wrong one and your position quietly stops doing what you thought it did.
 
-Understanding which decisions belong to which version is what makes the difference between a position that behaves as expected and one that quietly stops working.
+They all price trades the same way. What changes is how many decisions they hand to you, and how much attention the position then needs.
+
+This guide covers what each version asks of you, what your position actually holds, how to pick a fee tier and a range, and what a real trade costs on either side of it.
 
 <figure class="article-figure">
   <img src="/images/guides/uniswap-liquidity-pools.webp" alt="Table comparing Uniswap v2, v3 and v4 across price coverage, fees, LP claim, deployment, management and capital efficiency." width="1600" height="1067" loading="lazy" decoding="async" />
@@ -33,108 +35,120 @@ Understanding which decisions belong to which version is what makes the differen
 </figure>
 
 > **Desk Field Note from Dr. Kieran Thorne:**
-> *"The interface hides how much of this is a contract-level choice. Fee tier, tick spacing and, in v4, the hook are all part of the pool's identity. Two pools on the same pair with different tiers are different markets with different depth, and routing treats them that way even when the front end presents one price."*
+> *"The front end hides how much of this is a contract choice. The fee tier, the tick spacing and, on v4, the attached code are all part of what the pool is. Two pools on the same pair at different tiers are different markets with different depth. Routers treat them that way even when the screen shows you one price."*
 
-## 1. The Pricing Rule Common to All Versions
+## What all three versions have in common
 
-Every Uniswap pool prices swaps from reserves. In v2 the invariant is the constant product across all prices [1]:
+Every Uniswap pool works out its price from what it is holding. The oldest rule keeps the two balances multiplied together at a fixed number [1]:
 
 $$
 x \cdot y = k
 $$
 
-The marginal price is the reserve ratio $y/x$, so each trade moves the price against the trader. In v3 and v4 the same curve is translated so that a position's reserves reach zero at its chosen bounds [2]:
+Where:
 
-$$
-\left(x + \frac{L}{\sqrt{p_b}}\right)\left(y + L\sqrt{p_a}\right) = L^2
-$$
+- $x$ and $y$ are the two token balances.
+- $k$ is the number the pool keeps level.
 
-Nothing about divergence, adverse selection or fee accrual changes between versions because of this equation. What changes is where liquidity sits and what it costs to interact with it.
+The price is one balance divided by the other, so every trade moves it against the trader. That is the same in all three versions.
 
----
+v3 and v4 use the same curve, shifted so your money runs out at the two prices you chose rather than at zero and infinity [2]. The consequences for you are identical either way. Only where your money sits, and what it costs to touch it, change.
 
-## 2. Fee Tiers and What They Signal
+| | v2 | v3 | v4 |
+| :--- | :--- | :--- | :--- |
+| Where your money sits | Every possible price | The band you choose | The band you choose |
+| Fee | Fixed 0.30% | Four fixed tiers | Those tiers, or code that sets it per swap |
+| Your position is | A fungible token | An NFT | An NFT, recorded inside one shared contract |
+| Attention needed | None | Regular | Regular, unless a hook handles it |
+| Extra thing to check | Nothing | Your range | Your range, and the attached code |
 
-v2 charges a single 30 basis point fee on every swap. v3 introduced separate pools per fee tier, and v4 keeps them while adding hook-set dynamic fees [2] [3].
+## Picking a fee tier is bidding for volume
 
-| Tier | Typical use | Consequence for LPs |
+v2 charges 0.30% on every swap. v3 split that into separate pools per tier, and v4 keeps them and adds fees that code can change per swap [2] [3].
+
+| Tier | What it is for | What it means for you |
 | :--- | :--- | :--- |
-| 1 bps | Fiat stablecoin pairs, pegged assets | Highest volume share, lowest revenue per unit |
-| 5 bps | ETH/USDC and other deep majors | Where most routed size clears |
-| 30 bps | Volatile and mid-cap pairs | Compensation for higher adverse selection |
-| 100 bps | Long-tail and illiquid pairs | Thin volume, wide quoted spread |
+| 0.01% | Stablecoins and pegged pairs | Most of the volume, least revenue per trade |
+| 0.05% | ETH against dollars, the deep majors | Where most large orders actually clear |
+| 0.30% | Volatile and mid-cap pairs | Pays for the higher risk of being picked off |
+| 1.00% | Long-tail and thin pairs | Little volume, wide spread |
 
-Each tier is a separate pool with its own liquidity, and aggregators route to whichever path executes best. Choosing a tier is therefore a bid for order flow rather than a yield setting, developed in [Uniswap Fee Tiers Explained](/guides/uniswap-fee-tiers-explained/).
+The key point people miss: each tier is a completely separate pool with its own money. Routers send each trade wherever it fills best. So choosing a tier is not choosing a yield. It is bidding for order flow, and you can lose that bid. See [Uniswap Fee Tiers Explained](/guides/uniswap-fee-tiers-explained/).
 
----
+## What you actually get back
 
-## 3. What a Uniswap LP Position Holds
+On v2, a fungible token representing a slice of the whole pool. On v3, an NFT recording your two bounds and your size. On v4, a position recorded inside the single shared contract, which you normally hold as an NFT from Uniswap's position manager [3].
 
-In v2 the claim is a fungible ERC-20 token representing a share of the whole pool. In v3 it is an ERC-721 position NFT recording lower tick, upper tick and liquidity. In v4 the manager tracks positions internally, with ERC-6909 claims used for balances and NFTs available through periphery contracts [3].
+That difference matters in practice:
 
-The practical differences:
+- **The v2 token travels anywhere.** Stake it, borrow against it, send it. It has no price bounds to explain.
+- **The v3 NFT does not.** Every one is unique, which is why lending markets struggle with them and why claiming fees is a separate transaction.
+- **v4 settles once per transaction**, rather than moving tokens at every step, which makes touching several pools at once much cheaper.
 
-- **Fungible v2 claims** can be staked in farms, used as collateral and transferred without reference to price bounds.
-- **v3 position NFTs** are unique because each carries its own range, which is why they cannot be pooled trivially and why fee collection is a separate transaction.
-- **v4 accounting** avoids token transfers during a transaction, which reduces gas for anyone interacting with several pools at once.
+See [Liquidity Pool Tokens Explained](/guides/liquidity-pool-tokens/) and [Uniswap v3 Ticks and Position NFTs](/guides/uniswap-v3-ticks-and-lp-nfts/).
 
-The mechanics of each claim type are covered in [Liquidity Pool Tokens Explained](/guides/liquidity-pool-tokens/) and the tick internals in [Uniswap v3 Ticks and Position NFTs](/guides/uniswap-v3-ticks-and-lp-nfts/).
+## How to actually do it
 
----
+1. **Pick the pair, and be honest.** Would you hold either token on its own? The pool will decide the proportions, not you.
+2. **Pick the tier on measured volume.** Look at what routes through that specific tier, not the pair overall.
+3. **Pick the range, and do the arithmetic first.** At your lower bound you hold only the base asset. At your upper bound, only the quote asset. Work out both amounts before you continue.
+4. **Approve only what you are depositing.** Modern interfaces use signatures with expiry dates rather than unlimited approvals. Use them.
+5. **Mint it, and check the ratio** the interface asks for against what you meant to put in.
+6. **Write down where you started.** Quantities, prices, transaction hash. Without that you can never tell later whether this worked.
+7. **Decide your rules now.** When do you re-centre? When do you leave? Decide while you are calm.
 
-## 4. Providing Liquidity, Step by Step
+See [How to Provide Liquidity](/guides/how-to-provide-liquidity/) and [Out-of-Range Liquidity](/guides/out-of-range-liquidity/).
 
-1. **Choose the pair and confirm you would hold both assets.** The pool will change the proportions.
-2. **Choose the fee tier**, using measured routed volume for the specific tier rather than pair-level volume.
-3. **Choose the price range** on v3 or v4. Compute the exact holdings at each bound before proceeding: entirely the base asset at the lower bound, entirely the quote asset at the upper bound.
-4. **Approve both tokens.** Modern interfaces use Permit2 signatures, which set allowances with expiries rather than unlimited approvals.
-5. **Mint the position**, checking the deposit ratio the interface computes against your intended exposure.
-6. **Record entry state**: quantities, prices, transaction hash. Without it, no benchmark can be reconstructed later.
-7. **Decide the management rule in advance**: when you re-centre, when you exit, and what evidence triggers each.
+## What a trade actually costs, from both sides
 
-A fuller mechanism-first walkthrough is in [How to Provide Liquidity](/guides/how-to-provide-liquidity/), and the boundary case in [Out-of-Range Liquidity](/guides/out-of-range-liquidity/).
+Two things make up a trader's cost. Price impact — how far your own order pushes the rate — is knowable before you sign. Slippage — the extra gap between the quote you saw and the fill you got, caused by somebody else trading first — is not, and your tolerance setting caps it.
 
----
+The number that decides price impact is money near the current price, not the pool's headline size. A pool with huge deposits parked in distant ranges can fill you worse than a small one with dense liquidity right at the touch.
 
-## 5. Price Impact and Execution on Uniswap
+Work an example. Somebody buys \$120,000 of ETH from a 0.05% pool with \$3,000,000 working within 1% of the current price of \$2,400.
 
-For traders, the cost of a swap has two components. Price impact is deterministic and computable from the pool's state before signing. Slippage is the additional difference caused by other transactions landing first, and it is bounded by the tolerance the trader sets.
+| | The trader's side | The depositor's side |
+| :--- | :--- | :--- |
+| Order against active depth | 4% | — |
+| Price impact | the price moves about 0.08%, so the average fill is about 0.04% worse | — |
+| Average fill | about \$2,401 | — |
+| Fee paid | \$60 | \$60 shared across everyone in range |
+| A position holding 2% of that depth | — | earns \$1.20 |
 
-On concentrated pools, the correct denominator for impact is liquidity active near the current price, not headline total value locked. A pool with large deposits parked in distant ranges can execute worse than a smaller pool with dense liquidity at the touch. Both effects are worked through with numbers in [Slippage and Price Impact](/guides/slippage-and-price-impact/) and [Liquidity Depth and Execution](/guides/liquidity-depth-and-execution/).
+Send the same order to a 0.30% pool with \$400,000 working and it pays about 0.3% in impact plus the 0.30% fee, roughly seven times the total cost. That is why aggregators split orders rather than sending them to whichever pool shows the biggest total.
 
-### A worked execution example
+The depositor's row is the one to sit with. One good trade pays \$1.20. Real income is thousands of those, which is why routed volume matters far more than any single transaction. See [Slippage and Price Impact](/guides/slippage-and-price-impact/) and [Liquidity Depth and Execution](/guides/liquidity-depth-and-execution/).
 
-A trader buys \$120,000 of ETH against a 5 bps pool holding \$3,000,000 of liquidity active within one percent of the current price of 2,400.
+## What people get wrong about Uniswap pools
 
-The order consumes 4% of the active depth, producing roughly 2% of price impact and an average execution near 2,448. The pool fee adds \$60. If the same order were routed to a 30 bps pool with \$400,000 of active depth, price impact alone would exceed 12% before the higher fee is counted, which is why aggregators split orders rather than sending them to whichever pool advertises the largest total value locked.
+| What people assume | What actually happens |
+| :--- | :--- |
+| One pool per pair | Each fee tier is a separate pool with separate money. They compete for your trade |
+| A lower fee tier is cheaper | Only if the depth is there. A cheap tier on a thin pool costs far more in impact |
+| A range position is set and forget | It stops earning the moment the price leaves, while still fully exposed to the losing token |
+| The protocol is audited, so a v4 pool is safe | The core is mature. The code attached to a specific pool is somebody else's work |
 
-For the liquidity provider on the other side, that single trade paid \$60 in fees, distributed across every position in range in proportion to its share. A position holding 2% of the active liquidity earned \$1.20 from it. Fee income at realistic scale is the accumulation of thousands of such trades, which is why routed volume matters more to an LP than any individual transaction.
+## Two risks specific to these pools
 
----
+Uniswap's own documentation names them plainly: divergence from holding, volatility, positions going out of range, contract risk, unverified token teams, whether liquidity is locked, and gas [4].
 
-## 6. Risks Specific to Uniswap Pools
+Two are version-specific and worth repeating:
 
-Uniswap's own documentation lists the exposures plainly: impermanent loss, price volatility, positions moving out of range, smart contract vulnerability, unverified token teams, liquidity lock status and network costs [4].
+- **Out of range on v3 and v4, you earn nothing** while staying completely exposed to whichever token you converted into.
+- **Hooks on v4 are arbitrary code** with real permissions over the pool. A pool inherits whatever its hook can do, including anything affecting withdrawals. Read the hook before you read the yield. See [Uniswap v4 Architecture and Hooks](/guides/uniswap-v4-architecture-and-hooks/).
 
-Two are version-specific and worth restating:
+## What to check before you deposit
 
-- **Out-of-range positions on v3 and v4** stop earning while remaining fully exposed to the asset they converted into.
-- **Hooks on v4** are arbitrary contracts with permissions over the pool lifecycle. A pool inherits the trust assumptions of its hook, including any ability to affect liquidity removal. Read the hook before reading the yield, as set out in [Uniswap v4 Architecture and Hooks](/guides/uniswap-v4-architecture-and-hooks/).
+1. **Would you hold either token alone?** If not, this is the wrong pair.
+2. **Where does volume actually route?** Compare tiers for that pair, not pair-level totals.
+3. **How much money is inside the band you want?** That is your competition for fees.
+4. **What do you hold at each bound?** Compute both. Accept both.
+5. **On v4, who wrote the hook and can it change?** Resolve the address and its permissions.
+6. **Estimate fees and divergence separately**, then compare them. One number cannot tell you both.
+7. **Is the position big enough to absorb the gas** of how often you plan to touch it?
+8. **Set an alert near your boundary**, so you never discover a conversion weeks later.
 
----
-
-## 7. Checklist Before Supplying a Uniswap Pool
-
-- [ ] Confirm the pair and that you would hold either asset alone.
-- [ ] Compare routed volume across tiers for that pair, not aggregate volume.
-- [ ] Measure active liquidity inside the band you intend to occupy.
-- [ ] Compute holdings at both range bounds and accept both outcomes.
-- [ ] For v4 pools, resolve the hook address, its permissions and whether it is upgradeable.
-- [ ] Estimate fee income and divergence separately, then compare the two.
-- [ ] Size the position so that gas across the intended management cadence is immaterial.
-- [ ] Set an alert near the range boundary so a conversion is never discovered weeks later.
-
-The protocol is well documented and the contracts are mature. Most disappointing outcomes on Uniswap pools trace not to the protocol but to a range chosen without reference to volatility, or a tier chosen without reference to where the volume actually routes.
+The contracts here are mature and well documented. Most bad outcomes on Uniswap trace back to two things: a range chosen without looking at how much the pair moves, and a tier chosen without looking at where the volume goes.
 
 ## References
 
@@ -144,8 +158,8 @@ The protocol is well documented and the contracts are mature. Most disappointing
 4. [What are the risks when providing liquidity? (Uniswap Labs)](https://support.uniswap.org/hc/en-us/articles/37113550065549-What-are-the-risks-when-providing-liquidity)
 5. [How Uniswap Works (Uniswap Developer Documentation)](https://developers.uniswap.org/docs/get-started/concepts/how-uniswap-works)
 6. [Risks and Returns of Uniswap V3 Liquidity Providers (Heimbach et al., 2022)](https://arxiv.org/abs/2205.08904)
-7. [SoK: Decentralized Exchanges with Automated Market Maker Protocols (Xu et al., 2021)](https://arxiv.org/abs/2103.12732)
-8. [Trading in the DeFi era: automated market maker (BIS Bulletin No 58, 2022)](https://www.bis.org/publ/bisbull58.htm)
+7. [SoK: Decentralized Exchanges (DEX) with Automated Market Maker (AMM) Protocols (Xu et al., 2021)](https://arxiv.org/abs/2103.12732)
+8. [Miners as intermediaries: extractable value and market manipulation in crypto and DeFi (BIS Bulletin No 58, 2022)](https://www.bis.org/publ/bisbull58.htm)
 
 [1]: https://uniswap.org/whitepaper.pdf "Uniswap v2 Core Whitepaper"
 [2]: https://uniswap.org/whitepaper-v3.pdf "Uniswap v3 Core Whitepaper"
@@ -153,5 +167,5 @@ The protocol is well documented and the contracts are mature. Most disappointing
 [4]: https://support.uniswap.org/hc/en-us/articles/37113550065549-What-are-the-risks-when-providing-liquidity "What are the risks when providing liquidity?"
 [5]: https://developers.uniswap.org/docs/get-started/concepts/how-uniswap-works "How Uniswap Works"
 [6]: https://arxiv.org/abs/2205.08904 "Risks and Returns of Uniswap V3 Liquidity Providers (Heimbach et al., 2022)"
-[7]: https://arxiv.org/abs/2103.12732 "SoK: Decentralized Exchanges with Automated Market Maker Protocols (Xu et al., 2021)"
-[8]: https://www.bis.org/publ/bisbull58.htm "Trading in the DeFi era: automated market maker (BIS Bulletin No 58, 2022)"
+[7]: https://arxiv.org/abs/2103.12732 "SoK: Decentralized Exchanges (DEX) with Automated Market Maker (AMM) Protocols (Xu et al., 2021)"
+[8]: https://www.bis.org/publ/bisbull58.htm "Miners as intermediaries: extractable value and market manipulation in crypto and DeFi (BIS Bulletin No 58, 2022)"

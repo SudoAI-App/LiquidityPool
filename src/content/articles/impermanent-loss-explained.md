@@ -1,11 +1,11 @@
 ---
-title: "Impermanent Loss Explained: Rebalancing, Relative Price, and LP Outcomes"
-description: "Impermanent loss & LVR explained: mathematical derivation, path dependency, toxic order flow, dynamic rebalancing, and verifiable benchmark ledgers."
+title: "Impermanent Loss Explained: Why Pools Trail Simply Holding"
+description: "Why a pool position falls behind simply holding, how much at each price move, and the cost volatility adds that fees have to cover."
 category: "Risk & Research"
 date: 2026-08-29
-lastReviewed: "2026-09-10"
+lastReviewed: "2026-09-12"
 author: "Dr. Elena Rostova"
-readTime: "13 min read"
+readTime: "8 min read"
 keywords: "impermanent loss explained, Loss-Versus-Rebalancing, LVR, AMM market microstructure, Uniswap v3 IL, adverse selection, toxic flow, what is impermanent loss, how to avoid impermanent loss, impermanent loss calculator, divergence loss"
 featured: true
 faq:
@@ -17,9 +17,11 @@ faq:
     a: "Only until you withdraw. The word impermanent refers to the possibility that relative prices return to their entry ratio, which closes the gap. Withdrawing crystallises whatever gap exists at that moment."
 ---
 
-Automated market makers (AMMs) enforce a deterministic pricing invariant that mandates continuous inventory rebalancing against incoming market orders. When relative market prices diverge from deposit levels, the pool's invariant algorithmically sells the appreciating asset and accumulates the depreciating one. The difference between the value of this dynamically rebalanced inventory and a static hold portfolio is conventionally termed **impermanent loss (IL)**.
+You put \$10,000 into an ETH/USDC pool when ETH was \$3,000. A month later ETH is \$6,000. You are up, but less up than the friend who did nothing and just held the same tokens.
 
-In institutional quantitative finance, treating impermanent loss as an "impermanent" or path-independent phenomenon is an accounting fallacy. An AMM liquidity position is structurally short volatility: it continuously sells out-of-the-money options to the market, collecting swap fees as premium while absorbing short gamma risk. Modern market microstructure demonstrates that impermanent loss is merely an ex-post accounting delta; the true ex-ante economic cost of market making on an AMM is **Loss-Versus-Rebalancing (LVR)**—a path-dependent, monotonically compounding adverse selection cost extracted by informed arbitrageurs [1] [2] [3].
+That gap has a name. Impermanent loss — the shortfall between a pool position and simply holding the same tokens — happens because the pool sold your ETH on the way up, a little at a time, the whole way.
+
+This guide shows you exactly how big that gap is at each price move, why a narrow range makes it far worse, and why the word "impermanent" is misleading in a way that costs people real money.
 
 <figure class="article-figure">
   <img src="/images/guides/impermanent-loss-explained.webp" alt="A balanced pool evolves into an uneven inventory while a hold-only basket preserves its original mix." width="1600" height="1067" loading="lazy" decoding="async" />
@@ -27,220 +29,170 @@ In institutional quantitative finance, treating impermanent loss as an "imperman
 </figure>
 
 > **Desk Field Note from Dr. Elena Rostova:**
-> *"The phrase 'impermanent loss' is one of the most dangerous misnomers in finance. While divergence loss is path-independent and will reset if prices return to the exact initial ratio, the Loss-Versus-Rebalancing (LVR) accrued along that price trajectory is permanent and unrecoverable. Every time the price moves away and returns, arbitrageurs rebalance your pool reserves at favorable prices, locking in structural decay that trading fees must overcome."*
+> *"The name is the problem. The headline number does reset if the price comes all the way back, and people take comfort in that. But you do not get to pick the exit price, and every re-range along the way locks the loss in. Price the position on the cost volatility creates, not on the hope of a round trip."*
 
-## The Mathematics of Impermanent Loss in Constant-Product AMMs
+## Why the pool sells your winner
 
-In a standard constant-product AMM ($x \cdot y = k$), the spot price $P$ of base asset $x$ in terms of quote asset $y$ is determined by the reserve ratio:
+A pool holds two tokens and follows one rule. It never checks the market, so when ETH rises somewhere else, the pool is still offering it at the old price.
 
-$$
-P = \frac{y}{x}
-$$
+Traders notice immediately. They buy the cheap ETH out of your pool and sell it at the real price elsewhere. They keep doing that until the pool's price catches up.
 
-Solving for individual reserves yields:
+So the pool ends up with less ETH and more dollars, every single time ETH goes up. It sold the winner. Not because anyone decided to, but because that is what the rule does.
 
-$$
-x = \sqrt{\frac{k}{P}}, \quad y = \sqrt{k \cdot P}
-$$
+The reverse happens when ETH falls. Traders sell ETH into the pool cheaply, and you end up holding more of the thing that dropped. Either way, you are on the wrong side.
 
-The total portfolio value of the LP position at spot price $P$ is:
+## How much it costs at each price move
 
-$$
-V_{\text{LP}}(P) = x \cdot P + y = \sqrt{\frac{k}{P}} \cdot P + \sqrt{k \cdot P} = 2 \sqrt{k \cdot P}
-$$
+Here is the whole thing in one table. Each row is how far the price moved from where you deposited.
 
-Now, suppose the market price shifts from an initial level $P_0$ to a new level $P_1$, representing a relative price ratio $k_r = P_1 / P_0$. The value of the pool position at $P_1$ evaluates to:
+| Price move | Impermanent loss vs holding |
+| :--- | ---: |
+| Up 25%, or down 20% | -0.62% |
+| Up 50%, or down a third | -2.02% |
+| Doubles or halves | -5.72% |
+| Triples | -13.40% |
+| Up 5x | -25.46% |
 
-$$
-V_{\text{LP}}(P_1) = 2 \sqrt{k P_1} = 2 \sqrt{k P_0} \sqrt{k_r}
-$$
+Two things stand out. First, small moves cost almost nothing, so a pair that stays put is a comfortable place to be. Second, the cost accelerates. Doubling costs you nine times what a 25% move costs.
 
-In contrast, if the liquidity provider had simply held their initial reserves $x_0$ and $y_0$ in cold storage, the value of that "Hold" baseline portfolio at $P_1$ would be:
+The rule behind that table is short [1]:
 
 $$
-V_{\text{Hold}}(P_1) = x_0 \cdot P_1 + y_0 = x_0 \cdot P_0 \cdot k_r + y_0
+\text{IL} = \frac{2\sqrt{k}}{1 + k} - 1
 $$
 
-Because the initial deposit satisfied $x_0 \cdot P_0 = y_0 = \sqrt{k P_0}$, we obtain:
+Where:
+
+- $k$ is the price now divided by the price when you deposited.
+- The answer is negative, and it is the fraction of value you gave up.
+
+Notice that $k$ and $1/k$ give the same answer. A token that doubles hurts exactly as much as one that halves. Direction does not matter to this formula, only distance. The pool mechanics behind it are in [Constant Product Formula](/guides/constant-product-formula/).
+
+## Why a narrow range multiplies it
+
+Picking a tight price band packs your money where the trading happens, so you earn much more per dollar. The same packing multiplies the loss by the same factor [2] [4].
+
+Worse, a band has edges. Cross one and the conversion is complete.
+
+| Where the price goes | What you are left holding |
+| :--- | :--- |
+| Below your lower bound | All of the token that fell, and you bought it the whole way down |
+| Inside your band | A mix, shifting with every trade |
+| Above your upper bound | All of the quote token, and you stopped gaining at the edge |
+
+A band of plus or minus 5% around the current price speeds the divergence up by about forty times compared with a full-range position [2] [5]. That is not a reason to avoid ranges. It is a reason to size them against how much the pair actually moves. See [Concentrated Liquidity Explained](/guides/concentrated-liquidity-explained/).
+
+## Why "impermanent" is the wrong word
+
+Partly it is the right word. If the price comes all the way back and you never touched the position, an ordinary pool really is level with holding again, plus whatever fees it earned.
+
+The word misleads in two other ways, and both cost people money.
+
+**You rarely get the round trip.** You withdraw at whatever price exists on the day you need to. If you re-range along the way, each move withdraws at the current price and locks that part of the loss in for good.
+
+**The formula hides a steady cost.** Every time the market moves, fast traders correct your pool's stale price and keep the difference. That cost is loss-versus-rebalancing, or LVR — the gap between making those trades at your pool's late price and making them at the real one [3].
 
 $$
-V_{\text{Hold}}(P_1) = \sqrt{k P_0} (1 + k_r)
+\frac{d(\text{LVR})}{dt} = \frac{\sigma^2}{4} \cdot L \cdot \sqrt{P}
 $$
 
-Dividing $V_{\text{LP}}$ by $V_{\text{Hold}}$ and subtracting 1 gives the classical closed-form equation for impermanent loss:
+Where:
+
+- $\sigma$ is how much the pair moves, as annual volatility.
+- $L$ is how much liquidity you have working at the current price.
+- $P$ is the current price.
+
+If the price has no built-in trend, then averaged over every path it could take, impermanent loss and LVR come to the same number. On any single path they differ. A round trip shows zero impermanent loss, and a steady trend shows a lot. LVR is the version you can estimate before you deposit, which makes it the fair number to compare fees against.
+
+For a \$10,000 full-range position held for a year:
+
+| How much the pair moves a year | Expected cost from LVR |
+| :--- | ---: |
+| 40% | \$200 |
+| 80% | \$800 |
+| 120% | \$1,800 |
+
+Three things follow from that shape, and each one changes a decision:
+
+- **It builds steadily.** It does not depend on where the price ends up, so it keeps accruing in a choppy market that goes nowhere [3].
+- **Volatility is squared.** A pair that moves twice as much costs you roughly four times as much.
+- **Volume is not in it at all.** Your fees depend on volume. Your bleed depends on volatility. Those are two different things, and profitability is the race between them [3] [6].
+
+## Who is actually trading with you
+
+Not all volume is worth the same to you. Split it in two [6].
+
+**Ordinary traders** are swapping because they want the token, rebalancing a portfolio, or routing through an aggregator. They have no edge on the next ten minutes. Their fees are genuine payment for a service.
+
+**Fast traders** are bots watching a real exchange and hitting your pool the instant it lags. Every trade they make is a transfer from you to them. They still pay a fee, but the fee is usually smaller than what they take [6] [7].
+
+So the test for any pool is:
 
 $$
-\text{IL}(k_r) = \frac{V_{\text{LP}}}{V_{\text{Hold}}} - 1 = \frac{2 \sqrt{k_r}}{1 + k_r} - 1
+\text{Profit} = \text{fees from ordinary traders} - \text{LVR} - \text{gas}
 $$
 
-| Price Ratio ($k_r = P_1/P_0$) | Equivalent Asset Move | Classical Impermanent Loss | Implied Option Position Equivalent |
-|---|---|---|---|
-| 1.25x | +25% | -0.60% | Mild short gamma drag |
-| 1.50x | +50% | -2.02% | Accelerated delta decay |
-| 2.00x | +100% | -5.72% | Heavy adverse inventory skew |
-| 3.00x | +200% | -13.40% | Severe upside payoff capping |
-| 5.00x | +400% | -25.46% | Massive opportunity drag |
+Where:
 
-For a rigorous derivation of how the virtual reserve curve enforces this mathematical relationship at contract execution, see our foundational analysis on the [Constant Product Formula: Math and Mechanics](/guides/constant-product-formula/).
+- **Fees from ordinary traders** is the part of volume that is not arbitrage, times the fee rate.
+- **LVR** is the bleed above.
+- **Gas** is everything you pay to enter, claim, adjust, and exit.
 
-## Impermanent Loss in Concentrated Liquidity (Uniswap v3 and v4)
+Academic audits of major Uniswap v3 pools have found that arbitrage extraction often exceeds total fee income, which makes unmanaged provision on those pairs a losing position in real terms [6] [7]. Much of that extraction is MEV — value captured purely by choosing the order transactions run in. See [MEV and Liquidity Providers](/guides/mev-and-liquidity-providers/) for how it works.
 
-When liquidity is concentrated within a discrete price interval $[P_l, P_u]$, the curvature of the virtual reserve curve is truncated and amplified. This engineering innovation increases capital efficiency, but it accelerates divergence loss across the active interval by the exact same multiplier [2] [4].
+## What people get wrong about impermanent loss
 
-Inside the active range $[P_l, P_u]$, an LP's capital behaves as if it were deployed in a constant-product pool with magnified virtual reserves $L$. If market price breaches the interval, inventory conversion completes entirely:
-- **Downside Breach ($P \le P_l$)**: The position converts 100% into the depreciating asset. The LP's impermanent loss becomes equivalent to holding pure single-asset exposure from the exact microsecond the lower boundary was breached.
-- **Upside Breach ($P \ge P_u$)**: The position converts 100% into quote assets (e.g., USDC), permanently truncating any further upside participation in the appreciating asset [2] [5].
+| What people assume | What actually happens |
+| :--- | :--- |
+| The loss is not real until I withdraw | The trades already happened, on chain, one at a time. Withdrawing just tells you the total |
+| A high advertised yield means I am fine | A 40% yield on a pair that moves 100% a year still loses money. Compare the yield to the bleed, not to zero |
+| A tighter range is always better | It multiplies the earnings and the bleed by the same number, and adds the risk of falling out entirely |
+| If the price comes back, I am even | Only if you never re-ranged, paid little gas, and the price returns exactly. Most positions meet none of those |
 
-A narrow band of $\pm 5\%$ around spot price amplifies the instantaneous divergence rate by roughly 20x to 40x relative to a full-range position. To examine the exact mechanics of boundary crossings and tick-spacing mechanics, review our technical breakdown on [Concentrated Liquidity Explained: Range, Capital Efficiency, and Risk](/guides/concentrated-liquidity-explained/).
+## What to check before you deposit
 
-## Why Impermanent Loss Is Flawed: Introducing Loss-Versus-Rebalancing (LVR)
+1. **Pick your benchmark first.** Are you measuring against holding, or against a portfolio somebody actively rebalances? They give different answers, and only one of them is honest about volatility.
+2. **Compare the yield to the bleed.** Take annual volatility, square it, divide by eight. If the pool's fee yield is not comfortably above that, the position loses on average.
+3. **Look at who trades there.** What share of volume comes from aggregators and ordinary users, rather than arbitrage bots?
+4. **Size the band to the pair.** Wide enough that you are not knocked out by a normal week, or automated enough that something moves it for you.
+5. **Ask whether you want a trade instead.** If you have a view on direction, a range order may express it better than providing liquidity. See [Range Orders on AMMs](/guides/range-orders-on-amms/).
 
-The classical framing of impermanent loss contains a dangerous intellectual flaw: **it is strictly path-independent**.
+## Where to watch the numbers
 
-According to classical IL math, if ETH begins at \$3,000, rallies to \$5,000, crashes to \$1,500, and wanders back to exactly \$3,000, the calculated impermanent loss upon withdrawal is **0%**. Traditional decentralized finance literature concluded that if relative price returns to its deposit baseline, the LP incurs no structural loss beyond missed alternate yields [1].
+- **Your position against holding, side by side:** [Revert Finance](https://revert.finance).
+- **Pool-level arbitrage and historical volatility:** [Dune Analytics](https://dune.com).
+- **Your own scenario:** the [impermanent loss calculator](/tools/impermanent-loss-calculator/).
 
-In real-world decentralized markets, this conclusion is provably false. Automated market makers do not possess autonomous price discovery; they rely entirely on external arbitrageurs to update their internal quotes. Centralized order books (Binance, Coinbase) update instantaneously in response to global macro signals. AMMs update with on-chain latency. This structural asynchronous gap creates an unhedged arbitrage window that bleeds pool capital continuously.
+## When something goes wrong
 
-### The Formal LVR Formulation
+- **The price has moved more than 30% from where you entered.** You are roughly 3% behind on a full-range position, far more in a band. Compare the fees you have earned against that, and decide whether to keep holding the converted position.
+- **The price is back near your entry but you are still behind holding.** Divergence is not the cause. Look at gas, re-ranges that locked in losses, time spent out of range, and reward tokens that fell.
+- **Fees are comfortably ahead of the divergence.** The pool has real volume and modest volatility. Keep going, and put the fees back to work.
 
-To resolve the path-independence fallacy, researchers Tim Roughgarden, Andrea Canidio, Ciamac Moallemi, and Jason Milionis formulated **Loss-Versus-Rebalancing (LVR)** [3].
+## Where to go next
 
-Instead of comparing an LP position to a passive "buy-and-hold" portfolio, LVR compares the LP's return to an actively managed reference portfolio that continuously matches the instantaneous market exposure (delta) of the AMM pool on an external frictionless reference market, without paying AMM transaction fees [3].
-
-Under standard continuous-time market assumptions where spot price follows geometric Brownian motion with instantaneous volatility $\sigma$:
-
-$$
-dP_t = \mu P_t dt + \sigma P_t dW_t
-$$
-
-The expected instantaneous rate of LVR for a constant-product AMM pool is derived as:
-
-$$
-\frac{d(\text{LVR}_t)}{dt} = \frac{\sigma^2}{8} \cdot L \cdot \sqrt{P_t}
-$$
-
-Integrating over time $t \in [0, T]$, cumulative LVR is:
-
-$$
-\text{LVR}_T = \int_0^T \frac{\sigma^2}{8} \cdot L \cdot \sqrt{P_t} \, dt
-$$
-
-### Key Microstructure Properties of LVR
-
-1. **Monotonically Compounding**: Because $\sigma^2 > 0$ and pool reserves are positive, LVR is strictly positive and **never decreases**. Even if the price oscillates wildly and finishes at the exact starting point (where classical IL = 0), LVR permanently accumulates [3].
-2. **Quadratic Scaling with Volatility**: LVR scales with the square of market volatility ($\sigma^2$). Doubling asset volatility quadruples the rate of arbitrage extraction from the pool.
-3. **The True Cost of Stale Quotes**: LVR quantifies the exact monetary value extracted by latency arbitrageurs who trade against stale on-chain quotes before AMM state transitions reflect off-chain market consensus [3] [6].
-
-```
-Comparison of IL vs LVR over an Oscillating Round-Trip Price Path:
-Price: P0 ($3,000) ----> P_high ($4,500) ----> P_low ($2,000) ----> P0 ($3,000)
-
-Classical Impermanent Loss:
-IL:    0.0%       ----> -2.0%           ----> -4.2%          ----> 0.0% (Loss appears to vanish!)
-
-Modern Microstructure (LVR):
-LVR:   $0         ----> -$480           ----> -$1,240        ----> -$1,890 (Loss accumulates permanently!)
-```
-
-## Toxic Flow versus Uninformed Order Flow
-
-To determine whether an automated market making position is economically viable, institutional LPs decompose total pool volume into two distinct flow components [6]:
-
-```
-Total AMM Volume = Uninformed Flow (Retail / Solvers) + Toxic Flow (Latency Arbitrage / MEV)
-```
-
-1. **Uninformed Flow (Retail / Non-Toxic)**: Traders who execute swaps to rebalance personal portfolios, purchase tokens for utility, or swap via aggregators without predictive knowledge of short-term price movements. Fees collected from uninformed flow represent genuine economic compensation for passive market makers.
-2. **Toxic Flow (Adverse Selection / Arbitrage)**: Algorithmic bots, latency arbitrageurs, and MEV searchers who detect price discrepancies on centralized order books and execute atomic on-chain transactions to extract stale AMM reserves. Every unit of toxic volume represents a pure transfer of wealth from passive LPs to arbitrageurs [6] [7].
-
-### The Net LP Profitability Condition
-
-An AMM liquidity provider generates positive economic profit if and only if the fees harvested from uninformed flow exceed cumulative LVR plus gas overhead:
-
-$$
-\text{Net LP Profit} = \sum \text{Fees}_{\text{uninformed}} - \text{LVR} - \text{Gas}_{\text{management}} > 0
-$$
-
-Empirical academic audits of Uniswap v3 have demonstrated that in major volatile pools (such as ETH/USDC 0.05% and 0.30%), cumulative LVR and arbitrage extraction frequently exceed total fee generation, rendering passive liquidity provision net negative in real terms [6] [7]. Learn how transaction ordering and mempool dynamics exacerbate this drain in our deep dive on [MEV and Liquidity Providers: Sandwich Attacks, JIT Liquidity, and Toxic Flow](/guides/mev-and-liquidity-providers/).
-
-## Monitoring & Onchain Tooling Stack
-
-To model, monitor, and calculate impermanent loss and LVR onchain:
-
-- **Real-Time Divergence & Net PnL**: Benchmark live position value against 100% Token A, 100% Token B, and 50/50 HODL strategies on [Revert Finance](https://revert.finance).
-- **Historical LVR & Volatility Queries**: Calculate pool-level adverse selection and historical price volatility on [Dune Analytics](https://dune.com).
-- **Impermanent Loss Calculators**: Model theoretical divergence curves across custom price boundaries using specialized DeFi quant simulators.
-
-## Common Misconceptions & Accounting Pitfalls
-
-| Fallacy / Misconception | Mathematical & Economic Reality | Correct Operational Protocol |
-|---|---|---|
-| **"Loss is only realized when I withdraw."** | False. Inventory rebalancing is executed irreversibly on-chain at every trade. Stale quote extraction is permanent and non-recoverable. | Track mark-to-market daily against an actively rebalanced benchmark or cash benchmark. |
-| **"High fee APR guarantees profitability."** | False. A 40% APR pool with high underlying volatility ($\sigma > 100\%$) often incurs LVR exceeding 50% annualized, creating net bleed. | Compute the LVR hurdle rate $\frac{\sigma^2}{8}$. Fee APR must comfortably exceed this threshold. |
-| **"Narrow concentrated ranges always outperform."** | False. Narrow ranges multiply LVR and short gamma exposure proportionally to capital efficiency, resulting in rapid position death. | Widen ranges during high-volatility regimes or deploy automated dynamic hedging models. |
-| **"Impermanent loss reverses if price returns to entry."** | False. While classical IL reaches zero, path-dependent LVR has permanently reduced portfolio equity through round-trip arbitrage. | Treat volatility itself as an operational cost factor, not just terminal price divergence. |
-
-## Modern Mitigations: Dynamic Fees, LVR Capture, and Hooks
-
-Protocol architectures have evolved specifically to curb or capture LVR:
-
-### 1. Dynamic Volatility Fees (Uniswap v4 Hooks & Liquidity Book)
-Trader Joe's Liquidity Book utilizes an endogenous volatility accumulator to automatically scale bin transaction fees during turbulent price action [8]. Similarly, Uniswap v4 allows custom hooks to adjust pool swap fees dynamically in real time based on recent tick velocity. By raising fees during volatile regimes, the pool forces arbitrageurs to pay wider spreads, effectively internalizing value that would otherwise leak as LVR.
-
-### 2. MEV Capture and Order Flow Auctions (OFA)
-Protocols like CoW Swap, UniswapX, and Sorella FastLane segment order flow before it touches on-chain pools. By routing trades through off-chain batch auctions and private solver networks, these protocols eliminate frontrunning and redistribute MEV back to users and liquidity providers [3].
-
-## Pre-Deployment Diligence Checklist for LPs
-
-Before supplying capital to an automated market maker, perform this quantitative assessment:
-
-- [ ] **Benchmark Selection**: Have you established whether your reference baseline is a static hold portfolio or an actively rebalanced portfolio?
-- [ ] **Implied Volatility vs. Fee Yield**: Is the pool's projected annual fee rate higher than $\frac{\sigma^2}{8}$ for the asset pair? If fee APR is 15% but annualized variance $\sigma^2$ is 1.6 (meaning $\sigma^2 / 8 = 20\%$), the position will bleed capital to LVR on expectation.
-- [ ] **Retail-to-Arbitrage Volume Ratio**: What proportion of pool volume originates from DEX aggregators and retail users versus MEV searcher contracts?
-- [ ] **Range Width Calibration**: If deploying concentrated capital, is your interval wide enough to prevent premature deactivation, or do you have automated rebalancing logic in place?
-- [ ] **Alternative Intent Routing**: For directional swaps or rebalancing, would executing an intent-based limit order minimize execution drag compared to LP market making? Review [Range Orders on AMMs: How Liquidity Can Express a Price View](/guides/range-orders-on-amms/).
-
-Impermanent loss is an incomplete baseline. Successful liquidity provision requires measuring net returns against the relentless, path-dependent drag of Loss-Versus-Rebalancing.
-
-## Diagnostic Troubleshooting Decision Tree
-
-Follow this diagnostic framework when evaluating impermanent divergence risk:
-
-1. **Price Divergence Exceeds 30% from Entry Baseline**:
-   - *Diagnostic*: Impermanent loss has reached ~3.2% of total capital (or >25% in concentrated ranges), shifting portfolio inventory heavily into the declining asset.
-   - *Action*: Calculate whether trailing fee accruals exceed divergence loss; if not, determine whether to hold converted inventory or close position to prevent further adverse selection.
-2. **Price Returns to Baseline, but Portfolio Value is Lower Than Initial**:
-   - *Diagnostic*: Structural LVR from directional arbitrage has permanently eroded reserves despite price round-tripping.
-   - *Action*: The pool fee tier is insufficient to compensate for asset volatility; discontinue unhedged LPing on this pair.
-3. **Impermanent Loss Completely Neutralized by Fee Accrual**:
-   - *Diagnostic*: The pool exhibits high organic trading volume with bounded volatility, generating fee yield greater than divergence drag.
-   - *Action*: Continue providing liquidity; consider compounding accrued fees back into active reserves to maximize compound yield.
-
-## Where to Go Next
-
-For the closed-form derivation and a step-by-step worked example, read [The Impermanent Loss Formula](/guides/impermanent-loss-formula/), then run your own position through the [impermanent loss calculator](/tools/impermanent-loss-calculator/). To test whether fee income clears the divergence over a holding period, use [LP Fees vs Impermanent Loss](/guides/lp-fees-vs-impermanent-loss/). For five fully worked positions see [Impermanent Loss Examples](/guides/impermanent-loss-examples/), and for the mitigations and what each costs see [How to Avoid Impermanent Loss](/guides/how-to-avoid-impermanent-loss/).
+For the step-by-step derivation, read [The Impermanent Loss Formula](/guides/impermanent-loss-formula/). To test whether fees clear the gap over a holding period, use [LP Fees vs Impermanent Loss](/guides/lp-fees-vs-impermanent-loss/). For five worked positions, see [Impermanent Loss Examples](/guides/impermanent-loss-examples/), and for what each mitigation costs, [How to Avoid Impermanent Loss](/guides/how-to-avoid-impermanent-loss/).
 
 ## References
 
-
 1. [Uniswap Support: What is Impermanent Loss?](https://support.uniswap.org/hc/en-us/articles/20904453751693-What-is-Impermanent-Loss)
-2. [Uniswap v3 Concentrated Liquidity Documentation](https://developers.uniswap.org/docs/protocols/v3/concepts/concentrated-liquidity)
+2. [Concentrated Liquidity (Uniswap Developer Documentation)](https://developers.uniswap.org/docs/get-started/concepts/liquidity-providers/concentrated-liquidity)
 3. [Automated Market Making and Loss-Versus-Rebalancing (Milionis et al., 2022)](https://arxiv.org/abs/2208.06046)
 4. [Uniswap v3 Core Whitepaper](https://uniswap.org/whitepaper-v3.pdf)
 5. [Risks and Returns of Uniswap V3 Liquidity Providers (Heimbach et al., 2022)](https://arxiv.org/abs/2205.08904)
-6. [Measuring Arbitrage Losses and Profitability of AMM Liquidity (Fritsch, 2024)](https://arxiv.org/abs/2404.05803)
-7. [Trading Fast and Slow: Colocation and Liquidity](https://academic.oup.com/rfs/article/26/1/249/1574519)
-8. [Liquidity Book: concentrated liquidity in bins (Trader Joe Documentation)](https://docs.traderjoexyz.com/concepts/concentrated-liquidity)
+6. [Measuring Arbitrage Losses and Profitability of AMM Liquidity (Fritsch & Canidio, 2024)](https://arxiv.org/abs/2404.05803)
+7. [Trading Fast and Slow: Colocation and Liquidity (Brogaard et al., 2015)](https://doi.org/10.1093/rfs/hhv045)
+8. [Liquidity Book DLMM: Primer (LFJ, formerly Trader Joe, Documentation)](https://docs.lfj.gg/lfj-dex/liquidity/liquidity_book-_primer_6893873)
 9. [Impermanent Loss in Uniswap v3 (Loesch et al., 2021)](https://arxiv.org/abs/2111.09192)
-10. [Trading in the DeFi era: automated market maker (BIS Bulletin No 58, 2022)](https://www.bis.org/publ/bisbull58.htm)
+10. [Miners as intermediaries: extractable value and market manipulation in crypto and DeFi (BIS Bulletin No 58, 2022)](https://www.bis.org/publ/bisbull58.htm)
 
 [1]: https://support.uniswap.org/hc/en-us/articles/20904453751693-What-is-Impermanent-Loss "Uniswap Support: What is Impermanent Loss?"
-[2]: https://developers.uniswap.org/docs/protocols/v3/concepts/concentrated-liquidity "Uniswap v3 Concentrated Liquidity Documentation"
+[2]: https://developers.uniswap.org/docs/get-started/concepts/liquidity-providers/concentrated-liquidity "Concentrated Liquidity (Uniswap Developer Documentation)"
 [3]: https://arxiv.org/abs/2208.06046 "Automated Market Making and Loss-Versus-Rebalancing (Milionis et al., 2022)"
 [4]: https://uniswap.org/whitepaper-v3.pdf "Uniswap v3 Core Whitepaper"
 [5]: https://arxiv.org/abs/2205.08904 "Risks and Returns of Uniswap V3 Liquidity Providers (Heimbach et al., 2022)"
-[6]: https://arxiv.org/abs/2404.05803 "Measuring Arbitrage Losses and Profitability of AMM Liquidity (Fritsch, 2024)"
-[7]: https://academic.oup.com/rfs/article/26/1/249/1574519 "Trading Fast and Slow: Colocation and Liquidity"
-[8]: https://docs.traderjoexyz.com/concepts/concentrated-liquidity "Liquidity Book: concentrated liquidity in bins (Trader Joe Documentation)"
+[6]: https://arxiv.org/abs/2404.05803 "Measuring Arbitrage Losses and Profitability of AMM Liquidity (Fritsch & Canidio, 2024)"
+[7]: https://doi.org/10.1093/rfs/hhv045 "Trading Fast and Slow: Colocation and Liquidity (Brogaard et al., 2015)"
+[8]: https://docs.lfj.gg/lfj-dex/liquidity/liquidity_book-_primer_6893873 "Liquidity Book DLMM: Primer (LFJ, formerly Trader Joe, Documentation)"
 [9]: https://arxiv.org/abs/2111.09192 "Impermanent Loss in Uniswap v3 (Loesch et al., 2021)"
-[10]: https://www.bis.org/publ/bisbull58.htm "Trading in the DeFi era: automated market maker (BIS Bulletin No 58, 2022)"
+[10]: https://www.bis.org/publ/bisbull58.htm "Miners as intermediaries: extractable value and market manipulation in crypto and DeFi (BIS Bulletin No 58, 2022)"

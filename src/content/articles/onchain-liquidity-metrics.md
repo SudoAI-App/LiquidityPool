@@ -1,11 +1,11 @@
 ---
 title: "Onchain Liquidity Metrics: What to Measure Beyond TVL and Volume"
-description: "Quantitative onchain liquidity metrics: executable depth at ±2%, turnover velocity, LVR rates, order flow toxicity, tick density, and JIT dilution."
+description: "The five numbers that decide whether a pool is worth your money, why the two headline figures mislead, and two pools whose dashboards point the wrong way."
 category: "Risk & Research"
 date: 2026-08-24
-lastReviewed: "2026-09-10"
+lastReviewed: "2026-09-12"
 author: "Marcus Vance"
-readTime: "12 min read"
+readTime: "7 min read"
 keywords: "onchain liquidity metrics, executable depth, AMM analytics, LVR rate, order flow toxicity, turnover velocity, JIT dilution factor, TVL verifiability, liquidity pool data, pool analytics DeFi, liquidity pool volume, how to research a DeFi pool"
 featured: false
 faq:
@@ -17,9 +17,11 @@ faq:
     a: "A measure of how much of the supplied liquidity is actually being used to price trades. In tick-based pools it is closer to the share of liquidity that is in range and receiving flow, rather than a lending-style utilisation figure."
 ---
 
-In decentralized finance, nominal scoreboard metrics such as Total Value Locked (TVL) and 24-hour trading volume routinely distort operational reality. Gross TVL is frequently inflated by recursive restaking loops and vast allocations of out-of-range capital sitting idle far away from the active spot tick [1] [2]. Similarly, headline trading volume is often dominated by latency arbitrageurs, cyclic MEV bundles, and flash-loan churn that extracts value from passive reserves rather than reflecting organic market demand [3].
+Every pool dashboard leads with two numbers: how much money is in the pool, and how much traded yesterday. Both are close to useless on their own.
 
-Liquidity is not an aggregate dollar balance. It is the **instantaneous, mechanism-specific capacity of a smart contract to absorb an order of size $Q$ within a defined price impact tolerance $\Delta P$ while withstanding adverse selection** [1] [4]. Institutional market makers and smart order routers discard vanity scoreboards in favor of a quantitative on-chain measurement stack centered on executable depth, turnover velocity, Loss-Versus-Rebalancing (LVR), order flow toxicity, and Just-In-Time (JIT) fee dilution [4] [5].
+The first counts money parked at prices nobody trades at. The second counts bots taking value out of your position as though it were a customer paying you.
+
+This guide gives you the five numbers that actually decide whether a pool is worth your money, and walks through two real-shaped pools where the headline figures point exactly the wrong way.
 
 <figure class="article-figure">
   <img src="/images/guides/onchain-liquidity-metrics.webp" alt="A price curve is measured by active depth bars, transaction flow, and reserve imbalance." width="1600" height="1067" loading="lazy" decoding="async" />
@@ -27,188 +29,156 @@ Liquidity is not an aggregate dollar balance. It is the **instantaneous, mechani
 </figure>
 
 > **Desk Field Note from Marcus Vance:**
-> *"A single metric in DeFi will always mislead you. High TVL can be mercenary capital waiting to withdraw at the end of an incentive cycle; high volume can be wash-trading or toxic MEV bot arbitrage; and high APR is often nominal inflation. Institutional analysts evaluate the trinity: Fee-to-TVL ratio (capital turnover), Toxic Flow ratio (adverse selection), and LVR-adjusted return. If a pool cannot survive on organic fees alone, it is a speculative gamble."*
+> *"Any single number will mislead you. A big pool can be money waiting to leave the day the rewards end. Heavy volume can be bots. A high advertised rate is often just token issuance. Look at three things together: how much of the money actually works, how much of the volume is arbitrage, and what is left after the bleed. If a pool cannot pay its way on real fees, it is a bet, not a position."*
 
-## Deconstructing Gross TVL: The Verifiability Deficit
+## Why the headline number is wrong
 
-Gross Total Value Locked measures the nominal dollar value of all ERC-20 tokens held within a pool's contract address. However, empirical academic research highlights severe structural distortions:
+The money-in-the-pool figure counts everything in the contract. It says nothing about whether any of it is near the price where trading happens [1] [2].
 
-1. **The Verifiability Gap**: A comprehensive 2025 Bank for International Settlements (BIS) study of 939 Ethereum decentralized finance protocols found that over 10.5% of protocols rely on opaque, off-chain data sources to calculate reported TVL [2]. Tokenized assets with thin or non-existent secondary markets are routinely marked at arbitrary oracle valuations.
-2. **The Idle Capital Illusion in Concentrated AMMs**: In Uniswap v3 and v4, capital is allocated across discrete price intervals $[P_l, P_u]$ [1]. If a provider deposits \$10 million across a range of \$4,000 to \$5,000 while ETH trades at \$3,000, that entire \$10 million is **completely inactive**. It provides zero execution depth to incoming swaps and earns zero trading fees [1]. A pool advertising \$100M in TVL may possess less than \$5M of active in-range depth.
-3. **Restaking Multi-Counting**: Liquid Restaking Tokens (LRTs) like eETH and ezETH recursively package underlying staked ETH, which is then deposited into AMMs and lending markets, artificially multiplying apparent DeFi TVL by 2x to 3x without introducing new external capital. To examine how multi-counting inflates protocol aggregates, read our foundation explainer on [TVL Explained: Capital Efficiency and Valuation](/guides/tvl-explained/).
+Three ways it misleads:
 
-## The Quantitative On-Chain Measurement Stack
+- **It can come from somewhere unverifiable.** A 2025 Bank for International Settlements study of 939 protocols found more than one in ten relied on off-chain sources for the figure [2]. Thinly traded assets get marked at whatever price the source says.
+- **Most of it can be asleep.** Deposit \$10M into a range from \$4,000 to \$5,000 while ETH trades at \$3,000, and every cent of it is inert [1]. It fills nothing and earns nothing. A pool advertising \$100M can have under \$5M doing work.
+- **The same money gets counted repeatedly.** Staked ETH becomes a receipt, the receipt gets restaked, the second receipt goes into a pool. One pile of ETH, counted two or three times. See [TVL Explained](/guides/tvl-explained/).
 
-Institutional liquidity analysis replaces vanity totals with five formal quantitative metrics:
+## The five numbers worth reading
 
-```
-[1. Executable Depth (±1%, ±2%)] ---> Quantifies real-time slippage absorption
-[2. Turnover Velocity (V / TVL)]  ---> Quantifies capital utilization efficiency
-[3. LVR Accumulation Rate]         ---> Quantifies adverse selection drag from arbitrage
-[4. Order Flow Toxicity Index]    ---> Quantifies retail fee surplus vs. bot extraction
-[5. JIT Dilution Factor]          ---> Quantifies passive fee cannibalization by searchers
-```
+### One: how much money sits near the price
 
-### 1. Executable Depth ($\mathcal{D}_{\pm 1\%}, \mathcal{D}_{\pm 2\%}$)
-Executable depth measures the precise capital required to push the marginal execution price by a defined percentage (typically $\pm 100$ or $\pm 200$ basis points) away from the current spot price $P_0$.
-
-In a continuous concentrated pool with active liquidity $L$, the amount of quote asset $\Delta y$ required to move spot price upwards to $P_1 = 1.02 \cdot P_0$ is calculated analytically by integrating across active initialized ticks:
+This is the number the headline figure is pretending to be. How much capital is within 1% and 2% of the current price, and therefore able to fill your trade.
 
 $$
-\Delta y = L \cdot \left( \sqrt{1.02 \cdot P_0} - \sqrt{P_0} \right) = L \cdot \sqrt{P_0} \cdot (\sqrt{1.02} - 1) \approx 0.00995 \cdot L \cdot \sqrt{P_0}
+\Delta y \approx 0.00995 \cdot L \cdot \sqrt{P}
 $$
 
-Evaluating pools by executable depth reveals whether depth is durable or hollow. A pool with \$20M in gross TVL but only \$150,000 of depth within $\pm 2\%$ is structurally fragile, exposing large swaps to severe price impact.
+Where:
 
-### 2. Capital Turnover Velocity ($\mathcal{V}$)
-Turnover velocity measures how intensively active capital is utilized:
+- $\Delta y$ is the money needed to push the price up by 2%.
+- $L$ is the liquidity live at the current price.
+- $P$ is the current price.
 
-$$
-\mathcal{V} = \frac{\text{24h Trading Volume}}{\text{Active In-Range TVL}}
-$$
+You rarely compute this by hand. Most pool pages show liquidity by price, so read the chart. A pool with \$20M on the dashboard but \$150,000 within 2% of the price is fragile, and any decent order will find out the hard way.
 
-- **Low Velocity ($\mathcal{V} < 0.2$)**: Indicates stagnant, underutilized capital. Fee yields will be meager relative to inventory exposure.
-- **Moderate Velocity ($0.5 \le \mathcal{V} \le 2.0$)**: Optimal operational regime for major asset pairs, indicating consistent retail flow and tight spreads.
-- **Hyper Velocity ($\mathcal{V} > 10.0$)**: Often signals algorithmic wash trading, flash loan churning, or extreme volatility events where LVR extraction is peaking [3] [4].
+### Two: how hard the money is working
 
-### 3. Loss-Versus-Rebalancing (LVR) Rate
-As established by Milionis, Moallemi, Roughgarden, and Timmer (2022), LVR represents the theoretical lower bound on the cost imposed on passive liquidity providers by latency arbitrageurs [4]:
+Divide yesterday's volume by the money actually near the price.
 
-$$
-\frac{d(\text{LVR})}{dt} = \frac{\sigma^2}{8} \cdot L \cdot \sqrt{P}
-$$
+| What you get | What it means |
+| :--- | :--- |
+| Under 0.2 | The money is idle. Fees will be thin against the risk you carry |
+| 0.2 to 5 | Healthy. Real flow, tight spreads, a normal working pool |
+| 5 to 10 | Very busy. Check who is doing the trading before you celebrate |
+| Over 10 | Something is off. Wash trading, flash-loan churn, or a violent day where arbitrage is eating the pool [3] [4] |
 
-Where $\sigma$ is the instantaneous volatility of the pair. Dividing both sides by the total capital $V_{\text{LP}} = 2 L \sqrt{P}$ yields the annualized percentage hurdle rate:
+### Three: what the pair's volatility costs you
 
-$$
-\text{Annual LVR Rate} \approx \frac{\sigma^2}{8}
-$$
-
-If an LP evaluates a volatile pair with annualized volatility $\sigma = 100\%$ ($\sigma = 1.0$), the LVR hurdle rate is $1.0^2 / 8 = 12.5\%$ annually. Any fee APR below 12.5% guarantees negative net expected return for the provider [4]. To master the economic derivation of this benchmark, explore our deep dive on [Impermanent Loss Explained: Rebalancing, Relative Price, and LP Outcomes](/guides/impermanent-loss-explained/).
-
-### 4. Order Flow Toxicity Index (OFTI)
-Order flow toxicity measures the proportion of trading volume that originates from informed arbitrageurs versus uninformed retail traders [3]:
+Your pool quotes a price that is always one block behind. Faster traders take the difference. That cost is loss-versus-rebalancing, or LVR — the money handed over purely because the quote is late [4].
 
 $$
-\text{OFTI} = \frac{\text{Volume}_{\text{toxic}}}{\text{Volume}_{\text{total}}} = \frac{\text{Volume}_{\text{arbitrage}} + \text{Volume}_{\text{MEV}}}{\text{Volume}_{\text{total}}}
+\text{Annual LVR rate} \approx \frac{\sigma^2}{8}
 $$
 
-Using on-chain transaction labeling:
-- Swaps originating from private solver contracts, DEX aggregators, or retail wallets are marked **Uninformed**.
-- Swaps executed by MEV bot contracts at the top of a block, cross-DEX spatial arbitrage bundles, or multi-hop flash loan transactions are marked **Toxic**.
+Where:
 
-If a pool exhibits an $\text{OFTI} > 0.70$, 70%+ of its volume is extracting value from resting LP quotes. Fees accrued from toxic volume fail to compensate for the inventory erosion incurred.
+- $\sigma$ is the pair's annual volatility, so 100% means $\sigma = 1.0$.
 
-### 5. Just-In-Time (JIT) Dilution Factor ($\mathcal{J}$)
-In concentrated liquidity AMMs, quantitative searchers deploy JIT liquidity to sandwich large trades [5]. The JIT Dilution Factor measures the percentage of total protocol trading fees captured by temporary, intra-block liquidity additions:
+This one is easy and it settles most decisions. A pair that moves 100% a year costs a full-range position about 12.5% annually before any fee, and a band several times that. If the pool's fee yield is less than that, you lose money on average, no matter how the page presents it [4]. It is a better planning number than impermanent loss — the simple gap between a pool position and holding — because it does not depend on where the price happens to finish. See [Impermanent Loss Explained](/guides/impermanent-loss-explained/).
 
-$$
-\mathcal{J} = \frac{\sum \text{Fees}_{\text{JIT}}}{\sum \text{Fees}_{\text{total}}}
-$$
+### Four: who the volume comes from
 
-A high dilution factor ($\mathcal{J} > 0.40$) indicates that passive liquidity providers are systematically stripped of high-value swap revenue while bearing 100% of underlying price risk between blocks [5]. Review our complete guide to [MEV and Liquidity Providers: Sandwich Attacks, JIT Liquidity, and Toxic Flow](/guides/mev-and-liquidity-providers/).
+Split the volume into people and bots [3].
 
-## Metric Comparison: Scoreboard Vanity vs. Institutional Microstructure
+Trades from aggregators, solver networks and ordinary wallets are customers. Their fees are real payment.
 
-| Analytic Dimension | Legacy Vanity Metric | Quantitative Microstructure Metric | Institutional Insight |
-|---|---|---|---|
-| Capital Depth | Gross Contract TVL ($) | Active Depth at $\pm 2\%$ ($\mathcal{D}_{\pm 2\%}$) | Filters out idle, out-of-range capital; reflects real swap capacity [1] |
-| Capital Productivity | 24h Gross Volume ($) | Turnover Velocity ($\mathcal{V} = V / \text{TVL}_{\text{active}}$) | Identifies whether capital is efficiently monetized or sitting stagnant |
-| Adverse Selection | Impermanent Loss (IL %) | Loss-Versus-Rebalancing Rate ($\frac{\sigma^2}{8}$) | Path-dependent cost of latency arbitrage; independent of mean-reversion [4] |
-| Flow Quality | Transaction Count | Order Flow Toxicity Index ($\text{OFTI}$) | Separates fee-generating retail trades from predatory bot arbitrage [3] |
-| Fee Distribution | Displayed Fee APR (%) | Net Fee Yield ($\text{APR}_{\text{net}} = \text{Fees}_{\text{retail}} - \text{LVR}$) | Measures actual economic return net of adverse selection |
+Trades from bot contracts at the top of a block, cross-venue arbitrage bundles, and multi-hop flash loans are the opposite. Each one takes more from your position than it pays in fee.
 
-## Monitoring & Onchain Tooling Stack
+If more than 70% of a pool's volume is the second kind, the fee income is a rebate on a loss, not a return.
 
-To track and audit institutional-grade onchain liquidity metrics:
+### Five: how much fee gets stolen at the last second
 
-- **Protocol & Pool Metric Dashboards**: Audit TVL, 24h volume, fee turnover, and capital retention on [DeFiLlama](https://defillama.com).
-- **Onchain SQL Metric Queries**: Query tick depth, user retention, and toxic volume distribution on [Dune Analytics](https://dune.com).
-- **Financial Statement & Valuation Ratios**: Analyze protocol revenue, Price-to-Fees ratios, and treasury balances on [Token Terminal](https://tokenterminal.com).
+In range-based pools, a bot can see a big trade coming, flood the exact price with liquidity, take almost the whole fee, and pull out in the same block [5].
 
-## Common Metric Traps & Data Analysis Mistakes
+Measure it as the share of total fees captured by liquidity that existed for less than one block. Above about 25%, you are carrying the risk all week and somebody else is collecting on the days that matter [5]. This is MEV — value taken by controlling the order transactions run in. See [MEV and Liquidity Providers](/guides/mev-and-liquidity-providers/).
 
-| Analytical Trap | Data Distortion | Institutional Correction |
-|---|---|---|
-| **Confusing Gross TVL with Market Depth** | Millions of dollars parked in dormant out-of-range ticks inflate TVL without supporting trading depth. | Filter exclusively for active in-range liquidity across $\pm 1\%$ and $\pm 2\%$ bands. |
-| **Treating All Volume as Revenue-Generating** | High 24-hour volume generated by MEV arbitrageurs drains reserves faster than the fee yield it provides. | Decompose volume into informed versus uninformed transactions using mempool analytics. |
-| **Ignoring the Square of Volatility in LVR** | Underestimating adverse selection in high-beta altcoin pools where variance $\sigma^2$ scales quadratically. | Apply the continuous hurdle test: require realized fee yield to exceed $\frac{\sigma^2}{8}$ on a rolling 30-day basis. |
-| **Blindly Trusting Front-End APR Calculators** | Calculators assume static spot prices, zero impermanent loss, zero adverse selection, and perpetual current volume. | Model net yields under historical volatility paths, factoring in gas costs and fee share dilution. |
+## The old numbers against the useful ones
 
-## Practical Scenario: Comparing Two ETH/USDC 0.05% Pools
+| What you want to know | The dashboard number | The one to use instead |
+| :--- | :--- | :--- |
+| How deep is it | Total money in the pool | Money within 2% of the price [1] |
+| Is the money working | Yesterday's volume | Volume divided by money near the price |
+| What does volatility cost | Impermanent loss | Annual variance divided by eight [4] |
+| Who is trading here | Transaction count | Share of volume that is arbitrage [3] |
+| What will I earn | The advertised rate | Real fees from real users, minus the bleed |
 
-Consider two competing AMM deployments hosting ETH/USDC:
+## Two pools that look nothing like their dashboards
 
-```
-Pool Alpha (Legacy Dashboard Leader):
-- Gross TVL: $80,000,000
-- 24h Volume: $60,000,000
-- Headline Fee APR: 27.3%
+Both are ETH against dollars at the same fee tier.
 
-Microstructure Audit:
-- Active Depth (±2%): $1,200,000 (98.5% of capital is parked out-of-range)
-- OFTI: 82% of volume is latency arbitrage
-- Net LP Economic Yield: -4.2% (Fees fail to cover LVR of σ = 75%)
----------------------------------------------------------------------
-Pool Beta (Optimized Concentrated Pool):
-- Gross TVL: $25,000,000
-- 24h Volume: $45,000,000
-- Headline Fee APR: 19.5%
+| | Pool Alpha | Pool Beta |
+| :--- | ---: | ---: |
+| Money in the pool | \$80,000,000 | \$25,000,000 |
+| Volume yesterday | \$60,000,000 | \$27,000,000 |
+| Advertised rate | 27.3% | 19.7% |
+| Of which, token rewards | 13.6 points | None |
+| Money within 2% of price | \$1,200,000 | \$8,500,000 |
+| Share of volume that is arbitrage | 82% | 34% |
+| What you actually end up with | -4.2% | +8.1% |
 
-Microstructure Audit:
-- Active Depth (±2%): $8,500,000 (Dense concentration around spot)
-- OFTI: 34% (Integrated with intent routers and retail aggregators)
-- Net LP Economic Yield: +8.1% (Retail fee surplus substantially exceeds LVR)
-```
+Pool Alpha wins on every number a leaderboard shows. It has three times the money, more than twice the volume, and a rate nearly eight points higher.
 
-Despite boasting less than one-third of Pool Alpha's gross TVL, **Pool Beta delivers 7x greater executable depth and positive net risk-adjusted yield**. Relying on raw TVL leaderboards would steer capital directly into a structural money-losing position. For a systematic framework to conduct this audit, refer to [How to Evaluate a Liquidity Pool: A Five-Part Research Framework](/guides/how-to-evaluate-a-liquidity-pool/).
+It also has 98.5% of its capital parked where nothing trades, and four out of five trades are bots taking a stale quote. After the bleed, it loses money.
 
-## Pre-Allocation Metrics Verification Checklist
+Pool Beta has seven times the usable depth on a third of the capital, and most of its volume comes from routers sending real users. Follow the dashboard and you put money in the one that loses it. See [How to Evaluate a Liquidity Pool](/guides/how-to-evaluate-a-liquidity-pool/).
 
-Before deploying capital or routing institutional swap volume, verify these five data points:
+## What people get wrong about pool data
 
-- [ ] **Active In-Range Capital**: What percentage of the pool's reported TVL resides within $\pm 2\%$ of the instantaneous spot tick?
-- [ ] **Annualized Volatility vs. Fee Yield**: Does the pool's organic retail fee APR exceed the asset pair's LVR hurdle ($\frac{\sigma^2}{8}$) [4]?
-- [ ] **Toxic Flow Proportion**: Does organic uninformed volume constitute at least 50% of total 24-hour volume?
-- [ ] **JIT Historical Incidence**: Over the past 1,000 blocks, what percentage of swaps over \$50,000 were sandwiched by single-block JIT liquidity mints [5]?
-- [ ] **Verifiable On-Chain Data**: Are reserve balances queried directly from immutable smart contract getters rather than unverified third-party indexer APIs [2]?
+| What people assume | What actually happens |
+| :--- | :--- |
+| A bigger pool means a better fill | Money parked in dead ranges counts toward the total and fills nothing |
+| Volume means revenue | Arbitrage volume drains the pool faster than its fee pays you |
+| Doubling volatility doubles the cost | It roughly quadruples it. The number is squared |
+| The rate on the page is what I earn | It assumes the price stops moving, volume continues, and nothing bleeds |
 
-Liquidity analysis is not an exercise in reading marketing scoreboards. Rigorous quantitative market making demands measuring executable depth, accounting for adverse selection, and demanding positive economic yield net of LVR.
+## What to check before you commit
 
-## Diagnostic Troubleshooting Decision Tree
+1. **What share of the pool sits within 2% of the price?** Under 10% and the headline number is fiction.
+2. **Does the real fee yield clear the bleed?** Annual volatility squared, divided by eight [4].
+3. **Is at least half the volume from actual users?** Check where the trades originate.
+4. **How often do big trades get fee-sniped?** Look at swaps over \$50,000 in the last thousand blocks, and check for liquidity that appeared and vanished around them [5].
+5. **Are you reading the chain or a dashboard?** Balances from the contract, not from an indexer you cannot check [2].
 
-Follow this diagnostic decision tree when screening liquidity metrics:
+## Where to watch the numbers
 
-1. **TVL is Rising, but Fee-to-TVL Ratio is Falling**:
-   - *Diagnostic*: Capital is entering the pool faster than trading volume is growing, diluting fee yield per unit of capital.
-   - *Action*: Determine whether protocol incentives justify the dilution; if not, seek alternative pools with higher capital turnover.
-2. **Volume Spikes 500%+ for 24 Hours, then Collapses**:
-   - *Diagnostic*: Temporary market volatility or wash-trading incentive farming has distorted short-term trailing volume figures.
-   - *Action*: Normalize volume metrics over 30-day and 90-day moving averages before committing long-term LP capital.
-3. **Reported APY Diverges Radically Across Analytical Dashboards**:
-   - *Diagnostic*: Different platforms use differing compounding assumptions, trailing time windows, or token pricing feeds.
-   - *Action*: Calculate manual gross fee yield directly from onchain fee growth global variables (feeGrowthGlobal) rather than relying on frontend estimates.
+- **Pool size, volume and fee turnover:** [DeFiLlama](https://defillama.com).
+- **Depth by price and where volume comes from:** [Dune Analytics](https://dune.com).
+- **Protocol revenue and valuation ratios:** [Token Terminal](https://tokenterminal.com).
 
-## Where to Go Next
+## When something looks wrong
 
-Turn these measurements into an expected income figure with the [liquidity pool fee and APR calculator](/tools/liquidity-pool-calculator/), and into a cost figure with [LP Fees vs Impermanent Loss](/guides/lp-fees-vs-impermanent-loss/). For why a quoted rate rarely matches measured data, see [APR vs APY in DeFi](/guides/apr-vs-apy-in-defi/). Depth specifically is treated in [Liquidity Depth and Execution](/guides/liquidity-depth-and-execution/), and token-level exit capacity in [Token Liquidity Analysis](/guides/token-liquidity-analysis/).
+- **The pool is growing but your yield is falling.** Money is arriving faster than volume. Check whether the rewards justify the dilution, and move if they do not.
+- **Volume jumped five-fold for a day, then vanished.** A volatile day or a reward programme distorted the trailing figure. Use a 30-day average before committing.
+- **Two dashboards report very different rates.** They use different windows, compounding assumptions, and price sources. Read the fee growth from the contract yourself.
+
+## Where to go next
+
+Turn these into an income estimate with the [liquidity pool fee and APR calculator](/tools/liquidity-pool-calculator/), and a cost estimate with [LP Fees vs Impermanent Loss](/guides/lp-fees-vs-impermanent-loss/). For why quoted rates rarely match measurement, see [APR vs APY in DeFi](/guides/apr-vs-apy-in-defi/). Depth gets its own treatment in [Liquidity Depth and Execution](/guides/liquidity-depth-and-execution/), and exit capacity in [Token Liquidity Analysis](/guides/token-liquidity-analysis/).
 
 ## References
 
-
-1. [Uniswap v3 Concentrated Liquidity Documentation](https://developers.uniswap.org/docs/protocols/v3/concepts/concentrated-liquidity)
+1. [Concentrated Liquidity (Uniswap Developer Documentation)](https://developers.uniswap.org/docs/get-started/concepts/liquidity-providers/concentrated-liquidity)
 2. [Towards Verifiability of Total Value Locked (TVL) in Decentralized Finance | BIS Working Paper 1268](https://www.bis.org/publ/work1268.htm)
-3. [Measuring Arbitrage Losses and Profitability of AMM Liquidity (Fritsch, 2024)](https://arxiv.org/abs/2404.05803)
+3. [Measuring Arbitrage Losses and Profitability of AMM Liquidity (Fritsch & Canidio, 2024)](https://arxiv.org/abs/2404.05803)
 4. [Automated Market Making and Loss-Versus-Rebalancing (Milionis et al., 2022)](https://arxiv.org/abs/2208.06046)
-5. [Just-In-Time Liquidity: Characteristics and Impact on Concentrated AMMs](https://arxiv.org/abs/2305.19211)
-6. [Trading in the DeFi era: automated market maker (BIS Bulletin No 58, 2022)](https://www.bis.org/publ/bisbull58.htm)
+5. [Just-In-Time Liquidity on the Uniswap Protocol (Wan & Adams, Uniswap Labs, 2022)](https://blog.uniswap.org/jit-liquidity)
+6. [Miners as intermediaries: extractable value and market manipulation in crypto and DeFi (BIS Bulletin No 58, 2022)](https://www.bis.org/publ/bisbull58.htm)
 7. [On the Quality of Cryptocurrency Markets: Centralized versus Decentralized Exchanges (Barbon & Ranaldo, 2021)](https://arxiv.org/abs/2112.07386)
 8. [DeFi risks and the decentralisation illusion (BIS Quarterly Review, December 2021)](https://www.bis.org/publ/qtrpdf/r_qt2112b.htm)
-[1]: https://developers.uniswap.org/docs/protocols/v3/concepts/concentrated-liquidity "Uniswap v3 Concentrated Liquidity Documentation"
+
+[1]: https://developers.uniswap.org/docs/get-started/concepts/liquidity-providers/concentrated-liquidity "Concentrated Liquidity (Uniswap Developer Documentation)"
 [2]: https://www.bis.org/publ/work1268.htm "Towards Verifiability of Total Value Locked (TVL) in Decentralized Finance | BIS Working Paper 1268"
-[3]: https://arxiv.org/abs/2404.05803 "Measuring Arbitrage Losses and Profitability of AMM Liquidity (Fritsch, 2024)"
+[3]: https://arxiv.org/abs/2404.05803 "Measuring Arbitrage Losses and Profitability of AMM Liquidity (Fritsch & Canidio, 2024)"
 [4]: https://arxiv.org/abs/2208.06046 "Automated Market Making and Loss-Versus-Rebalancing (Milionis et al., 2022)"
-[5]: https://arxiv.org/abs/2305.19211 "Just-In-Time Liquidity: Characteristics and Impact on Concentrated AMMs"
-[6]: https://www.bis.org/publ/bisbull58.htm "Trading in the DeFi era: automated market maker (BIS Bulletin No 58, 2022)"
+[5]: https://blog.uniswap.org/jit-liquidity "Just-In-Time Liquidity on the Uniswap Protocol (Wan & Adams, Uniswap Labs, 2022)"
+[6]: https://www.bis.org/publ/bisbull58.htm "Miners as intermediaries: extractable value and market manipulation in crypto and DeFi (BIS Bulletin No 58, 2022)"
 [7]: https://arxiv.org/abs/2112.07386 "On the Quality of Cryptocurrency Markets: Centralized versus Decentralized Exchanges (Barbon & Ranaldo, 2021)"
 [8]: https://www.bis.org/publ/qtrpdf/r_qt2112b.htm "DeFi risks and the decentralisation illusion (BIS Quarterly Review, December 2021)"

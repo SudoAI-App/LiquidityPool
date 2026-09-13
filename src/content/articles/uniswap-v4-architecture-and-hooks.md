@@ -1,11 +1,11 @@
 ---
 title: "Uniswap v4 Architecture: Singleton Design, Hooks, and Flash Accounting"
-description: "A comprehensive technical guide to Uniswap v4: the PoolManager singleton, EIP-1153 transient storage, hook lifecycle bitmasks, ERC-6909 tokens, and security."
+description: "What changed in Uniswap v4 and what it means for you: one contract for every pool, settle-once accounting, custom pool code, and how to read a hook."
 category: "LP Mechanics"
 date: 2026-09-08
-lastReviewed: "2026-09-10"
+lastReviewed: "2026-09-12"
 author: "Dr. Kieran Thorne"
-readTime: "14 min read"
+readTime: "7 min read"
 keywords: "Uniswap v4 architecture, Uniswap v4 hooks, PoolManager.sol, transient storage EIP-1153, flash accounting, ERC-6909, dynamic fee hook, Uniswap v4 hooks liquidity pools, Uniswap v4 singleton, Uniswap v4 flash accounting, Uniswap v4 liquidity pool"
 featured: true
 faq:
@@ -17,236 +17,151 @@ faq:
     a: "Settlement that records net balance changes in transient storage during a transaction and transfers only the net amounts at the end, rather than moving tokens at each hop. It sharply reduces gas on multi-hop and multi-pool operations."
 ---
 
-Uniswap v4 fundamentally restructures decentralized exchange architecture on Ethereum. In prior iterations (Uniswap v2 and v3), every trading pair existed as an independently deployed smart contract factory instance. Multi-hop swaps required token balances to transfer physically across multiple contract boundaries, incurring cumulative ERC-20 transfer overhead, state writes, and gas friction.
+Uniswap v3 gave every trading pair its own contract. Swap through three pools and your tokens were physically moved three times, and you paid for each move.
 
-Uniswap v4 consolidates all liquidity pools into a single central contract: `PoolManager.sol`. Enabled by Ethereum's Cancun-Deneb upgrade and EIP-1153 transient storage opcodes (`TSTORE` and `TLOAD`), this singleton engine implements *flash accounting*. Instead of transferring tokens during intermediate operations, contract balances are updated in temporary memory, requiring token settlement strictly at the conclusion of the overarching transaction lock. Coupled with modular, programmable plugins known as *hooks*, Uniswap v4 transforms the automated market maker from a rigid bonding curve into an extensible execution platform [1] [2] [3].
+Uniswap v4 collapses all of that into one contract. Tokens stop shuffling between pools, and a pool can now run code that somebody wrote specially for it.
+
+Both changes are good for your costs. The second one hands you a new job: working out whether the code attached to a pool is safe to stand behind. This guide covers what changed, why it is cheaper, and exactly what to check before you deposit.
 
 <figure class="article-figure">
-  <img src="/images/guides/uniswap-v4-architecture-and-hooks.webp" alt="Isometric diagram of Uniswap v4 singleton contract vault with pre-swap and post-swap hook plugins and transient storage." width="1600" height="1067" loading="lazy" decoding="async" />
-  <figcaption>The Uniswap v4 singleton architecture centralizes token balances while delegating execution logic to modular hooks. <span class="article-figure__credit">Original editorial illustration by LiquidityPools.app.</span></figcaption>
+  <img src="/images/guides/uniswap-v4-architecture-and-hooks.webp" alt="Six cards describing the single contract, settle-once accounting, hook address permissions, swap and liquidity callbacks, and returns-delta flags." width="1600" height="1067" loading="lazy" decoding="async" />
+  <figcaption>What changed in Uniswap v4, and the hook permissions a depositor should read before trusting a pool. <span class="article-figure__credit">Original editorial illustration by LiquidityPools.app.</span></figcaption>
 </figure>
 
 > **Desk Field Note from Dr. Kieran Thorne:**
-> *"Uniswap v4's hook architecture represents the greatest paradigm shift in AMM security since reentrancy was discovered. Because hooks execute arbitrary code during critical state transitions, a malicious or poorly written hook contract can re-enter the singleton, manipulate internal balances, or freeze pool liquidity entirely. Never deposit capital into a v4 pool without verifying the hook address bitmask permissions and auditing the hook contract's upgradeability."*
+> *"Hooks are the biggest security change in this corner of the market since reentrancy was first understood. Custom code runs at the exact moments money is moving. Badly written, it can freeze the pool or drain balances. Never deposit into a pool without reading what its hook is allowed to do, and whether somebody can change it later."*
 
-## 1. The Singleton Architecture vs. Factory Model
+## One contract instead of thousands
 
-In Uniswap v2 and v3, pool deployment was decentralized across thousands of discrete bytecode instances:
+In the old design, creating a pool meant deploying a whole new contract. That was expensive on its own, and it made every trade that touched more than one pool expensive too [1] [2].
 
-```
-Uniswap v3 (Factory Model):
-[Trader] ---> [SwapRouter] ---> [USDC/ETH Pool Contract] ---> [ETH/WBTC Pool Contract]
-                   |                       |                               |
-                   +-- (Transfer USDC) ----+-- (Transfer ETH) -------------+-- (Transfer WBTC)
-                   Gas: 3 separate contract state updates + 3 distinct ERC-20 transfers
-```
+| | v3, one contract per pool | v4, one contract for all |
+| :--- | :--- | :--- |
+| Creating a pool | Deploy a contract, over 4,000,000 gas | Add an entry to a table, roughly 99% cheaper |
+| A three-hop trade | Three contracts, three token transfers | One contract, one settlement at the end |
+| Moving between fee tiers | Separate approvals, separate calls | Handled inside the same contract |
+| Where your tokens sit | In each individual pool | In the one contract, tracked per pool |
 
-This factory architecture imposed significant architectural penalties:
-1. **Multi-Hop Gas Inefficiency**: Swapping from Token A to Token C via Token B required transferring Token B out of Pool 1 and into Pool 2. Each transfer invoked the ERC-20 `transfer` function, consuming 20,000+ gas per hop [1].
-2. **Pool Creation Overhead**: Initializing a new pool required deploying an entire contract via `CREATE2`, costing upwards of 4,000,000 gas.
-3. **Fragmented Liquidity Management**: Rebalancing capital across different fee tiers or pairs required multiple approvals and independent contract calls [2].
+That single contract is called a singleton — one contract holding every pool rather than one per pair [1]. Creating a pool now costs almost nothing, which matters more than it sounds: it makes long-tail pairs and experimental fee settings economically possible. The pricing rule inside is unchanged, and is covered in [Constant Product Formula](/guides/constant-product-formula/).
 
-```
-Uniswap v4 (Singleton Architecture):
-                                  [Trader]
-                                     |
-                                     v
-                       +---------------------------+
-                       |      PoolManager.sol      |
-                       | (Holds ALL token balances)|
-                       +---------------------------+
-                       | Pool: USDC/ETH            |
-                       | Pool: ETH/WBTC            |
-                       | Pool: DAI/USDC            |
-                       +---------------------------+
-                                     |
-                    (Transient Ledger: Delta Netting)
-                                     |
-                                     v
-                  Single Net Settlement at Transaction End
-```
+## Why settling once makes everything cheaper
 
-In Uniswap v4, `PoolManager.sol` holds the balances of all tokens across all pools. Creating a new pool does not deploy a new contract; it simply initializes a new key entry in the singleton's internal mapping, reducing pool creation costs by up to 99% [1]. To understand how classical constant-product curves operate within this structure, review our foundational guide on the [Constant Product Formula: Math and Mechanics](/guides/constant-product-formula/).
+The second change is how the contract keeps score during a transaction.
 
----
+Writing to permanent storage is one of the most expensive things a contract does. Ethereum added a cheap scratchpad that lasts only as long as one transaction, and Uniswap v4 keeps its running tally there [1] [3].
 
-## 2. Flash Accounting and EIP-1153 Transient Storage
+The pattern is called flash accounting — tally everything in scratch memory, move real tokens once at the end.
 
-The engineering foundation of Uniswap v4 is **flash accounting**, made possible by Ethereum's EIP-1153 transient storage opcodes:
-- `TSTORE`: Writes a 32-byte word to transient memory (cost: 100 gas, compared to 20,000 gas for `SSTORE`).
-- `TLOAD`: Reads a 32-byte word from transient memory (cost: 100 gas, compared to 2,100 gas for `SLOAD`).
+| Step | What happens |
+| :--- | :--- |
+| You open a session | The contract hands you temporary rights to operate |
+| You do whatever you need | Several swaps, mint a position, claim fees, all recorded as running balances |
+| You settle up | You pay in what you owe and take out what you are owed |
+| The session closes | The contract checks every balance nets to exactly zero, or the whole thing reverts |
 
-Transient storage behaves like persistent contract storage, but its state is completely cleared at the end of the transaction execution frame [1] [3].
+That last line is the safety net. If a single unit is unaccounted for, nothing happens at all [1] [4].
 
-### The Lock and Delta Settlement Cycle
-
-When an external caller (a router, swapper, or liquidity provider) interacts with `PoolManager.sol`, execution follows a strict locking pattern:
+In code, the session looks like this:
 
 ```solidity
-// Simplified architectural flow of PoolManager lock execution
 function unlock(bytes calldata data) external returns (bytes memory) {
-    require(!isLocked(), "Already Locked");
-    setLocked(true);
+    if (Lock.isUnlocked()) revert AlreadyUnlocked();
+    Lock.unlock();
 
-    // Callback to caller contract (e.g., Router or Hook)
-    bytes memory result = ILockCallback(msg.sender).unlockCallback(data);
+    bytes memory result =
+        IUnlockCallback(msg.sender).unlockCallback(data);
 
-    // Verify that all currency deltas in transient storage have resolved to zero
-    require(areAllDeltasZero(), "Currency Not Settled");
-    setLocked(false);
+    if (NonzeroDeltaCount.read() != 0) revert CurrencyNotSettled();
+    Lock.lock();
     return result;
 }
 ```
 
-1. **Transaction Entry (`unlock`)**: The caller requests a lock. `PoolManager` grants temporary execution rights to the caller via an `unlockCallback`.
-2. **Internal Operation Churn**: The caller can execute multiple swaps, mint concentrated liquidity, burn positions, and donate fees. Each action updates the caller's transient currency balance delta (`currencyDelta`). No actual ERC-20 tokens move.
-3. **Delta Settlement**: If the caller swapped USDC for ETH, transient storage records a negative delta for USDC (owed to the pool) and a positive delta for ETH (owed to the caller).
-4. **Final Resolution (`take` and `settle`)**:
-   - The caller calls `settle()` and transfers the owed USDC into `PoolManager`.
-   - The caller calls `take()` and withdraws the credited ETH out of `PoolManager`.
-5. **Lock Release Verification**: Before `unlock` terminates, `PoolManager` asserts that every currency delta equals exactly zero. If a single wei remains unpaid or unclaimed, the entire transaction reverts [1] [4].
+This is a simplified version of the real function. The idea is exactly as described: open the session, let your code run, and refuse to close unless every balance nets to zero.
 
-Flash accounting enables complex multi-pool arbitrage and rebalancing loops with near-zero intermediate gas drag. For a detailed breakdown of how concentrated liquidity behaves within these boundaries, see [Concentrated Liquidity Explained: Range, Capital Efficiency, and Risk](/guides/concentrated-liquidity-explained/).
+The practical effect is that complex work in one transaction stopped being expensive. Rebalancing a range, claiming fees, and re-minting used to be three costly steps. Now it is one. See [Concentrated Liquidity Explained](/guides/concentrated-liquidity-explained/).
 
----
+## What a hook can do, and when
 
-## 3. The Hook Lifecycle: 8 Execution Interception Points
+A hook is a contract attached to a pool when the pool is created. The main contract calls it at set moments, and the hook can change what happens [1] [2].
 
-Hooks are external smart contracts associated with a specific pool key at initialization. When pool actions occur, `PoolManager.sol` executes callbacks to the hook contract, allowing custom logic to modify transaction parameters, fees, or balances [1] [2].
+There are eight of these moments, in four pairs:
 
-```
-                     UNISWAP v4 HOOK EXECUTION LIFECYCLE
-                     
-  [Pool Initialization]             [Swap Execution]             [Liquidity Modification]
-           |                                |                               |
-           v                                v                               v
-    beforeInitialize                   beforeSwap                  beforeAddLiquidity
-           |                                |                               |
-     (Initialize)                        (Execute)                   beforeRemoveLiquidity
-           |                                |                               |
-           v                                v                               v
-    afterInitialize                    afterSwap                   afterAddLiquidity
-                                                                            |
-                                                                   afterRemoveLiquidity
-```
+- **When a pool is created.** The hook can set up a fee rule, restrict who may use the pool, or check an authorisation.
+- **When liquidity goes in.** It can check credentials, take a management fee, or lend idle reserves out.
+- **When liquidity comes out.** It can require a minimum holding time, which kills the just-in-time fee-stealing trick, or charge an exit fee.
+- **Around every swap.** This is the important pair. Before a swap it can set the fee from current volatility, or replace the pricing rule entirely. After a swap it can capture arbitrage profit, fill a resting order, or update an internal price record [1] [5].
 
-### The Hook Callback Inventory:
+There is a ninth and tenth around donations, which let a protocol push rewards straight to whoever is live at the current price without moving it.
 
-1. **`beforeInitialize` / `afterInitialize`**: Executed when a pool key is first registered. Allows the hook to configure initial dynamic fee curves, restrict pool parameters, or verify authorization.
-2. **`beforeAddLiquidity` / `afterAddLiquidity`**: Triggered when an LP deposits capital. Hooks can verify KYC credentials, collect custom management fees, or rebalance collateral into external lending markets.
-3. **`beforeRemoveLiquidity` / `afterRemoveLiquidity`**: Triggered during capital withdrawal. Hooks can enforce minimum holding cooldowns (mitigating JIT liquidity) or compute exit taxes.
-4. **`beforeSwap` / `afterSwap`**: The core execution interception points. 
-   - `beforeSwap` can inspect swapper address, dynamically calculate swap fees based on volatility, or override swap execution entirely via custom curves.
-   - `afterSwap` can capture MEV profits, trigger automated in-pool limit order fills, or update internal TWAP accumulators [1] [5].
-5. **`beforeDonate` / `afterDonate`**: Allows protocols to inject native rewards directly to active in-range liquidity providers without changing tick prices.
+## How you can tell what a hook is allowed to do
 
----
+This part is unusually elegant, and it is the single most useful thing to know as a depositor.
 
-## 4. Hook Address Bitmasks and Permission Flags
+A hook does not get to say which callbacks it uses. Its permissions are written into the last few bits of its own contract address [1]. Developers have to search for a deployment address whose final bits match exactly the permissions they want.
 
-To prevent unauthorized or unexpected contract calls, Uniswap v4 implements **deterministic address bitmasking** [1]. 
+So the address is the permission list. If a hook tries to run code before a swap but its address does not carry that bit, the main contract rejects it on the spot.
 
-A hook contract cannot simply declare which callbacks it implements. Instead, the permissions of a hook contract are encoded directly into the leading bits of its deployed Ethereum contract address. During contract initialization, `PoolManager.sol` checks the hook address against the required permission bitmask:
+| Permission | What it lets the hook do |
+| :--- | :--- |
+| Before or after initialize | Configure or restrict the pool at creation |
+| Before or after add liquidity | Gate deposits, charge a fee, move reserves |
+| Before or after remove liquidity | Enforce a holding period, charge an exit fee |
+| Before or after swap | Set fees, replace pricing, capture value |
+| Before or after donate | Push rewards to live liquidity |
+| The four "returns delta" flags | Change the actual amounts settled, not just the parameters |
 
-```
-Hook Address Permission Bitmask Schema (14 Flags):
-0x[ Flag Bits (14 bits) ][ Mining Salt / Address Bytes (146 bits) ]
+Those last four deserve attention. A hook with a returns-delta flag can alter the money that changes hands, not just the rules around it. Treat one as a much higher trust requirement than a hook without.
 
-Bit 0:  BEFORE_INITIALIZE_FLAG
-Bit 1:  AFTER_INITIALIZE_FLAG
-Bit 2:  BEFORE_ADD_LIQUIDITY_FLAG
-Bit 3:  AFTER_ADD_LIQUIDITY_FLAG
-Bit 4:  BEFORE_REMOVE_LIQUIDITY_FLAG
-Bit 5:  AFTER_REMOVE_LIQUIDITY_FLAG
-Bit 6:  BEFORE_SWAP_FLAG
-Bit 7:  AFTER_SWAP_FLAG
-Bit 8:  BEFORE_DONATE_FLAG
-Bit 9:  AFTER_DONATE_FLAG
-Bit 10: BEFORE_SWAP_RETURNS_DELTA_FLAG
-Bit 11: AFTER_SWAP_RETURNS_DELTA_FLAG
-Bit 12: AFTER_ADD_LIQUIDITY_RETURNS_DELTA_FLAG
-Bit 13: AFTER_REMOVE_LIQUIDITY_RETURNS_DELTA_FLAG
-```
+## Balances that never leave the contract
 
-Developers must mine salt values using tools like `CREATE2` to deploy their hook bytecode to an address that matches their exact declared permissions. If a hook attempts to execute `beforeSwap` but its address does not possess the `BEFORE_SWAP_FLAG` bit set, `PoolManager` immediately reverts [1]. This mathematical constraint provides transparency: any LP or router can immediately inspect a hook contract's address to determine its operational capabilities.
+Your liquidity position itself is still normally an NFT, issued by Uniswap's position manager, much as in v3 [1] [2].
 
----
+What v4 adds is a way to keep token balances inside the main contract, recorded under a light multi-token standard [6]. You can take proceeds as an internal credit rather than a real transfer, then spend that credit on your next action without any token moving at all.
 
-## 5. Native ERC-6909 Singleton Accounting
+For anyone trading or rebalancing frequently, this is the difference between viable and not. The trade-off is that the credit exists only inside that one contract. If you are holding size, settle it out to real tokens periodically. See [Liquidity Pool Tokens](/guides/liquidity-pool-tokens/).
 
-In Uniswap v2 and v3, liquidity positions and claimable balances were represented through discrete token standards: v2 utilized standard ERC-20 LP tokens, while v3 utilized ERC-721 non-fungible tokens (NFTs) to track custom price bounds [1] [2].
+## What people get wrong about hooks
 
-Uniswap v4 introduces native support for **ERC-6909 Multi-Token Standard** directly inside `PoolManager.sol` [6]. 
+| What people assume | What actually happens |
+| :--- | :--- |
+| A verified contract is a safe one | Verified means you can read it, not that it is harmless. A hook can block your withdrawal or take your fees |
+| Hooks stop bots taking value | They can blunt the worst tricks. They cannot change who decides the order of transactions in a block |
+| A fee that adapts always helps me | Set too high, routers send the volume elsewhere and you earn less than a fixed tier |
+| An internal credit is just like a token | It exists only inside the one contract. It has no independent backing if that contract fails |
 
-ERC-6909 is a minimalist, gas-optimized alternative to ERC-1155. Instead of transferring external ERC-20 tokens in and out of the singleton, users and hooks can maintain balance credits inside `PoolManager`:
-- When withdrawing liquidity or collecting fees, an LP can mint an ERC-6909 claim instead of requesting an ERC-20 transfer.
-- When executing subsequent swaps, the user spends their ERC-6909 credit with zero ERC-20 transfer overhead.
-- This creates an ultra-fast internal balance economy for active market makers and automated rebalancers.
+## What to check before you deposit
 
-Learn more about how token representations govern claims across AMMs in our guide to [Liquidity Pool Tokens: ERC-20, NFTs, and Accounting Claims](/guides/liquidity-pool-tokens/).
+1. **Decode the hook address.** It tells you exactly which permissions the hook holds, with no trust required.
+2. **Look for the returns-delta flags.** A hook that can change settled amounts needs far more scrutiny than one that cannot.
+3. **Find out if it can be replaced.** Immutable, or behind an upgradeable proxy? If upgradeable, is there a delay before a change takes effect?
+4. **Ask whether it protects against fee sniping.** Does it require a minimum holding time, or charge on a fast exit [5]?
+5. **Check the fee rule covers the bleed.** If the fee adapts, does it rise enough to cover loss-versus-rebalancing — what arbitrage takes because the pool quotes a block late? On a pair moving 80% a year that is roughly 8% of a full-range position, and several times that for a band, so a 0.05% tier on thin volume will not clear it [7].
+6. **Check what the hook adds to swap gas.** Traders pay it, and routers steer volume away from pools that cost more to trade through, which reaches your fee income.
 
----
+## Where to watch the numbers
 
-## 6. Common Hook Misconceptions & Smart Contract Audit Pitfalls
+- **Replaying a transaction through a hook:** [Tenderly](https://tenderly.co) shows exactly where it went wrong.
+- **Checking a hook's permissions and behaviour:** [Foundry](https://getfoundry.sh) for tests and static analysis.
+- **Live pools and their hook settings:** the official Uniswap v4 interface and developer tooling.
 
-| Hook Misconception | Smart Contract & Execution Reality | Institutional Risk Mitigation |
-|---|---|---|
-| **"Any verified hook on Etherscan is secure."** | A hook can execute arbitrary logic in `beforeSwap` or `beforeRemoveLiquidity`, including draining fee deltas or restricting withdrawals. | Audit whether the hook is an immutable deployment or behind an upgradeable proxy with a centralized multisig key. |
-| **"Hooks can prevent all MEV."** | Hooks can mitigate atomic JIT liquidity and dynamic LVR, but cannot eliminate block builder transaction ordering dominance or cross-DEX arbitrage. | Combine hook protections with private RPC relays (Flashbots Protect, MEV-Blocker) when routing orders. |
-| **"Dynamic fee hooks always benefit LPs."** | If a dynamic fee algorithm is calibrated improperly, raising fees excessively drives organic aggregator flow to competing v3 or Curve pools. | Verify that hook fee scaling formulas utilize rolling volatility rather than lagging single-block volume spikes. |
-| **"ERC-6909 tokens carry identical risks to ERC-20."** | ERC-6909 credits exist solely within `PoolManager.sol`. If `PoolManager` suffers a catastrophic vulnerability, internal credits have no independent external backing. | Periodically settle internal ERC-6909 claims into native canonical assets on high-value positions. |
+## When something goes wrong
 
----
+- **Your swap reverts inside the hook.** The hook's own code stopped it. Replay the transaction to see the reason, and check whether the pool has been paused.
+- **You get a currency-not-settled error.** Something in your transaction did not balance. Confirm the exact amount owed is paid in, or settled as an internal credit.
+- **Your hook fails the permission check at creation.** The deployed address does not carry the bits for the callbacks it declares. Re-mine the deployment salt until it does.
 
-## 7. Institutional Pre-Flight Checklist for Uniswap v4 Pools
+## Where to go next
 
-Before allocating capital to a Uniswap v4 pool deployment, institutional risk managers execute this technical checklist:
-
-- [ ] **Hook Address Bitmask Inspection**: Have you decoded the hook contract address prefix to confirm that only declared permissions are active?
-- [ ] **Transient Delta Audit**: Does the hook contract implement `take` or `settle` with custom delta modifications (`BEFORE_SWAP_RETURNS_DELTA`)? Ensure delta accounting cannot leave an unresolved balance deficit.
-- [ ] **Proxy and Timelock Verification**: Is the hook contract immutable, or does it utilize an upgradeable proxy (UUPS/Transparent)? If upgradeable, is there a mandatory 48-hour timelock?
-- [ ] **Anti-JIT Mechanics**: Does the hook enforce a minimum liquidity holding duration or tick exit fee to neutralize atomic Just-In-Time sandwich attacks [5]?
-- [ ] **LVR Hurdle Validation**: If the pool implements dynamic fees, does the fee expansion curve adequately compensate for the pair's expected Loss-Versus-Rebalancing ($\frac{\sigma^2}{8}$) during market shocks [7]?
-- [ ] **Gas Amortization**: Does your position size amortize the hook callback compute overhead relative to standard v3 execution?
-
-Uniswap v4 transforms automated market makers into programmable financial infrastructure. By understanding the interaction between singleton flash accounting, deterministic hook bitmasks, and transient storage, liquidity providers can harness institutional flexibility while rigorously mitigating smart contract attack surfaces.
-
----
-
-## Monitoring & Onchain Tooling Stack
-
-To inspect Uniswap v4 singleton pools, hook execution, and transient storage:
-
-- **Hook Contract Simulation & Gas Tracing**: Simulate hook callbacks and trace EIP-1153 transient storage gas execution using [Tenderly](https://tenderly.co).
-- **Uniswap v4 Pool Explorer & Analytics**: Inspect active singleton pool deployments, hook configurations, and fee settings on official Uniswap v4 developer tooling.
-- **Hook Security & Bitmask Verification**: Audit hook permission flags and address bitmasks using [Foundry](https://getfoundry.sh) test suites and static analysis tools.
-
-## Diagnostic Troubleshooting Decision Tree
-
-Follow this diagnostic decision tree when building or interacting with Uniswap v4 pools:
-
-1. **Transaction Reverts with Hook Execution Failure**:
-   - *Diagnostic*: A custom hook contract reverted during beforeSwap or afterSwap, blocking swap execution.
-   - *Action*: Simulate the transaction in Tenderly to inspect the exact revert reason in the hook frame; check if the hook has paused execution or reached an unhandled edge case.
-2. **Transient Accounting Fails to Settle ('CurrencyNotSettled')**:
-   - *Diagnostic*: Net token deltas recorded in transient storage were not fully settled to zero before the unlock context closed.
-   - *Action*: Ensure the calling contract transfers the exact required net token balance to PoolManager.sol or settles claims via ERC-6909 tokens.
-3. **Hook Address Bitmask Verification Fails at Initialization**:
-   - *Diagnostic*: The deployed hook contract address does not possess the exact leading bitmask matching its declared permission flags.
-   - *Action*: Re-mine the hook deployment salt using CREATE2 (via Foundry) until the deployed contract address matches the exact bitwise permissions required by PoolManager.
-
-## Where to Go Next
-
-For the migration decision stated as a comparison rather than an architecture tour, see [Uniswap v3 vs v4 Liquidity](/guides/uniswap-v3-vs-v4/). For what a dynamic-fee hook is actually trying to price, see [Loss-Versus-Rebalancing](/guides/loss-versus-rebalancing/). The fee mechanism hooks are most often used for is examined in [Dynamic Fees in AMMs](/guides/dynamic-fees-in-amms/).
+For the migration decision rather than the architecture, see [Uniswap v3 vs v4](/guides/uniswap-v3-vs-v4/). For what an adaptive fee is trying to price, see [Loss-Versus-Rebalancing](/guides/loss-versus-rebalancing/) and [Dynamic Fees in AMMs](/guides/dynamic-fees-in-amms/).
 
 ## References
-
 
 1. [Uniswap v4 Core Whitepaper (Adams et al., 2024)](https://uniswap.org/whitepaper-v4.pdf)
 2. [Uniswap v4 Developer Documentation: Hooks Architecture](https://docs.uniswap.org/contracts/v4/concepts/hooks)
 3. [EIP-1153: Transient Storage Opcodes](https://eips.ethereum.org/EIPS/eip-1153)
 4. [Uniswap v3 Core Technical Whitepaper](https://uniswap.org/whitepaper-v3.pdf)
-5. [Just-In-Time Liquidity: Characteristics and Impact on Concentrated AMMs](https://arxiv.org/abs/2305.19211)
+5. [Just-In-Time Liquidity on the Uniswap Protocol (Wan & Adams, Uniswap Labs, 2022)](https://blog.uniswap.org/jit-liquidity)
 6. [EIP-6909: Minimal Multi-Token Interface](https://eips.ethereum.org/EIPS/eip-6909)
 7. [Automated Market Making and Loss-Versus-Rebalancing (Milionis et al., 2022)](https://arxiv.org/abs/2208.06046)
 8. [SoK: Decentralized Finance (DeFi) Attacks (Zhou et al., 2022)](https://arxiv.org/abs/2208.13035)
@@ -255,7 +170,7 @@ For the migration decision stated as a comparison rather than an architecture to
 [2]: https://docs.uniswap.org/contracts/v4/concepts/hooks "Uniswap v4 Developer Documentation: Hooks Architecture"
 [3]: https://eips.ethereum.org/EIPS/eip-1153 "EIP-1153: Transient Storage Opcodes"
 [4]: https://uniswap.org/whitepaper-v3.pdf "Uniswap v3 Core Technical Whitepaper"
-[5]: https://arxiv.org/abs/2305.19211 "Just-In-Time Liquidity: Characteristics and Impact on Concentrated AMMs"
+[5]: https://blog.uniswap.org/jit-liquidity "Just-In-Time Liquidity on the Uniswap Protocol (Wan & Adams, Uniswap Labs, 2022)"
 [6]: https://eips.ethereum.org/EIPS/eip-6909 "EIP-6909: Minimal Multi-Token Interface"
 [7]: https://arxiv.org/abs/2208.06046 "Automated Market Making and Loss-Versus-Rebalancing (Milionis et al., 2022)"
 [8]: https://arxiv.org/abs/2208.13035 "SoK: Decentralized Finance (DeFi) Attacks (Zhou et al., 2022)"

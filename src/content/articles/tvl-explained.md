@@ -1,11 +1,11 @@
 ---
 title: "TVL Explained: What Total Value Locked Can—and Cannot—Tell You"
-description: "TVL is a valuation snapshot, not a safety score. Deconstruct restaking loops, concentrated depth within ±2%, double-counting, and oracle pricing inputs."
+description: "How one dollar becomes seven dollars of headline deposits, why a big pool can fill worse than a small one, and what to read instead."
 category: "Foundations"
 date: 2026-09-04
-lastReviewed: "2026-09-10"
+lastReviewed: "2026-09-12"
 author: "Aria Chen"
-readTime: "11 min read"
+readTime: "7 min read"
 keywords: "TVL explained, total value locked, DeFi TVL, liquidity pool TVL, restaking leverage, executable depth, TVL liquidity pool, liquidity pool depth, pool utilization DeFi, liquidity depth crypto"
 featured: false
 faq:
@@ -19,9 +19,11 @@ faq:
     a: "Within the pool, yes: price is a function of the reserve ratio, so every trade moves it. Across the market, a deep pool anchors price by making arbitrage cheap, while a thin pool can be moved sharply by a single order."
 ---
 
-Total Value Locked (TVL) is a point-in-time balance sheet valuation, not a solvency score, execution guarantee, or safety rating. In decentralized finance, headline TVL aggregates gross contract balances across disparate tokens, routinely obscuring critical market microstructure realities: idle out-of-range capital in concentrated AMMs, recursive restaking multi-counting loops, and oracle pricing distortions [1] [2].
+Total value locked is the number every dashboard leads with, and it is the one that misleads people most.
 
-Evaluating capital across decentralized protocols requires deconstructing how TVL is measured: which specific contracts and tokens are counted, how restaking leverage inflates aggregates, which oracles determine asset prices, and how much of that capital is genuinely executable within $\pm 2\%$ of the instantaneous market spot price [1] [2] [3].
+It tells you what is sitting in a contract. It does not tell you whether any of that money can fill your trade, whether it is the same dollar counted five times, or whether you could get it out in a hurry.
+
+This guide shows you how the number is built, three specific ways it lies, and what to read instead.
 
 <figure class="article-figure">
   <img src="/images/guides/tvl-explained.webp" alt="A large pool reservoir and a narrow active channel distinguish total value from usable depth." width="1600" height="1067" loading="lazy" decoding="async" />
@@ -29,170 +31,154 @@ Evaluating capital across decentralized protocols requires deconstructing how TV
 </figure>
 
 > **Desk Field Note from Aria Chen:**
-> *"Total Value Locked (TVL) is the most easily manipulated vanity metric in DeFi. Through recursive borrowing in money markets and double-counting across wrapper tokens (e.g., ETH $\to$ stETH $\to$ eETH $\to$ pool), a single dollar of real capital can easily be reported as \$4 to \$6 of TVL. When evaluating protocol solvency and liquidity depth, always look at non-borrowed native liquidity and measure 24-hour fee generation relative to real TVL."*
+> *"This is the easiest number in the industry to inflate. Through recursive borrowing and layers of wrapper tokens, one real dollar can be reported several times over. When you evaluate a pool, look at liquidity that is not borrowed from somewhere else, and at fees generated against that real figure."*
 
-## TVL Is a Valuation Snapshot, Not a Score
+## It is a valuation, not a score
 
-TVL represents the aggregate dollar value of cryptoassets held in smart contracts associated with a protocol. However, there is no universally enforced accounting standard. A Bank for International Settlements (BIS) study analyzing 939 Ethereum protocols found that 10.5% relied on off‑chain data sources. In a 400‑protocol detailed case study, only 46.5% published TVL figures that matched the BIS study’s standardized on‑chain estimate [1]. That discrepancy demonstrates two realities:
+The number sums up what a protocol's contracts hold, priced at whatever the dashboard thinks those tokens are worth. There is no agreed accounting standard for this.
 
-- TVL is sensitive to what a dashboard creator chooses to include as “deposited” and how those balances are priced.
-- The same protocol can report vastly divergent TVL figures depending on the aggregator, oracle feeds, and netting rules applied [1].
+A Bank for International Settlements study of 939 Ethereum protocols found that more than one in ten relied on off-chain data to produce the figure. In a detailed look at 400 of them, fewer than half matched a standardised on-chain estimate [1].
 
-Consequently, TVL should never be treated as a proxy for protocol safety, financial solvency, code quality, or actual trading volume. It is a point-in-time balance sheet estimate. When understood mechanically, it provides useful valuation context; when accepted uncritically, it blinds investors to systemic fragility.
+Two things follow. The number depends entirely on what the dashboard chose to count and how it priced it. And the same protocol can show wildly different figures depending on which site you look at [1].
 
-## How TVL Is Produced: Balances, Prices, and Accounting Filters
+So it is not a measure of safety, solvency, code quality, or trading activity. It is a snapshot of a balance sheet, and it is only useful if you know how it was assembled.
 
-Mechanically, TVL aggregates contract balances, applies price feeds, and sums the result across pools:
+## How the number is built
 
 $$
-\text{TVL} = \sum_{i=1}^{n} B_i \times P_i
+\text{TVL} = \sum_{i} B_i \times P_i
 $$
 
-Where $B_i$ represents the balance of token $i$ locked in the protocol's contracts, and $P_i$ is its price. Three structural assumptions dictate the calculated output:
+Where:
 
-1. **Inclusion Boundaries**: Which smart contracts count toward the protocol? For example, in Uniswap v4, should uninitialized hook contracts or out-of-band lending positions be credited to pool TVL [2]?
-2. **Pricing Oracles**: What feeds determine $P_i$? Are prices derived from decentralized spot pools, time-weighted average prices (TWAP), or off-chain API aggregators? Using internal illiquid AMM pool midpoints can allow malicious actors to manipulate TVL via flash loans [1].
-3. **Netting vs. Gross Counting**: Are derivative claims netted against underlying collateral, or are both counted simultaneously [1] [3]?
+- $B_i$ is how much of token $i$ the contracts hold.
+- $P_i$ is whatever price the dashboard uses for it.
 
-```
-┌────────────────────────────────────────────────────────────────────────┐
-│               The Restaking Multi-Counting TVL Illusion                │
-├────────────────────────────────────────────────────────────────────────┤
-│ 1. User deposits 10 ETH into Lido          → Lido TVL:        +$35,000 │
-│ 2. Lido mints 10 stETH                     → (Underlying ETH held)     │
-│ 3. User deposits stETH into Ether.fi       → Ether.fi TVL:    +$35,000 │
-│ 4. Ether.fi mints 10 eETH & restakes       → EigenLayer TVL:  +$35,000 │
-│ 5. User supplies eETH/ETH to a DEX pool    → DEX AMM TVL:     +$70,000 │
-│ 6. User deposits LP token into lending     → Money Mkt TVL:   +$70,000 │
-├────────────────────────────────────────────────────────────────────────┤
-│ Aggregate Dashboard TVL Displayed:                            $245,000 │
-│ Actual Underlying Base Economic Collateral:                    $35,000 │
-│ Net Multi-Counting Leverage Factor:                               7.0x │
-└────────────────────────────────────────────────────────────────────────┘
-```
+Simple enough. Three choices decide the answer, and none of them is standardised:
 
-This multi-counting cascade explains how ecosystem TVL can explode while net capital inflows remain modest. If a depeg or smart-contract exploit occurs at the foundation of the stack, the entire \$245,000 TVL unwinds from a single \$35,000 collateral base [1] [3].
+- **What counts.** Which contracts belong to the protocol? Treasury, staking, hooks? Different sites answer differently [2].
+- **Where the prices come from.** A deep market, a time-weighted average, or an illiquid pool that somebody could manipulate with a borrowed position [1]?
+- **Whether claims get netted.** If a token represents a claim on something else, do both get counted [1] [3]?
 
-For an analysis of how LP claims are accounted for across these layers, explore [Liquidity Pool Tokens Explained: What an LP Position Represents](/guides/liquidity-pool-tokens/).
+## Lie one: the same dollar, counted five times
 
-## Scenario 1: Two Uniswap Pools, Identical TVL—Where Do You Route?
+This is the big one, and it is worth following step by step.
 
-Suppose you need to swap 100 ETH into USDC and compare two pools, each displaying \$25,000,000 in headline TVL. Relying on TVL alone is a costly error. Instead, interrogate the tick distribution:
+| Step | What happens | What gets added |
+| :--- | :--- | ---: |
+| 1 | You deposit 10 ETH with a staking service | +\$35,000 |
+| 2 | You get a staked-ETH token back | Nothing new held |
+| 3 | You deposit that token with a restaking service | +\$35,000 |
+| 4 | It delegates the stake to a restaking network, which counts it too | +\$35,000 |
+| 5 | You put the restaked token into a vault that supplies a pool | +\$35,000 |
+| 6 | You post the vault share as collateral in a lending market | +\$35,000 |
+| | **What the dashboards show** | **\$175,000** |
+| | **What actually exists** | **\$35,000** |
 
-- **Active Tick Depth within ±1%**: In Uniswap v3 and v4, liquidity is allocated across discrete tick intervals $[P_{\text{lower}}, P_{\text{upper}}]$. In Pool 1, 80% of the TVL consists of wide-range passive capital or historical positions left out-of-range above current prices. Only \$500,000 of executable depth sits near the spot price. In Pool 2, professional market makers have concentrated \$12,000,000 within a tight ±1.5% band [2].
-- **Realized Price Impact**: The 100 ETH swap through Pool 1 consumes all active depth within the tick, cascading into thin outer ticks and inflicting 2.5% price impact. The identical swap through Pool 2 experiences less than 0.05% price impact because depth is concentrated where the trade clears [2].
-- **Fee Tier Optimization**: A 0.05% fee pool with high concentration can deliver significantly superior net execution compared to a 0.30% fee pool with dispersed liquidity, even if the latter reports larger total TVL [2].
+One deposit of \$35,000 becomes \$175,000 of reported deposits [1] [3]. Nothing dishonest happened at any step. Each protocol genuinely holds what it says it holds.
 
-Headline TVL measures total balance; executable depth measures the capital that actually absorbs your order. Always inspect active tick depth.
+But there is only one pile of ETH at the bottom. If it breaks, all five layers unwind at once. See [Liquidity Pool Tokens Explained](/guides/liquidity-pool-tokens/).
 
-## Scenario 2: Curve Lending Pools and Wrapped Collateral Dependencies
+## Lie two: a big pool that cannot fill your trade
 
-Curve separates plain pools (which hold base assets directly) from lending pools and metapools (where pooled reserves are lent to external money markets like Aave or Compound to earn collateral interest) [3].
+You want to swap 100 ETH. Two pools, both showing \$25,000,000.
 
-Consider a lending pool showing \$50,000,000 in TVL:
-- **Custody and Re-hypothecation**: The pool contract does not hold physical USDC or DAI; it holds interest-bearing receipt tokens (aTokens or cTokens). The physical collateral has been borrowed by third parties on an external lending market [3].
-- **Liquidity Lockup & Bank Run Risk**: If the external lending protocol experiences high utilization or bad debt, withdrawals from the lending market freeze. Consequently, LPs cannot burn their Curve LP tokens to retrieve base assets, even though the Curve pool dashboard displays millions in TVL [3].
-- **Smart-Contract Attack Surface**: The pool's security is now conjoined to both the AMM contract and the external lending market's contract suite.
+| | Pool 1 | Pool 2 |
+| :--- | ---: | ---: |
+| Headline figure | \$25,000,000 | \$25,000,000 |
+| Money working within 1.5% of the price | \$500,000 | \$12,000,000 |
+| What your trade costs | 2.5% | under 0.05% |
 
-Two equal TVL numbers can represent completely different liquidity risks: one holds unencumbered base coins; the other holds re-hypothecated claims subject to external protocol utilization [3].
+Pool 1 has 98% of its money in wide or abandoned ranges away from the market [2]. Pool 2 has professionals holding depth right where you need it.
 
-## Scenario 3: Token Rally vs. Genuine Capital Inflow
+Same headline, fifty times the cost. And a 0.05% fee pool with concentrated depth routinely beats a 0.30% pool with scattered depth on total cost, even though the second looks bigger [2].
 
-A protocol’s dashboard reports TVL up 40% over two weeks. Is this real adoption? Treat TVL like an investment fund's assets under management:
+## Lie three: the money is not actually there
 
-- **Decompose Price Appreciation from Net Inflows**: If ETH and governance tokens rallied 40% across the same period, the protocol’s token balances ($B_i$) did not increase by a single unit. Zero new users deposited capital. The TVL increase was pure asset revaluation [1].
-- **Token Emission Inflation**: Protocols distributing native governance tokens as liquidity mining rewards often count unvested or locked reward tokens in their TVL metrics. If the governance token experiences low liquidity, dashboard TVL is heavily distorted by mark-to-market valuations that could never be liquidated without crashing the price [1].
+Some pools do not hold the tokens they appear to hold. Curve's lending pools hold interest-bearing receipts, because the actual assets have been lent out to an external market [3].
 
-## Scenario 4: “High TVL” Does Not Protect Liquidity Providers from Loss
+A pool showing \$50,000,000 might hold:
 
-Liquidity providers often assume that supplying a high-TVL pool protects them from financial loss. Headline capital offers zero defense against structural market mechanics:
+- **Receipt tokens, not the real thing.** The actual dollars have been borrowed by somebody else.
+- **A withdrawal path that can close.** If the external lending market runs hot or takes bad debt, withdrawals freeze. You cannot get your assets out, even though the dashboard still shows millions.
+- **Two contracts' worth of risk.** The pool contract and the lending market's contracts both have to work.
 
-- **Adverse Selection and LVR**: Arbitrageurs continuously exploit stale AMM quotes when external centralized exchange prices move. Large TVL pools attract intense arbitrage flow, continuously draining value from passive LPs (Loss-Versus-Rebalancing, or LVR) [4].
-- **Impermanent Loss**: Sustained price divergence between paired assets forces the AMM to sell appreciating tokens and accumulate depreciating tokens, resulting in divergence loss regardless of pool size [4].
-- **MEV Churn**: High-volume, high-TVL pools are prime targets for Just-In-Time (JIT) liquidity searchers who extract fee revenue without maintaining permanent depth [4].
+Two identical figures can mean completely different things. One is unencumbered. The other is a claim on somebody else's borrowers [3].
 
-For a rigorous breakdown of adverse selection and impermanent loss, see [Impermanent Loss Explained: Rebalancing, Relative Price, and LP Outcomes](/guides/impermanent-loss-explained/).
+## Why a growing number can mean nothing at all
 
-## Monitoring & Onchain Tooling Stack
+A protocol reports deposits up 40% in two weeks. Treat it like a fund reporting assets under management.
 
-To audit authentic TVL, eliminate double-counting, and analyze capital stickiness:
+**Did prices go up?** If ETH rose 40% over the same period, the token balances did not move at all. Nobody deposited anything. It is pure revaluation [1].
 
-- **DeFi TVL & Double-Count Filtering**: Inspect cross-chain TVL, protocol breakdowns, and clean liquidity filters on [DeFiLlama](https://defillama.com).
-- **Protocol Financial Statements**: Track protocol fee generation, active capital, and token holder revenue on [Token Terminal](https://tokenterminal.com).
-- **Onchain Token Flow Audits**: Trace whale deposits and smart money capital flows across protocols using [Nansen](https://nansen.ai) or [Dune Analytics](https://dune.com).
+**Are they counting their own token?** Protocols paying rewards in their own token often count unvested or locked rewards in the figure. If that token has thin markets, the valuation is a price nobody could actually get [1].
 
-## Common TVL Misconceptions & Accounting Traps
+## A high figure does not protect you
 
-| TVL Misconception | Accounting & Mechanical Reality | Quantitative Verification Check |
-|---|---|---|
-| **"Higher TVL guarantees lower swap slippage."** | In concentrated AMMs, 90%+ of TVL can sit out-of-range, providing zero depth at current spot ticks. | Measure executable depth ($\mathcal{D}_{\pm 1\%}$ and $\mathcal{D}_{\pm 2\%}$) directly on-chain. |
-| **"TVL growth indicates organic user adoption."** | Asset price appreciation and recursive restaking loops artificially multiply TVL without new capital entering. | Decompose TVL into native asset units ($\Delta \text{ETH}$, $\Delta \text{USDC}$) to isolate real net inflows. |
-| **"Capital in a high-TVL pool is liquid and safe."** | Lending wrappers and restaking tokens tie LP collateral to external unbonding queues and illiquid money markets. | Audit collateral custody: verify whether pool assets are unencumbered or re-hypothecated receipt claims. |
-| **"Dashboard TVL is verifiable on-chain."** | Over 10% of protocols rely on off-chain APIs or unverified third-party feeds to report TVL figures [1]. | Query raw contract balances directly from blockchain RPC getters using verified explorers. |
+People assume a big pool is a safe pool. The number offers no protection against the mechanics at all.
 
-## TVL Versus Nearby Analytical Metrics
+- **Arbitrage does not care how big the pool is.** Faster traders take stale quotes regardless of size, and bigger pools attract more of them [4].
+- **Divergence does not care either.** If the two tokens move apart, the pool sells the winner and buys the loser, at any scale [4].
+- **Big busy pools attract fee sniping.** Bots inject liquidity for one block, take the fee on the largest trades, and leave [4].
 
-| Metric | Mechanical Measurement | What It Fails to Reveal |
-|---|---|---|
-| Headline TVL | Dollar valuation of assets held across protocol contracts [1] | Executable depth at spot, protocol solvency, re-hypothecation risk [1] [3] |
-| Active Depth (±2%) | Capital allocated to ticks within ±2% of current price [2] | Total portfolio value across the entire protocol |
-| Volume-to-TVL (Turnover) | Capital velocity; ratio of 24h trading volume to pool reserves | Directional profitability or adverse selection costs |
-| Fee-to-TVL Ratio | Annualized cash flow generated per dollar of locked capital | Net LP profitability after subtracting impermanent loss and LVR [4] |
+That gap against holding is impermanent loss — the shortfall between a pool position and simply keeping the tokens. See [Impermanent Loss Explained](/guides/impermanent-loss-explained/).
 
-## How to Make TVL Decision-Useful
+## What to read instead
 
-When reviewing a liquidity pool or protocol dashboard, execute this verification process:
+| Metric | What it measures | What it still misses |
+| :--- | :--- | :--- |
+| Headline figure | What the contracts hold [1] | Depth at the price, solvency, whether it is lent out [1] [3] |
+| Money within 2% of the price | What can actually fill your trade [2] | Everything about the rest of the protocol |
+| Volume divided by pool size | Whether the money is working | Whether the volume is profitable for you |
+| Fees divided by pool size | Cash generated per dollar deposited | What the position loses to volatility [4] |
 
-1. **Verify Contract Inclusions**: Check which contracts comprise the reported TVL. Are escrow, staking, and treasury funds included [1]?
-2. **Inspect Collateral Layering**: Is the TVL built from base assets (ETH, USDC) or multi-wrapped restaking claims (stETH, eETH, LRTs) [1] [3]?
-3. **Measure Active Depth at Spot**: On concentrated AMMs, measure liquidity within ±1% and ±2% ticks rather than accepting aggregate pool reserves [2].
-4. **Audit Oracle Pricing Sources**: Ensure asset prices are derived from robust, manipulation-resistant oracles rather than internal low-liquidity pools [1].
-5. **Evaluate Capital Velocity**: Divide 24-hour volume by TVL. A \$5M pool processing \$15M daily volume is far more economically vital than a \$50M pool processing \$100k [2].
+## What people get wrong about this number
 
-## What to Check Before You Act
+| What people assume | What actually happens |
+| :--- | :--- |
+| A bigger pool means a cheaper trade | Most of it can sit in ranges the market never visits |
+| Growth means adoption | Price moves and layered wrappers multiply the figure without new money |
+| A big pool means I can get out | Lending wrappers and restaking queues can lock you in while the dashboard looks healthy |
+| The number is verifiable | More than one in ten protocols report it from an off-chain source [1] |
 
-- What specific smart contracts and token balances constitute this TVL figure [1]?
-- Does this TVL contain double-counted restaked collateral, lending wrappers, or native governance token reserves [1] [3]?
-- For my swap size, what is the executable active liquidity within ±1% of spot price [2]?
-- If providing liquidity, does the pool's volume-to-TVL ratio support sufficient fee income to overcome adverse selection [4]?
-- Could collateral withdrawal queues or external lending pauses freeze the liquidity shown on screen [3]?
+## How to make the number useful
 
-## Bottom Line
+1. **Find out what is being counted.** Which contracts, and does it include treasury or staking [1]?
+2. **Check what is at the bottom.** Base assets, or four layers of wrapper tokens [1] [3]?
+3. **Measure depth at the price.** Within 1% and 2%, not the total [2].
+4. **Check where the prices come from.** A manipulation-resistant feed, or a thin pool [1]?
+5. **Divide volume by the figure.** A \$5M pool doing \$15M a day matters more than a \$50M pool doing \$100,000 [2].
 
-Total Value Locked is a useful starting point for broad ecosystem valuation, but it is dangerously incomplete as an execution or risk metric. It cannot distinguish between unencumbered capital and leveraged restaking loops, nor can it reveal whether liquidity is active at your execution price. By measuring active tick depth, collateral netting, and capital turnover, you turn a vanity dashboard number into actionable on-chain intelligence [1] [2] [3] [4].
+## When something looks off
 
-## Diagnostic Troubleshooting Decision Tree
+- **Deposits spiked in days.** A reward programme or points campaign pulled in money that will leave the moment it ends. Check the schedule and plan for the exit.
+- **Most of it is one obscure token.** The figure is being held up by something with no real market. Filter to the assets you could actually sell.
+- **Money is leaving but prices are flat.** Somebody knows something. Check the protocol's channels and reduce exposure until it settles.
 
-Use this operational framework when evaluating protocol TVL:
+## Where to watch the numbers
 
-1. **Protocol TVL Spikes Exponentially in Short Timeframe**:
-   - *Diagnostic*: Highly inflationary token incentives or a points farming campaign have attracted mercenary capital.
-   - *Action*: Check the emissions runway and vesting schedule; anticipate massive capital flight and liquidity collapse when incentives terminate.
-2. **TVL Concentrated in Synthetic or Illiquid Wrapper Assets**:
-   - *Diagnostic*: The reported TVL is inflated by illiquid governance tokens or recursive wrapper tokens with zero external market depth.
-   - *Action*: Filter TVL by canonical assets (ETH, BTC, USDC, USDT) to measure true economic security.
-3. **Sudden TVL Outflow Without Market Price Drop**:
-   - *Diagnostic*: Institutional capital is withdrawing due to exploit rumors, regulatory pressure, or higher risk-adjusted yields elsewhere.
-   - *Action*: Audit protocol security channels and reduce personal capital exposure until liquidity stabilizes.
+- **Cross-chain totals with double-counting filters:** [DeFiLlama](https://defillama.com).
+- **Protocol revenue and real capital:** [Token Terminal](https://tokenterminal.com).
+- **Who is actually moving money and where:** [Nansen](https://nansen.ai) or [Dune Analytics](https://dune.com).
 
-## Where to Go Next
+## Where to go next
 
-The practical consequence of the depth-versus-deposits distinction shows up in execution, covered in [Slippage and Price Impact](/guides/slippage-and-price-impact/), and in fee income, which you can model with the [liquidity pool fee and APR calculator](/tools/liquidity-pool-calculator/). For how the same distinction distorts quoted yields, see [APR vs APY in DeFi](/guides/apr-vs-apy-in-defi/). The measurement that replaces it is set out in [Liquidity Depth and Execution](/guides/liquidity-depth-and-execution/).
+The practical consequence shows up in what a trade costs, covered in [Slippage and Price Impact](/guides/slippage-and-price-impact/), and in fee income, which you can model with the [liquidity pool fee and APR calculator](/tools/liquidity-pool-calculator/). For how the same problem distorts quoted yields, see [APR vs APY in DeFi](/guides/apr-vs-apy-in-defi/). The measurement that replaces it is in [Liquidity Depth and Execution](/guides/liquidity-depth-and-execution/).
 
 ## References
-
 
 1. [Towards verifiability of total value locked (TVL) in decentralized finance | BIS Working Paper 1268](https://www.bis.org/publ/work1268.htm)
 2. [How Uniswap Works | Uniswap Developers](https://developers.uniswap.org/docs/get-started/concepts/how-uniswap-works)
 3. [StableSwap pools (Curve Documentation)](https://docs.curve.finance/developer/amm/legacy/stableswap-overview)
-4. [Trading in the DeFi era: automated market maker (BIS Bulletin No 58, 2022)](https://www.bis.org/publ/bisbull58.htm)
+4. [Miners as intermediaries: extractable value and market manipulation in crypto and DeFi (BIS Bulletin No 58, 2022)](https://www.bis.org/publ/bisbull58.htm)
 5. [DeFi risks and the decentralisation illusion (BIS Quarterly Review, December 2021)](https://www.bis.org/publ/qtrpdf/r_qt2112b.htm)
 6. [SoK: Decentralized Finance (DeFi) (Werner et al., 2021)](https://arxiv.org/abs/2101.08778)
 7. [On the Quality of Cryptocurrency Markets: Centralized versus Decentralized Exchanges (Barbon & Ranaldo, 2021)](https://arxiv.org/abs/2112.07386)
+
 [1]: https://www.bis.org/publ/work1268.htm "Towards verifiability of total value locked (TVL) in decentralized finance | BIS Working Paper 1268"
 [2]: https://developers.uniswap.org/docs/get-started/concepts/how-uniswap-works "How Uniswap Works | Uniswap Developers"
 [3]: https://docs.curve.finance/developer/amm/legacy/stableswap-overview "StableSwap pools (Curve Documentation)"
-[4]: https://www.bis.org/publ/bisbull58.htm "Trading in the DeFi era: automated market maker (BIS Bulletin No 58, 2022)"
+[4]: https://www.bis.org/publ/bisbull58.htm "Miners as intermediaries: extractable value and market manipulation in crypto and DeFi (BIS Bulletin No 58, 2022)"
 [5]: https://www.bis.org/publ/qtrpdf/r_qt2112b.htm "DeFi risks and the decentralisation illusion (BIS Quarterly Review, December 2021)"
 [6]: https://arxiv.org/abs/2101.08778 "SoK: Decentralized Finance (DeFi) (Werner et al., 2021)"
 [7]: https://arxiv.org/abs/2112.07386 "On the Quality of Cryptocurrency Markets: Centralized versus Decentralized Exchanges (Barbon & Ranaldo, 2021)"

@@ -1,11 +1,11 @@
 ---
 title: "Gas Costs for Liquidity Providers: The Minimum Viable Position"
-description: "What gas actually costs an LP across mint, collect, rebalance and exit, how to compute the minimum viable position size, and when a cheaper network changes the answer."
+description: "Gas does not scale with your position, so it decides which strategies you can even use. One table tells you whether yours is viable before you deposit."
 category: "Risk & Research"
 date: 2026-09-11
-lastReviewed: "2026-09-11"
+lastReviewed: "2026-09-12"
 author: "Siddharth Mehta"
-readTime: "11 min read"
+readTime: "6 min read"
 keywords: "gas fees providing liquidity, LP gas costs, minimum liquidity position size, rebalancing cost, liquidity pool withdrawal risk, cost of providing liquidity"
 featured: false
 faq:
@@ -19,9 +19,11 @@ faq:
     a: "Use wider ranges so rebalancing is rare, batch collections rather than claiming frequently, prefer networks with cheaper execution for smaller positions, and avoid strategies whose economics depend on frequent transactions at a size that cannot support them."
 ---
 
-Gas is the cost that turns a sound strategy into an unworkable one without ever appearing in a yield quote. It does not scale with position size, which means it decides which strategies are available to which providers, and it is the reason two people running identical ranges on the same pair can get opposite results.
+Gas costs the same whether you deposit \$500 or \$500,000. That one fact decides which strategies are available to you, and it never appears in a yield quote.
 
-The arithmetic is simple and worth doing before the first deposit rather than after the third rebalance.
+It is also why two people running identical ranges on the same pair can get opposite results. One was large enough to absorb the transactions. The other was not.
+
+The arithmetic takes two minutes. Do it before the first deposit rather than after the third rebalance.
 
 <figure class="article-figure">
   <img src="/images/guides/lp-gas-costs.webp" alt="Bars showing round-trip gas cost as a share of annual fee income across five position sizes." width="1600" height="1067" loading="lazy" decoding="async" />
@@ -29,111 +31,134 @@ The arithmetic is simple and worth doing before the first deposit rather than af
 </figure>
 
 > **Desk Field Note from Siddharth Mehta:**
-> *"We keep a single number on the desk sheet: cost per management cycle, divided by expected weekly fee income. Above one, the strategy is paying the network instead of the mandate. It is the fastest way to reject a proposal that otherwise looks fine on a spreadsheet of annualised yields."*
+> *"We keep one number on the sheet: the cost of a management cycle, divided by expected weekly fees. Above one, the strategy is paying the network instead of the mandate. It rejects proposals in ten seconds that otherwise look perfectly reasonable on a page of annualised yields."*
 
-## 1. Every Transaction in a Position's Life
+## Every transaction a position needs
 
-A concentrated liquidity position touches the chain more often than people expect:
+More than people expect.
 
-| Operation | When it happens | Notes |
+| What | When | Note |
 | :--- | :--- | :--- |
-| Token approvals | Before the first deposit | Signature-based approvals reduce but do not remove this |
-| Entry swap | When holdings do not match the deposit ratio | Costs a fee and price impact as well as gas |
-| Mint | Opening the position | Higher when the range crosses uninitialised ticks |
-| Collect | Each time fees are claimed | Separate from withdrawing liquidity |
-| Rebalance | Each re-centre | Effectively a burn plus a mint, sometimes plus a swap |
-| Exit | Closing the position | Plus a final collection |
+| Approvals | Before your first deposit | Signature-based approvals reduce this, they do not remove it |
+| An entry swap | When you do not hold the right ratio | Costs a fee and moves the rate, as well as gas |
+| Minting | Opening the position | More expensive when your range crosses fresh price steps |
+| Collecting | Every time you claim fees | A separate transaction from withdrawing |
+| Rebalancing | Every re-centre | A burn plus a mint, often plus a swap |
+| Exiting | Closing | Plus one final collection |
 
-A passive full-range position uses three of these. An actively managed narrow band can use all of them several times a month.
+A passive full-range position uses three of those. An actively managed narrow band can use all of them several times a month.
 
----
-
-## 2. Computing the Minimum Viable Size
-
-Let $g$ be the average cost of one transaction, $n$ the number of transactions in your intended cycle, and $R$ the expected daily fee income at your position size. The break-even holding period in days for the gas alone is:
+## The table that decides it
 
 $$
-T_{\text{gas}} = \frac{n \cdot g}{R}
+T = \frac{n \times g}{R}
 $$
 
-Suppose gas averages \$14 per transaction, a cycle involves five transactions, and the position expects a 25% annualised gross fee yield.
+Where:
 
-| Position size | Daily fee income | Cycle gas | Days of fees consumed |
+- $n$ is how many transactions your cycle needs.
+- $g$ is what one transaction costs.
+- $R$ is your expected daily fee income.
+- $T$ is how many days of fees that cycle consumes.
+
+What one transaction costs depends heavily on where you are and when.
+
+| Where | Rough cost of a liquidity transaction |
+| :--- | :--- |
+| Ethereum mainnet, quiet hours | Under a dollar to a few dollars |
+| Ethereum mainnet, a busy day | Tens of dollars |
+| A major rollup | Cents |
+| Solana | A fraction of a cent, plus a small refundable account deposit |
+
+Plan against the busy figure for whichever network you use, because the days you most want to act are the days fees spike.
+
+Say gas averages \$14, your cycle is five transactions, and you expect a 25% annual gross yield.
+
+| Your position | Daily fees | Cost of one cycle | Days of fees it eats |
 | ---: | ---: | ---: | ---: |
 | \$500 | \$0.34 | \$70 | 205 |
 | \$2,000 | \$1.37 | \$70 | 51 |
 | \$10,000 | \$6.85 | \$70 | 10 |
 | \$50,000 | \$34.25 | \$70 | 2 |
 
-The first two rows are not marginal cases; they are strategies that cannot work. The third is workable with a slow cadence. Only the fourth supports active management with room to spare.
+The first two rows are not marginal. They are strategies that cannot work at all. The third works with a slow cadence. Only the fourth supports active management with room to spare.
 
-The same arithmetic runs in the [liquidity pool fee and APR calculator](/tools/liquidity-pool-calculator/), which includes gas directly in the net figure.
+If your position sits in one of the top rows, you have three honest options. Add capital until a cycle costs a few days of fees at most. Cut the plan to one or two transactions a quarter. Or move to a network where the same cycle costs cents. Anything else is paying the network for the privilege of watching a chart.
 
----
+The same arithmetic runs in the [liquidity pool fee and APR calculator](/tools/liquidity-pool-calculator/), which puts gas straight into the net figure.
 
-## 3. Rebalancing Is the Expensive Habit
+## Rebalancing is the expensive habit
 
-Re-centring a range is not just gas. Each rebalance:
+Re-centring is not just gas. Each one does three things:
 
-1. **Realises the current composition**, converting an unrealised divergence into a realised one.
-2. **Pays a swap fee and price impact** if the withdrawn ratio does not match the new range.
-3. **Resets the fee accrual clock** in the new band, where competing liquidity may be denser.
+1. **Locks in where you are.** An unrealised divergence becomes a realised one.
+2. **Pays a swap fee, and moves the rate against you,** if what you withdrew does not match the new range.
+3. **Restarts the clock** in a band where the competing liquidity may be denser than where you were.
 
-That is why chasing price with frequent re-centres tends to underperform a wider band that is left alone. The threshold question is whether expected fee income in the new range clears all three costs over the period you expect to hold it, which is the test set out in [Out-of-Range Liquidity](/guides/out-of-range-liquidity/).
+That is why chasing the price with frequent re-centres tends to lose to a wider band left alone. The question is always whether the new range's fees clear all three costs over the time you expect to hold it. See [Out-of-Range Liquidity](/guides/out-of-range-liquidity/).
 
----
+## Network choice changes what strategies exist
 
-## 4. Network Choice Changes the Strategy Set
+Execution costs differ by orders of magnitude, and that does not just shrink a cost line. It changes what is possible.
 
-Execution cost differs by orders of magnitude across networks, and that difference does not merely reduce a cost line: it changes which strategies exist.
+| | Expensive network | Cheap network |
+| :--- | :--- | :--- |
+| What works | Large positions, wide bands, rare management | Narrow bands and frequent moves, at retail size |
+| What does not | Narrow bands below institutional size | Nothing, on cost grounds |
+| The catch | Everything costs | Usually much thinner volume, so lower fees per dollar |
 
-- **Expensive networks** favour large positions, wide ranges and infrequent management. Narrow-band strategies are available only at institutional size.
-- **Cheap networks** make narrow bands and frequent rebalancing viable at retail size, but they typically have thinner routed volume, so fee income per dollar is lower.
-- **The comparison is not gas alone.** A cheap network with a fifth of the volume can still produce a worse net result than an expensive one, which is why both terms belong in the same calculation.
+The comparison is never gas alone. A cheap network with a fifth of the volume can still net out worse than an expensive one, which is why both numbers belong in the same calculation. Spreading liquidity across networks also thins depth everywhere, covered in [Cross-Chain Liquidity Explained](/guides/cross-chain-liquidity-explained/).
 
-Fragmentation across networks also thins depth everywhere, an effect examined in [Cross-Chain Liquidity Explained](/guides/cross-chain-liquidity-explained/).
+## Three costs that behave exactly like gas
 
----
+They scale with transaction count rather than position size, so they belong in the same budget.
 
-## 5. Costs That Behave Like Gas
+- **Entry and exit costs.** Price impact — the way your own order moves the rate — plus slippage, the gap between the quote and the fill. Getting into the ratio and unwinding both consume depth. See [Slippage and Price Impact](/guides/slippage-and-price-impact/).
+- **Harvest-and-sell cycles for reward tokens.** Weekly claiming and selling costs gas every time, plus impact on a thin market.
+- **Failed transactions.** A reverted mint or swap still pays. On volatile pairs with tight settings this is recurring, not exceptional.
 
-Three other frictions scale with transaction count rather than with position size, and belong in the same budget:
+## The compounding threshold, worked
 
-- **Entry and exit price impact.** Reaching the deposit ratio and unwinding both consume depth, as covered in [Slippage and Price Impact](/guides/slippage-and-price-impact/).
-- **Harvest-and-sell cycles for incentive tokens.** Emission income that requires weekly claiming and selling carries both gas and market impact on a thin book.
-- **Failed transactions.** A reverted mint or swap still pays gas. On volatile pairs with tight slippage settings, this is a recurring cost rather than an anomaly.
+Auto-compounding sounds free and is not.
 
----
+Compounding turns a 20% annual rate into about 22% if done daily. So the gain is roughly two points of your position per year. On a \$3,000 position that is \$60.
 
-## 6. Practical Ways to Reduce the Bill
+Doing it 365 times at \$14 each costs \$5,110.
 
-- **Widen the range** so rebalances are rare. The lower fee density is often cheaper than the gas the narrow band would have consumed.
-- **Batch fee collection** on a schedule tied to accrued value rather than to habit.
-- **Prefer a single larger position** to several small ones on the same pair; gas is per transaction, not per dollar.
-- **Choose the network for the strategy**, not the strategy for the network.
-- **Avoid auto-compounding at small size.** The compounding gain is a percentage of the fees; the gas is a fixed cost, and below a threshold the trade is negative.
-- **Use limit-style range orders** rather than repeated market entries when position adjustments are not urgent.
+The break-even is where the gain exceeds the cost. At a 20% rate compounded daily on an expensive network, that is a position around \$250,000. Much smaller at weekly cadence, and far smaller again on a cheap network.
 
-### The compounding threshold, worked
+Vaults solve this by pooling many depositors and harvesting once for everybody. That is a genuine service, worth its performance fee, and a real reason to prefer one to doing it yourself at small size.
 
-Auto-compounding sounds free and is not. Compounding turns a 20% annual rate into roughly 22% when performed daily, so the gain is about two percentage points of the position per year. On a \$3,000 position that is \$60 across 365 harvests. At \$14 per transaction, the harvests cost \$5,110.
+The same logic applies to claiming generally. Claim when the amount is a large multiple of the transaction cost, not on a calendar.
 
-The break-even is where the compounding gain exceeds the harvest cost. For a 20% rate compounding daily, that means a position around \$250,000 before daily harvesting pays for itself on an expensive network, or a much smaller figure at weekly cadence, or a far smaller one again on a cheap network. Vault products solve this by pooling many depositors and harvesting once for all of them, which is a genuine service worth its performance fee, and a reason to prefer a vault to manual compounding at small size.
+## What people get wrong about gas
 
-The same logic applies to fee collection generally: claim when the accrued amount is a large multiple of the transaction cost, not on a calendar.
+| What people assume | What actually happens |
+| :--- | :--- |
+| Gas is a small percentage | It is a fixed amount. On a small position it is the whole return |
+| Compounding is free money | Two points a year against a fixed cost per harvest. Do the sum |
+| A cheap network is always better | Cheap execution with thin volume can still net out worse |
+| Rebalancing protects the position | It locks in where you are and restarts the clock somewhere more crowded |
 
----
+## Six ways to reduce the bill
 
-## 7. Checklist Before Committing Capital
+- **Widen the range** so you rarely rebalance. Lower fee density often beats the gas a tight band would have burned.
+- **Batch your claims** on accrued value, not on habit.
+- **Prefer one larger position** to several small ones on the same pair. Gas is per transaction, not per dollar.
+- **Pick the network for the strategy**, not the strategy for the network.
+- **Do not auto-compound at small size.** The gain is a percentage, the cost is fixed, and below a threshold it is negative.
+- **Use range orders rather than repeated market entries** when adjustments are not urgent.
 
-- [ ] Count the transactions your intended strategy needs over one month, honestly.
-- [ ] Multiply by current average gas cost on the target network.
-- [ ] Divide by expected monthly fee income at your position size.
-- [ ] Reject the strategy if that ratio exceeds roughly a fifth, and reconsider the structure rather than the pair.
-- [ ] Add expected entry and exit price impact to the same budget.
-- [ ] Recompute after any change in network conditions, since gas is not a constant.
+## Before you commit
 
-Fee yield is quoted as a percentage and gas is charged as a fixed amount. Everything difficult about small liquidity positions follows from that mismatch.
+1. **Count the transactions** your strategy needs in a month. Honestly.
+2. **Multiply by current gas** on the network you will use.
+3. **Divide by expected monthly fees** at your size.
+4. **If that is more than about a fifth, reject the strategy.** Change the structure, not the pair.
+5. **Add expected entry and exit impact** to the same budget.
+6. **Redo it when conditions change.** Gas is not a constant.
+
+Fee yield is quoted as a percentage. Gas is charged as a fixed amount. Everything difficult about small liquidity positions follows from that mismatch.
 
 ## References
 
@@ -142,11 +167,11 @@ Fee yield is quoted as a percentage and gas is charged as a fixed amount. Everyt
 3. [What are the risks when providing liquidity? (Uniswap Labs)](https://support.uniswap.org/hc/en-us/articles/37113550065549-What-are-the-risks-when-providing-liquidity)
 4. [Gas and fees (Ethereum Foundation)](https://ethereum.org/en/developers/docs/gas/)
 5. [Risks and Returns of Uniswap V3 Liquidity Providers (Heimbach et al., 2022)](https://arxiv.org/abs/2205.08904)
-6. [SoK: Decentralized Exchanges with Automated Market Maker Protocols (Xu et al., 2021)](https://arxiv.org/abs/2103.12732)
+6. [SoK: Decentralized Exchanges (DEX) with Automated Market Maker (AMM) Protocols (Xu et al., 2021)](https://arxiv.org/abs/2103.12732)
 
 [1]: https://uniswap.org/whitepaper-v3.pdf "Uniswap v3 Core Whitepaper"
 [2]: https://uniswap.org/whitepaper-v4.pdf "Uniswap v4 Core Whitepaper"
 [3]: https://support.uniswap.org/hc/en-us/articles/37113550065549-What-are-the-risks-when-providing-liquidity "What are the risks when providing liquidity?"
 [4]: https://ethereum.org/en/developers/docs/gas/ "Gas and fees"
 [5]: https://arxiv.org/abs/2205.08904 "Risks and Returns of Uniswap V3 Liquidity Providers (Heimbach et al., 2022)"
-[6]: https://arxiv.org/abs/2103.12732 "SoK: Decentralized Exchanges with Automated Market Maker Protocols (Xu et al., 2021)"
+[6]: https://arxiv.org/abs/2103.12732 "SoK: Decentralized Exchanges (DEX) with Automated Market Maker (AMM) Protocols (Xu et al., 2021)"

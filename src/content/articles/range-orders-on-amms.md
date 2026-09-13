@@ -1,11 +1,11 @@
 ---
 title: "Range Orders on AMMs: How Liquidity Can Express a Price View"
-description: "AMM range orders explained: synthetic limit orders, geometric mean execution math, v4 limit hooks, Ambient knock-out liquidity, and adverse selection."
+description: "A one-sided deposit works like a limit order that earns fees while it fills. It also un-fills if the price comes back, which is what catches people out."
 category: "LP Mechanics"
 date: 2026-08-31
-lastReviewed: "2026-09-10"
+lastReviewed: "2026-09-12"
 author: "Aria Chen"
-readTime: "11 min read"
+readTime: "7 min read"
 keywords: "range orders AMM, concentrated liquidity limit order, Uniswap v4 limit hook, Ambient knock-out liquidity, AMM order execution, LVR, range order liquidity, single-sided liquidity, one-sided liquidity provision"
 featured: false
 faq:
@@ -17,9 +17,11 @@ faq:
     a: "The position sits fully converted and stops earning. Unless you withdraw, a reversal will convert it back, which is the main operational difference from a conventional limit order."
 ---
 
-A single-sided concentrated liquidity position deployed outside the active trading tick is commonly termed an AMM "range order." Capital allocators and decentralized treasuries deploy range orders to simulate limit-order execution, aiming to acquire or liquidate token inventory without paying taker fees while collecting passive swap yield during conversion.
+You want to sell ETH at \$3,200 but it is trading at \$3,000. On an exchange you would leave a limit order and wait.
 
-Conflating an AMM range order with a traditional limit order, however, obscures fundamental market microstructure differences. An on-chain range order is not an atomic, irrevocable order book instruction. It is an active, bounded automated market-making commitment whose inventory transforms continuously as trades walk across its ticks. Mastering range orders requires analyzing their geometric-mean execution pricing, their vulnerability to post-crossing reversal, modern protocol solutions (such as Uniswap v4 limit hooks and Ambient knock-out liquidity), and the severe adverse selection inherent in passive on-chain fills [1] [2] [3].
+There is an equivalent in a pool. Put ETH into a range that sits entirely above the current price, and as the market rises through it, the pool sells your ETH for you. You even collect fees on the way.
+
+It works beautifully, and it has one trap that catches almost everyone the first time. This guide covers how it fills, exactly what price you get, the trap, and the three designs that fix it.
 
 <figure class="article-figure">
   <img src="/images/guides/range-orders-on-amms.webp" alt="One asset transforms into another as price moves through a bounded corridor." width="1600" height="1067" loading="lazy" decoding="async" />
@@ -27,166 +29,154 @@ Conflating an AMM range order with a traditional limit order, however, obscures 
 </figure>
 
 > **Desk Field Note from Aria Chen:**
-> *"Using single-sided concentrated liquidity as a synthetic limit order (range order) is a clever technique, but it comes with a critical catch: reversibility. Unlike a traditional limit order on Binance that executes and deposits tokens into your account, an AMM range order remains in the pool. If the market price crosses your tick and subsequently reverses, your order un-fills, swapping your newly acquired tokens back into the depreciating asset. You must withdraw immediately upon fill."*
+> *"The catch is that it is reversible. A limit order on a normal exchange executes and the tokens are yours. A range order stays in the pool. If the price crosses your range and comes back, your completed sale is undone and you are holding the original token again. Withdraw the moment it fills, or use a design that locks it."*
 
-## Mechanics of Single-Sided Range Orders
+## How a one-sided deposit works
 
-In standard constant-product AMMs without price concentration, liquidity providers must deposit both assets in equal value proportion according to the prevailing spot price. Concentrated liquidity protocols decouple this requirement by allowing deposits outside the current active tick [1].
+Normally a pool makes you deposit both tokens in the ratio it currently holds. Range-based pools do not, as long as your range sits entirely on one side of the current price [1].
 
-When an LP deposits capital entirely within a range $[P_l, P_u]$ situated strictly above the current market price $P < P_l$, the position requires 100% token $X$ (the base asset, e.g., ETH). Symmetrically, if the range is placed strictly below the market price $P > P_u$, the position requires 100% token $Y$ (the quote asset, e.g., USDC) [2].
+Put a range above the market and you deposit only the risky token. The pool has no reason to hold any dollars up there yet [2]. Put it below and you deposit only the quote token.
 
-### Effective Execution Price
+Then the market does the work. As the price rises into your range, traders buy your ETH and leave dollars behind. By the time it passes your upper bound, the conversion is complete.
 
-As the market spot price enters the range from below and traverses from $P_l$ to $P_u$, incoming swappers buy token $X$ from the position and deposit token $Y$. The effective average execution price $\bar{P}$ obtained by the LP across the entire traversed interval is mathematically defined as the geometric mean of the boundaries:
+## The price you actually get
+
+Not the top of your range. Not the bottom. The geometric mean of the two:
 
 $$
 \bar{P} = \sqrt{P_l \cdot P_u}
 $$
 
-For an order placed across a single minimum tick spacing $\Delta t$ where $P_u = P_l \cdot 1.0001^{\Delta t}$, the execution price is virtually indistinguishable from the boundary ticks. If the range spans wider boundaries, say $[3,100, 3,300]$, the realized fill price is $\sqrt{3100 \times 3300} \approx 3198.44$ USDC per ETH.
+Where:
 
-Furthermore, because the LP acts as the passive market maker rather than an aggressive taker, the position does not pay taker swap fees. Instead, it accrues LP fees from the swappers who execute against it, effectively capturing a positive spread during order completion [2] [4]. For an analysis of how tick math governs virtual reserve transitions, explore our technical breakdown of [Concentrated Liquidity Explained: Range, Capital Efficiency, and Risk](/guides/concentrated-liquidity-explained/).
+- $P_l$ is the bottom of your range.
+- $P_u$ is the top.
+- $\bar{P}$ is the average price your fill actually achieved.
 
-## The Reversal Problem: Why AMM Range Orders Differ from Limit Orders
+Put numbers on it. A range from \$3,100 to \$3,300 fills at about \$3,198, not \$3,300. Set the range wide and you will be disappointed by the average.
 
-While range orders mimic limit orders during a unidirectional price crossing, their behavior diverges fundamentally once the price completes the traverse:
+So the width is the whole decision. A narrow range of one or two steps fills at almost exactly the price you wanted. A wide range spreads the fill across the whole move.
 
-```
-Unidirectional Crossing:
-Price moves up: [100% ETH] ----> [50% ETH / 50% USDC] ----> [100% USDC (Inactive)]
-                              (Tick traversal)
+One genuine advantage over a limit order: you are the maker here, so you pay no taker fee and you collect fees from everyone trading through you while it fills [2] [4]. See [Concentrated Liquidity Explained](/guides/concentrated-liquidity-explained/).
 
-Market Mean-Reversion (The Reversal Problem):
-Price retreats: [100% USDC] ----> [50% USDC / 50% ETH] ----> [100% ETH (Restored)]
-```
+## The trap
 
-In a traditional central limit order book (CLOB), when a limit order is matched, the trade settles atomically and disappears from the book. The order cannot "unfill" if the market price subsequently moves in the opposite direction [5].
+Here is the part nobody warns you about.
 
-In a concentrated AMM (such as Uniswap v3), a fully crossed range order simply transitions into an out-of-range, single-sided liquidity position. **The underlying liquidity remains active on the smart contract.** If the spot price retraces and re-enters the range from above, the pool executes trades in reverse: swappers buy token $Y$ and deposit token $X$. Unless the LP submits an on-chain transaction to withdraw their capital the moment the crossing finishes, their completed sale will be completely undone during a price reversal [2] [3].
+| What happens | A limit order on an exchange | A range order in a pool |
+| :--- | :--- | :--- |
+| Price crosses your level | Fills, settles, done | Fills, and stays in the pool |
+| Price comes back | Nothing. You have the money | It fills back the other way |
+| You need to do something | No | Yes, withdraw, immediately |
 
-This creates an operational dependency: the LP or an automated keeper bot must actively monitor mempools and block headers to withdraw liquidity before market volatility pulls the price back through the range.
+When your range order completes, it does not disappear. It becomes an ordinary out-of-range position, still live in the contract. If the price comes back down through your range, the pool sells your dollars and buys the ETH back, at prices you did not choose [2] [3].
 
-## Modern Evolution: Native Limit Hooks and Knock-Out Liquidity
+So a range order is only equivalent to a limit order if you withdraw the moment it fills. In practice that means a bot watching for the crossing, or one of the designs below.
 
-To overcome the manual withdrawal bottleneck and the reversal problem, next-generation AMM designs have introduced protocol-native primitives:
+## Three ways to make it stick
 
-### 1. Uniswap v4 Hook-Based Limit Orders
-Uniswap v4's singleton architecture and 8-point lifecycle hooks enable developers to implement true on-chain limit orders directly inside `PoolManager.sol` [3].
+### Code that settles it inside the transaction
 
-Using an `afterSwap` hook (such as an audited `LimitOrderHook` or `TakeProfitHook`), orders are registered into internal hook accounting tables. When an incoming swap causes the pool's tick accumulator to cross the limit order's designated tick:
-1. The hook's `afterSwap` callback inspects the tick transition.
-2. The hook contract automatically claims the converted tokens from the singleton's flash accounting ledger.
-3. The hook burns the concentrated liquidity claim and credits the user's balance in native ERC-6909 singleton tokens or transfers the proceeds directly to the user's address [3].
+Uniswap v4 lets a pool attach code that runs after each swap [3]. A limit-order hook registers your order, watches for the price crossing your level, and then claims your converted tokens and closes the position in the very same transaction that crossed it.
 
-Because this execution occurs atomically within the exact transaction that crossed the tick, the order cannot be reversed by subsequent transactions in the same or subsequent blocks.
+Because it settles atomically, nothing later in that block or any block after can reverse it.
 
-### 2. Ambient Finance Knock-Out Liquidity
-Ambient (formerly CrocSwap) natively implements **Knock-Out Liquidity** within its core smart contract engine [6]. 
+### A protocol that locks it natively
 
-A knock-out position is a concentrated liquidity range bundled with a directional trigger. When the market price completely traverses the knock-out band, the position permanently "knocks out"—the core protocol automatically locks the position against reverse trading. The maker's capital remains safely frozen in the converted asset until the owner claims it, eliminating the requirement for fast off-chain keeper bots or MEV-susceptible withdrawal races [6].
+Ambient builds this into its core contract as knock-out liquidity [6]. Your position comes with a direction. Once the price fully crosses it, the protocol locks the position against trading backwards. Your converted tokens sit safely until you claim them, with no bot and no race.
 
-### 3. Intent-Based Off-Chain Limit Orders (UniswapX and CoW Swap)
-A parallel architecture bypasses on-chain AMM liquidity altogether through intent-based settlement networks [7]. In protocols like UniswapX and CoW Swap, a trader signs an off-chain EIP-712 order specifying: "Swap 1 ETH for at least 3,200 USDC before deadline $T$."
+### Skipping the pool entirely
 
-Specialized searchers and market makers (solvers) compete in private Dutch auctions to fill the order using private inventory, AMM routes, or peer-to-peer coincidences of wants (CoW). Intent orders require zero initial on-chain gas to place, eliminate balance lockup in AMM contracts, and guarantee absolute protection against adverse reversal [7]. To compare how order books, intent auctions, and AMMs handle execution paths, see our comparative overview of [AMM vs Order Book: Latency, Capital, and Execution](/guides/amm-vs-order-book/).
+Intent systems like UniswapX and CoW Swap take a different route [7]. You sign a message saying what you want and by when. Solvers compete to fill it, using their own inventory, pool routes, or a match with somebody wanting the opposite trade.
 
-| Order Dimension | Classical v3 Range Order | Uniswap v4 Hook Limit Order | Ambient Knock-Out Liquidity | Intent Auction (UniswapX/CoW) |
-|---|---|---|---|---|
-| Execution Invariant | Virtual constant-product curve | Hook-managed tick crossing | Native discrete trigger curve | Off-chain signed EIP-712 message |
-| Reversal Risk | High: reverses unless manually withdrawn | Zero: atomically settled in `afterSwap` | Zero: permanently locked upon breach | Zero: single atomic off-chain fill |
-| Gas Cost to Place | Standard contract interaction | Standard hook initialization | Native singleton operation | 0 gas (off-chain signature) |
-| Fee Model | Earns passive LP trading fees | Earns LP fees prior to tick fill | Earns LP fees prior to knock-out | Zero LP fees, zero taker fees |
-| Capital Custody | Locked in AMM position | Held in Singleton `PoolManager` | Held in Ambient singleton | Retained in user wallet until fill |
+Nothing is locked up, placing it costs no gas, and there is nothing to reverse. See [AMM vs Order Book](/guides/amm-vs-order-book/).
 
-## Microstructure and Adverse Selection (LVR) in Range Orders
+| | Plain range order | v4 limit hook | Knock-out liquidity | Intent auction |
+| :--- | :--- | :--- | :--- | :--- |
+| Can it reverse | Yes, unless you withdraw fast | No, settled in the same transaction | No, locked on crossing | No, filled once |
+| Cost to place | A normal transaction | A normal transaction | A normal transaction | Nothing, just a signature |
+| Do you earn fees | Yes, while filling | Yes, until it fills | Yes, until it knocks out | No |
+| Where your money sits | In the pool | In the pool contract | In the protocol | In your wallet until it fills |
 
-While range orders allow market participants to capture LP fees rather than paying taker fees, they suffer from severe **adverse selection**.
+## Why passive orders fill at the wrong moments
 
-In financial market microstructure, a passive limit order is subject to the *winner's curse*: a resting order is filled disproportionately when informed traders possess information that the asset's true value has shifted past the order price [4] [8]. 
+There is an uncomfortable pattern here worth understanding before you rely on this.
 
-In AMMs, this adverse selection is formally captured by **Loss-Versus-Rebalancing (LVR)** [8]. When a major macroeconomic event or off-chain centralized exchange price jump occurs:
-1. High-frequency arbitrageurs detect the price discrepancy between Binance/Coinbase and the on-chain AMM.
-2. Arbitrageurs route atomic trades to consume the resting range order before the LP can cancel or modify it.
-3. The range order is filled at a price that is already inferior to the new off-chain fair value [4] [8].
+A resting order gets filled when somebody wants to trade against it. On a fast-moving market, the people who want to trade against a stale price are the ones who already know the price has moved [4] [8].
 
-Conversely, if the market price approaches the range order boundary but fails to breach it before bouncing back, the order remains unfilled, leaving the LP with uncompensated market risk. Thus, range orders are filled systematically when it is disadvantageous to the maker, and left unfilled when the price movement was favorable.
+So the sequence goes: news breaks, the price jumps on a fast exchange, and arbitrage traders sweep your resting order at the old price before you could possibly react. Your sell filled, at a price that was already wrong.
 
-## Monitoring & Onchain Tooling Stack
+And the reverse also holds. If the price approaches your level and bounces without crossing, you do not get filled at all, even though that was the favourable outcome.
 
-To monitor range order fill status and automate immediate withdrawals:
+Put bluntly: these orders fill systematically when it suits somebody else, and sit unfilled when it would have suited you. That cost is loss-versus-rebalancing — what a pool pays out for quoting a block late — and it applies to range orders exactly as it does to ordinary positions [8].
 
-- **Position Monitoring & Execution Alerts**: Track single-sided tick crossing status and uncollected fee accrual via [Revert Finance](https://revert.finance).
-- **Automated Limit Order Execution**: Use [Aperture Finance](https://aperture.finance) to configure automated withdrawal upon complete range order crossing.
-- **Tick Price Tracking**: Monitor spot price proximity to range order boundary ticks on [Dune Analytics](https://dune.com).
+## Two things people actually use this for
 
-## Common Operational Mistakes & Range Order Pitfalls
+### Bidding for a discounted stablecoin
 
-| Operational Mistake | Microstructure Failure Mode | Correct Protocol Action |
-|---|---|---|
-| **Ignoring the Reversal Mechanism** | Position completely fills into quote asset, but spot price bounces back, reversing 100% of the trade back into the original token. | Deploy automated keeper bots to trigger withdrawal at tick crossing, or use Uniswap v4 `afterSwap` limit hooks. |
-| **Placing Excessively Wide Range Orders** | Setting a broad interval ($[3,000, 3,600]$) causes inventory to convert along a wide curve, delivering an average fill price far below the top tick. | Tighten range to 1-2 tick spacings if single-price limit execution is desired. |
-| **Locking Collateral in Stale Mempool Ticks** | When news breaks off-chain, latency arbitrageurs sweep on-chain range orders before the LP can submit a cancellation transaction. | Utilize off-chain intent orders (CoW Swap / UniswapX) where cancellation is gasless and off-chain. |
-| **Treating Range Orders as Risk-Free Yield** | Assuming range orders are free limit orders that also generate income; LVR drag routinely exceeds fractional fee earnings. | Deduct adverse selection costs from gross fee projections when planning order execution. |
+A stable token trades at \$0.999 and you expect a brief liquidity squeeze to push it lower. Place a one-sided range below the price, between \$0.9975 and \$0.9985, funded with the other dollar token, and you are bidding for the discount. If the price dips through it, you convert fully into the discounted token and keep the fees, and if the peg then recovers you hold a token bought below par [2].
 
-## Practical Scenarios: Stablecoins, Exits, and Volatility Bands
+The risk is obvious and severe. If that discount is the market correctly pricing insolvency rather than a temporary squeeze, you have just bought all of it.
 
-### Scenario A: The Stablecoin Depeg Arbitrage Range
-Traders frequently use range orders on pegged assets (e.g., DAI/USDC or crvUSD/USDC) around the $[0.9990, 1.0010]$ corridor. If a stablecoin dips to \$0.9980 due to temporary liquidity strain, placing a single-sided range order between $[0.9985, 0.9995]$ effectively bids for the discounted asset. If the peg recovers to $1.0000$, the position completely converts into quote currency plus accumulated fees [2]. However, if the discount represents a structural insolvency rather than a transitory liquidity shock, the range order is completely filled with the defaulting token, crystallizing catastrophic loss.
+### Selling a treasury position gradually
 
-### Scenario B: Phased Treasury Liquidation
-DAOs and decentralized treasuries often utilize wide range orders to execute programmatic token diversifications. By placing a single-sided governance token position over a wide band (e.g., \$10.00 to \$15.00), the treasury acts as an on-chain automated seller. As external demand absorbs token inventory, the DAO accumulates USDC with zero price impact slippage, earning trading fees throughout the execution horizon [1].
+A project wants to diversify out of its own token without crashing it. With the token trading below \$10, a wide one-sided range from \$10 to \$15 turns the treasury into a patient seller [1]. Demand absorbs the tokens over time, the treasury accumulates dollars, and it earns fees the whole way.
 
-## Pre-Deployment Verification Checklist for Range Orders
+Here the wide range is the point rather than a mistake, because the goal is gradual execution rather than a single price.
 
-Before executing a range order strategy on an AMM, verify the following operational requirements:
+## What people get wrong about range orders
 
-- [ ] **Protocol Reversal Mechanism**: Are you using a classical v3 position (requiring immediate manual/bot withdrawal upon crossing), a v4 hook with atomic execution, or a native knock-out system?
-- [ ] **Tick Spacing Alignment**: Have you confirmed that your chosen price interval $[P_l, P_u]$ conforms to the pool's initialized `tickSpacing` parameter?
-- [ ] **LVR and Volatility Assessment**: Is the expected fee capture during crossing sufficient to offset the adverse selection cost imposed by arbitrageurs?
-- [ ] **Mempool Visibility and Gas Bidding**: If manual withdrawal is required, do you have automated infrastructure capable of executing a withdrawal transaction in the exact block following a complete crossing?
-- [ ] **Opportunity Cost vs. Intent Routing**: Would an intent-based limit order (e.g., CoW Swap or UniswapX) deliver better execution without locking up collateral or exposing capital to MEV sandwiching?
+| What people assume | What actually happens |
+| :--- | :--- |
+| It fills at my target price | It fills at the geometric mean of the two bounds, which is lower than the top |
+| Once it fills, I am done | It stays in the pool and reverses if the price comes back |
+| It is a free limit order that pays me | The fees are real, and the adverse selection usually costs more |
+| A wide range is more likely to fill | It is, and it fills at a much worse average price |
 
-Range orders bridge liquidity provision and order execution. However, treating them as simple limit orders without accounting for tick geometry, reversibility, and adverse selection will systematically impair risk-adjusted performance.
+## What to check before you place one
 
-## Diagnostic Troubleshooting Decision Tree
+1. **Which design are you using?** A plain range order needs a bot. A hook or a knock-out position does not.
+2. **Does your range fit the pool's step size?** Bounds have to line up with the pool's own increments.
+3. **Will the fees cover the adverse selection** — the pattern where the people trading with you already know the price moved? Usually not, on a volatile pair over a short window.
+4. **If you need to withdraw manually, can you actually do it in the next block?** If not, assume the order will reverse at some point.
+5. **Would an intent order be better?** No lock-up, no gas to place, no reversal, and no bot to run.
 
-Use this operational tree when executing range orders on concentrated AMMs:
+## Where to watch the numbers
 
-1. **Spot Price Crosses Range, but Position is Only Partially Filled**:
-   - *Diagnostic*: Price touched the range boundary but did not traverse the entire tick interval before reversing.
-   - *Action*: Evaluate whether to leave the remaining partial fill or withdraw the mixed inventory balance.
-2. **Order Fully Filled, but Un-Fills Following Market Reversal**:
-   - *Diagnostic*: Spot price retraced across the range before an onchain withdrawal transaction was submitted.
-   - *Action*: Automate range order execution using keeper bots or specialized limit order protocols (e.g., Aperture) that trigger atomic burn calls upon complete crossing.
-3. **Range Order Earns Significant Fees During Extended Choppy Crossing**:
-   - *Diagnostic*: Price oscillates across your exact single-sided interval, capturing continuous trading fees while gradually executing.
-   - *Action*: Beneficial outcome; collect bonus fee yield alongside the target order execution.
+- **Whether your position has crossed, and fees earned:** [Revert Finance](https://revert.finance).
+- **Automatic withdrawal on a full crossing:** [Aperture Finance](https://aperture.finance).
+- **How close the price is to your bounds:** [Dune Analytics](https://dune.com).
 
-## Where to Go Next
+## When something goes wrong
 
-A range order is a deliberate out-of-range position, so the mechanics in [Out-of-Range Liquidity](/guides/out-of-range-liquidity/) apply directly. For the alternative of simply taking liquidity and paying the impact, see [Slippage and Price Impact](/guides/slippage-and-price-impact/). The one-sided case is developed further in [Single-Sided Liquidity](/guides/single-sided-liquidity/).
+- **The price crossed but you are only half filled.** It touched your range and turned around before going all the way through. Decide whether to keep the partial position or take the mixed balance.
+- **It filled and then un-filled.** The price came back before you withdrew. Automate it, or use a design that locks on crossing.
+- **It is earning a lot of fees while slowly filling.** The price is oscillating across your range. That is the good case. Collect the fees and let it work.
+
+## Where to go next
+
+A range order is a deliberate out-of-range position, so everything in [Out-of-Range Liquidity](/guides/out-of-range-liquidity/) applies. For simply taking the price instead, and paying price impact — the way your order moves the rate — plus slippage, the gap between quote and fill, see [Slippage and Price Impact](/guides/slippage-and-price-impact/). The one-sided case is developed further in [Single-Sided Liquidity](/guides/single-sided-liquidity/).
 
 ## References
 
-
 1. [Uniswap v3 Core Whitepaper](https://uniswap.org/whitepaper-v3.pdf)
-2. [Uniswap v3 Concentrated Liquidity Concepts](https://developers.uniswap.org/docs/protocols/v3/concepts/concentrated-liquidity)
+2. [Concentrated Liquidity (Uniswap Developer Documentation)](https://developers.uniswap.org/docs/get-started/concepts/liquidity-providers/concentrated-liquidity)
 3. [Uniswap v4 Core Whitepaper](https://uniswap.org/whitepaper-v4.pdf)
-4. [Strategic Liquidity Provision in Uniswap v3 (Neuder et al., 2021)](https://arxiv.org/abs/2106.12033)
-5. [Trading Fast and Slow: Colocation and Liquidity](https://academic.oup.com/rfs/article/26/1/249/1574519)
-6. [Ambient Protocol Knock-Out Liquidity Architecture](https://docs.ambient.run/protocol-design/knock-out-liquidity)
+4. [Strategic Liquidity Provision in Uniswap v3 (Fan et al., 2021)](https://arxiv.org/abs/2106.12033)
+5. [Trading Fast and Slow: Colocation and Liquidity (Brogaard et al., 2015)](https://doi.org/10.1093/rfs/hhv045)
+6. [Knockout Liquidity (Ambient Documentation)](https://docs.ambient.finance/concepts/knockout-liquidity)
 7. [CoW Protocol Documentation](https://docs.cow.fi/)
 8. [An Analysis of Uniswap v3: Loss-Versus-Rebalancing and Market Microstructure](https://arxiv.org/abs/2208.06046)
 9. [On the Quality of Cryptocurrency Markets: Centralized versus Decentralized Exchanges (Barbon & Ranaldo, 2021)](https://arxiv.org/abs/2112.07386)
-10. [Trading in the DeFi era: automated market maker (BIS Bulletin No 58, 2022)](https://www.bis.org/publ/bisbull58.htm)
+10. [Miners as intermediaries: extractable value and market manipulation in crypto and DeFi (BIS Bulletin No 58, 2022)](https://www.bis.org/publ/bisbull58.htm)
 
 [1]: https://uniswap.org/whitepaper-v3.pdf "Uniswap v3 Core Whitepaper"
-[2]: https://developers.uniswap.org/docs/protocols/v3/concepts/concentrated-liquidity "Uniswap v3 Concentrated Liquidity Concepts"
+[2]: https://developers.uniswap.org/docs/get-started/concepts/liquidity-providers/concentrated-liquidity "Concentrated Liquidity (Uniswap Developer Documentation)"
 [3]: https://uniswap.org/whitepaper-v4.pdf "Uniswap v4 Core Whitepaper"
-[4]: https://arxiv.org/abs/2106.12033 "Strategic Liquidity Provision in Uniswap v3 (Neuder et al., 2021)"
-[5]: https://academic.oup.com/rfs/article/26/1/249/1574519 "Trading Fast and Slow: Colocation and Liquidity"
-[6]: https://docs.ambient.run/protocol-design/knock-out-liquidity "Ambient Protocol Knock-Out Liquidity Architecture"
+[4]: https://arxiv.org/abs/2106.12033 "Strategic Liquidity Provision in Uniswap v3 (Fan et al., 2021)"
+[5]: https://doi.org/10.1093/rfs/hhv045 "Trading Fast and Slow: Colocation and Liquidity (Brogaard et al., 2015)"
+[6]: https://docs.ambient.finance/concepts/knockout-liquidity "Knockout Liquidity (Ambient Documentation)"
 [7]: https://docs.cow.fi/ "CoW Protocol Documentation"
 [8]: https://arxiv.org/abs/2208.06046 "An Analysis of Uniswap v3: Loss-Versus-Rebalancing and Market Microstructure"
 [9]: https://arxiv.org/abs/2112.07386 "On the Quality of Cryptocurrency Markets: Centralized versus Decentralized Exchanges (Barbon & Ranaldo, 2021)"
-[10]: https://www.bis.org/publ/bisbull58.htm "Trading in the DeFi era: automated market maker (BIS Bulletin No 58, 2022)"
+[10]: https://www.bis.org/publ/bisbull58.htm "Miners as intermediaries: extractable value and market manipulation in crypto and DeFi (BIS Bulletin No 58, 2022)"

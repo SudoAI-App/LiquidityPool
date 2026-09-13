@@ -1,11 +1,11 @@
 ---
 title: "The Constant Product Formula: How x × y = k Shapes AMM Prices"
-description: "How x × y = k sets AMM execution: marginal vs average price, virtual reserves, bin invariants, slippage controls, and LP inventory paths before you trade."
+description: "What x × y = k actually does to your trade: why the quote is never your fill, how impact scales with size, and how other curves change the answer."
 category: "Foundations"
 date: 2026-09-07
-lastReviewed: "2026-09-10"
+lastReviewed: "2026-09-12"
 author: "Dr. Elena Rostova"
-readTime: "10 min read"
+readTime: "6 min read"
 keywords: "constant product formula, x y k AMM, Uniswap formula, AMM pricing curve, virtual reserves, constant product AMM, constant product market maker, pool reserves AMM, bonding curve crypto"
 featured: false
 faq:
@@ -15,17 +15,17 @@ faq:
     a: "Because the invariant is a hyperbola. Removing a fixed fraction of one reserve requires adding a proportionally larger amount of the other, so the average execution price degrades convexly as the order grows relative to the reserve."
   - q: "Does the constant product formula apply to Uniswap v3?"
     a: "Yes, in translated form. A v3 position uses the same curve shifted so that reserves reach zero at the position bounds, which is why the mathematics of price impact inside a range is familiar even though capital efficiency is much higher."
-  - q: "What is the x*y=k formula?"
-    a: "It is the constant-product invariant: the product of the two reserve balances stays constant across a trade before fees. It defines the execution price for any trade size and guarantees the pool can always quote, at increasingly unfavourable prices for larger orders."
+  - q: "Does every liquidity pool use x*y=k?"
+    a: "No. It is the rule for constant-product pools such as Uniswap v2. Stable-pair pools, weighted pools and bin-based pools use different rules, and concentrated liquidity pools apply the same curve only inside each position's chosen range."
   - q: "Why does liquidity pool price change?"
     a: "Because price is a function of the reserve ratio. Every swap changes the reserves, so the marginal price moves against the trade, and arbitrage then aligns that price with the wider market."
 ---
 
-The constant product formula, $x \cdot y = k$, is the foundational deterministic pricing rule of decentralized exchange microstructure. It establishes the mathematical relationship between pooled token reserves and executable market prices without relying on an external order matching engine.
+Almost every pool in decentralised finance runs on one line of arithmetic. Multiply the two token balances together. Never let that number fall.
 
-When an order executes against a constant-product automated market maker (AMM), the transaction shifts the reserve ratio, creating mechanical price impact. The swapper never executes at the pre-trade marginal spot price; they execute along the harmonic curvature of the curve, receiving an average execution price strictly worse than the spot quote.
+From that single rule comes every price the pool quotes, every cost you pay to trade, and most of what happens to your money if you deposit. It is worth an hour of your time.
 
-This guide presents the mathematical derivation of execution prices and price impact, contrasts full-range constant product with discrete bin and concentrated virtual reserves, and examines the inventory drift that liquidity providers underwrite.
+This guide shows you what the rule does, why your fill is always worse than the quote on the screen, how much worse at each trade size, and how other pool designs change the answer.
 
 <figure class="article-figure">
   <img src="/images/guides/constant-product-formula.webp" alt="A pricing curve shows trade size moving through changing pool reserves." width="1600" height="1067" loading="lazy" decoding="async" />
@@ -33,179 +33,113 @@ This guide presents the mathematical derivation of execution prices and price im
 </figure>
 
 > **Desk Field Note from Dr. Elena Rostova:**
-> *"The constant product formula $x \cdot y = k$ is elegant in theory but inherently unhedged in practice. Every continuous AMM position represents a short options straddle: you collect a stream of premium (trading fees) in exchange for paying out variance to informed traders whenever the underlying asset trends strongly. Understanding the curvature $\frac{d^2y}{dx^2} = \frac{2k}{x^3}$ tells you everything about your marginal slippage and exposure profile."*
+> *"The rule is beautiful and it is completely unhedged. Holding a position on this curve is selling volatility. You collect fees drip by drip, and you pay out whenever the asset moves hard in either direction. Everything about your exposure comes from how steeply the curve bends, and the curve bends hardest exactly when the pool is thinnest."*
 
-## 1. The Mathematical Execution Invariant Inside the Pool
+## What the rule actually says
 
-In a constant-product pool, a smart contract holds two token reserves: $x$ (representing token $X$) and $y$ (representing token $Y$). The contract enforces the invariant:
+A pool holds two balances. Call them $x$ and $y$. The contract enforces one thing [1] [2]:
 
 $$
 x \cdot y = k
 $$
 
-The instantaneous exchange rate between the two assets is the marginal spot price ($P_{\text{spot}}$), defined as the infinitesimal ratio of reserves:
+Where:
+
+- $x$ is how many units of the first token the pool holds.
+- $y$ is how many of the second.
+- $k$ is the number their product must stay at.
+
+Everything else is a consequence. The price is simply one balance divided by the other. Trade in one direction and you raise one balance and lower the other, which moves the price against you.
+
+The word for that fixed relationship is the pool's invariant — the one thing the contract will not let change. It never consults a price feed, it never looks at another exchange, and it never gets an opinion. It just refuses to let $k$ fall.
+
+## Why your fill is always worse than the quote
+
+The number on the screen is the rate for a trade of almost nothing. Your trade is not nothing, so it moves the balances while it executes, and you pay the average across that whole move.
+
+With a fee of $f$ taken off your input first, here is what you actually receive:
 
 $$
-P_{\text{spot}} = \frac{y}{x}
+\Delta y = \frac{y \cdot \Delta x \cdot (1 - f)}{x + \Delta x \cdot (1 - f)}
 $$
 
-When a trader swaps $\Delta x$ for token $Y$, the input amount increases reserve $x$ and decreases reserve $y$ while preserving the product $k$ before protocol fees [1] [2].
+Where:
 
-### Incorporating Swap Fees into Output Calculations
-In Uniswap v2 and equivalent constant-product architectures, a swap fee rate $f$ (e.g., 0.30% or $0.003$) is deducted from the input amount. The effective input added to the pool's reserves is:
+- $\Delta x$ is what you put in.
+- $\Delta y$ is what you get out.
+- $f$ is the fee rate, so 0.30% means $f = 0.003$.
+- $x$ and $y$ are the balances before your trade.
 
-$$
-\Delta x_{\text{eff}} = \Delta x \cdot (1 - f)
-$$
+Look at where your input sits. It is in the denominator. Every extra unit you send makes the bottom of that fraction bigger, which means each extra unit brings back a little less than the one before it.
 
-The conservation invariant requires that:
+That penalty is price impact — the cost of moving the pool's own balances to get your trade done. It is not a fee anyone charges you. It is geometry. The architecture that executes it is covered in [Automated Market Makers Explained](/guides/automated-market-maker-explained/).
 
-$$
-(x + \Delta x_{\text{eff}}) \cdot (y - \Delta y_{\text{out}}) = k = x \cdot y
-$$
+## How bad it gets at each size
 
-Solving algebraically for the exact token output $\Delta y_{\text{out}}$ received by the trader:
+Here is the whole thing in one table. Each row is your order measured against the pool's balance of the token you are paying in.
 
-$$
-\Delta y_{\text{out}} = y - \frac{x \cdot y}{x + \Delta x_{\text{eff}}} = \frac{y \cdot \Delta x_{\text{eff}}}{x + \Delta x_{\text{eff}}}
-$$
+| Your order, as a share of the pool | Roughly what the curve costs you |
+| :--- | ---: |
+| 1% | 0.99% |
+| 5% | 4.76% |
+| 10% | 9.09% |
+| 25% | 20.00% |
+| 50% | 33.33% |
 
-### Marginal Spot Price vs. Average Execution Price
-Traders frequently confuse the spot price visible on dashboards with their actual execution price:
-- **Marginal Spot Price ($P_{\text{spot}}$)**: The instantaneous derivative $\frac{dy}{dx} = \frac{y}{x}$ before the swap executes.
-- **Average Execution Price ($\bar{P}$)**: The total quantity of input asset surrendered divided by the total output received:
+Fees are on top of those numbers. A \$10,000 trade into a pool holding \$100,000 of the token you are paying with loses about 9% to the curve before you pay a cent of fee.
 
-$$
-\bar{P} = \frac{\Delta x}{\Delta y_{\text{out}}} = \frac{x + \Delta x_{\text{eff}}}{y \cdot (1 - f)} = \frac{P_{\text{spot}}^{-1} + \frac{\Delta x_{\text{eff}}}{y}}{1 - f}
-$$
+Three things follow, and all three are worth internalising:
 
-Because $\Delta x_{\text{eff}} > 0$, the average execution price is **strictly worse than the marginal spot price**. Price impact is not an exchange commission; it is the mathematical penalty imposed by traversing a convex hyperbolic curve [2] [3].
+- **Your tolerance setting does not reduce the cost.** It only decides whether the trade reverts. Raising it from 1% to 5% does not get you a better rate. It just authorises the contract to fill you at the bad one [2].
+- **Splitting the order helps.** Spreading it across several pools, or letting an aggregator do it, lowers the share of each pool you consume. The curve punishes size because the cost grows faster than the order does [1] [4].
+- **Somebody is waiting behind you.** A large trade leaves the pool's price out of line with the rest of the market, and a bot corrects it in the same block and keeps the difference [5].
 
-For an architectural breakdown of how modern singletons execute this math, see [Automated Market Makers Explained: The Engine Behind AMM Pools](/guides/automated-market-maker-explained/).
+## How other curves change the answer
 
----
+The constant product rule is the general-purpose one. Other designs trade that generality for depth in a narrower place.
 
-## 2. Taylor Approximation: Small Trades in Deep Liquidity
-
-When an order size $\Delta x$ is small relative to total reserves $x$ ($\Delta x_{\text{eff}} \ll x$), the denominator $(x + \Delta x_{\text{eff}})$ can be expanded using a first-order Taylor series [1]:
-
-$$
-\Delta y_{\text{out}} \approx \frac{y}{x} \cdot \Delta x_{\text{eff}} \cdot \left(1 - \frac{\Delta x_{\text{eff}}}{x}\right) \approx P_{\text{spot}} \cdot \Delta x \cdot (1 - f)
-$$
-
-In deep liquidity pools where trade size is negligible relative to reserves, price impact approaches zero, and the execution price converges to the marginal spot price scaled by the fee factor $(1 - f)$. In this regime, the protocol fee constitutes almost the entire difference between quote and execution [1] [3].
-
----
-
-## 3. Large Swaps and Price Impact in Shallow Reserves
-
-When order size $\Delta x$ represents a meaningful percentage of pool reserves $x$, the linear approximation fails completely. As $\Delta x$ expands, each incremental unit of input purchases fewer units of output, causing the effective exchange rate to degrade rapidly [1] [2].
-
-```
-+--------------------------------------------------------------------------------+
-|                        PRICE IMPACT DYNAMICS ON CPMM                           |
-+--------------------------------------------------------------------------------+
-|                                                                                |
-|  Trade Size relative to Pool x     Approximate Price Impact (excl. fee)        |
-|  ----------------------------------------------------------------------------  |
-|  Delta x = 0.01 * x  (1% of pool)  -->  ~0.99% Price Impact                    |
-|  Delta x = 0.05 * x  (5% of pool)  -->  ~4.76% Price Impact                    |
-|  Delta x = 0.10 * x (10% of pool)  -->  ~9.09% Price Impact                    |
-|  Delta x = 0.25 * x (25% of pool)  --> ~20.00% Price Impact                    |
-|  Delta x = 0.50 * x (50% of pool)  --> ~33.33% Price Impact                    |
-|                                                                                |
-+--------------------------------------------------------------------------------+
-```
-
-Key operational takeaways for market participants:
-- **Slippage Tolerance Does Not Reduce Impact**: Slippage tolerance only establishes a revert threshold (`minAmountOut`). Setting a higher slippage tolerance (e.g., 5%) does not improve your execution; it simply authorizes the smart contract to fill your order at the degraded rate dictated by the curve [2].
-- **Order Splitting**: Routing portions of an order across multiple independent liquidity pools or DEX aggregators reduces the effective $\Delta x / x$ in each venue, minimizing aggregate price impact [1] [4].
-- **Immediate Arbitrage Backrunning**: A swap that shifts an AMM's marginal price away from external market consensus creates an immediate arbitrage opportunity. Searchers will execute backrunning swaps in the same block, pocketing the price discrepancy [5].
-
----
-
-## 4. Invariant Comparison: CPMM, Virtual Ticks, and Discrete Bins
-
-Modern decentralized finance has developed specialized invariants optimized for different volatility and correlation regimes:
-
-| Invariant Architecture | Formula / Governing Equation | Capital Density | Primary Failure Mode |
+| Pool design | What it does differently | Where the money sits | How it fails |
 | :--- | :--- | :--- | :--- |
-| **Constant Product (Uniswap v2)** | $x \cdot y = k$ across $(0, \infty)$ | Uniform, low density across all prices [1] | High slippage on large orders relative to total reserves [3] |
-| **Concentrated Virtual Reserves (v3/v4)** | $(x + \frac{L}{\sqrt{P_b}})(y + L\sqrt{P_a}) = L^2$ | Hyper-dense within tick interval $[P_a, P_b]$ [1] | Severe price cliff once active tick liquidity is exhausted [1] |
-| **Curve StableSwap** | $A n^n \sum x_i + D = A D n^n + \frac{D^{n+1}}{n^n \prod x_i}$ | Ultra-dense near parity; flat curve [4] | Sharp slippage acceleration when reserves skew past 80/20 [4] |
-| **Discrete Bin AMM (Liquidity Book)** | $P \cdot x + y = L_{\text{bin}}$ per discrete bin | Zero intra-bin slippage; step transitions [1] | Gaps between bins during fast directional momentum |
+| Constant product, Uniswap v2 | Nothing, this is the base case | Spread across every possible price | Large orders get expensive fast [3] |
+| Chosen ranges, Uniswap v3 and v4 | Same curve, shifted to run out at your band's edges | Packed into your band | Price leaves the band and depth vanishes [1] |
+| Stable pairs, Curve | Nearly flat near the peg, curved further out | Piled up around a one-to-one rate | Cost accelerates once the pair skews badly [4] |
+| Stepped bins | Flat price inside each step | Sorted into fixed steps | A fast move can jump empty steps |
 
-For a comprehensive analysis of concentrated tick mathematics, review [Concentrated Liquidity Explained: Range, Capital Efficiency, and Risk](/guides/concentrated-liquidity-explained/).
+For the range-based version of this maths, see [Concentrated Liquidity Explained](/guides/concentrated-liquidity-explained/).
 
----
+## What people get wrong about the formula
 
-## 5. Common Mathematical Misconceptions & Slippage Errors
+| What people assume | What actually happens |
+| :--- | :--- |
+| A 1% tolerance caps my loss at 1% | It caps the drift from an estimate that already includes impact. If the estimate baked in 8%, you can still lose 9% |
+| Twice the pool size means half the cost | Only if the extra money sits near the price. In range-based pools, most of it often does not |
+| The rule protects depositors | It guarantees one thing: the product holds. It also forces the pool to sell the winner and buy the loser every time prices move |
+| Price impact is a fee somebody charges | Nobody charges it. It is the shape of the curve, and it goes to the pool, not to a company |
 
-Review these common execution mistakes before interacting with constant-product contracts:
+## What to check before you trade
 
-```
-+--------------------------------------------------------------------------------+
-|                 COMMON AMM MATHEMATICAL MISCONCEPTIONS                         |
-+--------------------------------------------------------------------------------+
-|                                                                                |
-|  [x] Misconception: "Setting 1% slippage caps total execution loss at 1%."     |
-|  [v] Reality: Slippage tolerance only caps deviation from the estimated quote. |
-|      If the estimated quote already baked in 8% price impact, a 1% slippage   |
-|      setting permits a 9% total execution penalty.                            |
-|                                                                                |
-|  [x] Misconception: "Double the pool TVL means half the price impact."         |
-|  [v] Reality: In concentrated AMMs, gross TVL does not dictate impact. Depth   |
-|      in the active tick dictates execution. A $10M pool with dense ticks       |
-|      yields lower impact than a $100M pool with dispersed liquidity.           |
-|                                                                                |
-|  [x] Misconception: "The AMM invariant protects LPs from trading losses."      |
-|  [v] Reality: The invariant guarantees only that x * y = k holds. It forces    |
-|      LPs to sell the appreciating asset and accumulate the depreciating asset  |
-|      whenever external prices diverge (Loss-Versus-Rebalancing).               |
-|                                                                                |
-+--------------------------------------------------------------------------------+
-```
+1. **Work out the output yourself.** Read the two balances from the contract and run them through the formula above. Compare that with what the interface quotes [1] [2].
+2. **Set a real floor.** Decide the worst rate you will accept in absolute terms, and pass that number rather than a percentage you picked by habit [2].
+3. **In range-based pools, look at the live band.** Check that enough money sits at and around the current price to absorb your order without jumping into an empty stretch [1].
+4. **Protect anything above \$20,000.** Send it through a private relay so bots cannot read your order and trade in front of it [5].
 
----
+For what this same curve costs a depositor — impermanent loss, the gap between a pool position and simply holding the tokens — see [Impermanent Loss Explained](/guides/impermanent-loss-explained/).
 
-## 6. Pre-Trade Quantitative Verification Checklist
+## Where to watch the numbers
 
-Execute this verification sequence before routing swaps through constant-product pools:
+- **Simulate the trade first:** [Tenderly](https://tenderly.co) runs it against the live contract.
+- **Volume and fee turnover by pool:** [DeFiLlama](https://defillama.com).
+- **Your position against simply holding:** [Revert Finance](https://revert.finance).
 
-1. **Calculate Price Impact Independently**: Use the formula $\Delta y_{\text{out}} = \frac{y \cdot \Delta x_{\text{eff}}}{x + \Delta x_{\text{eff}}}$ to verify the interface's quoted output against raw contract reserves [1] [2].
-2. **Set a Mathematical Floor on Output**: Calculate the minimum acceptable output based on maximum allowable price impact, and pass that explicit value to `minAmountOut` [2].
-3. **Inspect Tick Density (Concentrated Pools)**: In Uniswap v3 and v4 pools, verify that the active tick and adjacent ticks hold sufficient liquidity $L$ to absorb your order without jumping across empty tick intervals [1].
-4. **Evaluate Private RPC Routing**: For trades exceeding \$20,000, submit transactions through private RPC endpoints (e.g., Flashbots Protect) to prevent sandwich bots from exploiting your deterministic price impact [5].
+## When something goes wrong
 
-For further analysis of LP rebalancing mechanics, consult our foundation guide: [Impermanent Loss Explained: Rebalancing, Relative Price, and LP Outcomes](/guides/impermanent-loss-explained/).
+- **Your cost was worse than the formula predicted.** Either the balances were smaller than you assumed, or somebody traded in front of you in the same block. Read the reserves immediately before trading and use a private relay.
+- **One side of the pool keeps draining.** The market has moved somewhere else, and the pool is a one-way door for arbitrage. If the falling token looks permanently broken, take out what is left.
+- **Fees are coming in below what the page promised.** Volume has moved to pools that quote better, so routers no longer send trades your way. Move to a design that competes on execution.
 
----
+## Where to go next
 
-## Monitoring & Onchain Tooling Stack
-
-To track constant-product reserve ratios, price impact, and divergence metrics:
-
-- **Reserve Tracking & Slip Calculations**: Simulate marginal price impact for varying trade sizes against constant-product reserves using [Tenderly](https://tenderly.co).
-- **Historical Pool Volumes & Fees**: Audit fee turnover and capital productivity on [DeFiLlama](https://defillama.com).
-- **LP Position Benchmark Accounting**: Calculate realized impermanent divergence versus a static buy-and-hold strategy on [Revert Finance](https://revert.finance).
-
-## Diagnostic Troubleshooting Decision Tree
-
-Follow this diagnostic decision tree when analyzing constant product pool execution:
-
-1. **Slippage Significantly Exceeds Theoretical Formula Calculations**:
-   - *Diagnostic*: The pool reserves onchain are substantially smaller than assumed, or a frontrunning transaction has altered reserve balances in the same block.
-   - *Action*: Verify current onchain reserves via contract call prior to trade execution and utilize private RPC endpoints to prevent sandwich extraction.
-2. **Pool Suffers Persistent Reserve Depletion on One Side**:
-   - *Diagnostic*: Structural price divergence on external markets has turned the pool into a one-way liquidity drain for informed arbitrageurs.
-   - *Action*: If providing liquidity, assess whether the depreciating asset is undergoing permanent failure; if so, withdraw remaining healthy reserves immediately.
-3. **Fee Accruals Lagging Behind Projected APY**:
-   - *Diagnostic*: Trading volume on the pair has migrated to concentrated liquidity AMMs (Uniswap v3/v4) that offer superior execution pricing to aggregators.
-   - *Action*: Reallocate capital from classic $x \cdot y = k$ pools to concentrated tick-based or discretized bin protocols.
-
-## Where to Go Next
-
-The same invariant produces two consequences worth studying separately: the cost a trader pays, in [Slippage and Price Impact](/guides/slippage-and-price-impact/), and the cost a liquidity provider absorbs, in [The Impermanent Loss Formula](/guides/impermanent-loss-formula/). For how other curve families change both, see [Types of Liquidity Pools](/guides/liquidity-pool-types/).
+The same rule produces two separate costs. What a trader pays — price impact plus slippage, the gap between quote and fill — is in [Slippage and Price Impact](/guides/slippage-and-price-impact/). What a depositor absorbs is impermanent loss, the gap between the pool position and simply holding, worked out in [The Impermanent Loss Formula](/guides/impermanent-loss-formula/). For how other curves change both, see [Types of Liquidity Pools](/guides/liquidity-pool-types/).
 
 ## References
 
@@ -213,15 +147,16 @@ The same invariant produces two consequences worth studying separately: the cost
 2. [Uniswap v2 Core Whitepaper (Adams, 2020)](https://uniswap.org/whitepaper.pdf)
 3. [Understanding Swaps on Uniswap (Uniswap Developer Documentation)](https://developers.uniswap.org/docs/get-started/concepts/traders/swaps)
 4. [Curve StableSwap Exchange: Overview (Curve Knowledge Hub)](https://docs.curve.finance/developer/amm/legacy/stableswap-overview)
-5. [Trading in the DeFi era: automated market maker (BIS Bulletin No 58, 2022)](https://www.bis.org/publ/bisbull58.htm)
+5. [Miners as intermediaries: extractable value and market manipulation in crypto and DeFi (BIS Bulletin No 58, 2022)](https://www.bis.org/publ/bisbull58.htm)
 6. [An Analysis of Uniswap Markets (Angeris et al., 2019)](https://arxiv.org/abs/1911.03380)
 7. [Constant Function Market Makers: Multi-Asset Trades via Convex Optimization (Angeris et al., Stanford)](https://web.stanford.edu/~boyd/papers/pdf/cfmm.pdf)
-8. [SoK: Decentralized Exchanges with Automated Market Maker Protocols (Xu et al., 2021)](https://arxiv.org/abs/2103.12732)
+8. [SoK: Decentralized Exchanges (DEX) with Automated Market Maker (AMM) Protocols (Xu et al., 2021)](https://arxiv.org/abs/2103.12732)
+
 [1]: https://uniswap.org/whitepaper-v4.pdf "Uniswap v4 Core Whitepaper"
 [2]: https://uniswap.org/whitepaper.pdf "Uniswap v2 Core Whitepaper"
 [3]: https://developers.uniswap.org/docs/get-started/concepts/traders/swaps "Understanding Swaps on Uniswap"
 [4]: https://docs.curve.finance/developer/amm/legacy/stableswap-overview "Curve StableSwap Exchange: Overview"
-[5]: https://www.bis.org/publ/bisbull58.htm "Trading in the DeFi era: automated market maker (BIS Bulletin No 58, 2022)"
+[5]: https://www.bis.org/publ/bisbull58.htm "Miners as intermediaries: extractable value and market manipulation in crypto and DeFi (BIS Bulletin No 58, 2022)"
 [6]: https://arxiv.org/abs/1911.03380 "An Analysis of Uniswap Markets (Angeris et al., 2019)"
 [7]: https://web.stanford.edu/~boyd/papers/pdf/cfmm.pdf "Constant Function Market Makers: Multi-Asset Trades via Convex Optimization (Angeris et al., Stanford)"
-[8]: https://arxiv.org/abs/2103.12732 "SoK: Decentralized Exchanges with Automated Market Maker Protocols (Xu et al., 2021)"
+[8]: https://arxiv.org/abs/2103.12732 "SoK: Decentralized Exchanges (DEX) with Automated Market Maker (AMM) Protocols (Xu et al., 2021)"

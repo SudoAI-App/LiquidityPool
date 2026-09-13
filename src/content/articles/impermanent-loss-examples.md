@@ -1,11 +1,11 @@
 ---
 title: "Impermanent Loss Examples: Five Positions, Fully Worked"
-description: "Five impermanent loss examples with real numbers: a modest drift, a doubling, a four-times run, a halving, and a stablecoin depeg, each net of fee income."
+description: "Five real positions in dollars: a small drift, a doubling, a four-times run, a halving, and a stablecoin breaking. Each one with the fees needed to break even."
 category: "Risk & Research"
 date: 2026-09-11
-lastReviewed: "2026-09-11"
+lastReviewed: "2026-09-12"
 author: "Dr. Elena Rostova"
-readTime: "11 min read"
+readTime: "6 min read"
 keywords: "impermanent loss example, impermanent loss calculation example, IL worked example, divergence loss scenario, stablecoin depeg example, impermanent loss vs permanent loss"
 featured: false
 faq:
@@ -19,9 +19,11 @@ faq:
     a: "When you withdraw at a price ratio different from your entry ratio. Until then, the gap closes if relative prices return to where they started, which is the whole reason the word impermanent is used."
 ---
 
-Formulas convince nobody. Five positions with real quantities, priced end to end, make the shape of divergence obvious in a way that the closed form does not: small moves cost almost nothing, large moves cost a great deal, and the fee line decides whether either matters.
+Formulas convince nobody. Five positions with real dollars make the shape obvious in a way the algebra does not.
 
-Each example uses a balanced deposit and the constant-product case, then states what fee income would have been required to break even.
+Small moves cost you almost nothing. Large moves cost a great deal. Impermanent loss — the gap between a pool position and simply holding — is what we are measuring, and in every case the fee line decides whether it mattered.
+
+Each one below uses an even deposit in an ordinary pool, then tells you exactly what the fees would have had to be to break even.
 
 <figure class="article-figure">
   <img src="/images/guides/impermanent-loss-examples.webp" alt="Five scenarios with bars showing impermanent loss for each price move." width="1600" height="1067" loading="lazy" decoding="async" />
@@ -29,121 +31,131 @@ Each example uses a balanced deposit and the constant-product case, then states 
 </figure>
 
 > **Desk Field Note from Dr. Elena Rostova:**
-> *"Ask any LP what a 4x costs them and most will guess a few percent. It is twenty. The function is flat enough near parity that intuition trained on small moves fails badly in the tail, which is exactly where position sizing decisions get made."*
+> *"Ask anybody what a four-times move costs them and most will guess a few percent. It is twenty. The function is flat enough near the middle that intuition trained on small moves fails badly in the tail, which is exactly where the sizing decisions get made."*
 
-## 1. Example One: A Modest Drift
+## One: a modest drift
 
-**Position**: \$10,000 into ETH/USDC at 2,000 per ETH, so 2.5 ETH and \$5,000.
-**Move**: ETH rises to 2,500. Price ratio $k = 1.25$.
+**You deposit** \$10,000 into ETH against dollars at \$2,000 per ETH, so 2.5 ETH and \$5,000.
 
-Holding the basket would be worth $2.5 \times 2{,}500 + 5{,}000 = \$11{,}250$. The pool rebalances to $2.5 / \sqrt{1.25} = 2.236$ ETH and $5{,}000 \times \sqrt{1.25} = \$5{,}590$, worth \$11,180.
+**ETH rises to \$2,500.** A 25% move.
 
-| Line | Value |
+| | Value |
 | :--- | ---: |
-| Hold value | \$11,250 |
-| Pool value before fees | \$11,180 |
-| Divergence | −\$70, or −0.62% |
-| Fees required to break even | \$70 |
+| Holding would be worth | \$11,250 |
+| The pool position is worth | \$11,180 |
+| The gap | -\$70, or -0.62% |
+| Fees needed to break even | \$70 |
 
-At a 5 bps tier with reasonable turnover, seventy dollars is a few days of income. This is the regime where liquidity provision is comfortably profitable and where most positions spend most of their life.
+At a 0.05% tier with reasonable turnover, \$70 is a few days of income. This is the regime where pools work comfortably, and where most positions spend most of their life.
 
----
+## Two: it doubles
 
-## 2. Example Two: The Asset Doubles
+**You deposit** 1 ETH and \$2,000 at \$2,000 per ETH. A \$4,000 basket.
 
-**Position**: 1 ETH and \$2,000 at 2,000 per ETH, a \$4,000 basket.
-**Move**: ETH reaches 4,000. $k = 2$.
+**ETH reaches \$4,000.** The pool rotates you to 0.7071 ETH and \$2,828.
 
-Reserves rotate to 0.7071 ETH and \$2,828.
-
-| Line | Value |
+| | Value |
 | :--- | ---: |
-| Hold value | \$6,000 |
-| Pool value before fees | \$5,657 |
-| Divergence | −\$343, or −5.72% |
-| Fees required to break even | \$343 |
+| Holding would be worth | \$6,000 |
+| The pool position is worth | \$5,657 |
+| The gap | -\$343, or -5.72% |
+| Fees needed to break even | \$343 |
 
-The position is up \$1,657 in dollar terms and still trails holding by \$343. Both statements are true, and confusing them is the single most common misreading of an LP result. The derivation is in [The Impermanent Loss Formula](/guides/impermanent-loss-formula/).
+Read both numbers. You are up \$1,657 in dollars and behind holding by \$343. Both are true at the same time, and confusing them is the single most common misreading of a pool result. See [The Impermanent Loss Formula](/guides/impermanent-loss-formula/).
 
----
+## Three: a four-times run
 
-## 3. Example Three: A Four-Times Run
+**You deposit** \$20,000 split between a mid-cap token and dollars at \$5.00, so 2,000 tokens and \$10,000.
 
-**Position**: \$20,000 split across a mid-cap token and USDC at \$5.00 per token, so 2,000 tokens and \$10,000.
-**Move**: The token reaches \$20.00. $k = 4$.
+**The token reaches \$20.00.** The pool rotates you to 1,000 tokens and \$20,000.
 
-Reserves rotate to 1,000 tokens and \$20,000.
-
-| Line | Value |
+| | Value |
 | :--- | ---: |
-| Hold value | \$50,000 |
-| Pool value before fees | \$40,000 |
-| Divergence | −\$10,000, or −20.00% |
-| Fees required to break even | \$10,000 |
+| Holding would be worth | \$50,000 |
+| The pool position is worth | \$40,000 |
+| The gap | -\$10,000, or -20.00% |
+| Fees needed to break even | \$10,000 |
 
-Ten thousand dollars of fees on a \$20,000 position requires extraordinary turnover. In practice this position sold half its winner on the way up, and no realistic fee tier compensates for it. If the thesis was that the token would run, the pool was the wrong instrument for expressing it.
+Ten thousand dollars of fees on a \$20,000 position needs extraordinary turnover. On any ordinary pool it will not happen, however long you wait.
 
----
+What actually occurred is simple: the pool sold half your winner on the way up. If your thesis was that this token would run, a pool was the wrong instrument for holding it.
 
-## 4. Example Four: A Halving
+## Four: it halves
 
-**Position**: The same \$20,000 basket at \$5.00 per token.
-**Move**: The token falls to \$2.50. $k = 0.5$.
+**The same \$20,000 basket** at \$5.00.
 
-| Line | Value |
+**The token falls to \$2.50.**
+
+| | Value |
 | :--- | ---: |
-| Hold value | \$15,000 |
-| Pool value before fees | \$14,142 |
-| Divergence | −\$858, or −5.72% |
-| Fees required to break even | \$858 |
+| Holding would be worth | \$15,000 |
+| The pool position is worth | \$14,142 |
+| The gap | -\$858, or -5.72% |
+| Fees needed to break even | \$858 |
 
-Note the symmetry with example two: the same 5.72%, because the formula depends on the log of the ratio. Note also what dominates the outcome. The position lost \$5,000 to the market and \$858 to the invariant. Attributing the whole loss to impermanent loss, as many post-mortems do, misidentifies the problem: the pair selection cost six times more than the pool mechanics did.
+Notice the symmetry with example two. Exactly 5.72% again, because the formula only cares about distance, not direction.
 
----
+Now notice what actually dominates. You lost \$5,000 to the market and \$858 to the pool. Blaming the whole loss on impermanent loss, as most post-mortems do, misidentifies the problem. Picking that pair cost six times what the pool mechanics did.
 
-## 5. Example Five: A Stablecoin Depeg
+## Five: a stablecoin breaks
 
-**Position**: \$50,000 into an amplified stable pool, split evenly between two dollar stablecoins.
-**Move**: One asset trades to \$0.90 and stays there.
+**You deposit** \$50,000 into a flat stable-pair pool, split evenly between two dollar tokens.
 
-Endpoint divergence computed from the ratio alone looks trivial, roughly −0.14%. The realised outcome is not, because the amplified curve holds price near par while reserves skew. By the time the pool's quote reflects the dislocation, the pool holds far more of the distressed asset than of the sound one.
+**One of them trades to \$0.90 and stays there.**
 
-| Line | Approximate value |
+Computed from the endpoint ratio alone, this looks trivial. About -0.14%. That number is badly wrong, and here is why.
+
+The flat curve holds the price near par while the balances skew. By the time the pool's quote reflects reality, it holds far more of the broken token than the good one.
+
+| | Roughly |
 | :--- | ---: |
-| Pool composition after absorption | roughly 80% distressed asset |
-| Marked value at \$0.90 | roughly \$45,500 |
-| Loss against holding a 50/50 basket | roughly −\$2,000 |
-| Fee income over the same window | typically a few hundred dollars |
+| What the pool holds afterwards | About 80% the broken token |
+| Marked at \$0.90 | About \$45,500 |
+| Against holding an even basket | About -\$2,000 |
+| Fees over the same window | A few hundred dollars |
 
-The lesson is that the ratio-based formula understates risk on curves designed to resist ratio changes. The exposure is in the reserve composition, not in the endpoint ratio, and it is developed in [Stablecoin Liquidity Pools](/guides/stablecoin-liquidity-pools/).
+The lesson: on curves designed to resist ratio changes, the ratio-based formula understates the risk badly. The exposure lives in the composition, not the endpoint. See [Stablecoin Liquidity Pools](/guides/stablecoin-liquidity-pools/).
 
-## 5b. The Same Five Cases in a Concentrated Range
+## How fast the fees had to arrive
 
-Every example above assumes an unbounded curve. A range position changes two things: divergence inside the band is amplified by roughly the capital-efficiency multiplier, and it stops accruing once price leaves the band and the position is fully converted.
+The dollar gap is only half the story. The other half is how long the move took, because fees accrue with time and divergence does not wait for them.
 
-Take example two again, the doubling from 2,000 to 4,000, but supplied in a ±10% band. The position converts entirely to the quote asset once price passes 2,200, long before the move completes. From that point it holds no ETH at all, so it captures none of the run from 2,200 to 4,000.
+| Example | Gap as a share of the deposit | Fee rate needed if the move took a month | If it took a year |
+| :--- | ---: | ---: | ---: |
+| One, up 25% | 0.7% | about 8.5% a year | 0.7% a year |
+| Two, doubles | 8.6% | about 104% a year | 8.6% a year |
+| Three, four times | 50% | about 608% a year | 50% a year |
+| Four, halves | 4.3% | about 52% a year | 4.3% a year |
 
-| Structure | Divergence realised | Participation above the band |
-| :--- | ---: | :--- |
-| Full range | −5.72% | Keeps 0.71 ETH throughout |
-| ±10% band | Bounded at conversion | None: fully in USDC above 2,200 |
-| ±40% band | Larger than full range while in band | Partial, converts near 2,800 |
+The same move is trivial spread over a year and brutal packed into a month. So a quoted fee rate only means something next to how fast the pair actually moves. Before you compare two pools on their rates, check how quickly each pair has moved over the last few months. A pool paying 30% a year on a pair that can double in a month is not paying you enough, however generous 30% sounds.
 
-The bounded figure looks smaller in the formula and feels considerably worse in the account, because the opportunity cost of missing the remainder of the move does not appear in any impermanent loss calculation. That gap is the subject of [Out-of-Range Liquidity](/guides/out-of-range-liquidity/), and it is the reason narrow bands on trending pairs disappoint even when the arithmetic says divergence was modest.
+## The same five, in a narrow band
 
-Fee income partially compensates, since a narrow band earns far more per dollar while price is inside it. Whether it compensates enough is decided by how long the price stayed in the band, which is measurable after the fact and estimable in advance from realised volatility.
+Everything above assumes a full-range position. A band changes two things. Inside it, the loss grows faster, because your money is concentrated there. Past the edge, you hold only one token and stop rotating, but the market keeps moving without you, so the shortfall against holding keeps growing.
 
----
+Take example two again, ETH going from \$2,000 to \$4,000, but in a band.
 
-## 6. What the Five Cases Have in Common
+| Structure | Shortfall when ETH reaches the band's top | Shortfall when ETH reaches \$4,000 | What you hold at \$4,000 |
+| :--- | ---: | ---: | :--- |
+| Full range | No edge | -5.7% | 0.71 ETH and \$2,828 |
+| Plus or minus 40% | -7.6% at \$2,800 | -23.6% | Only dollars |
+| Plus or minus 10% | -2.3% at \$2,200 | -30.7% | Only dollars |
 
-1. **Divergence is small until it is not.** Below a 25% relative move it rounds to nothing; past a 3x it dominates.
-2. **The benchmark is the basket, not cash.** Examples two and four are the same divergence with opposite dollar outcomes.
-3. **Fees are the only offset that is actually paid to you.** Everything else is either a different exposure or a different instrument.
-4. **Curve design changes where the risk lives.** Amplified curves move it from the ratio into the composition.
-5. **The decision is made at deposit, not at exit.** Every number above was computable in advance from a price assumption.
+The narrow band looks mild at its edge and finishes far behind. Every dollar of the run from \$2,200 to \$4,000 happened after the band had already sold your ETH. A tool that stops measuring at the edge hides this, so always compare against holding at today's price.
 
-Run your own position through the [impermanent loss calculator](/tools/impermanent-loss-calculator/), then check whether the fee side clears it using the [liquidity pool fee and APR calculator](/tools/liquidity-pool-calculator/). For the ways to reduce the exposure and what each costs, see [How to Avoid Impermanent Loss](/guides/how-to-avoid-impermanent-loss/).
+That gap is the subject of [Out-of-Range Liquidity](/guides/out-of-range-liquidity/), and it is why narrow bands on trending pairs disappoint so reliably.
+
+Fees partly compensate, because a narrow band earns much more per dollar while you are inside it. Whether they compensate enough depends on how long the price stayed there, which you can estimate in advance from how much the pair actually moves.
+
+## What all five have in common
+
+1. **It is small until it is not.** Below a 25% move it rounds to nothing. Past three times, it dominates everything else.
+2. **Your benchmark is the basket, not cash.** Examples two and four have identical divergence and opposite dollar outcomes.
+3. **Fees are the only offset actually paid to you.** Everything else is a different exposure or a different instrument.
+4. **The curve decides where the risk lives.** Flat curves move it out of the ratio and into the composition, where the usual formula cannot see it.
+5. **The decision happens at deposit, not at exit.** Every number above was computable in advance from a price assumption.
+
+Run your own position through the [impermanent loss calculator](/tools/impermanent-loss-calculator/), then check whether the fees clear it with the [liquidity pool fee and APR calculator](/tools/liquidity-pool-calculator/). For what each mitigation costs, see [How to Avoid Impermanent Loss](/guides/how-to-avoid-impermanent-loss/).
 
 ## References
 
@@ -153,7 +165,7 @@ Run your own position through the [impermanent loss calculator](/tools/impermane
 4. [What are the risks when providing liquidity? (Uniswap Labs)](https://support.uniswap.org/hc/en-us/articles/37113550065549-What-are-the-risks-when-providing-liquidity)
 5. [Impermanent Loss in Uniswap v3 (Loesch et al., 2021)](https://arxiv.org/abs/2111.09192)
 6. [Risks and Returns of Uniswap V3 Liquidity Providers (Heimbach et al., 2022)](https://arxiv.org/abs/2205.08904)
-7. [Trading in the DeFi era: automated market maker (BIS Bulletin No 58, 2022)](https://www.bis.org/publ/bisbull58.htm)
+7. [Miners as intermediaries: extractable value and market manipulation in crypto and DeFi (BIS Bulletin No 58, 2022)](https://www.bis.org/publ/bisbull58.htm)
 8. [An Analysis of Uniswap Markets (Angeris et al., 2019)](https://arxiv.org/abs/1911.03380)
 
 [1]: https://uniswap.org/whitepaper.pdf "Uniswap v2 Core Whitepaper"
@@ -162,5 +174,5 @@ Run your own position through the [impermanent loss calculator](/tools/impermane
 [4]: https://support.uniswap.org/hc/en-us/articles/37113550065549-What-are-the-risks-when-providing-liquidity "What are the risks when providing liquidity?"
 [5]: https://arxiv.org/abs/2111.09192 "Impermanent Loss in Uniswap v3 (Loesch et al., 2021)"
 [6]: https://arxiv.org/abs/2205.08904 "Risks and Returns of Uniswap V3 Liquidity Providers (Heimbach et al., 2022)"
-[7]: https://www.bis.org/publ/bisbull58.htm "Trading in the DeFi era: automated market maker (BIS Bulletin No 58, 2022)"
+[7]: https://www.bis.org/publ/bisbull58.htm "Miners as intermediaries: extractable value and market manipulation in crypto and DeFi (BIS Bulletin No 58, 2022)"
 [8]: https://arxiv.org/abs/1911.03380 "An Analysis of Uniswap Markets (Angeris et al., 2019)"

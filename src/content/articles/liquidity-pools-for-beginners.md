@@ -1,11 +1,11 @@
 ---
 title: "Liquidity Pools for Beginners: Five Decisions, In Order"
-description: "A beginner's guide to liquidity pools that skips the hype: what you are agreeing to, the five decisions that decide the outcome, and the mistakes that cost the most."
+description: "Five decisions settle almost everything about how your first position turns out. None requires predicting a price, and the yield is the last thing to check."
 category: "Foundations"
 date: 2026-09-11
-lastReviewed: "2026-09-11"
+lastReviewed: "2026-09-12"
 author: "Siddharth Mehta"
-readTime: "11 min read"
+readTime: "6 min read"
 keywords: "liquidity pool for beginners, how to start providing liquidity, DeFi liquidity beginner guide, first liquidity position, liquidity pool basics"
 featured: false
 faq:
@@ -21,9 +21,11 @@ faq:
     a: "Usually not at first. A concentrated position requires monitoring and rebalancing to work, and an unmanaged one converts and stops earning. Learn the mechanics on a full-range position where the outcome depends on fewer decisions."
 ---
 
-Most introductions to liquidity pools explain what a pool is and then move directly to yields. The more useful order is the opposite: understand what the position holds, what changes it, and what it costs to enter and leave. The yield is the last thing you should look at, because it is the only figure that cannot be verified in advance.
+Most guides tell you what a pool is and then show you a yield. That is backwards.
 
-Five decisions determine almost everything about the outcome.
+The yield is the only number you cannot check in advance. Everything else about your outcome you can work out before you deposit a cent, and it comes down to five decisions.
+
+None of them requires predicting a price. This guide takes them in the order they actually arrive.
 
 <figure class="article-figure">
   <img src="/images/guides/liquidity-pools-for-beginners.webp" alt="Five sequential decisions: pick the pair, pick the curve, pick the tier, size the position, set the exit rule." width="1600" height="1067" loading="lazy" decoding="async" />
@@ -31,135 +33,138 @@ Five decisions determine almost everything about the outcome.
 </figure>
 
 > **Desk Field Note from Siddharth Mehta:**
-> *"I tell people to write down, before depositing, exactly what they will own if the volatile asset halves and if it triples. If either answer is unacceptable, the pool is the wrong instrument, and no yield figure changes that. It takes two minutes and it prevents most of the disappointment I see."*
+> *"Before depositing, write down exactly what you will own if the volatile token halves, and if it triples. If either answer is one you cannot live with, this is the wrong instrument and no yield figure changes that. It takes two minutes and prevents most of the disappointment I see."*
 
-## 1. What You Are Actually Agreeing To
+## What you are actually agreeing to
 
-A liquidity pool is a contract holding two or more assets that prices trades from its reserves. When you deposit, three things become true:
+Three things become true the moment you deposit.
 
-1. **You hold both assets**, in proportions the contract will change as the market moves.
+1. **You hold both tokens**, in amounts the contract will keep changing.
 2. **You are quoting a price continuously**, and you cannot cancel or adjust it.
-3. **You are paid per trade**, not per day, so income depends on volume rather than time.
+3. **You get paid per trade, not per day.** No volume, no income, however long you wait.
 
-The consequence of the first two is that the pool sells whichever asset is rising and accumulates whichever is falling. That behaviour is the mechanism, not a malfunction, and it is explained in [Impermanent Loss Explained](/guides/impermanent-loss-explained/). If any of the vocabulary here is unfamiliar, start with [What Is a Liquidity Pool?](/guides/what-is-a-liquidity-pool/).
+The first two together mean the pool sells whatever is rising and buys whatever is falling. That is the mechanism doing its job, not a fault. It opens up impermanent loss — the gap between what the pool position is worth and what simply holding the tokens would have been worth. See [Impermanent Loss Explained](/guides/impermanent-loss-explained/), and [What Is a Liquidity Pool?](/guides/what-is-a-liquidity-pool/) if any of this is new.
 
----
+## One: the pair
 
-## 2. Decision One: The Pair
+This decides most of your outcome, because you will be holding both tokens in changing amounts for the whole time.
 
-The pair decides most of your outcome, because you will hold both assets in changing amounts.
-
-- **Two stablecoins** produce small, steady fee income and very little rotation, with a real tail risk if one loses its peg.
-- **A major asset against a stablecoin** is the common starting structure: meaningful fee income and moderate rotation.
-- **Two volatile assets** rotate heavily and require a strong reason.
-- **A newly launched token against anything** carries contract and exit risk that dominates every other consideration, examined in [Rug Pulls and Locked Liquidity](/guides/liquidity-pool-rug-pulls/).
-
-Choose from what you would be content to hold, not from what is paying the most this week.
-
----
-
-## 3. Decision Two: The Pool Type
-
-Different curves suit different pairs, and the fit matters more than the protocol brand.
-
-| Pair type | Suitable structure | Why |
+| What you pair | What it feels like | The catch |
 | :--- | :--- | :--- |
-| Two stablecoins | Amplified stable pool | Depth concentrated where the pair actually trades |
-| Major against stablecoin | Constant product, or a wide range | Predictable, no boundary risk |
-| Correlated assets | Stable or narrow range | Relative price moves slowly |
-| Volatile pair | Constant product | Never runs out of liquidity at any price |
+| Two stablecoins | Small steady income, almost no rotation | Real damage if one breaks its peg |
+| A major token against dollars | Meaningful income, moderate rotation | The usual starting point, and a fair one |
+| Two volatile tokens | Heavy rotation both ways | Needs a strong reason |
+| Anything newly launched | Whatever the yield says | Contract and exit risk dominate everything else |
 
-Concentrated ranges are more capital efficient and require active management to stay that way. Beginners are better served learning on a structure where an unattended position still functions, as compared in [Uniswap v2 vs v3](/guides/uniswap-v2-vs-v3/).
+Choose from what you would be happy to hold anyway, not from what is paying most this week. On new tokens, see [Rug Pulls and Locked Liquidity](/guides/liquidity-pool-rug-pulls/).
 
----
+## Two: the pool type
 
-## 4. Decision Three: The Fee Tier
+Different curves suit different pairs, and the fit matters far more than the brand on the interface.
 
-Where tiers exist, the higher one earns more per trade and usually receives less volume, because routers send orders to the cheapest executable path. The right tier is the one that maximises fee multiplied by the volume that actually arrives, which is measurable rather than guessable. See [Uniswap Fee Tiers Explained](/guides/uniswap-fee-tiers-explained/).
+| Your pair | What suits it | Why |
+| :--- | :--- | :--- |
+| Two stablecoins | A flat stable-pair curve | Depth sits where the pair actually trades |
+| A major against dollars | Full range, or a wide band | Predictable, nothing to fall out of |
+| Assets that track each other | Stable curve or a narrow band | The relative price moves slowly |
+| A volatile pair | Full range | Never runs dry at any price |
 
-A reasonable default for a first position: the tier where the pair's volume already concentrates, which is visible in any pool listing.
+Narrow ranges are more efficient and only stay that way if you manage them. Learn on something that still works when you are not watching. See [Uniswap v2 vs v3](/guides/uniswap-v2-vs-v3/).
 
----
+## Three: the fee tier
 
-## 5. Decision Four: Size
+Where tiers exist, the higher one earns more per trade and usually gets fewer trades, because routers send orders wherever they fill best.
 
-Gas is charged per transaction and does not scale with position size, so it sets a floor below which a strategy cannot work.
+The right one maximises the fee times the volume that actually arrives, and both are measurable rather than guessable. See [Uniswap Fee Tiers Explained](/guides/uniswap-fee-tiers-explained/).
 
-A simple test: total the transactions your plan needs in a month, multiply by current gas cost, and divide by expected monthly fee income. If the answer is more than about a fifth, either increase the size, simplify the strategy, or use a cheaper network. The arithmetic is worked through in [Gas Costs for Liquidity Providers](/guides/lp-gas-costs/).
+A sensible default for a first position: whichever tier the pair's volume already sits in. Any pool listing shows you that.
 
----
+## Four: size
 
-## 6. Decision Five: The Exit Rule
+Gas costs the same whether you deposit \$500 or \$500,000. That sets a floor below which no strategy works.
 
-Decide in advance what ends the position. Reasonable rules include a target holding period, a measured shortfall against holding the basket, a volume decline that removes the fee case, or the end of an incentive programme that was the reason for entering.
+The test: count the transactions your plan needs in a month, multiply by what a transaction costs, and divide by expected monthly fees. More than about a fifth and you need a bigger position, a simpler plan, or a cheaper network. On a network where a transaction costs a few cents, that floor almost disappears and a few hundred dollars is enough to learn with. On a busy day on Ethereum mainnet, it can sit in the thousands. See [Gas Costs for Liquidity Providers](/guides/lp-gas-costs/).
 
-Write it down before depositing. A rule chosen while a position is losing money is not a rule, it is a reaction.
+## Five: the exit rule
 
-### A first position with real numbers
+Decide now what ends this position. A holding period, a measured shortfall against holding, volume drying up, or a reward programme ending.
 
-A \$4,000 deposit into a major pair at a 5 bps fee tier, held for 30 days on a network where transactions cost about \$3.
+Write it down before you deposit. A rule invented while a position is losing money is not a rule. It is a reaction.
 
-| Line | Value |
+## A first position, with real numbers
+
+A \$4,000 deposit into a major pair at 0.05%, held 30 days, on a network where a transaction costs about \$3.
+
+| | Value |
 | :--- | ---: |
-| Expected fee income at 0.05% and typical turnover | \$46 |
-| Gas across three transactions | −\$9 |
-| Divergence if the pair moves 20% apart | −\$18 |
-| Net against holding the basket | +\$19 |
+| Expected fees at typical turnover | \$46 |
+| Gas across three transactions | -\$9 |
+| Divergence if the pair moves 20% apart | -\$18 |
+| Net against holding | +\$19 |
 
-The margin is thin, which is the point: at this size the position is a learning exercise rather than an allocation. Change the network to one costing \$18 per transaction and the same position is negative before the market does anything at all.
+The margin is thin, and that is the point. At this size this is a learning exercise, not an allocation.
 
----
+Now change one input. Move to a network where transactions cost \$18 and the same position is negative before the market has done anything at all.
 
-## 7. The Mistakes That Cost the Most
+## What people get wrong at the start
 
-| Mistake | What happens |
+| What people assume | What actually happens |
 | :--- | :--- |
-| Choosing by advertised yield | The rate excludes divergence, gas and the assets you end up holding |
-| Supplying assets you would not hold | The pool converts you into the one you wanted less |
-| Using a narrow range without monitoring | The position converts, stops earning, and stays that way |
-| Ignoring transaction costs at small size | Gas consumes the fee income entirely |
-| Skipping the contract checks | The whole position is exposed to a permission you never read |
-| Judging over a week | Both fee income and divergence are noisy over short windows |
+| The advertised yield is what I earn | It excludes divergence, gas, and which token you end up holding |
+| I can supply tokens I do not want | The pool converts you into the one you wanted less |
+| A tight range is just more efficient | Unattended, it converts, stops earning, and stays that way |
+| Gas is a rounding error | On a small position it consumes the entire return |
+| A week tells me whether it worked | Both fees and divergence are noise over a week |
 
-### What the first month should teach you
+## What the first month should teach you
 
-Treat the first position as an experiment with a measurement, not as an allocation.
+Treat it as an experiment with a measurement attached, not as an allocation.
 
-At the end of the month, compute three numbers. What the pooled position is worth today. What the same deposited assets would be worth if you had never pooled them. And what you paid in gas across the whole cycle. The difference between the first two, plus the fees you collected, is the entire result, and it is the only comparison that means anything.
+At the end, work out three numbers. What the position is worth now. What the same tokens would be worth if you had never pooled them. What you paid in gas.
 
-If the position beat holding, note why: was it fee income clearing a small divergence, or a flat market where nothing happened? If it lost to holding, note that too: a trend that rotated your assets, or a range that converted early, or transaction costs that were simply too large for the size.
+The gap between the first two, plus the fees you collected, is the entire result. It is the only comparison that means anything.
 
-Either answer is worth more than a month of reading, because it is measured on your own capital, on a pair you chose, under conditions you observed. Scale up only after two or three such cycles, and only into the structures that worked for reasons you can articulate.
+Keep it in a record like this from the day you deposit, because reconstructing it later is harder than it sounds.
 
----
+| Date | Tokens in the position | Worth if simply held | Worth in the pool | Fees collected | Gas paid so far |
+| :--- | :--- | ---: | ---: | ---: | ---: |
+| Day 1 | 1 ETH and \$2,000 | \$4,000 | \$4,000 | \$0 | \$6 |
+| Day 30, ETH up 20% | 0.91 ETH and \$2,191 | \$4,400 | \$4,382 | \$46 | \$9 |
 
-## 8. A First Position, Step by Step
+In that example the pool trailed holding by \$18, collected \$46 and cost \$9 in gas, so it came out \$19 ahead.
 
-- [ ] Choose a pair you would hold in a wallet regardless of the pool.
-- [ ] Choose the simplest structure that suits the pair.
-- [ ] Verify the contracts are audited, verified and not upgradeable by a single key.
-- [ ] Estimate fee income with the [liquidity pool fee and APR calculator](/tools/liquidity-pool-calculator/).
-- [ ] Estimate divergence for a realistic move with the [impermanent loss calculator](/tools/impermanent-loss-calculator/).
-- [ ] Size the position so that gas is a small fraction of expected income.
-- [ ] Record entry quantities, prices and the transaction hash.
-- [ ] Set a review date and a written exit rule.
-- [ ] Review against holding the basket, not against your entry in dollars.
+If you beat holding, note why. Was it fees clearing a small divergence, or just a flat month where nothing happened? If you lost to holding, note that too. A trend that rotated you, a range that converted early, or costs that were too large for the size.
 
-If the first position teaches you that the pair was wrong, that is a cheap lesson and the correct one to learn first. Everything else in liquidity provision is refinement on top of these five decisions.
+Either answer is worth more than a month of reading, because it happened to your money, on a pair you chose, in conditions you watched. Scale up after two or three cycles, and only into the things that worked for reasons you can explain.
+
+## Your first position, step by step
+
+1. **Pick a pair you would hold in a wallet anyway.**
+2. **Pick the simplest structure that fits it.**
+3. **Check the contracts** are audited, verified, and not changeable by one key.
+4. **Estimate the income** with the [liquidity pool fee and APR calculator](/tools/liquidity-pool-calculator/).
+5. **Estimate the cost** with the [impermanent loss calculator](/tools/impermanent-loss-calculator/).
+6. **Size it so gas is small** against expected income.
+7. **Write down what you deposited**, at what prices, with the transaction hash.
+8. **Set a review date and a written exit rule.**
+9. **Review against holding the two tokens**, not against what you paid in dollars.
+
+If the first position teaches you the pair was wrong, that is a cheap lesson and the right one to learn first. Everything else in this subject is refinement on top of these five decisions.
 
 ## References
 
 1. [Uniswap v2 Core Whitepaper (Adams et al., 2020)](https://uniswap.org/whitepaper.pdf)
 2. [Uniswap v3 Core Whitepaper (Adams et al., 2021)](https://uniswap.org/whitepaper-v3.pdf)
 3. [What are the risks when providing liquidity? (Uniswap Labs)](https://support.uniswap.org/hc/en-us/articles/37113550065549-What-are-the-risks-when-providing-liquidity)
-4. [Trading in the DeFi era: automated market maker (BIS Bulletin No 58, 2022)](https://www.bis.org/publ/bisbull58.htm)
-5. [SoK: Decentralized Exchanges with Automated Market Maker Protocols (Xu et al., 2021)](https://arxiv.org/abs/2103.12732)
+4. [Miners as intermediaries: extractable value and market manipulation in crypto and DeFi (BIS Bulletin No 58, 2022)](https://www.bis.org/publ/bisbull58.htm)
+5. [SoK: Decentralized Exchanges (DEX) with Automated Market Maker (AMM) Protocols (Xu et al., 2021)](https://arxiv.org/abs/2103.12732)
 6. [Why Decentralised Finance (DeFi) Matters and the Policy Implications (OECD, 2022)](https://www.oecd.org/daf/fin/financial-markets/Why-Decentralised-Finance-DeFi-Matters-and-the-Policy-Implications.pdf)
 7. [How Uniswap Works (Uniswap Developer Documentation)](https://developers.uniswap.org/docs/get-started/concepts/how-uniswap-works)
+
 [1]: https://uniswap.org/whitepaper.pdf "Uniswap v2 Core Whitepaper"
 [2]: https://uniswap.org/whitepaper-v3.pdf "Uniswap v3 Core Whitepaper"
 [3]: https://support.uniswap.org/hc/en-us/articles/37113550065549-What-are-the-risks-when-providing-liquidity "What are the risks when providing liquidity?"
-[4]: https://www.bis.org/publ/bisbull58.htm "Trading in the DeFi era: automated market maker (BIS Bulletin No 58, 2022)"
-[5]: https://arxiv.org/abs/2103.12732 "SoK: Decentralized Exchanges with Automated Market Maker Protocols (Xu et al., 2021)"
+[4]: https://www.bis.org/publ/bisbull58.htm "Miners as intermediaries: extractable value and market manipulation in crypto and DeFi (BIS Bulletin No 58, 2022)"
+[5]: https://arxiv.org/abs/2103.12732 "SoK: Decentralized Exchanges (DEX) with Automated Market Maker (AMM) Protocols (Xu et al., 2021)"
 [6]: https://www.oecd.org/daf/fin/financial-markets/Why-Decentralised-Finance-DeFi-Matters-and-the-Policy-Implications.pdf "Why Decentralised Finance (DeFi) Matters and the Policy Implications (OECD, 2022)"
 [7]: https://developers.uniswap.org/docs/get-started/concepts/how-uniswap-works "How Uniswap Works (Uniswap Developer Documentation)"

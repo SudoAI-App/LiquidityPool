@@ -1,11 +1,11 @@
 ---
-title: "Stablecoin Liquidity Pools: Efficient Curves, Depeg Risk, and Due Diligence"
-description: "Stablecoin AMM mechanics: Curve StableSwap invariant math, synthetic dollar backing, RWA yield pools, amplification factors, and depeg microstructure."
+title: "Stablecoin Liquidity Pools: Efficient Curves and Depeg Risk"
+description: "Why stablecoin pools feel safe, exactly how they fail, and the one number to watch that tells you to leave before the price does."
 category: "LP Mechanics"
 date: 2026-08-30
-lastReviewed: "2026-09-10"
+lastReviewed: "2026-09-12"
 author: "Aria Chen"
-readTime: "12 min read"
+readTime: "7 min read"
 keywords: "stablecoin liquidity pool, StableSwap invariant, Curve amplification factor, Ethena USDe, RWA treasury tokens, depeg risk, Uniswap v4 hooks, stablecoin pool risks, correlated asset liquidity pool, peg defense"
 featured: false
 faq:
@@ -17,9 +17,11 @@ faq:
     a: "Traders sell it into the pool while the curve still quotes near par. The pool accumulates it until reserves are heavily imbalanced, at which point price impact rises sharply and the LP position is dominated by the depegged asset."
 ---
 
-A stablecoin liquidity pool is not a high-yield savings account; it is an automated, conditional risk-clearinghouse. Near parity, its mathematical invariant concentrates liquidity to deliver ultra-low slippage for trading volume. Under collateral or liquidity stress, however, that same invariant functions as a programmatic mechanism that systematically transfers toxic, depegging inventory onto passive liquidity providers (LPs).
+A stablecoin pool looks like the sensible choice. Both sides are meant to be worth a dollar, so nothing can really go wrong, and you collect a few percent for doing very little.
 
-Evaluating stablecoin and pegged-asset pools requires understanding three core structural pillars: the exact mathematical mechanics of the Curve StableSwap invariant (specifically the amplification coefficient $A$ and the liquidity cliff), the divergent risk profiles across fiat-backed, delta-hedged synthetic, and tokenized real-world assets (RWAs), and the crucial distinction between secondary AMM market quotes and primary issuer redemption liquidity [1] [2] [3] [5].
+That is true right up until it is not. The same design that makes these pools so efficient also makes them the last place a failing token goes to be sold, and you are the buyer.
+
+This guide covers why the curve is shaped the way it is, what actually happens during a depeg, and the one number to watch that tells you to leave well before the price does.
 
 <figure class="article-figure">
   <img src="/images/guides/stablecoin-liquidity-pools.webp" alt="Two reserve vessels connect through a flat channel that bends as one side becomes imbalanced." width="1600" height="1067" loading="lazy" decoding="async" />
@@ -27,167 +29,133 @@ Evaluating stablecoin and pegged-asset pools requires understanding three core s
 </figure>
 
 > **Desk Field Note from Aria Chen:**
-> *"Stablecoin pools (e.g., Curve 3pool, USDe/USDC) offer low impermanent loss under normal market conditions, but they harbor catastrophic tail risk. When a stablecoin de-pegs due to collateral insolvency or a run on redemption queues, the AMM invariant relentlessly sells the healthy stablecoins to arbitrageurs, leaving passive LPs holding 100% of the collapsed token. In stablecoin LPing, your upside is a 3%–8% fee yield; your downside is a 100% loss of principal."*
+> *"Your upside here is 3% to 8% a year in fees. Your downside is the whole position. When a stable token breaks, the curve sells your healthy dollars to arbitrage at nearly full price and leaves you holding all of the broken one. The trade is fine as long as you are honest about what it actually is."*
 
-## The Mathematics of StableSwap: Invariants and Amplification (A)
+## Why these pools use a different curve
 
-Standard constant-product automated market makers ($x \cdot y = k$) produce excessive slippage for pegged assets because the marginal price changes continuously with every trade, regardless of whether tokens trade near parity [1]. Conversely, a pure constant-sum invariant ($x + y = k$) offers zero slippage but suffers from immediate pool depletion if the market price deviates by even a fraction of a cent from 1:1.
+Two ordinary approaches, two bad outcomes [1] [2].
 
-To balance these extremes, Michael Egorov formulated the **Curve StableSwap invariant**, which combines constant-sum mechanics near balance with constant-product mechanics under extreme skew [2]:
+An ordinary pool spreads money across every price from zero upward. For a pair meant to trade at one-for-one, almost all of it sits somewhere useless, and even small trades cost something.
 
-$$
-A \cdot n^n \sum_{i=1}^n x_i + D = A \cdot D \cdot n^n + \frac{D^{n+1}}{n^n \prod_{i=1}^n x_i}
-$$
+A perfectly flat curve fixes the cost but has no defence. The moment the real price moves a fraction of a cent, traders empty one side completely.
 
-Where:
-- $n$ is the number of tokens in the pool (e.g., $n = 2$ for a USDC/USDT pair).
-- $x_i$ represents the reserve balance of token $i$.
-- $D$ is the total invariant measure, representing total pool depth when all assets are priced identically at 1.0.
-- $A$ is the dimensionless **amplification coefficient**, set by protocol governance [2].
+The stable-pair design sits between them. Near balance it behaves like the flat rule, so large trades cost almost nothing. As the balances skew, it bends toward the ordinary rule, which keeps the pool from being drained [2].
 
-### The Amplification Coefficient and the "Liquidity Cliff"
+One setting, called amplification, decides where that bend happens:
 
-The amplification coefficient $A$ dictates the curvature of the invariant:
-- As $A \to 0$, the formula simplifies to the classical constant-product AMM ($\prod x_i = (D/n)^n$).
-- As $A \to \infty$, the formula approaches an ideal constant-sum AMM ($\sum x_i = D$).
+| Amplification | What the curve looks like | Consequence |
+| :--- | :--- | :--- |
+| Low | Close to an ordinary pool | Higher cost per trade, but the price warns you early |
+| Typical for fiat stablecoins, 50 to 2,000 | Very flat around par | Huge trades at almost no cost, and no warning until late |
+| Very high | Almost perfectly flat | Superb efficiency, and a cliff edge you cannot see coming |
 
-In practice, protocols configure $A$ between 50 and 2,000 for fiat stablecoins. A high $A$ creates an ultra-flat pricing corridor around $1.00$, allowing multi-million dollar swaps with fractions of a basis point in price impact [2] [3].
+Turn it up and the pool quotes 0.999 even when most of the healthy side is already gone. That is the whole problem in one sentence. See [Constant Product Formula](/guides/constant-product-formula/).
 
-```
-Price Impact Curve under Skew:
-Spot Price
-   |
-1.0+---------------+  <- Flat Constant-Sum Zone (High A)
-   |                \
-   |                 \ <- The "Liquidity Cliff" (Constant-Product Transition)
-   |                  \
-0.0+-------------------+- Reserve Imbalance (%)
-   0%                 100%
-```
+## Not all stable tokens are the same
 
-However, high amplification introduces a structural vulnerability known as the **liquidity cliff**. Because the curve is held flat artificially near balance, the marginal price reflects minimal discount even as external selling pressure mounts. Once the solvent asset's reserves are depleted past a critical mathematical threshold, the curve rapidly transitions from constant-sum to constant-product behavior. At that point, the marginal price collapses vertically, trapping remaining LPs in the depreciating asset [2] [4]. For a comparative look at virtual reserve mechanics, see our technical primer on the [Constant Product Formula: Math and Mechanics](/guides/constant-product-formula/).
+Four different kinds of pegged token end up in these pools, and they break in four different ways.
 
-## The Modern Stablecoin Taxonomy: Collateral Models and AMM Behavior
+| Type | Examples | Where the yield comes from | How it breaks |
+| :--- | :--- | :--- | :--- |
+| Backed by real dollars | USDC, USDT | The issuer keeps it | A bank fails, or an address gets frozen [5] |
+| Hedged synthetic dollars | Ethena USDe | Staking yield plus futures funding | An exchange fails, or funding stays negative [6] |
+| Tokenised treasuries | BUIDL, USDY | Government debt, passed through | Transfer restrictions freeze your exit [7] |
+| Staked-ETH tokens | wstETH, eETH | Validator rewards | The redemption queue is weeks long [2] |
 
-Not all stablecoins behave identically under liquidity stress. Modern AMM pools accommodate four distinct structural categories of pegged assets:
+Three of those deserve a note.
 
-### 1. Centralized Fiat-Backed Tokens (USDC, USDT)
-Backed by short-term US Treasury bills, bank deposits, and reverse repos. Primary redemption occurs through centralized off-chain portals (Circle Mint, Tether) subject to KYC, business hours, and banking rail settlement. During weekend banking disruptions (such as the March 2023 Silicon Valley Bank run), secondary AMMs bear the full brunt of price discovery, causing sharp divergences between AMM quotes and par value [5].
+**Dollar-backed tokens depend on banking hours.** When Silicon Valley Bank failed on a Friday in March 2023, the issuer's own redemption could not run over the weekend. Every trade went through pools instead, which is why the price moved as far as it did [5].
 
-### 2. Delta-Hedged Synthetic Dollars (Ethena USDe)
-Maintained by pairing spot cryptocurrency collateral (e.g., stETH, BTC) with an offsetting short perpetual futures position on centralized derivatives exchanges (Binance, Bybit, OKX) [6]. The token earns structural yield generated by the stETH staking return plus positive perpetual funding rates. 
-- **AMM Risk Profile**: USDe stablecoin pools (such as USDe/USDC) expose LPs to exchange counterparty risk, ADL (Auto-Deleveraging) risk, and funding rate inversions. If funding rates turn negative for extended periods, the synthetic dollar experiences collateral decay unless subsidized by protocol reserves [6].
+**Hedged synthetic dollars depend on somebody else's exchange.** The hedge lives on a centralised venue. If that venue fails, or if funding stays negative long enough, the backing erodes unless a reserve fund covers it [6].
 
-### 3. Tokenized Real-World Assets (BUIDL, USDY)
-Institutional treasury funds (e.g., BlackRock's BUIDL, Ondo USDY) tokenized directly on public blockchains. These tokens accrue risk-free yield from underlying US sovereign debt. Because these assets require whitelist verification for peer-to-peer transfers, their AMM pools often rely on permissioned wrappers or specialized v4 hooks that enforce compliance checks at the `beforeSwap` lifecycle point [7].
+**Staked-ETH tokens depend on a queue.** They trade near par until a lot of people want out at once. Then nobody waits weeks, so they all sell into the pool, and the pool is you.
 
-### 4. Yield-Bearing LST and LRT Correlated Pools (wstETH/ETH, eETH/ETH)
-Liquid Staking Tokens (LSTs) and Liquid Restaking Tokens (LRTs) trade on modified StableSwap curves with dynamic exchange-rate multipliers that grow monotonically with staking rewards [2]. While these assets do not target a \$1.00 peg, they exhibit correlated pricing. Their primary vulnerability stems from unstaking queue delays: when market turbulence triggers massive liquidations, users sell LSTs/LRTs on secondary AMMs rather than waiting in week-long redemption queues, driving pool reserves into severe imbalance.
+## What actually happens during a depeg
 
-| Stablecoin Category | Example Assets | Yield Source | Primary Depeg Vector | AMM Invariant Recommendation |
-|---|---|---|---|---|
-| Fiat-Backed | USDC, USDT | Off-chain reserves (retained by issuer) | Banking rail insolvency, regulatory freezing | High-$A$ StableSwap ($A \ge 1,000$) or tight v3/v4 ticks |
-| Synthetic Dollar | Ethena USDe | Staking yield + short perp funding rate | CEX insolvency, prolonged negative funding | Moderate-$A$ StableSwap ($A \approx 200$) with dynamic exit fees |
-| Tokenized RWA | BUIDL, USDY | US Treasury yield passed to holder | Whitelist transfer restrictions, redemption delay | Permissioned Uniswap v4 hook pools |
-| Correlated LST/LRT | wstETH, eETH | Consensus & execution rewards, EigenLayer | Validator slashing, lengthy redemption queues | StableSwap with rate-provider oracle |
+The sequence is always the same, and it is faster than you think.
 
-## Depeg Microstructure: How Liquidity Providers Absorb Toxic Flow
+1. **Somebody finds out first.** Informed traders and bots see a credit event before it reaches the news [4] [5].
+2. **They sell into your pool.** They borrow the suspect token, dump it, and take out the healthy one. Because the curve is flat, they get near-par prices for it [2] [5].
+3. **The healthy side runs out.** By the time the price visibly falls to 0.80, the good token is gone. Nothing is left to sell.
+4. **You withdraw and get the broken one.** All of it.
 
-When a stablecoin faces insolvency rumors or redemption gating, market participants race to exit. In decentralized finance, this process unfolds with deterministic market microstructure:
+Follow the balances rather than the price. The pool can still be quoting 0.995 after 70% of the healthy reserves have been extracted. The price is the last thing to tell you, and by then there is nothing to save.
 
-```
-[Insolvent / Discounter Token] ---> [Swappers Sell to AMM] ---> [Solvent Token Drained]
-                                                                        |
-                                                                        v
-                                              [AMM Holds 99% Impaired Token]
-                                              [Passive LPs Absorb Full Loss]
-```
+Federal Reserve research makes the same point from the other direction: pools provide excellent liquidity in normal conditions, and prices diverge fast under stress when the issuer's own redemption is slow or restricted [5]. See [TVL Explained](/guides/tvl-explained/) for how headline numbers hide this.
 
-1. **Information Asymmetry**: Informed algorithmic traders and MEV searchers detect off-chain credit events before retail participants react [4] [5].
-2. **Atomic Arbitrage & Pool Draining**: Searchers borrow the suspect token, dump it into high-$A$ stablecoin pools, and withdraw the pristine reserve token (e.g., USDC). Because the high amplification parameter holds the marginal price near 0.995 even after 70% of the solvent reserves have been extracted, arbitrageurs extract dollars at near-par value [2] [5].
-3. **The Trap for Passive LPs**: By the time the pool hits the constant-product liquidity cliff and the price plummets to 0.80 or 0.50, the pool's solvent reserves are completely exhausted. LPs attempting to withdraw their liquidity receive exclusively the impaired token.
+## The one number to watch
 
-Federal Reserve research underscores that while secondary AMMs provide critical liquidity venues during normal market regimes, secondary market prices diverge rapidly under acute stress if primary redemption is slow or legally restricted [5]. To understand how overall pool capitalization can mask this vulnerability, consult our guide on [TVL Explained: Capital Efficiency and Valuation](/guides/tvl-explained/).
+The reserve split. Not the price.
 
-## Monitoring & Onchain Tooling Stack
+| Pool balance | What it means | What to do |
+| :--- | :--- | :--- |
+| Near 50/50 | Normal | Nothing |
+| 60/40 | Somebody is selling steadily | Find out why |
+| 65/35 | The healthy side is going | Leave. The exit cost is small now |
+| 70/30 | Informed money is well ahead of you | Leave immediately and accept the cost |
+| 85/15 and beyond | The cliff | The healthy side is effectively gone |
 
-To audit stablecoin collateral solvency, peg stability, and pool balance ratios:
+Set an alert on it. This is the single highest-value thing you can do in a stable pool, and almost nobody does it.
 
-- **Stablecoin Peg & Market Cap Tracking**: Monitor real-time peg deviations, supply changes, and reserve backing on [DeFiLlama Stablecoins](https://defillama.com/stablecoins).
-- **Curve StableSwap Reserve Ratios**: Inspect pool balance percentages and amplification parameters ($A$) on [Curve Finance](https://curve.fi).
-- **De-Peg Warning Alerts**: Set automated alerts for pool reserve imbalances (>60/40 skew) via onchain monitoring bots.
+## What people get wrong about stable pools
 
-## Common Due Diligence Errors & Stablecoin Risk Traps
+| What people assume | What actually happens |
+| :--- | :--- |
+| The tight price proves the peg is fine | A high amplification setting quotes 0.999 with 75% of the healthy collateral already drained |
+| Deep pool liquidity means I can always exit | Pool liquidity vanishes in minutes. Issuer redemption takes days and needs paperwork |
+| A tight range on a stable pair is free money | A band of 0.9995 to 1.0005 converts completely on a five basis point move, which is a normal Tuesday |
+| The hedge on a synthetic dollar is set and forget | Sustained negative funding bleeds the backing every day it continues |
 
-| Risk Trap / Error | Mechanism Failure Mode | Capital Protection Protocol |
-|---|---|---|
-| **Relying on Tight AMM Price as Proof of Peg** | High amplification $A$ masks underlying credit decay by quoting 0.999 even when 75% of solvent collateral is drained. | Monitor pool reserve skew rather than spot price; exit when pool balance drifts beyond 65/35. |
-| **Equating Secondary AMM Liquidity with Primary Solvency** | Secondary AMM liquidity can evaporate in minutes, whereas primary redemption contracts require KYC and days to clear. | Verify primary redemption queue health, issuer reserve audits, and on-chain collateral proof. |
-| **Deploying Ultra-Narrow Concentrated Bands on Pegged Pairs** | A concentrated range of $[0.9995, 1.0005]$ offers huge fee multipliers, but converts 100% into the depegged asset on a 10 bps drop. | Calibrate range lower bounds to absorb historical depeg deviations ($[0.985, 1.015]$) or use dynamic exit hooks. |
-| **Ignoring Negative Perp Funding on Synthetic Dollars** | In prolonged bear markets, short perp hedging incurs funding fee bleed, degrading synthetic dollar backing. | Track Ethena insurance fund capitalization and annualized 30-day rolling funding rates across CEX venues. |
+## How newer pools can defend themselves
 
-## Uniswap v4 Hooks: Defensive Architecture for Pegged Pools
+Older pools are passive. They cannot react to a run. Uniswap v4 lets a pool attach code that can [7].
 
-Under classical AMM models, liquidity pools are passive contracts that cannot defend themselves against toxic bank runs. The deployment of Uniswap v4 introduces programmable **hooks** that enable proactive risk mitigation for stablecoin pairs [7]:
+- **A fee that spikes on a discount.** The pool compares its own price to an outside reference. If the gap passes a threshold, the fee jumps from 0.01% to several percent. Panic sellers pay for the privilege, and that money goes to whoever is still providing liquidity.
+- **A circuit breaker.** If one token flows out faster than a set limit per hour, the pool pauses one-sided withdrawals. That buys time for the issuer to process real redemptions instead of letting bots drain the collateral first.
+- **Yield paid straight into the pool.** For tokens that earn, the code can route that yield into the fee pot rather than rebasing balances, which keeps the accounting simple.
 
-### 1. Dynamic Depeg Volatility Fees
-A specialized hook inspects the price deviation between the pool's instantaneous tick and an external censorship-resistant oracle (e.g., Chainlink or a Uniswap TWAP). When the discount exceeds an emergency threshold (e.g., 50 basis points), the hook's `beforeSwap` callback dynamically escalates the swap fee from 0.01% to 5.00% or higher. This tax captures value from panic-sellers and compensates remaining LPs for the inventory risk they absorb.
+## What to check before you deposit
 
-### 2. Circuit Breakers and Asymmetric Liquidity Halts
-Hooks can enforce programmatic circuit breakers. If net outflows of a constituent asset exceed a calibrated hourly limit (e.g., 20% of pool reserves), the hook temporarily pauses one-sided withdrawals or swaps, preventing MEV searchers from draining solvent collateral before the issuer can process on-chain redemptions.
+1. **What actually backs each token?** Read the reserve disclosure. For synthetic dollars, compare the insurance fund against the size of the position it is insuring.
+2. **How high is the amplification setting?** A very high one means great efficiency and no warning. Know which trade you are making.
+3. **Could you redeem directly in a crisis?** If the answer is no, the pool is the only exit and everybody will use it at once [5].
+4. **If you are using a range, where is the bottom?** A band that assumes a perfect peg deactivates on the first wobble. Set it to survive a historically normal depeg, something like 0.985 to 1.015 [1].
+5. **What else is in the contract?** Meta-tokens, rebasing assets and bridge wrappers each add a way to lose money that has nothing to do with the peg [8]. See [Liquidity Pool Risks](/guides/liquidity-pool-risks/).
 
-### 3. Native Yield Streaming
-For yield-bearing stablecoins and RWAs, v4 hooks can automatically stream underlying yield directly into the pool's fee accumulator, distributing yield proportionally to active liquidity providers without requiring complex token rebasing mechanisms.
+## Where to watch the numbers
 
-## Pre-Deployment Verification Checklist for Stablecoin LPs
+- **Peg deviations, supply and backing:** [DeFiLlama Stablecoins](https://defillama.com/stablecoins).
+- **Pool balance and the amplification setting:** [Curve Finance](https://curve.fi).
+- **Alerts:** set one on reserve imbalance past 60/40, not on price.
 
-Before depositing capital into any stablecoin or correlated asset pool, execute this due diligence audit:
+## When something goes wrong
 
-- [ ] **Underlying Collateral Quality**: Have you audited the issuer's reserve disclosures? For synthetic assets like USDe, what is the protocol's insurance fund reserve relative to open interest?
-- [ ] **Curve Amplification Parameter ($A$)**: Is the amplification parameter appropriately calibrated? An excessively high $A$ exposes LPs to severe liquidity cliff risks if a constituent token depegs.
-- [ ] **Primary Redemption Accessibility**: In a crisis, can you directly redeem the underlying asset with the issuer, or are you entirely reliant on secondary AMM exit liquidity [5]?
-- [ ] **Concentrated Range Boundaries**: If using Uniswap v3/v4, where are your lower tick boundaries? A narrow band centered at $[0.999, 1.001]$ will instantly deactivate during a minor depeg, locking 100% of your collateral into the declining asset [1].
-- [ ] **Contract and Wrapper Dependencies**: Does the pool contain meta-tokens, rebasing assets, or external bridge wrappers that introduce additional smart contract attack vectors [8]? Review our comprehensive guide on [Liquidity Pool Risks: A Complete Framework for LP Due Diligence](/guides/liquidity-pool-risks/).
+- **The pool has skewed past 70/30.** Informed money is selling the over-represented token and they are ahead of you. Withdraw now and accept the exit cost. It is far smaller than what comes next.
+- **Governance changed the amplification setting.** The curve's shape just changed under you. Check the new value suits how much these assets can actually diverge.
+- **The market price is below par but redemption is fine.** Work out whether the issuer's queue is congested or actually broken. One is a buying opportunity and the other is a trap.
 
-Stablecoin liquidity provision is an exercise in asymmetric risk: returns are bounded by fractional basis-point trading fees, while downside exposure encompasses total capital impairment during a catastrophic depeg.
+## Where to go next
 
-## Diagnostic Troubleshooting Decision Tree
-
-Follow this diagnostic decision tree when monitoring stablecoin pool allocations:
-
-1. **Pool Reserves Skew Past 70/30 Imbalance**:
-   - *Diagnostic*: Smart money is dumping the over-represented stablecoin, signaling impending collateral insolvency or regulatory seizure.
-   - *Action*: Immediately withdraw liquidity from the pool; absorb minor exit slippage to protect against total collateral collapse.
-2. **Amplification Coefficient ($A$) Altered by Governance**:
-   - *Diagnostic*: Protocol governance has modified the curve flatness parameter, altering slippage and peg concentration behavior.
-   - *Action*: Verify that the new $A$ parameter matches the volatility profile of the underlying assets.
-3. **Secondary Market Price Diverges from Mint/Redeem Parity**:
-   - *Diagnostic*: Origin redemption queues are congested or paused, forcing redemptions onto secondary DEX pools.
-   - *Action*: Assess whether the redemption delay is temporary operational congestion or permanent insolvency before buying discounted stablecoins.
-
-## Where to Go Next
-
-For where amplified curves sit among the alternatives, see [Types of Liquidity Pools](/guides/liquidity-pool-types/). For the tail case where the pool fills with the failing asset, see [Can You Lose Money in a Liquidity Pool?](/guides/can-you-lose-money-in-a-liquidity-pool/). For how these curves compare with lending markets on the same assets, see [Lending Pool vs Liquidity Pool](/guides/lending-pool-vs-liquidity-pool/).
+For where these curves sit among the alternatives, see [Types of Liquidity Pools](/guides/liquidity-pool-types/). For the tail case in full, see [Can You Lose Money in a Liquidity Pool?](/guides/can-you-lose-money-in-a-liquidity-pool/). For how this compares with lending the same assets, see [Lending Pool vs Liquidity Pool](/guides/lending-pool-vs-liquidity-pool/).
 
 ## References
 
-
-1. [Uniswap v3 Concentrated Liquidity Concepts](https://developers.uniswap.org/docs/protocols/v3/concepts/concentrated-liquidity)
+1. [Concentrated Liquidity (Uniswap Developer Documentation)](https://developers.uniswap.org/docs/get-started/concepts/liquidity-providers/concentrated-liquidity)
 2. [StableSwap pools (Curve Documentation)](https://docs.curve.finance/developer/amm/legacy/stableswap-overview)
 3. [StableSwap - Efficient Mechanism for Stablecoin Liquidity](https://berkeley-defi.github.io/assets/material/StableSwap.pdf)
 4. [Maximal Extractable Value (MEV) Overview](https://ethereum.org/en/developers/docs/mev/)
 5. [Primary and Secondary Markets for Stablecoins | Federal Reserve](https://www.federalreserve.gov/econres/notes/feds-notes/primary-and-secondary-markets-for-stablecoins-20240223.html)
-6. [Ethena Protocol Architecture and Hedging Mechanics](https://docs.ethena.fi/solution-overview/system-architecture)
+6. [How USDe Works (Ethena Documentation)](https://docs.ethena.fi/overview/how-usde-works)
 7. [Uniswap v4 Core Whitepaper](https://uniswap.org/whitepaper-v4.pdf)
-8. [Security Analysis of Decentralized Finance Protocols](https://arxiv.org/abs/2105.02784)
+8. [SoK: Decentralized Finance (DeFi) Attacks (Zhou et al., 2022)](https://arxiv.org/abs/2208.13035)
 9. [While Stability Lasts: A Stochastic Model of Non-Custodial Stablecoins (Klages-Mundt & Minca, 2020)](https://arxiv.org/abs/2004.01304)
 
-[1]: https://developers.uniswap.org/docs/protocols/v3/concepts/concentrated-liquidity "Uniswap v3 Concentrated Liquidity Concepts"
+[1]: https://developers.uniswap.org/docs/get-started/concepts/liquidity-providers/concentrated-liquidity "Concentrated Liquidity (Uniswap Developer Documentation)"
 [2]: https://docs.curve.finance/developer/amm/legacy/stableswap-overview "StableSwap pools (Curve Documentation)"
 [3]: https://berkeley-defi.github.io/assets/material/StableSwap.pdf "StableSwap - Efficient Mechanism for Stablecoin Liquidity"
 [4]: https://ethereum.org/en/developers/docs/mev/ "Maximal Extractable Value (MEV) Overview"
 [5]: https://www.federalreserve.gov/econres/notes/feds-notes/primary-and-secondary-markets-for-stablecoins-20240223.html "Primary and Secondary Markets for Stablecoins | Federal Reserve"
-[6]: https://docs.ethena.fi/solution-overview/system-architecture "Ethena Protocol Architecture and Hedging Mechanics"
+[6]: https://docs.ethena.fi/overview/how-usde-works "How USDe Works (Ethena Documentation)"
 [7]: https://uniswap.org/whitepaper-v4.pdf "Uniswap v4 Core Whitepaper"
-[8]: https://arxiv.org/abs/2105.02784 "Security Analysis of Decentralized Finance Protocols"
+[8]: https://arxiv.org/abs/2208.13035 "SoK: Decentralized Finance (DeFi) Attacks (Zhou et al., 2022)"
 [9]: https://arxiv.org/abs/2004.01304 "While Stability Lasts: A Stochastic Model of Non-Custodial Stablecoins (Klages-Mundt & Minca, 2020)"

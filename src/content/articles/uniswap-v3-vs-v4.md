@@ -1,11 +1,11 @@
 ---
 title: "Uniswap v3 vs v4 Liquidity: What Actually Changed for LPs"
-description: "A side-by-side comparison of Uniswap v3 and v4 liquidity: singleton architecture, flash accounting, hooks, dynamic fees, and the LP exposures that did not change at all."
+description: "Your exposure is identical. What changed is the cost of touching the pool and who may run code when a swap arrives, and that second part is the decision."
 category: "Advanced"
 date: 2026-09-10
-lastReviewed: "2026-09-10"
+lastReviewed: "2026-09-12"
 author: "Dr. Kieran Thorne"
-readTime: "12 min read"
+readTime: "6 min read"
 keywords: "Uniswap v3 vs v4, Uniswap v4 liquidity pool, Uniswap v3 liquidity pool, singleton PoolManager, flash accounting, Uniswap v4 hooks, ERC-6909"
 featured: true
 faq:
@@ -19,9 +19,11 @@ faq:
     a: "Only where the destination pool has the depth and routed volume to pay for the migration. Moving costs gas twice and realises the current composition. The architecture is cheaper to trade against, which tends to attract routing over time, but liquidity depth on the specific pair is what decides fee income."
 ---
 
-Uniswap v4 did not change how a concentrated liquidity position prices trades. It changed where pool state lives, how tokens move during a transaction, and who is allowed to run code when a swap touches the pool. For a liquidity provider, that means the exposure is familiar and the operating environment is not.
+Here is the short version. Your exposure did not change at all. A band of plus or minus 5% on ETH against dollars behaves identically on both versions.
 
-Separating those two things is the difference between a useful migration decision and a marketing one.
+What changed is where the pool's state lives, how tokens move during a transaction, and who is allowed to run code when a swap arrives.
+
+The first two make things cheaper. The third is the entire decision, and it is the one people skip.
 
 <figure class="article-figure">
   <img src="/images/guides/uniswap-v3-vs-v4.webp" alt="Row-by-row comparison of Uniswap v3 and v4 across deployment, settlement, fees, extensibility, accounting and LP risk." width="1600" height="1067" loading="lazy" decoding="async" />
@@ -29,96 +31,105 @@ Separating those two things is the difference between a useful migration decisio
 </figure>
 
 > **Desk Field Note from Dr. Kieran Thorne:**
-> *"Read the hook address before you read the APR. In v4 the pool key includes the hook, so two pools on the same pair with different hooks are different markets with different trust assumptions. I have seen teams treat a hooked pool as a drop-in replacement for the v3 pool and never check which lifecycle callbacks the hook actually holds permission for."*
+> *"Read the hook before you read the yield. In v4 the hook is part of the pool's identity, so two pools on the same pair with different hooks are different markets with different people to trust. I have watched teams treat a hooked pool as a drop-in replacement and never check which callbacks that hook actually holds."*
 
-## 1. One Contract Per Pool Versus One Contract For All Pools
+## One contract instead of thousands
 
-In v3, the factory deploys a new contract for every pool, identified by token pair and fee tier [1]. Each contract holds its own reserves, and multi-hop routes transfer ERC-20 tokens between those contracts at every hop.
+In v3, every pool is a separate contract, identified by its pair and fee tier [1]. Each one holds its own tokens, so a route through three pools moves tokens three times.
 
-In v4, a single `PoolManager` contract holds every pool as internal state, keyed by a `PoolKey` structure containing the two currencies, the fee, the tick spacing and the hook address [2]. Creating a pool becomes a state update rather than a contract deployment, which reduces the cost of launching a new market by orders of magnitude and makes fragmentation across fee tiers cheaper to create and cheaper to route across.
+In v4, one contract holds every pool as internal state, keyed by the two tokens, the fee, the step size, and the hook address [2]. Creating a pool is now a table entry rather than a deployment, which drops the cost of launching a market by orders of magnitude.
 
-The routing consequence is direct: a three-hop swap in v3 performs several token transfers, while the same route in v4 updates internal balances and transfers only the net amounts at the end.
+The routing effect is direct. A three-hop swap in v3 physically moves tokens at every step. The same route in v4 updates internal numbers and moves tokens once, at the end.
 
----
+## Why settling once is so much cheaper
 
-## 2. Flash Accounting and Transient Storage
+Ethereum added storage that lasts only as long as one transaction and then clears itself [3]. v4 keeps its running tally there.
 
-The settlement change rests on EIP-1153 transient storage, which provides storage slots that are cleared automatically at the end of the transaction [3]. During a v4 transaction, the manager records net balance deltas for each currency in transient storage. The caller must settle every outstanding delta before the lock is released, or the transaction reverts.
+During a transaction the contract records what each side owes. Before it finishes, every one of those must net to zero, or the whole thing reverts.
 
-Three practical effects follow:
+| What that buys | Why it matters |
+| :--- | :--- |
+| Much lower gas on multi-hop and multi-pool operations | Intermediate transfers simply disappear |
+| Composability | One contract can rebalance across several pools inside one session, settling once |
+| Internal balances | Frequent traders can hold credits in the contract rather than moving tokens back and forth [2] |
 
-1. **Gas cost falls sharply on multi-hop and multi-pool operations**, because intermediate transfers disappear.
-2. **Composability improves**: a contract can rebalance across several pools inside one lock and settle once.
-3. **Internal balances become useful.** v4 uses ERC-6909 claim tokens so frequent traders and integrators can hold balances inside the manager rather than moving ERC-20s in and out [2].
+None of that changes the price a swap gets. The rule, the price steps and the fee accounting are inherited unchanged from v3.
 
-None of this changes the price a swap receives. The invariant, the tick math and the fee accrual mechanics are inherited from v3.
+## Hooks: the actual change for you
 
----
+A hook is a contract attached to a pool when it is created, called at defined moments: around a swap, around liquidity going in or out, and on donations [2]. Its permissions are encoded in its own address, so you can read what it is allowed to do without trusting anybody.
 
-## 3. Hooks: The Real Change for Liquidity Providers
+| What hooks make possible | What hooks also introduce |
+| :--- | :--- |
+| Fees that rise with volatility, charging arbitrage more when it takes most | Arbitrary code sitting in the swap path |
+| Custom pricing rules that used to need a whole separate protocol | Conditions on withdrawal that did not exist in v3 |
+| Limit orders and automatic range management inside the pool | Upgradeability, if the hook sits behind a proxy with a key |
+| Fee routing to a treasury, insurance fund or reward programme | Behaviour under stress that nobody has tested at scale |
 
-A hook is an external contract attached to a pool at creation, invoked at defined points in the pool lifecycle: before and after a swap, before and after liquidity is added or removed, and on donation [2]. The permissions a hook holds are encoded in its address, so a pool's capabilities are visible from the key itself.
+The first row on the left is the most interesting thing in v4 for anyone supplying liquidity. It is the first protocol-level answer to loss-versus-rebalancing — what a pool pays out because its quote runs a block late — described in [Loss-Versus-Rebalancing](/guides/loss-versus-rebalancing/). See [Uniswap v4 Architecture and Hooks](/guides/uniswap-v4-architecture-and-hooks/).
 
-What hooks make possible:
+## What did not change at all
 
-- **Dynamic fees.** A pool can raise its fee when volatility rises, charging arbitrage more for repricing a stale quote. This is the most direct protocol-level response to the adverse selection described in [Loss-Versus-Rebalancing: The LP's Real Hurdle Rate](/guides/loss-versus-rebalancing/).
-- **Custom curves.** A hook can override default swap behaviour, allowing designs that would previously have required a separate protocol.
-- **Onchain limit orders and automated range management** implemented inside the pool rather than in periphery contracts.
-- **Fee routing and donations**, including directing part of the fee to a treasury, an insurance fund or an incentive programme.
+This is the section that matters most, and it is the shortest.
 
-What hooks also introduce:
-
-- **Arbitrary code in the swap path**, which is a security surface. A hook can, if permitted, impose withdrawal conditions or fees that did not exist in v3 pools.
-- **Upgradeability risk** where the hook is behind a proxy with an admin key.
-- **Behavioural uncertainty** in stress conditions, when a hook's logic interacts with volatility in ways that were never tested at scale.
-
-The architecture and its audit surface are covered in [Uniswap v4 Architecture and Hooks](/guides/uniswap-v4-architecture-and-hooks/).
-
----
-
-## 4. What Did Not Change
-
-For a liquidity provider, this is the important section.
-
-| LP concern | v3 | v4 |
+| Your concern | v3 | v4 |
 | :--- | :--- | :--- |
-| Range math | Translated constant product on $[p_a, p_b]$ | Identical |
-| Divergence exposure | Full, amplified by range width | Identical |
-| Out-of-range behaviour | Position converts, fee accrual stops | Identical |
-| Fee accrual model | Per-tick fee growth accumulators | Identical |
-| Adverse selection | Arbitrage against stale quotes | Identical, unless a hook prices it |
+| The range maths | The shifted curve between your two bounds | Identical |
+| Divergence | Full, amplified by how narrow your band is | Identical |
+| Out of range | You convert and stop earning | Identical |
+| How fees accrue | Per price step | Identical |
+| Being picked off | Arbitrage against a stale quote | Identical, unless a hook prices it |
 
-A ±5% ETH/USDC position behaves the same way on both versions. The reasons to prefer one are gas, routed volume, and whether a hook improves the fee side of the ledger. The reasons to be cautious about a specific v4 pool are entirely about the hook attached to it.
+A band of plus or minus 5% behaves the same way on both. The reasons to prefer one are gas, where the volume goes, and whether a hook improves the fee side. The reasons to be careful about a specific v4 pool are entirely about its hook.
 
-If the underlying range mechanics are unfamiliar, start with [Concentrated Liquidity Explained](/guides/concentrated-liquidity-explained/) and [Out-of-Range Liquidity](/guides/out-of-range-liquidity/).
+If the range mechanics are new, start with [Concentrated Liquidity Explained](/guides/concentrated-liquidity-explained/) and [Out-of-Range Liquidity](/guides/out-of-range-liquidity/).
 
----
+## What people get wrong about v4
 
-## 5. Evaluating a v4 Pool Before Supplying
+| What people assume | What actually happens |
+| :--- | :--- |
+| v4 reduces impermanent loss | It does not. The gap between a pool position and holding is identical |
+| A v4 pool is a drop-in replacement | The hook is part of the pool's identity. Two pools on the same pair are different markets |
+| Cheaper architecture means better returns | Architecture does not pay fees. Volume does |
+| The audit covers the pool I am using | It covers the core. Your pool's hook is somebody else's code |
 
-1. **Resolve the hook address** from the pool key and check whether the contract is verified and audited.
-2. **Enumerate hook permissions** encoded in the address: which lifecycle callbacks it may implement, and specifically whether it can act on liquidity removal.
-3. **Check for upgradeability.** A proxy hook with an active admin key means the pool's rules can change after you deposit.
-4. **Read the fee logic.** If the fee is dynamic, understand the function that sets it and the bounds it can reach.
-5. **Compare routed volume against the equivalent v3 pool.** Architecture does not pay fees; flow does.
-6. **Simulate a full lifecycle** with [Tenderly](https://tenderly.co) or a local fork: mint, swap through the range, collect, and withdraw. Confirm the withdrawal path returns what you expect with the hook in place.
-7. **Run the standard pool checks** from [How to Evaluate a Liquidity Pool](/guides/how-to-evaluate-a-liquidity-pool/) on top of the v4-specific ones.
+## Checking a v4 pool before you supply
 
----
+1. **Resolve the hook address** from the pool key, and check whether it is verified and audited.
+2. **Decode its permissions** from that address. Specifically, can it act when liquidity is removed?
+3. **Check for a proxy.** A hook that can be replaced means the rules can change after you deposit.
+4. **Read the fee logic.** If the fee moves, understand what sets it and how far it can go.
+5. **Compare routed volume with the equivalent v3 pool.** Architecture does not pay fees.
+6. **Simulate the whole lifecycle** on [Tenderly](https://tenderly.co) or a fork: mint, swap through your range, collect, withdraw. Confirm the exit returns what you expect with the hook in place.
+7. **Run the ordinary checks too**, from [How to Evaluate a Liquidity Pool](/guides/how-to-evaluate-a-liquidity-pool/).
 
-## 6. Migration Arithmetic
+## A migration decision, worked
 
-Migration is a real trade with real costs: two gas payments, realisation of the current composition, and possible price impact if the ratio must be adjusted. Compare against the incremental fee income you expect from the destination pool, and require a payback period you would actually tolerate.
+You hold \$50,000 in a v3 ETH and USDC band earning about \$18 a day. The equivalent v4 pool, with no hook, pays about \$21 a day for the same band because routers now send it more volume.
 
-One more consideration applies to teams running many positions. In v3, every pool is a separate address, so position management tooling tracks a set of contracts. In v4, the manager is one address and pools are identified by key, which simplifies indexing but means monitoring must resolve the hook for each pool rather than assuming pools on the same pair behave alike. Treat the hook as part of the pool's identity in every internal record you keep.
+| | Value |
+| :--- | ---: |
+| Extra income from moving | about \$3 a day |
+| Cost of moving, two transactions and a small swap | about \$60 on a quiet day |
+| Time to repay the move | about three weeks |
 
-A reasonable default: migrate when the destination pool's routed volume per unit of liquidity exceeds the source pool's by a clear margin and the hook is either absent or immutable and audited. Otherwise, let the market decide where flow concentrates and follow it with new capital rather than by churning existing positions.
+That is a reasonable trade, as long as the extra volume is steady rather than a one-week spike. Now suppose the v4 pool has a hook that can change its fee. Add the time it takes to read and verify that hook, and demand a longer track record before you believe the higher number.
 
-The architecture is better. That is a statement about execution cost and extensibility, not a promise about LP returns, which continue to be decided by volume, volatility, competition for the same ticks, and the discipline of the person choosing the range.
+## Whether to migrate
 
-## Where to Go Next
+Migration is a real trade with real costs. Two gas payments, locking in your current composition, and impact if the ratio has to be adjusted. Compare that against the extra fee income you expect, and demand a payback period you would actually accept.
 
-The exposure both versions share is derived in [The Impermanent Loss Formula](/guides/impermanent-loss-formula/), and the tier or dynamic-fee decision is covered in [Uniswap Fee Tiers Explained](/guides/uniswap-fee-tiers-explained/). For the earlier comparison that still matters to most providers, see [Uniswap v2 vs v3](/guides/uniswap-v2-vs-v3/).
+One operational note for anyone running many positions. In v3 every pool is its own address, so tooling tracks a set of contracts. In v4 there is one address and pools are identified by key, which simplifies indexing but means your monitoring has to resolve the hook for each pool rather than assuming pools on the same pair behave alike.
+
+Treat the hook as part of the pool's identity in every record you keep.
+
+A sensible default: migrate when the destination's volume per unit of liquidity clearly beats the source, and the hook is either absent or immutable and audited. Otherwise let the market decide where the flow settles and follow it with new money rather than churning what you have.
+
+The architecture is better. That is a statement about execution cost and what is now possible, not a promise about returns, which are still decided by volume, volatility, who else is in your band, and the discipline of whoever chose it.
+
+## Where to go next
+
+The exposure both versions share is impermanent loss — the gap between a pool position and simply holding — derived in [The Impermanent Loss Formula](/guides/impermanent-loss-formula/), and the fee decision in [Uniswap Fee Tiers Explained](/guides/uniswap-fee-tiers-explained/). For the earlier comparison that still matters to most people, see [Uniswap v2 vs v3](/guides/uniswap-v2-vs-v3/).
 
 ## References
 

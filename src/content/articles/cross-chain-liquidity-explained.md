@@ -1,11 +1,11 @@
 ---
-title: "Cross-Chain Liquidity Explained: What Moves, What Fragments, and What Can Break"
-description: "How cross-chain liquidity works: intent bridges, Circle CCTP, Chainlink CCIP, rollup liquidity fragmentation, ERC-7683 standards, and settlement risk."
+title: "Cross-Chain Liquidity Explained: Bridges, Fragmentation and Risk"
+description: "Nothing actually crosses between chains. Four ways protocols fake it, which ones have lost billions, and what to check before you bridge or supply."
 category: "Risk & Research"
 date: 2026-08-26
-lastReviewed: "2026-09-10"
+lastReviewed: "2026-09-12"
 author: "Aria Chen"
-readTime: "12 min read"
+readTime: "6 min read"
 keywords: "cross-chain liquidity, bridge risk, intent-based bridging, Circle CCTP, Chainlink CCIP, ERC-7683, liquidity fragmentation, LayerZero OFT, cross-chain liquidity pool, bridge liquidity risk, omnichain liquidity, intent based liquidity"
 featured: false
 faq:
@@ -17,9 +17,11 @@ faq:
     a: "A model where the user states the outcome they want and a solver fronts the assets on the destination chain, settling later. It shifts latency and inventory risk to the solver in exchange for a fee."
 ---
 
-Cross-chain liquidity is not an undifferentiated global reserve pool; it is an asynchronous mesh of cryptographic messaging layers, intent-based solver balance sheets, and sovereign consensus environments. When assets transition between Layer 1 blockchains and Layer 2 rollups, capital does not physically travel between chains. Instead, protocols orchestrate custodial lock-and-mint wrapping, native issuer burn-and-mint attestations, or off-chain solver advances backed by optimistic dispute windows.
+Nothing actually moves between chains. Your ETH does not travel anywhere. Every bridge is a way of pretending it did, and the differences between those pretences decide whether your money is safe.
 
-Historically, cross-chain messaging has represented the single largest vulnerability vector in decentralized finance, responsible for over \$2.8 billion in lost capital across high-profile bridge compromises [1] [2]. Evaluating cross-chain liquidity requires analyzing the demise of legacy lock-and-mint honeypots, the emergence of standardized intent frameworks (ERC-7683), canonical burn-and-mint primitives like Circle CCTP, and the persistent structural friction of liquidity fragmentation across the rollup ecosystem [1] [3] [4] [6].
+This has been the most expensive category of failure in decentralised finance. More than \$2.8 billion has been lost to bridge compromises [1] [2].
+
+This guide covers the four ways it is done, which ones have failed and how, why spreading liquidity across chains makes everything worse, and what to check before you bridge or supply.
 
 <figure class="article-figure">
   <img src="/images/guides/cross-chain-liquidity-explained.webp" alt="Separate reserve pools on islands connect through a central token bridge mechanism." width="1600" height="1067" loading="lazy" decoding="async" />
@@ -27,166 +29,119 @@ Historically, cross-chain messaging has represented the single largest vulnerabi
 </figure>
 
 > **Desk Field Note from Aria Chen:**
-> *"Cross-chain liquidity provision exposes LPs to risks entirely absent on a single EVM chain: settlement latency, bridge validation finality, and solver balance insolvency. When liquidity is locked in lock-and-mint bridge escrows, an exploit on one chain can leave synthetic wrapped assets unbacked on destination chains. Modern intent-based cross-chain routing (such as ERC-7683) solves this by transferring rebalancing inventory risk to competitive market-making solvers rather than passive retail LPs."*
+> *"Supplying liquidity across chains adds risks that simply do not exist on one chain. Settlement delay, bridge finality, and whether a solver can pay. When money is locked in a bridge escrow, one exploit leaves the wrapped version unbacked everywhere it was used. The newer intent designs fix this by handing that risk to professional market makers instead of to you."*
 
-## The Architectural Evolution of Cross-Chain Liquidity
+## The four ways it is done
 
-The cross-chain landscape has evolved across three distinct technological generations:
+| Approach | What you receive | How long | What breaks |
+| :--- | :--- | :--- | :--- |
+| Lock the real thing, mint a copy | A claim on an escrow | Minutes | The escrow gets drained, the copy is worthless [2] |
+| Burn the real thing, mint a real one | The genuine token | Seconds to 20 minutes | The issuer's signing service goes down [5] |
+| Somebody fronts you the money | The genuine token | 2 to 15 seconds | The solver runs out of inventory [3] |
+| General messaging between chains | Depends on the token | Minutes | The verifier network or relayer fails [7] [8] |
 
-```
-Generation 1 (2020-2022): Lock-and-Mint Bridges (Custodial Honeypots)
-[Chain A: Lock Real Asset] ----(Multisig Relayer)----> [Chain B: Mint Wrapped IOU]
+### Lock and mint: the honeypot generation
 
-Generation 2 (2022-2024): Liquidity Pool Bridges (AMM Rebalancing)
-[Chain A: Pool A (USDC)] <====(Message Passing)====> [Chain B: Pool B (USDC)]
+The original design. You deposit real tokens into a contract on one chain. A group of validators watches, and authorises minting a wrapped copy on the other chain [1] [2].
 
-Generation 3 (2024-Present): Intents & Native Burn/Mint (CCTP & ERC-7683)
-[User Signs Intent] ---------(Off-Chain Solvers)---------> [Instant Native Fill]
-[Native Asset Burned] <---(Cryptographic Attestation)---> [Native Asset Minted]
-```
+The problem is structural. That escrow accumulates enormous value in one place, and every wrapped token everywhere depends on it staying safe. One compromised key or one logic bug, and the copies become worthless while still sitting in pools.
 
-### 1. Legacy Lock-and-Mint Honeypots
-Under the classical lock-and-mint model, a user deposits native tokens into a custodian smart contract on the source chain. An off-chain validator set (or multisig) observes the event and authorizes the minting of a synthetic, "wrapped" token (e.g., `soETH` or `madUSDC`) on the destination chain [1] [2]. 
+### Burn and mint: no escrow at all
 
-This architecture created massive centralized capital pools that acted as prime targets for hackers. A single private-key compromise or validation logic bug completely drained the source reserves, rendering the wrapped tokens on destination chains completely worthless and unbacked.
+Circle's transfer protocol removed the honeypot [5]. The real token is burned on one side, Circle signs an attestation that it happened, and a genuine token is minted on the other.
 
-### 2. Native Burn-and-Mint Standards (Circle CCTP)
-To eliminate wrapped token fragmentation and custodial honeypots, major asset issuers introduced native burn-and-mint primitives, led by Circle's **Cross-Chain Transfer Protocol (CCTP)** [5]. 
+No pool holds collateral, so there is nothing to drain and nothing to slip. The cost is speed. The standard route waits for source-chain finality, which on Ethereum means 12 to 15 minutes. Circle's newer fast option settles in seconds for a small fee, by having Circle take the finality risk itself.
 
-Under CCTP:
-1. Canonical USDC is burned directly on the source domain.
-2. Circle's automated attestation service cryptographically signs an on-chain burn event.
-3. The user or relayer submits this attestation to the destination domain, which mints genuine, canonical USDC [5].
+### Intents: somebody fronts you the money
 
-Because no intermediary pool holds locked collateral, CCTP eliminates custodial honeypots and guarantees zero slippage. However, settlement latency is bound to source chain finality (e.g., 12 to 15 minutes on Ethereum Layer 1), making it unsuitable for sub-second user experiences without fast-relayer bridging.
+The current frontier [3] [6]. You sign a message: here is my USDC on Ethereum, pay me USDC on Arbitrum.
 
-### 3. Intent-Based Bridging (Across Protocol and ERC-7683)
-The modern frontier of cross-chain execution relies on **intent-based settlement networks**, exemplified by Across Protocol and the standardized ERC-7683 intent framework [3] [6].
+A market maker, called a solver, reads that and immediately sends you their own money on the destination chain. Seconds, not minutes. They then batch up their claims and get repaid from the settlement layer later.
 
-In an intent architecture, the user does not interact with a cross-chain messaging bridge directly. Instead, the user signs an off-chain order specifying: "I will provide $X$ USDC on Ethereum; pay me $Y$ native USDC on Arbitrum."
-- **Instant Local Execution**: Specialized competitive market makers called **relayers** or **solvers** inspect the order. A solver immediately advances their own private native capital to the user's destination wallet within seconds [3].
-- **Optimistic Cross-Chain Settlement**: The solver batches these fulfilled intents and submits a single repayment claim to the settlement layer (e.g., Across's UMA-based optimistic oracle). The solver bears the latency and cross-chain rebalancing risk in exchange for a fractional fee [3].
+The point is where the risk sits. The solver carries the delay and the rebalancing problem, and charges a small fee for it. You get the genuine token, fast, with no wrapped copy to worry about.
 
-The user experiences sub-minute execution with zero wrapped-token depeg exposure, while capital efficiency is maximized.
+### General messaging: for everything else
 
-## Omnichain Messaging Standards: Chainlink CCIP and LayerZero OFT
+Two standards matter here. Chainlink's protocol adds a separate network that watches transfers for abnormal patterns and can pause them [7]. LayerZero's token standard lets a token burn and mint itself across chains via verifier networks, so it does not need a pool on each one [8].
 
-For arbitrary data and native governance tokens, protocols utilize generalized messaging and omnichain asset layers:
+## Why spreading liquidity around makes everything worse
 
-### Chainlink Cross-Chain Interoperability Protocol (CCIP)
-CCIP provides an institutional-grade communication standard backed by decentralized oracle networks (DONs) and an independent **Risk Management Network** [7]. The Risk Management Network is a secondary, isolated consensus network that continuously monitors CCIP transactions for abnormal volume spikes or malicious execution patterns, programmatically pausing transfers if an anomaly is detected.
+This part gets less attention than bridge hacks and costs more in aggregate [4].
 
-### LayerZero Omnichain Fungible Token (OFT) Standard
-LayerZero eliminates fragmented, chain-specific liquidity pools by enabling native tokens to expand multichain via the **OFT standard** [8]. Rather than trading through an external AMM pool on every rollup, the token contract natively burns tokens on the source chain and mints them on the destination chain via decentralized verifier networks (DVNs).
+On one chain, every trader hits the same reserves. Depth is unified, fees are concentrated, and price impact — the way an order pushes the rate against itself — stays low.
 
-| Cross-Chain Model | Example Protocols | Asset Received | Latency | Primary Failure Vectors |
-|---|---|---|---|---|
-| Lock-and-Mint | Legacy bridges, Wormhole v1 | Wrapped token claim | Minutes | Custodial key compromise, validation bugs [2] |
-| Issuer Burn-and-Mint | Circle CCTP | Canonical native token | 10–20 min | Issuer attestation outage, centralization |
-| Intent-Based | Across, UniswapX Cross-Chain | Canonical native token | 2–15 sec | Solver liquidity exhaustion, oracle dispute lag [3] |
-| Generalized Messaging | Chainlink CCIP, LayerZero OFT | Canonical / OFT token | Minutes | Oracle network compromise, relayer downtime [7] [8] |
+Split that across ten rollups and the arithmetic turns against you:
 
-## The Liquidity Fragmentation Problem Across Rollups
+| | One chain | Ten chains |
+| :--- | :--- | :--- |
+| Total deposited | \$10,000,000 | \$10,000,000 |
+| Depth any single trade sees | \$10,000,000 | \$1,000,000 |
+| Cost of a large trade | Low | Severe on every one of them |
+| Where the volume goes | Here | Somewhere with real depth |
 
-The rapid expansion of Ethereum Layer 2 rollups (Arbitrum, Optimism, Base, Blast, Scroll, zkSync) has fractured decentralized finance liquidity into dozens of isolated silos [4].
+Same money, a tenth of the usefulness, on every chain [4]. Large trades then pay heavy impact on each one, so the volume goes elsewhere. That is why serious providers have stopped deploying passively everywhere and now concentrate, letting solvers do the routing. Rebalancing across venues adds impermanent loss — the gap between a pool position and simply holding — on top. See [Impermanent Loss Explained](/guides/impermanent-loss-explained/).
 
-In a single-chain environment, an AMM pool benefits from unified network effects: all traders interact with the same reserves, minimizing price impact and maximizing fee revenue. In a multi-chain environment:
-- Capital is divided across multiple disjointed pools.
-- A \$10,000,000 liquidity deployment is split into ten \$1,000,000 pools across ten rollups.
-- Large swaps experience severe price impact on any individual rollup, driving trades away from AMMs [4].
+## Three risks specific to cross-chain pools
 
-```
-Unified Liquidity (Single Chain):
-[Total Reserves: $10,000,000] <==== High Depth, Low Slippage, Maximized Fees
+**A wrapped token in your pool is a bridge in your pool.** If a pool pairs the genuine token with a bridged copy, and that bridge is exploited, traders will dump the now-worthless copies into the pool and take out every genuine token. You are left holding the copies [2] [4].
 
-Fragmented Liquidity (Multi-Rollup):
-[Base: $2M] | [Arbitrum: $3M] | [Optimism: $2M] | [Mainnet: $3M]
-  Slippage      Slippage        Slippage          Slippage
-```
+**Crisis flow only goes one way.** When markets break, everybody bridges in the same direction at once, usually toward somewhere they can sell. A cross-chain pool empties on one side and you end up holding all of whatever people are running from.
 
-To combat this fragmentation, liquidity providers are increasingly moving away from passive multichain deployments toward concentrated intent hubs. Intent solvers internalize cross-chain routing, aggregating fragmented liquidity on behalf of end users without requiring passive LPs to maintain separate inventories on every single chain. To understand how inventory rebalancing costs impact LP returns across venues, review our analysis on [Impermanent Loss Explained: Rebalancing, Relative Price, and LP Outcomes](/guides/impermanent-loss-explained/).
+**Rollup sequencers stop.** Most rollups have a single sequencer. When it halts, nothing settles, but prices elsewhere keep moving. The moment it restarts, every resting position gets picked off at once. That is MEV — value taken by controlling the order transactions run in. See [MEV and Liquidity Providers](/guides/mev-and-liquidity-providers/).
 
-## The Hidden Risks of Providing Cross-Chain AMM Liquidity
+## What people get wrong about bridging
 
-Supplying capital to a cross-chain liquidity pool or an AMM on a newly deployed rollup introduces compounding systemic hazards:
+| What people assume | What actually happens |
+| :--- | :--- |
+| Bridged USDC is USDC | It is a claim on an escrow. If the escrow fails, the claim is worth nothing |
+| A fast confirmation means it is settled | Rollup confirmations are not final settlement. Reorganisations and halts happen |
+| Any bridge is fine for small amounts | The failure is not proportional to your size. The whole wrapped supply goes at once |
+| I can move funds and sort out gas later | Bridge tokens to a chain without its gas token and you cannot do anything at all |
 
-### 1. Wrapped Asset Depeg Contagion
-If an AMM pool pairs a native asset with a bridged wrapped asset (e.g., native USDC paired with bridged `USDC.e`), the pool is vulnerable to bridge insolvency. If the underlying bridge contract suffers a hack, arbitrageurs will immediately dump the unbacked wrapped tokens into the pool, extracting 100% of the native assets. Passive LPs are left holding worthless wrapped claims [2] [4].
+## What to check before you bridge or supply
 
-### 2. Asymmetric Flow and Rebalancing Drain
-Cross-chain flows are frequently unidirectional during market crises. When a macroeconomic liquidation event occurs, users and bots rush to bridge funds to centralized exchanges or high-throughput execution venues. Cross-chain liquidity pools experience massive inventory depletion on one side, leaving LPs heavily exposed to the asset experiencing panic selling.
+1. **Are you receiving the genuine token?** Natively issued, or a wrapped version that depends on somebody's escrow staying solvent [5]?
+2. **Who verifies the transfer?** A competitive solver network, an institutional oracle network with a monitoring layer, or an unaudited group of signers [3] [7]?
+3. **If you are on a rollup, what is the escape route?** Can you withdraw through the base layer if the bridge operators disappear?
+4. **Does the pool contain any wrapped assets?** If so, you are exposed to that bridge whether you meant to be or not [2].
+5. **On an intent network, are your limits explicit?** Set the maximum fee and the tolerance in the order, so you are not gouged during congestion [3].
 
-### 3. Layer 2 Sequencer Downtime
-Layer 2 rollups operate centralized or federated sequencers. If a rollup sequencer halts (as occurred historically during major network upgrades or traffic spikes), cross-chain bridges cannot settle destination transactions. Meanwhile, spot prices on centralized exchanges continue to move, exposing resting LP orders to massive latency arbitrage the instant the sequencer resumes block production. Learn how transaction ordering impacts market making in our guide to [MEV and Liquidity Providers: Sandwich Attacks, JIT Liquidity, and Toxic Flow](/guides/mev-and-liquidity-providers/).
+## Where to watch the numbers
 
-## Monitoring & Onchain Tooling Stack
+- **Bridge flows and how much is locked where:** [DeFiLlama Bridges](https://defillama.com/bridges).
+- **Solver fill rates and settlement times:** [Across Protocol Analytics](https://dune.com/across_protocol).
+- **Whether a specific message actually delivered:** [LayerZero Scan](https://layerzeroscan.com).
 
-To audit cross-chain bridge flows, escrow solvency, and intent settlements:
+## When something goes wrong
 
-- **Cross-Chain Bridge Volume & TVL**: Track bridge deposits, net flows, and collateral locks across chains on [DeFiLlama Bridges](https://defillama.com/bridges).
-- **Intent Auction & Solver Execution**: Monitor cross-chain order fulfillment latency and settlement rates on [Across Protocol Analytics](https://dune.com/across_protocol).
-- **Cross-Chain Message Verification**: Inspect inter-chain message delivery states and bridge validator attestations via [LayerZero Scan](https://layerzeroscan.com).
+- **Your transfer is stuck pending.** The source side confirmed but the destination has not been relayed, usually because of gas or a queue. Check the bridge's explorer, and whether you can push it through manually.
+- **A wrapped token is trading below the real one.** The escrow has been exploited or paused. Stop depositing immediately. If you hold the wrapped version, work out whether you have any redemption claim before selling into whatever depth is left.
+- **Intent orders are not filling.** Volatility widened the spread past what solvers will take. Raise your limit, or use the slow canonical route for anything that is not urgent.
 
-## Common Cross-Chain Mistakes & Bridge Architecture Pitfalls
+## Where to go next
 
-| Operational Mistake | Systemic Consequence | Correct Infrastructure Protocol |
-|---|---|---|
-| **Depositing into Wrapped-Asset AMM Pools** | If the custodial lock-and-mint bridge suffers an exploit, wrapped tokens depeg to zero, leaving LPs with worthless inventory. | Restrict liquidity provision strictly to canonical native assets (Circle CCTP, native L1/L2 tokens). |
-| **Ignoring Asymmetric Bridge Inventory Imbalance** | In multi-chain liquidity pool bridges, pools on the receiving chain run out of inventory during market panics, stranding transfers. | Check bridge pool liquidity depth and route through intent solvers with independent off-chain balance sheets. |
-| **Assuming Instant Cross-Chain Finality** | Fast L2 confirmations do not equal L1 finality; soft reorganizations or sequencer halts can delay settlement unexpectedly. | Verify source chain finality requirements (optimistic challenge periods vs. zk-proof verification). |
-| **Omitting Destination Gas Token Requirements** | Bridging assets to a new chain without holding native gas tokens (e.g., ETH on Arbitrum) locks the user out of executing transactions. | Use bridges and intent networks that support native gas-drop features alongside token settlement. |
-
-## Pre-Bridging and Cross-Chain LP Due Diligence Checklist
-
-Before transferring funds or deploying capital into cross-chain pools, verify these architectural controls:
-
-- [ ] **Asset Canonicality**: Are you receiving genuine canonical tokens (e.g., native USDC issued via Circle CCTP) or a wrapped representation dependent on an external bridge's solvency [5]?
-- [ ] **Verification Architecture**: Does the route rely on an intent-based solver network with optimistic verification, an institutional oracle network with risk management (Chainlink CCIP), or an unaudited multisig [3] [7]?
-- [ ] **Rollup Finality and Exit Window**: If bridging to or from a Layer 2, what is the native escape hatch timeline? Can funds be withdrawn via native L1 dispute mechanisms if the bridge relayer network goes offline?
-- [ ] **Pool Composition & Bridge Dependencies**: If providing liquidity to a multichain pool, does the pool contain any wrapped tokens whose underlying bridge contracts hold concentrated custody balances [2]?
-- [ ] **Solver Depth and Fee Caps**: On intent networks, are slippage parameters and maximum solver fee limits explicitly defined in your signed order to prevent fee gouging during congested periods [3]?
-
-Cross-chain liquidity is not an undifferentiated utility; it is a heterogeneous spectrum of capital and cryptographic trust models. Evaluating the specific settlement layer and failure mechanics is mandatory to preserve capital across the multichain ecosystem.
-
-## Diagnostic Troubleshooting Decision Tree
-
-Follow this operational tree when monitoring cross-chain liquidity and bridge operations:
-
-1. **Cross-Chain Transaction Delayed in Pending State**:
-   - *Diagnostic*: Source chain transaction confirmed, but destination relay has stalled due to gas price spikes or relayer queue congestion.
-   - *Action*: Check the bridge relayer explorer to verify whether destination transaction gas parameters require manual gas acceleration.
-2. **Wrapped Asset Decoupling from Canonical Underpinning**:
-   - *Diagnostic*: The bridge escrow contract on the origin chain has suffered an exploit or withdrawal pause, threatening backing solvency.
-   - *Action*: Immediately pause new LP deposits; if holding unbacked wrapped tokens, evaluate redemption priority or exit into canonical stablecoins on secondary DEXs.
-3. **Solver Fill Rates Declining on Intent Protocols**:
-   - *Diagnostic*: Market volatility has widened cross-chain price spreads beyond the solver's risk tolerance, reducing fill liquidity.
-   - *Action*: Increase user-defined limit tolerances or utilize canonical bridge paths for large non-urgent transfers.
-
-## Where to Go Next
-
-Fragmented depth shows up first in execution quality, covered in [Slippage and Price Impact](/guides/slippage-and-price-impact/). For the loss paths that bridging adds on top of ordinary pool risk, see [Can You Lose Money in a Liquidity Pool?](/guides/can-you-lose-money-in-a-liquidity-pool/).
+Split depth shows up first in what a trade costs, including slippage — the gap between the quote and the fill — covered in [Slippage and Price Impact](/guides/slippage-and-price-impact/). For the loss paths bridging adds on top of ordinary pool risk, see [Can You Lose Money in a Liquidity Pool?](/guides/can-you-lose-money-in-a-liquidity-pool/).
 
 ## References
 
-
 1. [Ethereum Foundation: Blockchain Bridges and Architecture](https://ethereum.org/en/developers/docs/bridges/)
-2. [SoK: A Review of Cross-Chain Bridge Hacks and Vulnerabilities](https://arxiv.org/abs/2501.03423)
+2. [SoK: A Review of Cross-Chain Bridge Hacks in 2023 (Belenkov et al., 2025)](https://arxiv.org/abs/2501.03423)
 3. [Across Protocol Architecture: Intent-Based Cross-Chain Settlement](https://docs.across.to/)
 4. [Cryptocurrencies and Decentralised Finance (DeFi) | BIS Working Paper 1061](https://www.bis.org/publ/work1061.htm)
 5. [Circle Cross-Chain Transfer Protocol (CCTP) Architecture](https://www.circle.com/en/cross-chain-transfer-protocol)
 6. [ERC-7683: Cross-Chain Intent Standard](https://eips.ethereum.org/EIPS/eip-7683)
 7. [Chainlink Cross-Chain Interoperability Protocol (CCIP) Documentation](https://docs.chain.link/ccip)
-8. [LayerZero Omnichain Fungible Token (OFT) Standard](https://docs.layerzero.network/v2/home/token-standards/oft)
+8. [Omnichain Fungible Token (OFT) Standard (LayerZero Documentation)](https://docs.layerzero.network/v2/concepts/applications/oft-standard)
 9. [The Financial Stability Risks of Decentralised Finance (Financial Stability Board, 2023)](https://www.fsb.org/2023/02/the-financial-stability-risks-of-decentralised-finance/)
 10. [SoK: Decentralized Finance (DeFi) (Werner et al., 2021)](https://arxiv.org/abs/2101.08778)
 
 [1]: https://ethereum.org/en/developers/docs/bridges/ "Ethereum Foundation: Blockchain Bridges and Architecture"
-[2]: https://arxiv.org/abs/2501.03423 "SoK: A Review of Cross-Chain Bridge Hacks and Vulnerabilities"
+[2]: https://arxiv.org/abs/2501.03423 "SoK: A Review of Cross-Chain Bridge Hacks in 2023 (Belenkov et al., 2025)"
 [3]: https://docs.across.to/ "Across Protocol Architecture: Intent-Based Cross-Chain Settlement"
 [4]: https://www.bis.org/publ/work1061.htm "Cryptocurrencies and Decentralised Finance (DeFi) | BIS Working Paper 1061"
 [5]: https://www.circle.com/en/cross-chain-transfer-protocol "Circle Cross-Chain Transfer Protocol (CCTP) Architecture"
 [6]: https://eips.ethereum.org/EIPS/eip-7683 "ERC-7683: Cross-Chain Intent Standard"
 [7]: https://docs.chain.link/ccip "Chainlink Cross-Chain Interoperability Protocol (CCIP) Documentation"
-[8]: https://docs.layerzero.network/v2/home/token-standards/oft "LayerZero Omnichain Fungible Token (OFT) Standard"
+[8]: https://docs.layerzero.network/v2/concepts/applications/oft-standard "Omnichain Fungible Token (OFT) Standard (LayerZero Documentation)"
 [9]: https://www.fsb.org/2023/02/the-financial-stability-risks-of-decentralised-finance/ "The Financial Stability Risks of Decentralised Finance (Financial Stability Board, 2023)"
 [10]: https://arxiv.org/abs/2101.08778 "SoK: Decentralized Finance (DeFi) (Werner et al., 2021)"

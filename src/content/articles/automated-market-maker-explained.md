@@ -1,11 +1,11 @@
 ---
 title: "Automated Market Makers Explained: How an AMM Actually Works"
-description: "AMMs price trades from reserves and rules. Trace invariants, singleton architectures, programmable hooks, dynamic fees, and execution conditions before you act."
+description: "How an AMM quotes a price from its own reserves, what three generations of design changed, where your execution cost really comes from, and what to check first."
 category: "Foundations"
 date: 2026-09-08
-lastReviewed: "2026-09-10"
+lastReviewed: "2026-09-12"
 author: "Dr. Kieran Thorne"
-readTime: "11 min read"
+readTime: "8 min read"
 keywords: "automated market maker, AMM explained, AMM pool, DeFi exchange, singleton contract, hooks, flash accounting, how does an AMM work, what is an AMM, AMM crypto, AMM liquidity pool"
 featured: true
 faq:
@@ -17,11 +17,11 @@ faq:
     a: "By the invariant. In a constant-product pool the marginal price is the ratio of the two reserves, so buying an asset reduces its reserve and raises its price for the next trade. Other curve designs change how quickly that happens."
 ---
 
-An automated market maker (AMM) prices financial assets using a deterministic mathematical function rather than an order book. Instead of matching a buyer's bid with a seller's ask, the AMM quotes an exchange rate directly from the ratio of token reserves held within its smart contracts.
+On a normal exchange, your buy order waits until somebody posts a matching sell. An automated market maker, or AMM, removes the waiting. It always has a price, because it works one out from what it is holding right now.
 
-When an order executes against an AMM, the transaction shifts reserve balances, mechanically adjusting the marginal price along the bonding curve. For traders, this produces price impact proportional to order size relative to active depth. For liquidity providers, it forces continuous, un-hedged inventory rebalancing against informed market participants.
+That is the whole trick, and it is also the whole problem. The contract has no idea what your token is worth anywhere else. It quotes from its own shelves, and it keeps quoting the old number until someone trades against it.
 
-This guide analyzes the mechanics of AMM pricing engines, details their architectural evolution from isolated factory pairs to hook-enabled singletons, and establishes an operational framework to evaluate pools before trading or committing capital.
+This guide covers how that pricing works, how the design has changed over three generations, where your real trading cost comes from, and what to check before you trade or deposit.
 
 <figure class="article-figure">
   <img src="/images/guides/automated-market-maker-explained.webp" alt="An automated market mechanism moves token inventory along a pricing curve." width="1600" height="1067" loading="lazy" decoding="async" />
@@ -29,199 +29,127 @@ This guide analyzes the mechanics of AMM pricing engines, details their architec
 </figure>
 
 > **Desk Field Note from Dr. Kieran Thorne:**
-> *"The biggest mistake engineers make when designing or integrating AMMs is treating the invariant function as a mere price formula. The invariant is actually a state machine boundary condition enforced by the EVM. When implementing custom AMM logic, every call to reserve balances introduces reentrancy risks and rounding precision errors. Always ensure math operations round in favor of the protocol reserves—round up on token input requirements, and round down on token output distributions."*
+> *"People read the pool rule as a price formula. It is not. It is a boundary the contract is not allowed to cross, and everything else follows from that. If you are writing pool logic yourself, round every number in the pool's favour. Round up what a trader must put in, round down what they take out. The rounding errors are where the money leaks."*
 
-## 1. The Core Mechanism: An AMM Is an Inventory Rule, Not an Oracle
+## An AMM is a shelf, not a price feed
 
-In a constant-product pool, two token reserves ($x$ and $y$) are linked by the invariant equation $x \cdot y = k$. This rule determines the pool's internal exchange rate strictly as a function of its current reserves; it does not query an external oracle or track broader market sentiment [1].
+Picture a shop with two shelves. One holds ETH, the other holds USDC. The rule says the two shelf counts multiplied together must never fall [1].
 
-When a swap executes, reserves change, moving the marginal exchange rate ($P = y/x$) along the curve. The larger the transaction relative to active reserves, the further the marginal price moves—producing price impact [1].
+Take ETH off the first shelf and you have to put enough USDC on the second to keep that number level. Take more and you have to put on proportionally more still. That is where the price comes from, and it is why the rate gets worse as your order gets bigger.
 
-A fundamental principle of AMM market microstructure is that **the contract does not know the fair market price**. It quotes exclusively what its invariant and token balances dictate. When external reference prices shift on centralized exchanges, atomic arbitrageurs execute trades against the stale onchain quote until pool reserves rebalance to match external market levels. The quoted price is strictly a function of the local contract state modified by the transaction [1]. For a formal mathematical treatment of this curve, consult [The Constant Product Formula: How x × y = k Shapes AMM Prices](/guides/constant-product-formula/).
+The pool never checks anywhere else. It does not know ETH just moved on Binance. It keeps offering yesterday's rate until someone walks in and takes the good side, which is exactly what arbitrage traders do all day. The formal treatment is in [Constant Product Formula](/guides/constant-product-formula/).
 
----
+The one relationship the pool refuses to break is called its invariant — the rule holding the shelves in line. Different pools use different ones, and that choice decides how the price behaves.
 
-## 2. Architectural Evolution: From Factory Pairs to Programmable Singletons
+## How AMM design changed over three generations
 
-Understanding AMM behavior requires tracking the smart contract execution architecture across three distinct protocol generations:
+| Generation | What it looked like | Where money sat | Fee | The catch |
+| :--- | :--- | :--- | :--- | :--- |
+| First, Uniswap v1 and v2 | One contract per pair | Spread across every price | Fixed 0.30% | Tokens moved on every hop, so routing was expensive |
+| Second, Uniswap v3 | One contract per pair, money in bands | Only in the band you chose | Four fixed tiers | Money outside the live band does nothing |
+| Third, Uniswap v4 and Ambient | Every pool in one contract | Bands, plus custom code | Can move with volatility | Hooks are code, and code can be written badly |
 
-```
-+--------------------------------------------------------------------------------+
-|                        EVOLUTION OF THE AMM ENGINE                             |
-+--------------------------------------------------------------------------------+
-|                                                                                |
-|  Gen 1: Factory-Pair Architecture (Uniswap v1 & v2)                            |
-|  - Standalone pair contract per token pair                                     |
-|  - Uniform liquidity across (0, infinity)                                      |
-|  - Static swap fee (30 bps)                                                   |
-|  - Physical ERC-20 transfers at every swap hop                                 |
-|                                                                                |
-|  Gen 2: Concentrated Liquidity Ticks (Uniswap v3)                              |
-|  - Piecewise virtual reserve curves within ticks [P_l, P_u]                   |
-|  - Factory-deployed isolated pool contracts                                    |
-|  - Static discrete fee tiers (1, 5, 30, 100 bps)                               |
-|  - Capital efficiency gains up to 4,000x in-range                              |
-|                                                                                |
-|  Gen 3: Singleton State Engines & Hooks (Uniswap v4, Ambient)                  |
-|  - Unified contract (PoolManager.sol) holding all token reserves               |
-|  - Flash accounting via transient storage (EIP-1153)                           |
-|  - Internal token balances tracked via ERC-6909                                |
-|  - 8-point programmable lifecycle hooks                                        |
-|  - Dynamic volatility-adjusted swap fees                                       |
-|                                                                                |
-+--------------------------------------------------------------------------------+
-```
+### First generation: one contract per pair
 
-### Generation 1: Isolated Pair Contracts
-Early AMMs deployed an independent contract for every trading pair. Every swap required transferring ERC-20 tokens into the pair contract, updating state, and transferring tokens out. Multi-hop routing (e.g., Token A $\to$ Token B $\to$ Token C) incurred high gas costs due to repetitive external calls and redundant token transfers [1] [3].
+Every pair got its own contract. Every swap moved real tokens in and real tokens out. A trade routed through three pools paid for all of it, which made multi-hop routing costly [1] [3].
 
-### Generation 2: Concentrated Liquidity Ticks
-Uniswap v3 introduced concentrated liquidity, allowing LPs to allocate capital within finite price bounds $[P_l, P_u]$. Capital efficiency increased substantially, but depth became piecewise: each tick boundary acts as an independent virtual reserve, and capital outside the active tick sits idle [2] [3].
+### Second generation: money in a chosen band
 
-### Generation 3: Singleton Engines and Flash Accounting
-Modern architectures discard the factory-pair model entirely. All pools, fee tiers, and hook configurations exist inside a single state contract (`PoolManager.sol`) [1].
-- **Transient Storage (EIP-1153)**: During multi-hop swaps, intermediate balances are tracked as memory deltas via a lock/unlock mechanism. Physical tokens are not moved between intermediate hops; only the net delta is settled at the end of the transaction (`take` and `settle`). This cuts routing gas costs by over 90% [1].
-- **Native Credit Accounting (ERC-6909)**: LPs and routers can maintain internal balance claims directly inside the singleton, avoiding ERC-20 approve and transfer overhead [1].
+Uniswap v3 let you put money into a price band instead of across the whole range [2]. The same deposit could absorb far more trading, so it earned far more. But depth became patchy: money outside the live band earns nothing and fills nothing [2] [3].
 
-### Programmable Lifecycle Hooks
-Modern AMMs permit developers to attach custom logic to pools via hooks. A hook contract intercepts pool lifecycle events at eight execution points:
-- `beforeInitialize` / `afterInitialize`
-- `beforeAddLiquidity` / `afterAddLiquidity`
-- `beforeRemoveLiquidity` / `afterRemoveLiquidity`
-- `beforeSwap` / `afterSwap`
-- `beforeDonate` / `afterDonate`
+### Third generation: one contract for everything
 
-Hooks enable dynamic fee adjustments based on volatility, onchain limit orders, custom TWAP oracles, and automated treasury management directly within the swap pipeline [1].
+Newer designs put every pool inside a single contract — a pattern called a singleton, because one contract holds them all [1]. Three things follow:
 
----
+- **The tokens stay put during a trade.** The contract keeps a running tally and settles once at the end. This is flash accounting — bookkeeping in scratch memory rather than real transfers at every step — and it cuts routing gas by most of what it used to cost [1].
+- **Balances can live inside the contract.** Routers and depositors can hold internal claims rather than moving tokens back and forth [1].
+- **Pools can run their own code.** Hooks fire at set moments: before and after a swap, before and after liquidity moves, and so on.
 
-## 3. Mathematical Execution: Calculating Output and Price Impact
+Hooks are what make modern pools interesting and what make them worth checking. They can raise the fee when the market gets jumpy, run limit orders inside the pool, or sweep fees somewhere. They can also do things you would not want. Read what a hook does before you deposit behind it.
 
-In a constant-product pool obeying $x \cdot y = k$, sending an input $\Delta x$ into the pool increases reserve $x$ to $x + (1 - f) \cdot \Delta x$, where $f$ represents the pool swap fee rate. The output $\Delta y$ received by the swapper is calculated as:
+## Where your trading cost actually comes from
+
+Most people look at the fee tier and stop. The fee is usually the small part.
+
+Two things decide what you pay. The fee is the advertised one. The other is price impact — the amount your own order moves the rate while it executes.
 
 $$
 \Delta y = y - \frac{k}{x + (1 - f) \cdot \Delta x}
 $$
 
-From this formula, three operational realities emerge:
-1. **Marginal vs. Average Execution Price**: The marginal spot price before the trade is $P_{\text{spot}} = y/x$. The actual average execution price received by the trader is $\bar{P} = \Delta x / \Delta y$. As order size $\Delta x$ increases, $\bar{P}$ degrades monotonically relative to $P_{\text{spot}}$ [1].
-2. **Impact Dominates Low Fees**: A 0.05% fee tier in a shallow pool often yields worse execution than a 0.30% fee tier in a deep pool, because invariant curvature and reserve depletion dominate the total transaction cost [1] [3].
-3. **Slippage Bounds as Last Defense**: The `amountOutMinimum` parameter in a swap transaction sets an absolute floor on the acceptable output. Setting an excessively wide slippage tolerance invites MEV searchers to extract the difference [1] [5].
+Where:
 
-For a detailed comparative analysis between AMM execution and order books, read [AMM vs. Order Book: Two Ways to Organize a Market](/guides/amm-vs-order-book/).
+- $\Delta x$ is what you put in.
+- $\Delta y$ is what you get out.
+- $x$ and $y$ are the two pool balances before your trade.
+- $f$ is the fee rate, so a 0.30% pool has $f = 0.003$.
+- $k$ is the number the pool holds level.
 
----
+The thing to take from it is the denominator. Your input sits at the bottom of a fraction, so the more you send, the less each extra unit gets back. Small trades barely notice. Large ones pay for the whole curve.
 
-## 4. Fee Mechanics: Static Tiers vs. Dynamic Volatility Curves
+Three practical consequences:
 
-Swap fees compensate liquidity providers for underwriting inventory risk. In classical v2 AMMs, a static 0.30% fee is withheld from input tokens and added directly to pool reserves, growing the redeemable value of LP tokens [3]. In concentrated AMMs, fees accrue pro rata to active liquidity strictly within the price ticks traversed by trades [2] [3].
+- **The quoted price is not your price.** The screen shows the rate for an infinitely small trade. Yours is worse, and how much worse depends on your size against the money actually working near that price.
+- **A cheap fee tier can be the expensive choice.** A 0.05% pool with thin depth often costs more in total than a 0.30% pool with real depth [1] [3].
+- **Your tolerance setting is a backstop, not a plan.** It caps slippage — the gap between the quote you saw and the fill you got, usually because somebody traded in front of you. Set it wide on a public transaction and bots will take the whole difference [1] [5].
 
-In modern AMMs, static fee tiers are increasingly replaced by dynamic fees:
-- **Volatility-Adjusted Fees**: Protocols like Trader Joe (Liquidity Book) and Uniswap v4 hook pools monitor market volatility (e.g., via bin transition frequency or price variance) and automatically widen the fee during volatile intervals. This extracts higher compensation from arbitrageurs and protects LPs against adverse selection (Loss-Versus-Rebalancing, or LVR) [1] [3].
-- **Directional & Imbalance Fees**: In Curve cryptoswap and StableSwap pools, fees adjust dynamically based on pool balance, charging higher fees when a trade pushes the pool deeper into imbalance [4].
+See [AMM vs Order Book](/guides/amm-vs-order-book/) for how this compares to matching buyers and sellers directly.
 
-Operational rules for market participants:
-- **For Traders**: A low headline fee tier does not guarantee good execution. If your trade is large relative to active liquidity, invariant impact dominates your cost. Dynamic fees may also widen execution cost during market volatility [1].
-- **For Liquidity Providers**: Fees accrue only to liquidity that is active at the time of the swap. If price exits your range, fee accrual halts instantly [2] [3]. Fees are compensation for continuous rebalancing against informed flow.
+## How fees actually reach you
 
----
+A swap fee is what you are paid for standing in the middle. In the older design it is simply added back to the pool, so your share is worth a little more each time [3]. In band-based pools it goes only to the money that was live for that particular trade [2] [3].
 
-## 5. Concentrated Ranges: Active Management and Boundary Liquidity
+Newer pools let the fee move rather than sit fixed:
 
-Concentrated liquidity allows providers to set finite bounds $[P_l, P_u]$ around the market price. The operational trade-off is structural:
+- **Fees that track volatility.** Trader Joe and hook-enabled Uniswap v4 pools watch how fast the price is moving and widen the fee while it lasts. That charges more to the traders picking off stale quotes [1] [3].
+- **Fees that track imbalance.** Curve pools charge more when a trade pushes the pool further out of balance [4].
 
-```
-+--------------------------------------------------------------------------------+
-|                   CONCENTRATED LIQUIDITY INVENTORY TRANSITION                  |
-+--------------------------------------------------------------------------------+
-|                                                                                |
-|   Price Regime                     Position Inventory Composition              |
-|   --------------------------------------------------------------------------   |
-|   Price > Upper Bound (P_u)   -->  100% Token Y (Quote Asset)                  |
-|                                    Fee accrual halts; zero active depth.       |
-|                                                                                |
-|   Price Inside Range          -->  Mixture of Token X and Token Y              |
-|   [P_l <= P <= P_u]                Continuous fee accrual; active depth.       |
-|                                                                                |
-|   Price < Lower Bound (P_l)   -->  100% Token X (Base / Risky Asset)           |
-|                                    Fee accrual halts; zero active depth.       |
-|                                                                                |
-+--------------------------------------------------------------------------------+
-```
+Two rules fall out of this. If you are trading, a low headline fee guarantees nothing about your total cost. If you are depositing, your fees stop the instant the price leaves your band, and they stop completely, not partially [2] [3].
 
-When market price leaves your designated bounds, your position converts 100% into the underperforming asset and deactivates. A narrower range produces higher fee yield while active, but accelerates the frequency of range breaches and single-asset lockup [2] [3].
+## What happens when the price leaves your band
 
----
+| Where the price is | What you are holding | What you earn |
+| :--- | :--- | :--- |
+| Above your band | All of the quote token, having sold the whole way up | Nothing |
+| Inside your band | A mix, shifting as the price moves | Fees on every swap that crosses you |
+| Below your band | All of the risky token, having bought the whole way down | Nothing |
 
-## 6. Common Pitfalls and Execution Mistakes
+A narrower band earns more per dollar while the price stays inside it, and pushes you outside it more often [2] [3]. That is the entire trade-off, and no setting removes it.
 
-Review these operational mistakes before interacting with automated market makers:
+## What people get wrong about AMMs
 
-```
-+--------------------------------------------------------------------------------+
-|                 COMMON AMM EXECUTION MISTAKES TO AVOID                         |
-+--------------------------------------------------------------------------------+
-|                                                                                |
-|  [x] Mistake: Treating spot price as execution price on large swaps.           |
-|  [v] Correction: Pre-compute marginal price impact and average fill price       |
-|      before submitting transactions; check depth within +/-1% of spot.         |
-|                                                                                |
-|  [x] Mistake: Submitting public mempool transactions with > 0.5% slippage.     |
-|  [v] Correction: High slippage tolerances on public mempools are targeted      |
-|      by MEV sandwich bots; route via private RPCs or intent batch auctions.    |
-|                                                                                |
-|  [x] Mistake: Assuming concentrated liquidity positions earn passive yield.   |
-|  [v] Correction: Concentrated ticks require active monitoring; out-of-range    |
-|      positions earn zero fees while bearing 100% directional inventory risk.   |
-|                                                                                |
-|  [x] Mistake: Confusing gross TVL with available execution depth.              |
-|  [v] Correction: Gross TVL includes idle out-of-range capital; measure active   |
-|      liquidity density at the specific tick range your trade will cross.       |
-|                                                                                |
-+--------------------------------------------------------------------------------+
-```
+| What people assume | What actually happens |
+| :--- | :--- |
+| The quoted price is what I will pay | That is the rate for a trade of almost nothing. Check the depth within 1% of it before sending size |
+| A wide slippage setting is safer | It is an open invitation. Bots read public transactions and take exactly what you allowed |
+| A band position is passive income | It needs watching. Out of range you earn nothing and hold the losing token |
+| Big pool means good execution | The headline number counts idle money too. Only what sits near the price fills your trade |
 
----
+## What to check before you trade or deposit
 
-## 7. Step-by-Step Pre-Flight Evaluation Framework
+1. **Which rule is the pool using?** Full range, chosen band, stepped bins, or a stable-pair curve. Each behaves differently under stress [1] [4].
+2. **Does the pool have hooks, and what do they do?** Check whether they can change fees, limit withdrawals, or pause trading [1].
+3. **How much money sits near the price?** Look within 1% and 2% of the current rate, and compare that to your order size [1] [2].
+4. **Is the pool balanced?** For pegged pairs, a lopsided pool is already near the steep part of its curve [4].
+5. **How are you sending the order?** Anything large should go through a private relay or a batch auction rather than the open queue [5].
 
-Follow this sequential verification before executing a trade or supplying capital:
+For how the fee side adds up, see [Liquidity Provider Fees](/guides/liquidity-provider-fees/).
 
-1. **Identify the Governing Invariant**: Is the pool constant-product ($x \cdot y = k$), concentrated tick-based, discrete bin, or hybrid StableSwap [1] [4]?
-2. **Check Singleton and Hook Permissions**: In Uniswap v4 pools, verify whether attached hooks introduce dynamic volatility fees, withdrawal limits, or custom routing rules [1].
-3. **Assess Active Market Depth**: Determine how much capital is concentrated within $\pm 1\%$ and $\pm 2\%$ of the active tick. Confirm that your trade size will not exhaust in-range liquidity [1] [2].
-4. **Inspect Reserve Balance Skew**: For stablecoin and correlated pools, verify whether token reserves are balanced (50/50) or heavily skewed. Skewed pools operate near their liquidity cliff [4].
-5. **Select Transaction Routing**: Route large trades through private RPC endpoints (such as Flashbots Protect) or intent-based RFQ solvers (UniswapX, CoW Swap) to prevent MEV sandwich attacks [5].
+## Where to watch the numbers
 
-For further analysis on fee generation and return calculations, consult [Liquidity Provider Fees: Calculation, Structure, and Optimization](/guides/liquidity-provider-fees/).
+- **Simulate a trade before sending it:** [Tenderly](https://tenderly.co) replays swaps against the real contract.
+- **Volume against pool size across protocols:** [DeFiLlama Yields](https://defillama.com/yields).
+- **Your own position and fees earned:** [Revert Finance](https://revert.finance).
 
----
+## When something goes wrong
 
-## Monitoring & Onchain Tooling Stack
+- **A swap keeps reverting with a K error.** The pool's rule was breached, usually because fees were taken in the wrong order or a rounding step went the wrong way. Deduct fees before the check and round in the pool's favour.
+- **The pool's price has drifted from everywhere else.** If the gap is smaller than the fees an arbitrage trader would pay to close it, nobody profits by closing it, and that is normal. If it is larger, check whether a transfer tax or a pause is blocking arbitrage.
+- **Your position is losing money fast.** Faster traders are picking off a stale quote. Compare the fee tier against how much the pair has actually been moving.
 
-To monitor AMM state changes, reserve balances, and smart contract execution in real time:
+## Where to go next
 
-- **Contract State Tracing**: Use [Tenderly](https://tenderly.co) to simulate multi-hop swaps and debug transaction execution traces against AMM pool contracts.
-- **Protocol TVL & Volume Distribution**: Monitor historical reserve balances and volume-to-TVL ratios on [DeFiLlama Yields](https://defillama.com/yields).
-- **Position Health & Accounting**: Track real-time LP performance, fee accruals, and impermanent divergence loss via [Revert Finance](https://revert.finance).
-
-## Diagnostic Troubleshooting Decision Tree
-
-Use this operational decision tree when troubleshooting AMM pool execution anomalies:
-
-1. **Transaction Reverting with 'K' Invariant Error**:
-   - *Diagnostic*: The product of virtual reserves after fees $(x_{\text{new}} \cdot y_{\text{new}})$ is strictly less than the pre-swap constant $k$, typically caused by incorrect fee deduction ordering or integer truncation.
-   - *Action*: Ensure fee percentages are deducted prior to invariant verification and verify that integer rounding favors pool reserves.
-2. **Pool Price Significantly Decoupled from External Spot Rates**:
-   - *Diagnostic*: Arbitrageurs are unable to restore price balance due to transaction gas costs exceeding the absolute price disparity.
-   - *Action*: If the price delta is within the no-arbitrage band ($\Delta P < 2 \times \text{fee}$), the divergence is normal friction; otherwise, check if token transfer taxes or pause mechanisms are blocking arbitrage transactions.
-3. **LP Position Incurring Rapid Capital Depletion**:
-   - *Diagnostic*: Toxic order flow is exploiting stale reserves before onchain transactions can adjust to external market shocks.
-   - *Action*: Evaluate whether the pool's fee tier provides adequate compensation for trailing realized volatility ($\sigma$).
-
-## Where to Go Next
-
-The execution cost a trader pays against these curves is broken down in [Slippage and Price Impact](/guides/slippage-and-price-impact/). The value the same curves hand to arbitrageurs is quantified in [Loss-Versus-Rebalancing](/guides/loss-versus-rebalancing/). For the architectural comparison between the two most widely used versions, see [Uniswap v3 vs v4 Liquidity](/guides/uniswap-v3-vs-v4/). The curve families themselves are compared in [Bonding Curves and AMM Invariants](/guides/bonding-curves-and-amm-invariants/), and the fee side of the same design space in [Dynamic Fees in AMMs](/guides/dynamic-fees-in-amms/).
+What a trader pays is broken down in [Slippage and Price Impact](/guides/slippage-and-price-impact/). What the same curve hands to arbitrage is measured by loss-versus-rebalancing — the money a pool loses simply because its quote is a block behind — covered in [Loss-Versus-Rebalancing](/guides/loss-versus-rebalancing/). The version comparison is in [Uniswap v3 vs v4](/guides/uniswap-v3-vs-v4/), the curve families in [Bonding Curves and AMM Invariants](/guides/bonding-curves-and-amm-invariants/), and the fee side in [Dynamic Fees in AMMs](/guides/dynamic-fees-in-amms/).
 
 ## References
 
@@ -230,7 +158,7 @@ The execution cost a trader pays against these curves is broken down in [Slippag
 3. [Fees in Concentrated Liquidity (Uniswap Developer Documentation)](https://developers.uniswap.org/docs/get-started/concepts/fees)
 4. [Curve StableSwap Exchange: Overview (Curve Knowledge Hub)](https://docs.curve.finance/developer/amm/legacy/stableswap-overview)
 5. [Maximal Extractable Value (MEV) Documentation (Ethereum.org)](https://ethereum.org/en/developers/docs/mev/)
-6. [SoK: Decentralized Exchanges with Automated Market Maker Protocols (Xu et al., 2021)](https://arxiv.org/abs/2103.12732)
+6. [SoK: Decentralized Exchanges (DEX) with Automated Market Maker (AMM) Protocols (Xu et al., 2021)](https://arxiv.org/abs/2103.12732)
 7. [Constant Function Market Makers: Multi-Asset Trades via Convex Optimization (Angeris et al., Stanford)](https://web.stanford.edu/~boyd/papers/pdf/cfmm.pdf)
 8. [DeFi risks and the decentralisation illusion (BIS Quarterly Review, December 2021)](https://www.bis.org/publ/qtrpdf/r_qt2112b.htm)
 
@@ -239,6 +167,6 @@ The execution cost a trader pays against these curves is broken down in [Slippag
 [3]: https://developers.uniswap.org/docs/get-started/concepts/fees "Fees in Concentrated Liquidity"
 [4]: https://docs.curve.finance/developer/amm/legacy/stableswap-overview "Curve StableSwap Exchange: Overview"
 [5]: https://ethereum.org/en/developers/docs/mev/ "Maximal Extractable Value (MEV) Documentation"
-[6]: https://arxiv.org/abs/2103.12732 "SoK: Decentralized Exchanges with Automated Market Maker Protocols (Xu et al., 2021)"
+[6]: https://arxiv.org/abs/2103.12732 "SoK: Decentralized Exchanges (DEX) with Automated Market Maker (AMM) Protocols (Xu et al., 2021)"
 [7]: https://web.stanford.edu/~boyd/papers/pdf/cfmm.pdf "Constant Function Market Makers: Multi-Asset Trades via Convex Optimization (Angeris et al., Stanford)"
 [8]: https://www.bis.org/publ/qtrpdf/r_qt2112b.htm "DeFi risks and the decentralisation illusion (BIS Quarterly Review, December 2021)"

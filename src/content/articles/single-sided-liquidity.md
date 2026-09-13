@@ -1,11 +1,11 @@
 ---
 title: "Single-Sided Liquidity: What One-Sided Provision Really Does"
-description: "Single-sided and one-sided liquidity provision explained: what the pool converts, when the exposure arrives, and why a zap is a swap with extra steps."
+description: "Depositing one token does not avoid holding two. It changes when the second one arrives and lets you choose the price, a real advantage with a real cost."
 category: "LP Mechanics"
 date: 2026-09-11
-lastReviewed: "2026-09-11"
+lastReviewed: "2026-09-12"
 author: "Aria Chen"
-readTime: "11 min read"
+readTime: "6 min read"
 keywords: "single-sided liquidity, one-sided liquidity provision, zap into liquidity pool, single asset deposit, range order conversion, do I need both tokens to provide liquidity"
 featured: false
 faq:
@@ -21,9 +21,11 @@ faq:
     a: "When price passes the far boundary of the range. At that point the deposit has been fully exchanged for the other asset, the position is out of range, and it stops earning fees until price returns or you re-mint."
 ---
 
-Single-sided provision is often presented as a way to avoid holding a pair. It is more accurate to say it changes when the pair arrives. The pool still converts your deposit; the conversion simply happens through trading over time rather than through a swap at the moment of entry.
+Depositing one token is usually sold as a way to avoid holding two. It is not. It changes when the second one arrives.
 
-Once that is clear, the structure becomes genuinely useful, because a conversion that pays you while it happens is better than one that charges you for it.
+The pool still converts your deposit. It just does it through trading over time instead of through a swap the moment you enter.
+
+Once you see it that way the structure becomes genuinely useful, because a conversion that pays you while it happens beats one that charges you for it.
 
 <figure class="article-figure">
   <img src="/images/guides/single-sided-liquidity.webp" alt="Five-step flow showing a one-sided deposit converting into the other asset as price moves through the range." width="1600" height="1067" loading="lazy" decoding="async" />
@@ -31,105 +33,119 @@ Once that is clear, the structure becomes genuinely useful, because a conversion
 </figure>
 
 > **Desk Field Note from Aria Chen:**
-> *"The clean way to think about it: you are not avoiding the other asset, you are choosing the price at which you acquire it. That is a real advantage over a market swap, and it comes with a real cost, which is that the market may never reach your range, or may pass through and keep going."*
+> *"The clean way to think about it: you are not avoiding the other token, you are choosing the price at which you buy it. That is a real edge over a market order. It also has a real cost, which is that the market may never come to you, or may come through and keep going."*
 
-## 1. Two Different Things Called Single-Sided
+## Three different things with the same name
 
-The phrase covers structures that behave differently.
+| What it is | What happens | Do you choose the price |
+| :--- | :--- | :--- |
+| A range on one side of the market | The pool converts your deposit as the price moves through it | Yes, that is the point |
+| A zap | A contract swaps the right portion at today's price and mints for you | No, you get today's price |
+| A protocol vault taking one asset | Somebody else supplies the other side | No, and you pay them for it |
 
-**A range position placed entirely on one side of the current price.** You deposit only the base asset above the price, or only the quote asset below it. As price moves into and through your range, the invariant exchanges your deposit for the other asset. This is native to concentrated liquidity and is the same mechanism as a [range order](/guides/range-orders-on-amms/).
+Only the first gives you control over the conversion price. The other two convert at whatever the market is doing when you press the button.
 
-**A zap.** A router contract accepts one asset, swaps the appropriate portion at the current price, and mints a two-sided position in one transaction. Convenient, and functionally identical to doing the swap yourself, plus whatever the router charges.
+The first one is the same mechanism as a [range order](/guides/range-orders-on-amms/).
 
-**Protocol-level single-sided vaults.** Some designs accept one asset and pair it internally, either against protocol-owned liquidity or against a counterparty deposit. The exposure does not vanish; it is transferred to whoever supplies the other side, usually in exchange for a share of fees or a fee on withdrawal.
+## What the conversion actually looks like
 
-Only the first gives you control over the conversion price. The other two convert at the market price at the moment of entry.
+ETH at \$2,400. You deposit \$10,000 of USDC into a range from \$2,200 to \$2,300, entirely below the market.
 
----
-
-## 2. The Mechanics of the Conversion
-
-Take a position on ETH/USDC with spot at 2,400, funded with 10,000 USDC placed in a range from 2,200 to 2,300, entirely below the current price.
-
-| Stage | Spot | Position holds | Status |
+| | Price | What you hold | What it is doing |
 | :--- | ---: | :--- | :--- |
-| Mint | 2,400 | 10,000 USDC | Out of range, waiting |
-| Price falls into range | 2,280 | Mixed USDC and ETH | In range, earning fees |
-| Price exits below | 2,180 | roughly 4.44 ETH | Converted, no longer earning |
-| Price recovers into range | 2,250 | Mixed again | Converting back |
+| You mint | \$2,400 | \$10,000 of USDC | Waiting, earning nothing |
+| Price falls into your range | \$2,280 | A mix of both | Converting, and earning fees |
+| Price falls through | \$2,180 | About 4.44 ETH | Done, earning nothing again |
+| Price comes back up | \$2,250 | A mix again | Converting back the other way |
 
-Two features matter. The position earns fees only while price is inside the band, which is exactly while it is converting. And the conversion is reversible: if price re-enters the range from below, the pool sells the ETH back for USDC, which is the main behavioural difference from a limit order.
+Two things to take from that. You earn fees only while it is converting, which is a nice alignment. And the conversion reverses. If the price comes back up through your range, the pool sells the ETH back for dollars. That is the main difference from a limit order.
 
-### The same conversion, priced two ways
+## The same conversion, three ways
 
-Compare converting \$10,000 of USDC into ETH at a spot price of 2,400.
+Converting \$10,000 into ETH with the market at \$2,400.
 
-| Route | Average price achieved | Fees paid | Fees earned | Net position |
+| How | Average price | Fees paid | Fees earned | You end up with |
 | :--- | ---: | ---: | ---: | :--- |
-| Market swap now | 2,404 (0.17% impact) | \$5 | \$0 | 4.159 ETH |
-| One-sided range 2,200 to 2,300 | roughly 2,250 if filled | \$0 | roughly \$35 | roughly 4.44 ETH |
-| One-sided range, never filled | none | \$0 | \$0 | Still \$10,000 USDC |
+| Swap it now | \$2,404, 0.17% impact | \$5 | \$0 | 4.159 ETH |
+| One-sided range, filled | about \$2,250 | \$0 | about \$35 | about 4.44 ETH |
+| One-sided range, never filled | none | \$0 | \$0 | Still \$10,000 |
 
-The middle row is the case people have in mind, and it is genuinely better: a lower average price plus fee income. The third row is the cost of that option, and it is not free, because the capital sat idle while the market moved away.
+The middle row is what people picture, and it genuinely is better. Lower price, plus fee income.
 
----
+The bottom row is what that option costs. Not free, because your money sat idle while the market went the other way.
 
-## 3. What It Is Good For
+## What it is good for
 
-- **Accumulating an asset below the market.** You set the price band at which you are willing to buy, and you are paid fees while the market trades there.
-- **Distributing an asset above the market.** The same in reverse, converting a holding into the quote asset across a chosen band.
-- **Avoiding an entry swap.** For large deposits, converting through trading rather than through a single market order can reduce price impact, an effect covered in [Slippage and Price Impact](/guides/slippage-and-price-impact/).
-- **Expressing a range view without leverage.** The position profits from movement into the band and does not require a directional forecast beyond it.
+- **Buying below the market.** Set the band where you would be happy to buy, and get paid fees while the market trades there.
+- **Selling above the market.** The same thing in reverse.
+- **Avoiding a large market order.** Converting gradually rather than all at once reduces price impact — the way your own order pushes the rate. It also cuts slippage — the gap between the quote you saw and the fill you got. See [Slippage and Price Impact](/guides/slippage-and-price-impact/).
+- **Expressing a range view.** You profit from the market coming to you, with no forecast needed beyond that.
 
----
+## Setting the band, worked
 
-## 4. What It Does Not Solve
+ETH is at \$2,400 and you would happily buy below \$2,250. Here are three ways to place the same \$10,000 of USDC.
 
-Three claims deserve correcting.
+| Band | Average price if it fills | How far ETH must fall to fill completely | What it suits |
+| :--- | ---: | ---: | :--- |
+| \$2,240 to \$2,260 | about \$2,250 | about 7% | Buying at one price, like a limit order |
+| \$2,100 to \$2,300 | about \$2,198 | about 13% | Averaging in across a normal pullback |
+| \$1,900 to \$2,300 | about \$2,090 | about 21% | Building a position slowly through a deeper fall |
 
-**It does not remove divergence.** Once the conversion completes, you hold an asset acquired at an average price inside the band. If the market keeps moving, you hold the losing side of the trade in exactly the way a two-sided position would.
+The narrow band gives you the price you named, but only if ETH actually reaches it. The wide band gets you a better average, and asks for a much bigger fall before you own all of it.
 
-**It does not guarantee the fill.** If price never reaches the range, the position sits idle earning nothing, with the capital committed and the opportunity cost invisible.
+## Three things it does not fix
 
-**It does not avoid the fee.** A zap pays the swap fee and price impact immediately. A one-sided range pays it implicitly, by converting at prices inside the band rather than at the best available price.
+**It does not remove divergence.** Once the conversion is done, you hold a token you bought at an average price inside your band. If the market keeps going, you hold the wrong side exactly as a two-sided position would.
 
-The bounded outcomes are the same ones described in [Out-of-Range Liquidity](/guides/out-of-range-liquidity/).
+**It does not guarantee a fill.** If the price never arrives, the money sits there earning nothing, and the opportunity cost is invisible because nothing shows up on a screen.
 
----
+**It does not dodge being picked off.** A zap pays a swap fee up front. A one-sided range earns fees instead, but it tends to fill exactly when fast traders already know the price has moved, so part of its apparent discount is not a discount at all.
 
-## 5. Sizing and Placement
+See [Out-of-Range Liquidity](/guides/out-of-range-liquidity/).
 
-Three parameters decide the outcome, and all three are choices rather than forecasts.
+## Three choices, none of them forecasts
 
-1. **Distance from the current price.** Closer bands fill sooner and more often; distant bands may never fill.
-2. **Band width.** A narrow band converts almost entirely at one price, behaving like a limit order. A wide band averages the conversion across a range of prices, which reduces timing risk and dilutes fee density.
-3. **Size relative to band liquidity.** In a crowded band your share of both fees and conversion is proportionally smaller, and the fill takes longer in wall-clock terms.
+1. **How far from the market.** Close bands fill often. Distant bands may never fill.
+2. **How wide.** A narrow band converts almost all at one price, like a limit order. A wide band averages across a range, which cuts timing risk and thins the fee income.
+3. **How big, relative to what is already there.** In a crowded band you get a smaller share of both the fees and the conversion, and it takes longer in real time.
 
-For pairs where the conversion matters more than the fee income, prefer the narrow band and treat fees as a rebate. For pairs where you want the fee income, a wider band around a plausible trading range performs better.
+If the conversion matters more than the income, go narrow and treat fees as a rebate. If you want the income, go wider across a plausible trading range.
 
-### Comparing a one-sided range against a limit order
+## Against an actual limit order
 
-The two structures look similar and behave differently in three specific ways.
+They look similar and behave differently in three specific ways.
 
-A limit order on an order book fills at your price or better, once, and stays filled. A one-sided range fills gradually across the band, pays you fees while filling, and unfills if price returns through the range before you withdraw. The averaging is an advantage when you have no view on the exact price and a disadvantage when you do.
+| | Limit order | One-sided range |
+| :--- | :--- | :--- |
+| How it fills | At your price or better, once | Gradually across the band |
+| Does it pay you while waiting | Sometimes a rebate | Yes, fees while converting |
+| What it costs to place | Usually nothing | Gas to mint and to withdraw |
+| When it is done | Done. Finished | Still trading, unless you close it |
 
-The second difference is cost. A resting limit order costs nothing until it fills, and typically pays a maker rebate on venues that offer one. A one-sided range costs gas to mint and to withdraw, which reintroduces the minimum position size discussed in [Gas Costs for Liquidity Providers](/guides/lp-gas-costs/).
+That last row is the one that bites. A filled limit order is finished. A filled range is a live position, and the conversion you wanted can be undone by a reversal you did not want.
 
-The third is certainty. A filled limit order is done. A filled range is a position that keeps trading unless you close it, which means the conversion you wanted can be undone by a reversal you did not want. Setting an alert for full conversion, and acting on it, is what turns the structure into a usable execution tool rather than an accidental market-making position.
+Setting an alert for full conversion, and acting on it, is what turns this into a usable execution tool rather than an accidental market-making position. Gas on both ends reintroduces a minimum size, covered in [Gas Costs for Liquidity Providers](/guides/lp-gas-costs/).
 
----
+## What people get wrong about one-sided deposits
 
-## 6. Operational Checklist
+| What people assume | What actually happens |
+| :--- | :--- |
+| I avoid holding the other token | You hold it later, at prices inside your band |
+| A zap is single-sided | It is a swap with extra steps, at today's price |
+| A filled position is finished | It is still live and will reverse if the price comes back |
+| It is lower risk | Same exposure, different timing, plus the risk of never filling |
 
-- [ ] Decide whether you actually want the other asset at the prices inside your band. That is the trade.
-- [ ] Confirm whether your interface is placing a true one-sided range or performing a zap swap.
-- [ ] For a zap, check the swap route, the price impact quoted, and any router fee.
-- [ ] Compute the quantity you will hold if the band fills completely.
-- [ ] Set an alert for full conversion, so a filled position does not sit idle for weeks.
-- [ ] Decide in advance whether a fill is a signal to withdraw or to leave the position exposed to a reversal.
-- [ ] Size the band against realised volatility so it is reachable within your holding horizon.
+## Before you place one
 
-Single-sided provision is a scheduling tool, not an exemption from the mechanics of pooled liquidity. Used deliberately it is one of the few ways to be paid for patience.
+1. **Do you actually want the other token** at the prices inside your band? That is the whole trade.
+2. **Check what your interface is doing.** A real one-sided range, or a swap dressed up as one?
+3. **For a zap, read the route**, the quoted impact, and any extra fee.
+4. **Work out what you hold** if the band fills completely.
+5. **Set an alert for full conversion**, so a finished position does not sit there for weeks.
+6. **Decide now** whether a fill means withdraw, or means leave it exposed to a reversal.
+7. **Size the band to how the pair actually moves**, so it is reachable in your timeframe.
+
+This is a scheduling tool, not an exemption from how pools work. Used deliberately, it is one of the few ways to get paid for being patient.
 
 ## References
 
@@ -137,9 +153,9 @@ Single-sided provision is a scheduling tool, not an exemption from the mechanics
 2. [Uniswap v4 Core Whitepaper (Adams et al., 2024)](https://uniswap.org/whitepaper-v4.pdf)
 3. [What are the risks when providing liquidity? (Uniswap Labs)](https://support.uniswap.org/hc/en-us/articles/37113550065549-What-are-the-risks-when-providing-liquidity)
 4. [How Uniswap Works (Uniswap Developer Documentation)](https://developers.uniswap.org/docs/get-started/concepts/how-uniswap-works)
-5. [Strategic Liquidity Provision in Uniswap v3 (Neuder et al., 2021)](https://arxiv.org/abs/2106.12033)
+5. [Strategic Liquidity Provision in Uniswap v3 (Fan et al., 2021)](https://arxiv.org/abs/2106.12033)
 6. [Concentrated Liquidity (Uniswap Developer Documentation)](https://developers.uniswap.org/docs/get-started/concepts/liquidity-providers/concentrated-liquidity)
-7. [SoK: Decentralized Exchanges with Automated Market Maker Protocols (Xu et al., 2021)](https://arxiv.org/abs/2103.12732)
+7. [SoK: Decentralized Exchanges (DEX) with Automated Market Maker (AMM) Protocols (Xu et al., 2021)](https://arxiv.org/abs/2103.12732)
 8. [Gas and Fees (Ethereum Foundation Documentation)](https://ethereum.org/en/developers/docs/gas/)
 9. [Why Decentralised Finance (DeFi) Matters and the Policy Implications (OECD, 2022)](https://www.oecd.org/daf/fin/financial-markets/Why-Decentralised-Finance-DeFi-Matters-and-the-Policy-Implications.pdf)
 
@@ -147,8 +163,8 @@ Single-sided provision is a scheduling tool, not an exemption from the mechanics
 [2]: https://uniswap.org/whitepaper-v4.pdf "Uniswap v4 Core Whitepaper"
 [3]: https://support.uniswap.org/hc/en-us/articles/37113550065549-What-are-the-risks-when-providing-liquidity "What are the risks when providing liquidity?"
 [4]: https://developers.uniswap.org/docs/get-started/concepts/how-uniswap-works "How Uniswap Works"
-[5]: https://arxiv.org/abs/2106.12033 "Strategic Liquidity Provision in Uniswap v3 (Neuder et al., 2021)"
+[5]: https://arxiv.org/abs/2106.12033 "Strategic Liquidity Provision in Uniswap v3 (Fan et al., 2021)"
 [6]: https://developers.uniswap.org/docs/get-started/concepts/liquidity-providers/concentrated-liquidity "Concentrated Liquidity (Uniswap Developer Documentation)"
-[7]: https://arxiv.org/abs/2103.12732 "SoK: Decentralized Exchanges with Automated Market Maker Protocols (Xu et al., 2021)"
+[7]: https://arxiv.org/abs/2103.12732 "SoK: Decentralized Exchanges (DEX) with Automated Market Maker (AMM) Protocols (Xu et al., 2021)"
 [8]: https://ethereum.org/en/developers/docs/gas/ "Gas and Fees (Ethereum Foundation Documentation)"
 [9]: https://www.oecd.org/daf/fin/financial-markets/Why-Decentralised-Finance-DeFi-Matters-and-the-Policy-Implications.pdf "Why Decentralised Finance (DeFi) Matters and the Policy Implications (OECD, 2022)"

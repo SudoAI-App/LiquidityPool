@@ -1,11 +1,11 @@
 ---
 title: "Yield Farming Explained: Fee Income, Emissions, and Dilution"
-description: "What yield farming actually pays: separating trading fee income from token emissions, pricing dilution, and testing whether a farm survives the end of its incentive programme."
+description: "One question tells you whether a farm is worth anything: if the rewards stopped tomorrow, what would this position earn? Everything follows from that."
 category: "Advanced"
 date: 2026-09-10
-lastReviewed: "2026-09-10"
+lastReviewed: "2026-09-12"
 author: "Siddharth Mehta"
-readTime: "12 min read"
+readTime: "6 min read"
 keywords: "yield farming liquidity pools, yield farming explained, liquidity mining vs yield farming, farming emissions, real yield, mercenary capital"
 featured: false
 faq:
@@ -19,9 +19,11 @@ faq:
     a: "Divergence loss on the underlying pair, smart contract risk across every contract in the stack including the farm and any vault wrapper, emission token price decay, and the depth collapse that follows when incentives taper and mercenary capital leaves."
 ---
 
-Yield farming describes moving capital toward whichever protocol is currently paying the most to attract it. The mechanics are simple; the accounting is where positions are won and lost. A farm pays from two distinct sources, and they behave nothing alike: fees collected from users, and tokens created out of nothing.
+There is one question that tells you almost everything about a farm. If the rewards stopped tomorrow, what would this position earn?
 
-Treating those two lines as one number is the single most expensive habit in the activity.
+A farm pays from two places that behave nothing alike. Fees collected from real users, and tokens created out of nothing. Adding them into one number is the most expensive habit in this whole activity.
+
+This guide separates them, shows how to price what the printing actually costs, and walks through exactly what happens when a programme ends.
 
 <figure class="article-figure">
   <img src="/images/guides/yield-farming-explained.webp" alt="Flow diagram from swap flow to pool fee to LP position to emissions to realised profit and loss." width="1600" height="1067" loading="lazy" decoding="async" />
@@ -29,109 +31,123 @@ Treating those two lines as one number is the single most expensive habit in the
 </figure>
 
 > **Desk Field Note from Siddharth Mehta:**
-> *"Ask one question about any farm: if emissions stopped tomorrow, what would this position earn? If the answer is close to zero, you are not being paid for supplying liquidity, you are being paid to hold a token that is being printed. That can still be a reasonable trade, but it should be underwritten as a token position, with a token position's sizing."*
+> *"Ask the one question. If the answer is close to zero, you are not being paid to supply liquidity. You are being paid to hold a token that is being printed. That can still be a reasonable trade, but size it like a token position, not like a yield."*
 
-## 1. The Capital Stack of a Farmed Position
+## Four layers, four things that can break
 
-A typical farm has four layers, and each adds an exposure:
+A farm is not one position. It is four stacked, and every layer adds a way to lose money.
 
-1. **The underlying pair.** Two assets deposited into a pool, subject to the pricing rule of its invariant and to divergence as relative prices move.
-2. **The pool contract.** The AMM itself, plus any hook in a v4-style architecture [2].
-3. **The farm or gauge contract.** Holds the staked LP claim and computes emission entitlements.
-4. **Optional vault wrapper.** Auto-compounds harvests, adds a performance fee and another contract to trust.
-
-Each layer must be solvent and correct for the position to return capital. This is why the security review of a farm is not the review of one contract but of a chain, and why the composition itself is a risk rather than a convenience. The taxonomy is developed in [Liquidity Pool Risks: A Complete Framework for LP Due Diligence](/guides/liquidity-pool-risks/).
-
----
-
-## 2. Separating the Two Revenue Lines
-
-Fee income is a claim on activity that already happened. Emission income is a claim on future token supply. The distinction shows up in every property that matters:
-
-| Property | Fee income | Emission income |
+| Layer | What it is | What it adds |
 | :--- | :--- | :--- |
-| Source of funds | Traders paying the pool fee | Protocol issuance |
-| Dependent on | Routed volume and your share of active liquidity | Emission schedule and total staked |
-| Ends when | Trading stops | The programme ends or the vote reallocates it |
-| Dilutes | Nobody | Every existing token holder |
-| Realisable at quote | Yes, in pool assets | Only at whatever the order book absorbs |
+| The pair | Two tokens you deposited | Divergence as their prices move apart |
+| The pool | The contract that prices trades | Contract risk, plus any attached code [2] |
+| The farm | Holds your pool claim and works out rewards | Another contract, and a schedule somebody controls |
+| A vault, sometimes | Harvests and reinvests for you | A performance fee and one more contract |
 
-The practical test is the one in the field note above: model the position with emissions set to zero. What remains is the durable part.
+All four have to work for you to get your money back. That is why reviewing a farm means reviewing a chain, not a contract. See [Liquidity Pool Risks](/guides/liquidity-pool-risks/).
 
-For the design side of incentive programmes, including vote-escrow systems and bribe markets, see [Liquidity Mining Explained: Incentives, Emissions, and Durable Market Depth](/guides/liquidity-mining-explained/).
+## The two revenue lines
 
----
+Fee income is a claim on activity that already happened. Reward income is a claim on future supply. They differ on every property that matters.
 
-## 3. Pricing Dilution Properly
+| | Fee income | Reward income |
+| :--- | :--- | :--- |
+| Who funds it | Traders paying the pool | The protocol, printing |
+| What it depends on | Volume and your share of the liquidity | The schedule, and how much is staked |
+| When it stops | When trading stops | When the programme ends, or a vote moves it |
+| Who it dilutes | Nobody | Everybody already holding the token |
+| What you actually get | The pool's own assets, at quote | Whatever the market absorbs when you sell |
 
-Suppose a farm emits 2% of circulating supply per week to LPs in a pool. Every recipient faces the same decision, and in aggregate a large share of emissions are sold promptly. For the quoted yield to be realised, the market must absorb that supply without a matching price decline.
+The test is the one from the field note. Model the position with rewards set to zero. Whatever is left is the durable part. See [Liquidity Mining Explained](/guides/liquidity-mining-explained/).
 
-A workable model:
+## What the printing actually costs
 
-- Let $e$ be the weekly emission as a fraction of circulating supply.
-- Let $\alpha$ be the fraction of recipients who sell within the week.
-- The weekly selling pressure is $\alpha e$ of supply, met by whatever organic demand exists.
+Say a farm issues 2% of the token's supply every week to depositors. Everybody receiving it faces the same decision, and in aggregate a lot of it gets sold quickly.
 
-If organic demand does not grow at least as fast as $\alpha e$, the token price declines and the quoted yield falls with it, on a schedule that is knowable in advance from the emission curve. This is the mechanism behind the familiar pattern of a farm launching at a spectacular rate and settling at a fraction of it within weeks.
+For the advertised rate to be real, the market has to absorb that supply without the price falling.
 
-A defensible approach is to value emissions at a conservative haircut, sell on a fixed schedule rather than accumulating, and treat any retained tokens as a deliberate directional position rather than as yield.
+$$
+\text{weekly selling pressure} = \alpha \times e
+$$
 
----
+Where:
 
-## 4. What Happens When Incentives End
+- $e$ is the weekly issuance as a fraction of circulating supply.
+- $\alpha$ is the fraction of recipients who sell within the week.
 
-Incentive programmes create a specific failure mode. Capital that arrived for emissions leaves when they taper, and it leaves quickly because it was never underwriting the pair.
+Put numbers on it. Issuance of 2% of supply a week, with 70% of recipients selling inside the week, sends 1.4% of the supply to market every week. On a token worth \$100M that trades \$3M a day, that is \$1.4M of extra selling against about \$21M of weekly volume. Roughly 7% of all trading, every week, all on one side.
 
-The sequence is consistent:
+If genuine demand does not grow at least that fast, the price falls and the advertised rate falls with it, on a schedule you could have read off the emission curve before you started.
 
-1. Emissions taper or a governance vote reallocates them.
-2. Quoted yield falls below the level that justified the divergence exposure.
-3. Liquidity withdraws, often within days.
-4. Depth collapses, execution worsens, and routers send less volume to the pool.
-5. Fee income falls for the LPs who remained, compounding the reason to leave.
+That is the whole mechanism behind the familiar pattern: a farm launches at a spectacular number and settles at a fraction of it within weeks. Nothing went wrong. It was arithmetic.
 
-The pools that survive this are the ones where fee income alone justified the position. Checking that in advance is a matter of computing fee-only yield at current volume and asking whether you would supply at that rate.
+The workable approach is to value rewards at a conservative haircut, sell on a fixed schedule rather than accumulating, and treat anything you keep as a deliberate bet on that token rather than as yield.
 
-### Worked example of a taper
+## What happens when the rewards taper
 
-A pool with \$40m of liquidity attracted by a programme paying 30 points of emissions and generating 6 points of fee yield. The programme halves. Quoted yield falls from 36% to 21%, and roughly half the liquidity leaves within two weeks. Fee yield for the remaining LPs rises mechanically, because the same volume is now shared among less liquidity, but only if volume holds. In practice routed volume falls as depth thins and aggregators find better execution elsewhere, so the fee yield gain is smaller than the naive calculation suggests.
+The sequence is consistent enough to plan around.
 
-The LP who modelled fee-only yield at entry knew the floor. The LP who annualised the launch week did not, and is now deciding whether to exit into a thinner book than the one they entered through.
+1. Rewards taper, or a vote moves them somewhere else.
+2. The advertised rate falls below what justified the exposure.
+3. Money leaves, often within days, because it was never underwriting the pair.
+4. Depth thins, execution worsens, and routers send less volume.
+5. Fee income falls for whoever stayed, which gives them a reason to leave too.
 
----
+Work an example. A pool holds \$40M, attracted by 30 points of rewards on top of 6 points of real fees. The programme halves.
 
-## 5. Measurement Stack
+| | Before | After |
+| :--- | ---: | ---: |
+| Reward budget | \$12M a year | \$6M a year |
+| Liquidity | \$40M | about \$20M within two weeks |
+| Reward rate | 30% | still 30%, on half the money |
+| Fee yield for those who stayed | 6% | 12% on paper, if volume held |
+| Advertised rate | 36% | about 42% on paper |
 
-- **Yield decomposition**: [DeFiLlama](https://defillama.com/yields) separates base fee yield from reward yield for most major pools, which is the fastest way to run the emissions-to-zero test.
-- **Position accounting**: [Revert Finance](https://revert.finance) reconstructs net performance against a hold benchmark, so emission income can be compared with the divergence it was supposed to compensate.
-- **Emission schedules**: read the farm contract directly, or the protocol's gauge documentation, for the rate and its decay. Do not rely on an interface's current figure.
-- **Flow quality**: [EigenPhi](https://eigenphi.io) shows how much of the pool's volume is arbitrage. A farm whose volume is mostly arbitrage is paying you emissions to warehouse inventory for searchers.
-- **Contract review**: verify the farm and any vault on a block explorer, and simulate a full deposit, harvest and withdrawal cycle on [Tenderly](https://tenderly.co) before committing size.
+The advertised rate went up after the cut, because money left faster than the rewards shrank. That is the first trap.
 
----
+The second is the fee row. On paper, the same volume shared among half the liquidity doubles your fee yield. In practice volume falls too, because thinner depth means worse execution and routers notice. If volume drops by a third, the fee yield lands nearer 8%.
 
-## 6. Pre-Deposit Checklist for a Farm
+Whoever modelled fee-only yield before entering knew where the floor was. Whoever annualised the launch week is now deciding whether to exit through a thinner market than the one they entered.
 
-- [ ] Compute fee-only yield with emissions set to zero, and decide whether you would supply at that rate.
-- [ ] Read the emission schedule and its decay, and calculate weekly issuance as a share of circulating supply.
-- [ ] Establish an exit rule for emitted tokens before the first harvest.
-- [ ] Confirm the divergence hurdle for the pair, using the arithmetic in [LP Fees vs Impermanent Loss](/guides/lp-fees-vs-impermanent-loss/).
-- [ ] Enumerate every contract in the stack and check audits, upgrade keys and timelocks for each.
-- [ ] Check the lockup and withdrawal path, including whether unstaking has a delay or penalty.
-- [ ] Model gas for the harvest cadence the quoted rate assumes, at your position size.
-- [ ] Set a monitoring alert for governance proposals that change the gauge weight for your pool.
+## What people get wrong about farming
 
-Farming is not a category error, and incentive programmes serve a real function in bootstrapping depth on pairs that would otherwise have none. The discipline is refusing to count issuance as income without pricing what issuing it costs.
+| What people assume | What actually happens |
+| :--- | :--- |
+| The advertised rate is income | Most of it is issuance, sold by everyone receiving it |
+| I will hold the reward token | Everyone says that. Most sell, which is why the price falls |
+| A big farm is a safe farm | Size measures how many people wanted the rewards, nothing else |
+| Reviewing the protocol is enough | Four contracts, all of which have to work |
 
-## Where to Go Next
+## Before you deposit into a farm
 
-Separate the durable part of any farm's yield using the [liquidity pool fee and APR calculator](/tools/liquidity-pool-calculator/), and read the protocol-side design in [Liquidity Mining Explained](/guides/liquidity-mining-explained/). A protocol-specific example of the same incentive structure is in [PancakeSwap Liquidity Pools](/guides/pancakeswap-liquidity-pools/). For the side-by-side split of who funds each activity, see [Liquidity Mining vs Yield Farming vs Staking](/guides/liquidity-mining-vs-yield-farming/), and for whether the underlying position clears its costs at all, [Is Providing Liquidity Profitable?](/guides/is-providing-liquidity-profitable/).
+1. **Compute fee-only yield with rewards at zero.** Would you supply at that rate? If not, you are buying a token.
+2. **Read the emission schedule and its decay.** Work out weekly issuance as a share of supply.
+3. **Decide your selling rule before the first harvest**, not after you have watched the price for a week.
+4. **Confirm the hurdle** for the pair. That is impermanent loss — the gap between a pool position and simply holding — plus gas. See [LP Fees vs Impermanent Loss](/guides/lp-fees-vs-impermanent-loss/).
+5. **List every contract** and check audits, upgrade keys and delays for each one.
+6. **Check the exit.** Is there a lockup, a cooldown, or a penalty for leaving early?
+7. **Model the gas** for the harvest cadence the quoted rate assumed, at your size.
+8. **Set an alert on governance proposals** that could move the rewards away from your pool.
+
+Farming is not a mistake, and reward programmes do a real job bootstrapping depth on pairs that would otherwise have none. The discipline is refusing to count printing as income without pricing what the printing costs.
+
+## Where to watch the numbers
+
+- **Splitting fee yield from reward yield:** [DeFiLlama](https://defillama.com/yields) does this for most major pools, which is the fastest version of the zero test.
+- **Your actual result against holding:** [Revert Finance](https://revert.finance).
+- **The real emission schedule:** read the farm contract, not the interface's current figure.
+- **Who is trading in the pool:** [EigenPhi](https://eigenphi.io). A farm whose volume is mostly arbitrage is paying you to warehouse inventory.
+- **Testing the full cycle:** simulate deposit, harvest and withdrawal on [Tenderly](https://tenderly.co) before committing size.
+
+## Where to go next
+
+Separate the durable part of any farm with the [liquidity pool fee and APR calculator](/tools/liquidity-pool-calculator/), and read the protocol's side in [Liquidity Mining Explained](/guides/liquidity-mining-explained/). A worked example of the same structure is in [PancakeSwap Liquidity Pools](/guides/pancakeswap-liquidity-pools/). For who funds each activity, see [Liquidity Mining vs Yield Farming vs Staking](/guides/liquidity-mining-vs-yield-farming/), and for the underlying position, [Is Providing Liquidity Profitable?](/guides/is-providing-liquidity-profitable/).
 
 ## References
 
 1. [Uniswap v3 Core Whitepaper (Adams et al., 2021)](https://uniswap.org/whitepaper-v3.pdf)
 2. [Uniswap v4 Core Whitepaper (Adams et al., 2024)](https://uniswap.org/whitepaper-v4.pdf)
-3. [Trading in the DeFi era: automated market maker (BIS Bulletin No 58, 2022)](https://www.bis.org/publ/bisbull58.htm)
+3. [Miners as intermediaries: extractable value and market manipulation in crypto and DeFi (BIS Bulletin No 58, 2022)](https://www.bis.org/publ/bisbull58.htm)
 4. [DeFiLlama Yields methodology](https://defillama.com/yields)
 5. [SoK: Yield Aggregators in DeFi (Cousaert et al., 2021)](https://arxiv.org/abs/2105.13891)
 6. [Why Decentralised Finance (DeFi) Matters and the Policy Implications (OECD, 2022)](https://www.oecd.org/daf/fin/financial-markets/Why-Decentralised-Finance-DeFi-Matters-and-the-Policy-Implications.pdf)
@@ -139,7 +155,7 @@ Separate the durable part of any farm's yield using the [liquidity pool fee and 
 
 [1]: https://uniswap.org/whitepaper-v3.pdf "Uniswap v3 Core Whitepaper"
 [2]: https://uniswap.org/whitepaper-v4.pdf "Uniswap v4 Core Whitepaper"
-[3]: https://www.bis.org/publ/bisbull58.htm "Trading in the DeFi era: automated market maker (BIS Bulletin No 58, 2022)"
+[3]: https://www.bis.org/publ/bisbull58.htm "Miners as intermediaries: extractable value and market manipulation in crypto and DeFi (BIS Bulletin No 58, 2022)"
 [4]: https://defillama.com/yields "DeFiLlama Yields"
 [5]: https://arxiv.org/abs/2105.13891 "SoK: Yield Aggregators in DeFi (Cousaert et al., 2021)"
 [6]: https://www.oecd.org/daf/fin/financial-markets/Why-Decentralised-Finance-DeFi-Matters-and-the-Policy-Implications.pdf "Why Decentralised Finance (DeFi) Matters and the Policy Implications (OECD, 2022)"

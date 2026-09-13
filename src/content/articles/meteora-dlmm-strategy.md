@@ -1,11 +1,11 @@
 ---
-title: "Meteora DLMM Strategy: Bin Step, Shape, and When a Position Stops Earning"
-description: "How to choose a bin step and liquidity shape on Meteora DLMM, what the volatility accumulator does to your fee rate, and the rebalancing rules that survive a fast Solana market."
+title: "Meteora DLMM Strategy: Bin Step, Shape and When Positions Stop Earning"
+description: "How to choose a bin step and shape on Meteora DLMM, what the volatility accumulator does to your fee rate, and rebalancing rules for a fast Solana market."
 category: "LP Mechanics"
 date: 2026-09-11
-lastReviewed: "2026-09-11"
+lastReviewed: "2026-09-12"
 author: "Dr. Elena Rostova"
-readTime: "13 min read"
+readTime: "9 min read"
 keywords: "Meteora DLMM strategy, Meteora DLMM bin step, Meteora DLMM fees, how to provide liquidity on Meteora, DLMM rebalance, Meteora DLMM impermanent loss, Solana liquidity pools, spot curve bid-ask distribution"
 featured: false
 faq:
@@ -21,9 +21,11 @@ faq:
     a: "The moment price leaves the bins you funded. Only the active bin earns fees on a given swap, so liquidity in bins that price never reaches contributes nothing. This is the same failure as an out-of-range concentrated position, made more visible by the discrete structure."
 ---
 
-Meteora's discretized liquidity market maker turns a price axis into a grid of fixed-price bins, and it hands the liquidity provider three decisions that a constant-product pool never asks: how wide each bin is, how many of them to fund, and what shape to spread capital across them in. Those three choices determine almost everything about how the position behaves.
+Meteora chops the price axis into a row of small boxes called bins. You choose which boxes to put money in, and how much goes in each one.
 
-The underlying mechanism is covered in [Discretized Liquidity (DLMM) Explained](/guides/discretized-liquidity-dlmm-explained/). This guide is about the operating decisions on top of it.
+That sounds like a settings screen. It is really three decisions that decide how the position behaves: how wide each box is, how many you fund, and how you spread money across them.
+
+This guide walks you through all three, shows you what the fee rate actually does during a fast market, and gives you rebalancing rules that hold up on Solana.
 
 <figure class="article-figure">
   <img src="/images/guides/meteora-dlmm-strategy.webp" alt="A bin grid showing spot, curve and bid-ask liquidity distributions around an active bin, with a volatility accumulator trace." width="1600" height="1067" loading="lazy" decoding="async" />
@@ -31,121 +33,157 @@ The underlying mechanism is covered in [Discretized Liquidity (DLMM) Explained](
 </figure>
 
 > **Desk Field Note from Dr. Elena Rostova:**
-> *"The bin step is a microstructure decision disguised as a settings field. Choose it narrower than the pair's typical inter-trade move and you pay gas and complexity to traverse bins that a single trade would have crossed anyway. Choose it far wider and you have rebuilt a coarse constant-sum pool and given up the density you came for. Start from the pair's realised movement, not from a yield target."*
+> *"The bin step is a microstructure decision disguised as a settings field. Pick it narrower than the pair's typical move between trades and you pay to cross boxes that one trade would have crossed anyway. Pick it far wider and you have given up the density you came for. Start from what the pair actually does, not from a yield target."*
 
-## 1. What the Bin Structure Actually Changes
+## What the boxes actually change
 
-Each bin quotes one price. Inside a bin the invariant is constant-sum, so a trade contained within a single bin executes with no price movement at all. Price moves only when a trade exhausts a bin and steps to the next one, and the step size is fixed by the bin step parameter $s$ in basis points:
+Each bin quotes exactly one price. A trade small enough to fit inside a single bin executes with no price movement at all. Price only moves when a trade empties a bin and steps to the next one.
 
-$$ P_{i} = P_{0}\,(1 + s)^{\,i} $$
+The step between bins is fixed when the pool is created. Inside each box the pool holds an invariant — the rule a pool keeps true no matter what trades pass through it.
 
-Two consequences follow directly, and both are strategy-relevant.
+$$
+P_{i} = P_{0}\,(1 + s)^{\,i}
+$$
 
-First, **only the active bin earns**. A swap pays fees to the liquidity sitting in the bin where the swap happens, and to any subsequent bins it traverses. Capital in bins price never visits earns nothing, in the same way that a concentrated position outside its range earns nothing. The difference is that the discrete structure makes the dead capital visible bin by bin rather than aggregated into a single range status.
+Where:
 
-Second, **crossing a bin converts your inventory**. As price moves up through your bins, each one is emptied of the base asset and filled with the quote asset. That is the same rebalancing that produces divergence loss on a continuous curve, executed in steps. The economics are identical; see [The Impermanent Loss Formula](/guides/impermanent-loss-formula/) for the closed form and [Concentrated Liquidity Explained](/guides/concentrated-liquidity-explained/) for the continuous analogue.
+- $P_i$ is the price quoted by bin number $i$.
+- $P_0$ is the price of the bin the pool started from.
+- $s$ is the bin step, the fixed percentage gap between one box and the next.
 
-## 2. Choosing a Bin Step
+Inside one box that rule is constant-sum, which is why a trade that fits within a box moves the price not at all.
 
-The bin step sets the price resolution of the position. The governing comparison is between the bin width and the typical distance price travels between trades on that pair.
+Two consequences follow, and both matter for strategy.
 
-| Bin step | Price gap per bin | Suits | Failure mode if mismatched |
-|---|---|---|---|
-| 1 bp | 0.01% | Pegged pairs, stable-to-stable | Bins traversed in bulk by any real trade; compute cost without density benefit |
-| 10 bp | 0.10% | Liquid-staking pairs, tight majors | Position needs many bins to cover a normal day |
-| 25 bp | 0.25% | Correlated majors | Reasonable default for a liquid volatile pair |
-| 80 bp | 0.80% | Volatile majors, higher-beta tokens | Coarse quotes; more price impact inside each bin |
-| 200 bp+ | 2.00%+ | New listings, thin long tail | Approaches a coarse constant-sum pool; large intra-bin impact |
+**Only the active bin earns.** A swap pays fees to whatever is sitting in the box where it happens, plus any boxes it runs through. Money in boxes that price never visits earns nothing at all. The grid makes that dead capital visible box by box rather than hiding it behind a single in-range indicator.
 
-A workable starting rule is to size the bin step near the pair's typical move over the interval between trades that actually reach your position. On a pair trading continuously, that is small. On a thin pair with minutes between swaps, it is much larger, and a fine grid there simply means each trade rips through a dozen bins.
+**Crossing a box changes what you hold.** As price climbs through your bins, each one is emptied of the first token and filled with the second. That is divergence loss — the gap between what a pool position is worth and what simply holding the two tokens would have been worth — executed in steps rather than smoothly. It is the same thing as impermanent loss — the shortfall a pool position runs against simply holding. See [The Impermanent Loss Formula](/guides/impermanent-loss-formula/) and [Concentrated Liquidity Explained](/guides/concentrated-liquidity-explained/).
 
-Meteora's documentation specifies the bin step, base fee and variable fee parameters per pool, and those values are set at pool creation rather than chosen by the depositor [1]. In practice the decision is therefore which existing pool to join, and the table above is a screening tool for that choice.
+## How wide should each box be?
 
-## 3. The Volatility Accumulator and Your Realised Fee Rate
+The bin step sets the resolution of your position. The question to answer is simple: how far does this pair usually travel between trades that reach you?
 
-The fee on a DLMM swap is not the base rate. It is the base rate plus a variable component driven by a volatility accumulator, which counts recent bin crossings and decays over time. Fast movement raises the accumulator, which raises the fee.
+| Bin step | Gap per box | Suits | What goes wrong if it is mismatched |
+| :--- | :--- | :--- | :--- |
+| 1 bp | 0.01% | Pegged pairs, stable against stable | Any real trade crosses boxes in bulk. Cost without benefit |
+| 10 bp | 0.10% | Liquid-staking pairs, tight majors | You need many boxes to cover a normal day |
+| 25 bp | 0.25% | Correlated majors | A reasonable default for a liquid volatile pair |
+| 80 bp | 0.80% | Volatile majors, higher-beta tokens | Coarser quotes and more price impact inside each box |
+| 200 bp and up | 2.00% and up | New listings, thin long tail | Close to one big flat box, with large impact inside it |
 
-$$ f_{\text{total}} = f_{\text{base}} + f_{\text{variable}}(V_a) $$
+A workable rule is to size the step near the pair's typical move between the trades that actually reach your bins. On a pair trading continuously that is small. On a thin pair with minutes between swaps it is much larger, and a fine grid there just means every trade rips through a dozen boxes.
 
-This matters strategically for one reason: the design deliberately charges more during the periods when the pool's quote is most likely to be stale, which is when arbitrage flow is extracting the most from liquidity providers. It is a protocol-level attempt to price adverse selection, the cost formalised as loss-versus-rebalancing [2]. It reduces that cost; it does not remove it.
+Meteora sets the bin step and the fee parameters when a pool is created, not when you deposit [1]. So your real decision is which existing pool to join, and the table above is the screening tool for that.
 
-The operating consequence is that a realised fee rate sampled during a calm week understates what the same position earns during a volatile one, and understates the divergence it takes at the same time. Sampling fee APR over a single quiet window is the most common measurement error on these pools. [Dynamic Fees in AMMs](/guides/dynamic-fees-in-amms/) covers the general family of designs.
+## Why your fee rate is not the number on the label
 
-## 4. Choosing a Shape
+The fee on a Meteora swap is the base rate plus a variable piece. The variable piece is driven by a counter of how many boxes price has crossed recently, which decays back down when things go quiet. Fast movement raises the counter, and the counter raises the fee.
 
-Meteora exposes three standard distributions across the bins you fund, and they encode different views.
+$$
+f_{\text{total}} = f_{\text{base}} + f_{\text{variable}}(V_a)
+$$
 
-**Spot** spreads liquidity uniformly across the selected bins. It is the neutral choice when you have no view on where price will sit, and it degrades gracefully: if price moves to the edge of the range, you still had capital working the whole way. Use it as the default for a pair you intend to hold through movement.
+Where:
 
-**Curve** concentrates weight around the active bin and thins toward the edges. It maximises fee capture while price stays near where you deposited and converts fastest when it does not. It suits range-bound pairs and short holding periods where you will be watching the position.
+- $f_{\text{total}}$ is what a trader actually pays on the swap.
+- $f_{\text{base}}$ is the pool's fixed floor rate.
+- $V_a$ is the volatility accumulator, the count of recent box crossings.
 
-**Bid-ask** places weight at the outer bins and little in the middle. This is not a passive market-making shape. It is a pair of scaled limit orders: sell into strength above, buy into weakness below. Treat it as an execution tool, the DLMM equivalent of the structure described in [Range Orders on AMMs](/guides/range-orders-on-amms/), and size it as a trade rather than as an allocation.
+The design charges more exactly when the pool's quote is most likely to be out of date. That is when traders who already know the new price are taking the most from you. Being picked off that way is adverse selection — you trade with people who know something you do not, and you lose a little every time.
 
-| Shape | Fee capture while price is still | Behaviour on a trend | Best read as |
-|---|---|---|---|
+The formal measure of that cost is loss-versus-rebalancing — what a pool pays out because its quote runs a block behind the wider market [2]. A rising fee reduces it. Nothing removes it.
+
+The operating consequence is practical. A fee rate you sampled during a calm week understates both what the position earns in a volatile one and what it gives up at the same time. Measuring fee income over one quiet window is the most common mistake on these pools. See [Dynamic Fees in AMMs](/guides/dynamic-fees-in-amms/).
+
+## Which shape should you spread money in?
+
+Meteora gives you three ways to distribute capital across the boxes you fund. They encode different views.
+
+**Spot** puts the same amount in every box you selected. It is the neutral choice when you have no view on where price will sit, and it fails gracefully. If price runs to the edge of your range, you still had money working the whole way there. Use it as the default for a pair you intend to hold through movement.
+
+**Curve** piles weight around the current price and thins toward the edges. It earns the most while price stays near where you deposited, and it converts fastest when price does not. It suits range-bound pairs and short holding periods where you will be watching.
+
+**Bid-ask** puts weight at the outer boxes and little in the middle. This is not passive market making. It is a pair of scaled limit orders: sell into strength above, buy into weakness below. Treat it as an execution tool and size it like a trade, not like an allocation. See [Range Orders on AMMs](/guides/range-orders-on-amms/).
+
+| Shape | Fees while price sits still | What a trend does to it | Read it as |
+| :--- | :--- | :--- | :--- |
 | Spot | Moderate | Even conversion across the move | Passive market making |
-| Curve | High | Rapid conversion, then dead capital at the edge | Active, range-bound view |
-| Bid-ask | Low near the middle | Fills at the edges as intended | Scaled limit orders |
+| Curve | High | Fast conversion, then dead capital at the edge | An active, range-bound view |
+| Bid-ask | Low near the middle | Fills at the edges, as intended | Scaled limit orders |
 
-## 5. A Worked Position
+## A position, worked all the way through
 
-A $12,000 position on a volatile major, 25 bp bin step, 60 bins spanning roughly ±7.5%, spot distribution, held 30 days.
+Take \$12,000 into a volatile major. A 25 bp bin step, 60 boxes covering roughly plus or minus 7.5%, spot distribution, held for 30 days.
 
 | Line | Value |
-|---|---|
+| :--- | ---: |
 | Base fee tier | 0.20% |
-| Average realised fee including variable component | 0.34% |
-| Routed volume reaching the funded bins | $2.9M |
-| Your share of liquidity in those bins | 4.1% |
-| Fee income | $404 |
-| Fraction of the period price was inside the range | 72% |
-| Divergence on the pair over the period | −$271 |
-| Solana transaction and rent costs, 14 operations | −$3 |
-| Net result vs holding the deposit | +$130 |
-| Annualised net rate | 13.2% |
+| Average fee actually realised, variable piece included | 0.34% |
+| Volume routed through the boxes you funded | \$2,900,000 |
+| Your share of the money in those boxes | 4.1% |
+| Fee income | \$404 |
+| Share of the month price spent inside your range | 72% |
+| Divergence over the period | -\$271 |
+| Solana transaction and rent costs, 14 operations | -\$3 |
+| **Net against just holding the deposit** | **+\$130** |
+| **Annualised** | **13.2%** |
 
-Two features of this worked case generalise. The variable fee component added 70% to the base rate over a month with normal movement, which is the main reason DLMM pools quote differently from fixed-tier pools. And transaction costs are negligible on Solana, which inverts the gas arithmetic that dominates small positions on high-fee chains, covered in [LP Gas Costs](/guides/lp-gas-costs/). Low friction makes frequent rebalancing feasible here in a way it is not elsewhere, which is a genuine structural advantage of the venue rather than a marketing claim.
+Two things here generalise.
 
-## 6. Rebalancing Rules That Survive Contact
+The variable fee added 70% on top of the base rate over a month with ordinary movement. That is the main reason Meteora pools quote differently from fixed-tier pools, and why you cannot read the base rate as your income.
 
-Cheap transactions tempt over-management. The trigger should still be economic rather than emotional.
+Transaction costs were three dollars. That inverts the gas arithmetic that dominates small positions on expensive chains, covered in [LP Gas Costs](/guides/lp-gas-costs/). Cheap operations make frequent rebalancing genuinely feasible here, which is a real structural advantage rather than a marketing line.
 
-- **Rebalance on a fee-forecast rule, not on price.** Re-centre when the expected fee income in the new range over your remaining horizon exceeds the divergence you crystallise by moving plus the cost of moving. If that inequality does not hold, the position is better left alone even while it sits at the edge.
-- **Do not chase a trend bin by bin.** Re-centring repeatedly into a directional move realises the conversion at every step and is the fastest way to convert a paper divergence into a realised one.
-- **Widen after a volatility regime change, do not narrow.** The instinct after being knocked out of range is to re-centre tightly to recover the lost yield. The observed volatility has just told you the opposite.
-- **Treat a claim as a separate decision from a rebalance.** Fees accrue outside the position on DLMM, so collecting them does not require touching the liquidity.
-- **Check whether the pool still has the routed volume you underwrote.** Solana pool flow migrates quickly between venues, and a position can be correctly shaped in a pool that stopped receiving trades.
+## Rebalancing rules that survive a fast market
 
-The general framework for width and rebalance triggers, including the objective function behind the first rule, is in [Concentrated Liquidity Strategy](/guides/concentrated-liquidity-strategy/).
+Cheap transactions tempt you into over-managing. The trigger still has to be economic.
 
-## 7. Pre-Deposit Checklist for a DLMM Position
+1. **Move on a fee forecast, not on price.** Re-centre only when expected fees in the new range over your remaining horizon beat the divergence you lock in by moving, plus the cost of moving. If that does not hold, leave the position alone even while it sits at the edge.
+2. **Do not chase a trend box by box.** Re-centring repeatedly into a directional move realises the conversion at every step. It is the fastest way to turn a paper loss into a real one.
+3. **Widen after a volatility change, never narrow.** The instinct after getting knocked out of range is to re-centre tightly and win the yield back. What just happened told you the opposite.
+4. **Claiming is a separate decision from rebalancing.** Fees accrue outside the position on Meteora, so collecting them does not mean touching your liquidity.
+5. **Check the pool still gets the volume you underwrote.** Flow migrates quickly between Solana venues, and a perfectly shaped position in a pool that stopped receiving trades earns nothing.
 
-- Bin step against the pair's typical inter-trade movement, using the table in section two.
-- Base fee and variable fee parameters for the specific pool, read from pool data rather than assumed.
-- Routed volume over thirty days, and whether it reached the bin band you intend to fund.
-- Liquidity already sitting in those bins, which is your dilution, not the pool's headline deposits.
-- Realised volatility of the pair, and the fraction of the last thirty days price spent inside your proposed band.
-- Shape chosen deliberately, with spot as the default unless you hold a specific view.
-- Contract and program risk on the venue, assessed the same way as any other. [Liquidity Pool Risks](/guides/liquidity-pool-risks/) and [How to Evaluate a Liquidity Pool](/guides/how-to-evaluate-a-liquidity-pool/) apply unchanged on Solana.
+The general framework behind the first rule is in [Concentrated Liquidity Strategy](/guides/concentrated-liquidity-strategy/).
 
-Bins change the resolution of the decision. They do not change what the decision is: whether fee income over your horizon exceeds the conversion cost the pricing rule will impose on your basket.
+## What people get wrong about bins
 
-## Where to Go Next
+| What people assume | What actually happens |
+| :--- | :--- |
+| More boxes means more fees | Only the box price is standing in pays you. The rest are idle |
+| The bin step is something I choose | It is fixed at pool creation. You choose which pool to join |
+| The advertised fee is what I earn | The variable piece can add half again, or nothing at all |
+| Bins avoid impermanent loss | They deliver the same conversion, one step at a time |
+| Cheap transactions mean rebalance often | Each re-centre still locks in the loss, gas or no gas |
 
-Model the divergence side in the [impermanent loss calculator](/tools/impermanent-loss-calculator/) and the fee side in the [liquidity pool fee and APR calculator](/tools/liquidity-pool-calculator/). For the mechanism underneath, read [Discretized Liquidity (DLMM) Explained](/guides/discretized-liquidity-dlmm-explained/), and for the continuous-curve comparison, [Concentrated Liquidity Explained](/guides/concentrated-liquidity-explained/).
+## What to check before you deposit
+
+1. **The bin step against the pair's typical move** between trades, using the table above.
+2. **The base and variable fee settings** for that specific pool, read from pool data rather than assumed.
+3. **Thirty days of routed volume**, and whether it reached the band of boxes you plan to fund.
+4. **How much money already sits in those boxes.** That is your dilution, not the pool's headline total.
+5. **How much the pair moves**, and what share of the last thirty days price spent inside your proposed band.
+6. **Your shape, chosen deliberately**, with spot as the default unless you hold a specific view.
+7. **Contract and program risk on the venue.** See [Liquidity Pool Risks](/guides/liquidity-pool-risks/) and [How to Evaluate a Liquidity Pool](/guides/how-to-evaluate-a-liquidity-pool/). Both apply unchanged on Solana.
+
+Bins change the resolution of the decision. They do not change what the decision is: whether your fee income over your horizon beats what the pricing rule does to your basket along the way.
+
+## Where to go next
+
+Model the divergence side in the [impermanent loss calculator](/tools/impermanent-loss-calculator/) and the fee side in the [liquidity pool fee and APR calculator](/tools/liquidity-pool-calculator/). For the mechanism underneath, read [DLMM Explained](/guides/discretized-liquidity-dlmm-explained/). For the continuous-curve version of the same decision, read [Concentrated Liquidity Explained](/guides/concentrated-liquidity-explained/).
 
 ## References
 
 1. [Meteora DLMM Developer Documentation](https://docs.meteora.ag/developer-guides/dlmm)
 2. [Automated Market Making and Loss-Versus-Rebalancing (Milionis et al., 2022)](https://arxiv.org/abs/2208.06046)
 3. [Risks and Returns of Uniswap V3 Liquidity Providers (Heimbach et al., 2022)](https://arxiv.org/abs/2205.08904)
-4. [SoK: Decentralized Exchanges with Automated Market Maker Protocols (Xu et al., 2021)](https://arxiv.org/abs/2103.12732)
+4. [SoK: Decentralized Exchanges (DEX) with Automated Market Maker (AMM) Protocols (Xu et al., 2021)](https://arxiv.org/abs/2103.12732)
 5. [Uniswap v3 Core Whitepaper (Adams et al., 2021)](https://uniswap.org/whitepaper-v3.pdf)
-6. [Trading in the DeFi era: automated market maker (BIS Bulletin No 58, 2022)](https://www.bis.org/publ/bisbull58.htm)
+6. [Miners as intermediaries: extractable value and market manipulation in crypto and DeFi (BIS Bulletin No 58, 2022)](https://www.bis.org/publ/bisbull58.htm)
 
 [1]: https://docs.meteora.ag/developer-guides/dlmm "Meteora DLMM Developer Documentation"
 [2]: https://arxiv.org/abs/2208.06046 "Automated Market Making and Loss-Versus-Rebalancing (Milionis et al., 2022)"
 [3]: https://arxiv.org/abs/2205.08904 "Risks and Returns of Uniswap V3 Liquidity Providers (Heimbach et al., 2022)"
-[4]: https://arxiv.org/abs/2103.12732 "SoK: Decentralized Exchanges with Automated Market Maker Protocols (Xu et al., 2021)"
+[4]: https://arxiv.org/abs/2103.12732 "SoK: Decentralized Exchanges (DEX) with Automated Market Maker (AMM) Protocols (Xu et al., 2021)"
 [5]: https://uniswap.org/whitepaper-v3.pdf "Uniswap v3 Core Whitepaper"
-[6]: https://www.bis.org/publ/bisbull58.htm "Trading in the DeFi era: automated market maker (BIS Bulletin No 58, 2022)"
+[6]: https://www.bis.org/publ/bisbull58.htm "Miners as intermediaries: extractable value and market manipulation in crypto and DeFi (BIS Bulletin No 58, 2022)"

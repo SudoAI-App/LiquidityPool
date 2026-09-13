@@ -1,11 +1,11 @@
 ---
-title: "MEV and Liquidity Providers: Sandwich Attacks, JIT Liquidity, and Toxic Flow"
-description: "How MEV impacts liquidity providers: the PBS supply chain, sandwich attacks, atomic JIT liquidity, LVR extraction, and Uniswap v4 defensive hooks."
+title: "MEV and Liquidity Providers: Sandwiches, JIT Liquidity and Toxic Flow"
+description: "Three ways transaction ordering takes money out of your pool position, how to tell how much is happening, and what actually defends against each one."
 category: "Risk & Research"
 date: 2026-08-27
-lastReviewed: "2026-09-10"
+lastReviewed: "2026-09-12"
 author: "Marcus Vance"
-readTime: "12 min read"
+readTime: "7 min read"
 keywords: "MEV liquidity providers, JIT liquidity, sandwich attacks, LVR, toxic order flow, Uniswap v4 hooks, MEV-Share, PBS, how does MEV affect liquidity providers, sandwich attacks liquidity pools, adverse selection AMM"
 featured: false
 faq:
@@ -17,9 +17,11 @@ faq:
     a: "Not individually, but pool design changes the exposure: dynamic fees price volatility, auctions can return arbitrage profit to LPs, and batch settlement removes the ordering advantage that makes extraction possible."
 ---
 
-In decentralized finance, Maximal Extractable Value (MEV) is the primary determinant of net liquidity provider profitability. Automated market makers (AMMs) post passive, unhedged, and un-cancellable quotes to a public mempool. This architectural design creates an asymmetric execution game: algorithmic searchers, block builders, and validating nodes continuously exploit the deterministic ordering of transactions to extract rent from passive pool reserves through latency arbitrage, frontrunning, sandwich attacks, and Just-In-Time (JIT) fee dilution [1] [2] [3].
+Your transactions are public before they happen. Anyone can read them, and somebody decides what order they run in. That is the whole story behind why pool positions underperform what the dashboard promised.
 
-For an institutional market maker, evaluating an AMM pool requires analyzing the entire transaction supply chain. Gross fee APR displayed on user interfaces is meaningless without measuring toxic order flow ratios, the structural latency gap between centralized order books and on-chain blocks, and the net economic leakage captured by searcher bundles [1] [4] [5].
+The name for value taken this way is MEV — money captured purely by controlling the sequence transactions execute in. Some of it lands on traders. Most of it lands on you, quietly, every day.
+
+This guide covers the three ways it reaches your position, how to measure how much is happening in a pool you are considering, and which defences actually work.
 
 <figure class="article-figure">
   <img src="/images/guides/mev-and-liquidity-providers.webp" alt="Three transactions move through a public lane around an AMM curve in sandwich-style order." width="1600" height="1067" loading="lazy" decoding="async" />
@@ -27,192 +29,150 @@ For an institutional market maker, evaluating an AMM pool requires analyzing the
 </figure>
 
 > **Desk Field Note from Marcus Vance:**
-> *"MEV is not a victimless technical quirk—it is a direct extraction of value from liquidity providers and swappers. Just-In-Time (JIT) liquidity attacks steal trading fees without taking inventory risk, while cross-DEX arbitrageurs continuously buy underpriced tokens and sell overpriced tokens against AMM reserves. If you want to protect your capital, look for pools integrated with MEV-capturing AMMs (such as MEV-Blocker, CowSwap, or hook-enabled pools that auction backrunning rights)."*
+> *"This is not a technical curiosity. It is money leaving your position. Fee sniping takes the payday without taking any risk, and cross-venue arbitrage buys your cheap token and sells you the expensive one all day. If you care about the outcome, choose pools that fight back: private routing, adaptive fees, or an auction that pays the proceeds back to depositors."*
 
-## The MEV Supply Chain: How Transactions Reach the Blockchain
+## Who decides what order your trades run in
 
-To understand how MEV impairs liquidity provision, market participants must examine the modern **Proposer-Builder Separation (PBS)** pipeline governing major networks such as Ethereum [2] [3]:
+Blocks are not assembled by the network at random. There is a supply chain, and every step in it has an incentive [2] [3].
 
-```
-[User / Swapper] ---> [Public Mempool / Private RPC]
-                             |
-                             v
-                     [MEV Searchers]  (Identify sandwiches, JIT, LVR arbitrage)
-                             |
-                             v
-                     [Block Builders] (Bundle & sequence transactions via algorithms)
-                             |
-                             v
-                     [Relays (MEV-Boost)] (Verify bids & validate block headers)
-                             |
-                             v
-                     [Proposers / Validators] (Propose winning block to consensus)
-```
+| Step | Who they are | What they do |
+| :--- | :--- | :--- |
+| Searchers | Bots on very fast connections | Read pending trades and construct profitable bundles |
+| Builders | Firms that assemble blocks | Combine those bundles with ordinary traffic to maximise their take |
+| Relays | Trusted intermediaries | Pass the winning block to whoever proposes it |
+| Proposers | Validators | Sign whatever block pays them most |
 
-1. **Searchers**: Quantitative algorithms running sub-millisecond network nodes scan pending mempool transactions to construct atomic arbitrage, sandwich, and liquidation bundles.
-2. **Block Builders**: Specialized entities aggregate searcher bundles alongside standard transactions, running complex knapsack optimizations to build blocks that maximize total validator priority fees and builder margins.
-3. **Relays and Validators**: Relays act as trusted escrow intermediaries within the MEV-Boost infrastructure, passing the header of the highest-bidding block to the designated validator (proposer) for cryptographic consensus signing [2].
+The consequence for you is simple. Builders control ordering completely, so your pool gets traded against with precision, at the top of every block, before anyone else gets a look.
 
-Because block builders possess absolute authority over transaction ordering within their blocks, passive AMM liquidity is traded against with mathematical precision at the very top of each block.
+## The three ways it reaches your position
 
-## The Three Primary MEV Vectors Affecting Liquidity Providers
+### One: somebody is always faster than your pool
 
-MEV extraction manifests in three distinct operational patterns, each impacting LP balance sheets differently:
+This is the big one, and it never stops [4].
 
-### 1. Latency Arbitrage and Loss-Versus-Rebalancing (LVR)
-The most severe, ongoing financial drain on passive LPs is **latency arbitrage** [4]. 
+Real price discovery happens on exchanges that match trades in microseconds. Your pool updates when a transaction gets included, maybe every twelve seconds. That gap is a standing opportunity.
 
-Price discovery for liquid crypto assets occurs primarily on off-chain centralized exchanges (Binance, Coinbase) that match trades in microseconds. AMMs update their quotes only when a transaction is included in an on-chain block (e.g., every 12 seconds on Ethereum mainnet). This structural latency creates a predictable pricing lag.
+ETH rises 1% somewhere fast. At the top of the next block, a bot buys your now-cheap ETH until your pool's price catches up. ETH falls 1%, and the same bot sells you expensive ETH [4] [5].
 
-At the very top of each block, searchers submit atomic arbitrage transactions:
-- If ETH rallies +1% on centralized exchanges, searchers immediately buy underpriced ETH from on-chain AMMs until the pool's marginal quote matches the off-chain price.
-- If ETH drops -1%, searchers immediately dump overpriced ETH back into the AMM [4] [5].
+So the pool sells the winner below market and buys the loser above it, constantly. The formal name for what that costs is loss-versus-rebalancing, or LVR — value handed over purely because your quote runs late. It builds with every move, whether or not the price later returns, which is why it is the number your fees have to beat. Impermanent loss — the simpler gap between a pool position and holding — only tells you where one path happened to end. See [Impermanent Loss Explained](/guides/impermanent-loss-explained/).
 
-This dynamic is formally modeled as **Loss-Versus-Rebalancing (LVR)**. The LP systematically sells the appreciating asset at a discount and buys the depreciating asset at a premium. LVR accumulates as a permanent, path-dependent economic loss [4]. To explore the mathematical derivation of LVR versus classical divergence loss, read our guide on [Impermanent Loss Explained: Rebalancing, Relative Price, and LP Outcomes](/guides/impermanent-loss-explained/).
+### Two: sandwiching, which hurts your customers
 
-### 2. Sandwich Attacks: Reserve Churn and Adverse Inflow
-Sandwich attacks occur when a searcher detects an unconfirmed swap with loose slippage tolerance in the public mempool:
+When somebody submits a swap with a loose tolerance setting and no protection, a bot can wrap it.
 
-```
-Step 1: Searcher Frontrun Buy  -> Drives AMM spot price up; consumes pool reserves
-Step 2: Victim User Swap      -> Executes at maximum allowed slippage limit
-Step 3: Searcher Backrun Sell  -> Sells back into the pool at the elevated price
-```
+1. Buy just before them, pushing the price up.
+2. Their trade executes at the worst rate they allowed.
+3. Sell just after, back into the pool at the raised price.
 
-While the LP collects swap fees across all three transactions, the sandwich introduces severe frictions:
-- The victim receives inferior execution and is more likely to abandon on-chain AMMs in favor of centralized venues or intent networks [6].
-- The pool absorbs artificially volatile reserve churn, often pushing concentrated ranges toward deactivation boundaries [1] [7].
+Your pool collects fees on all three, so this looks like a good day. It is not [1] [6] [7].
 
-### 3. Just-In-Time (JIT) Liquidity Provision: The Capital Dilution Engine
-Pioneered on concentrated liquidity protocols like Uniswap v3, **JIT liquidity** is an asymmetric attack specifically targeted at passive LPs [8].
+The trader got a bad fill and will use a venue that protects them next time, taking their fees with them. Meanwhile the artificial price swings push range positions toward their edges for no economic reason at all.
 
-When an incoming swap with high fee generation appears in the mempool, a JIT searcher does not execute an ordinary token trade. Instead, the searcher executes an atomic liquidity lifecycle within a single block bundle:
+### Three: fee sniping, which targets you specifically
 
-1. **Transaction 1 (Frontrun Mint)**: Searcher deposits millions of dollars of liquidity into the exact single tick where the incoming swap will execute.
-2. **Transaction 2 (Target Swap)**: The target trade executes. Because the searcher's temporary capital represents 90% to 99% of the in-range depth, 90% to 99% of the swap fee is credited to the searcher.
-3. **Transaction 3 (Backrun Burn)**: The searcher immediately removes the liquidity and redeems the converted tokens plus the captured fee [8].
+This one exists because of concentrated liquidity, and it is aimed squarely at passive depositors [8].
 
-```
-Block N Bundle Execution:
--------------------------------------------------------------------------------------
-[Tx 1: JIT Mint]       -> Injects $5M concentrated liquidity into tick [1950, 1951]
-[Tx 2: Whale Swap]     -> Swaps 500 ETH, paying a $7,500 trading fee
-[Tx 3: JIT Burn]       -> Withdraws $5M capital + $7,350 in captured fees
--------------------------------------------------------------------------------------
-Passive LPs receive: $150 (2% of fee pool) while continuing to hold 100% of market volatility risk.
-```
+A bot sees a large trade coming. Instead of trading, it does three things in one block:
 
-The consequence for passive LPs is devastating: they bear continuous inventory volatility and price risk 24/7, but are systematically stripped of high-value fee events by capital that assumes zero inter-block market risk [8]. For an overview of tick mechanics, see [Concentrated Liquidity Explained: Range, Capital Efficiency, and Risk](/guides/concentrated-liquidity-explained/).
+1. Deposits a huge amount of liquidity at exactly the price where the trade will land.
+2. The trade executes. The bot now owns most of the liquidity there, so it takes most of the fee.
+3. It withdraws everything immediately, principal plus fee.
 
-## Decomposing Toxic Order Flow
+Put numbers on it. A \$5M injection sits in front of a 500 ETH swap paying \$7,500 in fees at a 0.30% tier. The bot takes about \$7,350. Everyone who has held that position through weeks of volatility splits \$150 [8].
 
-In modern AMM quantitative research, order flow is categorized into two distinct buckets [5]:
+The asymmetry is the point. The bot carried risk for zero blocks. You carried it all month. See [Concentrated Liquidity Explained](/guides/concentrated-liquidity-explained/).
 
-```
-                  Total Trading Flow
-                     /          \
-                    v            v
-         Uninformed Flow       Toxic Flow
-         (Retail, Solvers)     (Arbitrage, JIT, Sandwich)
-                 |                     |
-                 v                     v
-          LP Net Profit          LP Net Drain (LVR)
-```
+## Not all volume is worth the same
 
-- **Uninformed (Non-Toxic) Flow**: Swaps generated by retail users, portfolio rebalancers, and decentralized applications executing utility trades. Uninformed traders do not possess forward predictive information regarding the asset's short-term trajectory. This flow pays fees that generate net positive returns for LPs.
-- **Toxic Flow (Adverse Selection)**: Swaps generated by MEV searchers and latency arbitrageurs. Every dollar of toxic flow executes against stale liquidity, imposing an instantaneous loss on the LP that exceeds the fee earned [4] [5].
+Split what goes through a pool into two piles [5].
 
-If a pool’s volume is predominantly toxic (as is common in high-volatility, low-fee tiers), the pool operates as a mechanism for extracting wealth from liquidity providers.
+**Real traders** are buying a token, rebalancing a portfolio, or routing through an aggregator. They have no idea where the price goes next. Their fees are genuine income.
 
-## Monitoring & Onchain Tooling Stack
+**Fast traders** are correcting a stale quote. Every one of their trades takes more out of your position than the fee puts back [4] [5].
 
-To detect and quantify MEV extraction against liquidity pools:
+| | Real traders | Fast traders |
+| :--- | :--- | :--- |
+| Who they are | Retail, apps, solvers, aggregators | Arbitrage bots, sandwichers, fee snipers |
+| What they know | Nothing about the next ten minutes | Exactly where the price is going |
+| What they cost you | Nothing, they pay you | More than the fee they pay |
+| What you want | As much as possible | As little as possible |
 
-- **MEV Extraction & Sandwich Analytics**: Inspect sandwich attacks, arbitrage bundles, and searcher profits on [EigenPhi](https://eigenphi.io).
-- **Proposer-Builder Separation (PBS) Metrics**: Track block builder market share, MEV-Boost bids, and searcher activity on [MevBoost.pics](https://mevboost.pics).
-- **Pool-Level Toxic Flow Queries**: Audit the percentage of pool trades executed by known MEV bots via [Dune Analytics](https://dune.com).
+A pool whose volume is mostly the second kind is not a business you are participating in. It is a mechanism for moving your money elsewhere.
 
-## Common MEV Misconceptions & Microstructure Pitfalls
+## What people get wrong about this
 
-| MEV Misconception | Microstructure Reality | Operational Safeguard |
-|---|---|---|
-| **"More pool volume always means higher LP profits."** | Toxic arbitrage volume generates fee revenue, but extracts more in adverse selection (LVR) than it pays in swap fees. | Screen volume quality: measure the ratio of retail aggregator flow versus MEV searcher contract swaps. |
-| **"Sandwich attacks are great for LPs because fees double."** | Sandwiches churn reserves artificially, trigger boundary tick deactivations, and degrade user retention, driving organic flow to intent solvers. | Deploy in pools with private RPC integrations or dynamic fee hooks that disincentivize sandwiching. |
-| **"JIT liquidity is fair market making competition."** | JIT capital assumes zero multi-block market risk. It free-rides on passive inventory depth and extracts fee spikes without underwriting downside risk. | Prioritize pools with minimum liquidity lockup durations (e.g., Uniswap v4 anti-JIT hooks). |
-| **"MEV can be eliminated by moving to Layer 2."** | Layer 2 sequencers alter the ordering mechanism (e.g., first-come-first-served latency races or centralized priority fees), but cross-domain LVR remains severe. | Benchmark cross-chain latency arbitrage: analyze how L2 pools synchronize with CEX price updates. |
+| What people assume | What actually happens |
+| :--- | :--- |
+| More volume means more profit | Arbitrage volume takes more in value than it pays in fees. Check where the volume comes from |
+| Sandwiching is good for me, double fees | It gives your customers bad fills, drives them away, and churns your ranges for no reason |
+| Fee sniping is just competition | The sniper carries risk for zero blocks and free-rides on depth you provided all month |
+| Moving to a cheaper chain fixes it | It changes who decides the ordering. The stale-quote problem is identical |
 
-## Modern Countermeasures: Order Flow Auctions and Uniswap v4 Hooks
+## What actually defends against each one
 
-The decentralized finance ecosystem has developed protocol-level architectures designed to defend LPs and capture MEV:
+### Route orders privately
 
-### 1. Order Flow Auctions (OFAs) and MEV-Share
-Rather than broadcasting transactions to a public mempool, protocols route user orders through private Order Flow Auctions like Flashbots MEV-Share and MEV-Blocker [3]. Searchers bid for the right to backrun trades, and a significant portion of the extracted MEV is returned directly to the user or redistributed to the liquidity pool, mitigating sandwich risks.
+Rather than broadcasting to a public queue, send trades through a private auction [3]. Bots bid for the right to trade behind you rather than in front, and a share of what they pay comes back to you or the pool. Sandwiching stops being possible.
 
-### 2. Intent-Based Routing (UniswapX, CoW Swap)
-Intent-based architectures shift price formation off-chain [6]. In protocols like CoW Swap and UniswapX, orders are matched off-chain via batch auctions and coincidence of wants (CoW). Solvers compete to provide the best execution, shielding orders from public mempool sandwiches and eliminating the toxic arbitrage flow that would otherwise hit on-chain AMMs [6]. Review the institutional differences between AMMs and alternative execution layers in our guide to [AMM vs Order Book: Latency, Capital, and Execution](/guides/amm-vs-order-book/).
+### Settle in batches
 
-### 3. Uniswap v4 Defensive Hooks
-Uniswap v4’s singleton architecture allows the integration of custom **hooks** that natively neutralize MEV vectors [7]:
-- **Dynamic Volatility Fee Hooks**: Hooks that track real-time tick velocity can automatically raise swap fees during volatile blocks. This forces latency arbitrageurs to pay higher fees, effectively internalizing LVR back into the LP fee accumulator.
-- **JIT Mitigation Hooks**: A hook contract can enforce a minimum deposit duration (e.g., requiring liquidity additions to remain locked for at least one block), rendering atomic JIT sandwiching impossible.
-- **Block-Top Auction Hooks**: Hooks can auction off the exclusive right to execute the first swap of a block. The auction proceeds are distributed directly to pool LPs, converting LVR from an external MEV leakage into a native revenue stream.
+Intent systems take a different route entirely [6]. You state what you want and professional fillers compete to deliver it. CoW Swap settles orders in batches at a single clearing price, and UniswapX runs a short auction among fillers for each order. Either way, there is no public pending trade to get in front of. See [AMM vs Order Book](/guides/amm-vs-order-book/).
 
-| Defense Mechanism | Target MEV Threat | How It Protects LPs |
-|---|---|---|
-| Private Order Routing (MEV-Share) | Public Mempool Sandwiches | Hides transaction parameters until execution block |
-| JIT Cooldown Hooks (v4) | Atomic JIT Fee Dilution | Imposes multi-block lockups on newly minted liquidity |
-| Dynamic Fee Hooks (v4) | Latency Arbitrage / LVR | Raises fees during volatility to capture arbitrage surplus |
-| Batch Auctions (CoW Swap) | Frontrunning & Toxic Arbitrage | Executes trades at uniform clearing prices per batch |
+### Pick pools with defensive code
 
-## Pre-Deployment MEV Diligence Checklist for LPs
+Uniswap v4 pools can attach custom code that addresses each vector directly [7]:
 
-Before deploying capital into an AMM pool, evaluate its MEV exposure:
+| Defence | What it stops | How |
+| :--- | :--- | :--- |
+| Private routing | Sandwiching | A wallet or router setting rather than pool code. Your trade stays hidden until it executes |
+| Minimum holding time | Fee sniping | Liquidity must stay for more than one block |
+| Fees that track volatility | Stale-quote arbitrage | Arbitrage pays a wide spread exactly when it is taking most |
+| Auctioning the first trade | Stale-quote arbitrage | The right to correct the price is sold, and the proceeds go to depositors |
 
-- [ ] **Mempool Environment**: Does the pool operate on a chain with a mature, competitive PBS pipeline (e.g., Ethereum Layer 1), or an L2 with a centralized sequencer and distinct ordering rules?
-- [ ] **Toxic Flow Proportion**: Using on-chain analytics, what percentage of pool swaps originate from known MEV bot contracts versus decentralized exchange aggregators?
-- [ ] **JIT Frequency**: In concentrated pools, inspect recent large trades. Are searcher contracts routinely injecting and withdrawing liquidity within the same block to capture fees?
-- [ ] **Fee Tier Adequacy**: Is the pool fee tier wide enough (e.g., 0.30% or 1.00% vs. 0.05%) to disincentivize latency arbitrageurs during standard volatility regimes [4]?
-- [ ] **Hook-Based Protections**: If operating on Uniswap v4, does the pool implement audited hooks for dynamic volatility pricing or JIT prevention [7]?
+That last one is the most interesting. It turns the biggest leak into a revenue line.
 
-MEV is an inescapable consequence of public, stateful blockchains. A successful liquidity provider must move beyond headline yields and actively manage the microstructural mechanics of order flow and transaction ordering.
+## What to check before you deposit
 
-## Diagnostic Troubleshooting Decision Tree
+1. **Which chain, and how is ordering decided?** A mature auction market behaves differently from a single sequencer, but neither removes the stale-quote problem.
+2. **What share of swaps come from bot contracts?** Onchain analytics will tell you. Above 60% and the fee income is not what it looks like.
+3. **How often does fee sniping happen here?** Look at recent large trades and check whether liquidity appeared and vanished around them.
+4. **Is the fee tier high enough?** A 0.05% tier on a volatile pair is an invitation. A 0.30% or 1.00% tier makes marginal arbitrage unprofitable [4].
+5. **Does the pool have defensive code, and has it been audited [7]?**
 
-Use this diagnostic sequence to identify and mitigate MEV attacks on LP positions:
+## Where to watch the numbers
 
-1. **Massive Liquidity Injected and Burned in Single Block (JIT Attack)**:
-   - *Diagnostic*: A searcher has frontrun a large swap with an atomic deposit and backrun it with a burn, stealing >90% of the swap fee.
-   - *Action*: Migrate liquidity to pools with minimum holding lockups, dynamic fees, or private order flow routing hooks.
-2. **Large Swaps Continuously Frontrun via Sandwich Attacks**:
-   - *Diagnostic*: Unprotected transactions submitted to public mempools are being manipulated by searchers, causing price volatility that extracts LP reserves.
-   - *Action*: Advise traders to route via private RPC endpoints (e.g., MEV-Blocker, Flashbots Protect) or intent-based batch auctions.
-3. **LVR Outpaces Gross Fees During High Market Volatility**:
-   - *Diagnostic*: Toxic arbitrageurs are exploiting block latency to pick off stale quotes before onchain prices update.
-   - *Action*: Avoid narrow concentrated positions in pools without dynamic fee adjustment hooks during scheduled economic announcements or extreme volatility.
+- **Sandwiches, bundles and searcher profit:** [EigenPhi](https://eigenphi.io).
+- **Who is building blocks and what they are paying:** [MevBoost.pics](https://mevboost.pics).
+- **What share of a pool's trades are bots:** [Dune Analytics](https://dune.com).
 
-## Where to Go Next
+## When something goes wrong
 
-The formal measure of what this extraction costs a liquidity provider is developed in [Loss-Versus-Rebalancing](/guides/loss-versus-rebalancing/). For the trader-side defences against the same mechanisms, including tolerance settings and private routing, see [Slippage and Price Impact](/guides/slippage-and-price-impact/).
+- **Liquidity appeared and vanished in one block around a big trade.** You were fee-sniped. Move to a pool with a minimum holding rule or an adaptive fee.
+- **Large trades through your pool keep getting sandwiched.** Traders are submitting unprotected transactions with loose tolerances. Tell them to use a private relay or a batch auction.
+- **Fees are not keeping up during volatile stretches.** Bots are taking stale quotes faster than the fee compensates. Avoid tight ranges in fixed-fee pools around scheduled announcements.
+
+## Where to go next
+
+The formal measure of what all this costs is developed in [Loss-Versus-Rebalancing](/guides/loss-versus-rebalancing/). The trader's side of the same problem is slippage — the gap between the quote you saw and the fill you got — set against price impact, which is the cost your own order size creates. Both are covered in [Slippage and Price Impact](/guides/slippage-and-price-impact/).
 
 ## References
 
-
-1. [Uniswap v3 Concentrated Liquidity Documentation](https://developers.uniswap.org/docs/protocols/v3/concepts/concentrated-liquidity)
+1. [Concentrated Liquidity (Uniswap Developer Documentation)](https://developers.uniswap.org/docs/get-started/concepts/liquidity-providers/concentrated-liquidity)
 2. [Flashbots Documentation: MEV and Proposer-Builder Separation](https://docs.flashbots.net/)
 3. [Ethereum Foundation: Maximal Extractable Value (MEV)](https://ethereum.org/en/developers/docs/mev/)
 4. [Automated Market Making and Loss-Versus-Rebalancing (Milionis et al., 2022)](https://arxiv.org/abs/2208.06046)
-5. [Measuring Arbitrage Losses and Profitability of AMM Liquidity (Fritsch, 2024)](https://arxiv.org/abs/2404.05803)
+5. [Measuring Arbitrage Losses and Profitability of AMM Liquidity (Fritsch & Canidio, 2024)](https://arxiv.org/abs/2404.05803)
 6. [CoW Protocol Documentation](https://docs.cow.fi/)
 7. [Uniswap v4 Core Whitepaper](https://uniswap.org/whitepaper-v4.pdf)
-8. [Just-In-Time Liquidity: Characteristics and Impact on Concentrated AMMs](https://arxiv.org/abs/2305.19211)
+8. [Just-In-Time Liquidity on the Uniswap Protocol (Wan & Adams, Uniswap Labs, 2022)](https://blog.uniswap.org/jit-liquidity)
 9. [Quantifying Blockchain Extractable Value: How Dark is the Forest? (Qin et al., 2021)](https://arxiv.org/abs/2101.05511)
 
-[1]: https://developers.uniswap.org/docs/protocols/v3/concepts/concentrated-liquidity "Uniswap v3 Concentrated Liquidity Documentation"
+[1]: https://developers.uniswap.org/docs/get-started/concepts/liquidity-providers/concentrated-liquidity "Concentrated Liquidity (Uniswap Developer Documentation)"
 [2]: https://docs.flashbots.net/ "Flashbots Documentation: MEV and Proposer-Builder Separation"
 [3]: https://ethereum.org/en/developers/docs/mev/ "Ethereum Foundation: Maximal Extractable Value (MEV)"
 [4]: https://arxiv.org/abs/2208.06046 "Automated Market Making and Loss-Versus-Rebalancing (Milionis et al., 2022)"
-[5]: https://arxiv.org/abs/2404.05803 "Measuring Arbitrage Losses and Profitability of AMM Liquidity (Fritsch, 2024)"
+[5]: https://arxiv.org/abs/2404.05803 "Measuring Arbitrage Losses and Profitability of AMM Liquidity (Fritsch & Canidio, 2024)"
 [6]: https://docs.cow.fi/ "CoW Protocol Documentation"
 [7]: https://uniswap.org/whitepaper-v4.pdf "Uniswap v4 Core Whitepaper"
-[8]: https://arxiv.org/abs/2305.19211 "Just-In-Time Liquidity: Characteristics and Impact on Concentrated AMMs"
+[8]: https://blog.uniswap.org/jit-liquidity "Just-In-Time Liquidity on the Uniswap Protocol (Wan & Adams, Uniswap Labs, 2022)"
 [9]: https://arxiv.org/abs/2101.05511 "Quantifying Blockchain Extractable Value: How Dark is the Forest? (Qin et al., 2021)"

@@ -1,11 +1,11 @@
 ---
 title: "The Impermanent Loss Formula: How to Calculate IL Step by Step"
-description: "The impermanent loss formula derived from first principles, with worked examples, a concentrated-liquidity variant, and the fee threshold that decides the net result."
+description: "One short formula, one variable, and a full worked example in dollars. Plus the range-position variant and everything the formula deliberately leaves out."
 category: "Risk & Research"
 date: 2026-09-10
-lastReviewed: "2026-09-10"
+lastReviewed: "2026-09-12"
 author: "Dr. Elena Rostova"
-readTime: "12 min read"
+readTime: "6 min read"
 keywords: "impermanent loss formula, how to calculate impermanent loss, impermanent loss example, IL calculation, divergence loss, HODL benchmark"
 featured: true
 faq:
@@ -16,12 +16,14 @@ faq:
   - q: "Is impermanent loss ever permanent?"
     a: "It becomes permanent the moment you withdraw at a price ratio different from your entry ratio. Until then it is an unrealised gap against a hold benchmark that closes if relative prices return to where they started."
   - q: "Does the formula work for concentrated liquidity?"
-    a: "Not directly. A range position experiences the same divergence amplified by the capital-efficiency multiplier of the range, and the loss stops growing once price exits the interval and the position is fully converted. The article gives the bounded form for a range position."
+    a: "Not directly. Inside its band a range position diverges faster, roughly in proportion to its capital-efficiency multiplier. Once price leaves the band the position holds a single asset, so it stops rotating, but its shortfall against holding keeps growing as the price moves further. The article gives the holdings formula for a range position."
 ---
 
-Impermanent loss is not a fee, a penalty, or a bug. It is the arithmetic difference between two portfolios: tokens sitting in a wallet, and the same tokens supplied to a constant-function market maker that continuously rebalanced them as the market moved. The formula that quantifies that difference is short, closed-form, and depends on exactly one variable.
+Impermanent loss — the gap between a pool position and simply holding the same tokens — is not a fee, and nobody charges it. It is arithmetic: what your tokens would be worth sitting in a wallet, against what they are worth in a pool that kept trading them while the market moved.
 
-Everything else people attach to the term, including whether the position was actually profitable, sits outside the formula and belongs to the fee accounting.
+The formula for that gap is one line and it has exactly one input. You can work out your own number in about a minute.
+
+This guide derives it, gives you a table to memorise, walks a real position through in dollars, covers the range-position version, and lists what the formula deliberately ignores.
 
 <figure class="article-figure">
   <img src="/images/guides/impermanent-loss-formula.webp" alt="Curve of impermanent loss against price ratio with marked values at 1.25x, 2x and 4x, beside a worked dollar example." width="1600" height="1067" loading="lazy" decoding="async" />
@@ -29,117 +31,126 @@ Everything else people attach to the term, including whether the position was ac
 </figure>
 
 > **Desk Field Note from Dr. Elena Rostova:**
-> *"Every LP can recite that a 2x move costs 5.7%. Very few can tell you the number for their actual position, because their actual position was minted at three different prices, collected fees in two assets, and paid gas twice. The formula is the easy part. The discipline is maintaining a ledger that lets you compute the benchmark at all."*
+> *"Everyone can recite that a doubling costs 5.7%. Almost nobody can give you the number for their own position, because it was minted at three different prices, collected fees in two tokens, and paid gas twice. The formula is the easy part. Keeping records good enough to use it is the hard part."*
 
-## 1. Deriving the Formula From the Invariant
+## Where the formula comes from
 
-Start with a constant-product pool holding reserves $x$ and $y$ with invariant $x \cdot y = k$ and price $P = y / x$. Deposit at price $P_0$ with reserves $x_0$ and $y_0$, so the deposited value in units of the quote asset is $V_{\text{hold}} = x_0 P_0 + y_0$.
+A pool holds two tokens and keeps their product at a fixed number. Price is one balance divided by the other.
 
-Let the price move to $P_1$ and define the price ratio:
+You deposit at some price. The market moves. Arbitrage traders keep pulling the pool's price back in line with the market, and that completely determines what the pool ends up holding.
+
+Define one number:
 
 $$
 k = \frac{P_1}{P_0}
 $$
 
-Arbitrage keeps the pool's marginal price aligned with the market, which fixes the new reserves. Because the invariant holds and $P = y/x$, the reserves after the move are:
+Where:
+
+- $P_0$ is the price when you deposited.
+- $P_1$ is the price now.
+- $k$ is the ratio between them, so a doubling gives $k = 2$.
+
+Because the product stays fixed and price is the ratio, the new balances are the old ones divided and multiplied by the square root of $k$. Value the pool position at the new price, value the untouched basket at the same price, take the ratio, and everything cancels into one line:
 
 $$
-x_1 = \frac{x_0}{\sqrt{k}}, \qquad y_1 = y_0 \sqrt{k}
+\text{IL}(k) = \frac{2\sqrt{k}}{1 + k} - 1
 $$
 
-The pool position is therefore worth $V_{\text{pool}} = x_1 P_1 + y_1$, while holding the original basket is worth $V_{\text{hold}} = x_0 P_1 + y_0$. Taking the ratio for a balanced 50/50 deposit gives the standard closed form:
+Where:
 
-$$
-\text{IL}(k) = \frac{V_{\text{pool}}}{V_{\text{hold}}} - 1 = \frac{2\sqrt{k}}{1 + k} - 1
-$$
+- $k$ is the price ratio above.
+- The answer is negative, and it is the fraction by which the pool trails simply holding.
 
-Three properties fall out immediately. The function is always less than or equal to zero, with equality only at $k = 1$. It is symmetric in log price, so a halving and a doubling produce the identical shortfall. And it depends only on the *relative* price of the two assets, not on whether the market went up or down in dollar terms.
+Three things fall out of it immediately, and all three are worth holding onto.
 
-The mechanism that produces this, continuous selling of the appreciating asset, is the same one described in [Impermanent Loss Explained: Rebalancing, Relative Price, and LP Outcomes](/guides/impermanent-loss-explained/).
+- **It is never positive.** The only case where it is zero is $k = 1$, meaning the price came back exactly.
+- **Direction does not matter.** Halving and doubling cost exactly the same. Only distance matters.
+- **Only the relative price counts.** If both tokens fall 40% together, this formula says zero, because the pool did no rotating. You lost money, but not to the pool.
 
----
+The mechanism behind all of it is in [Impermanent Loss Explained](/guides/impermanent-loss-explained/).
 
-## 2. The Reference Table Every LP Should Memorise
+## The table worth memorising
 
-| Price ratio $k$ | Move | IL vs. hold | Pool composition drift |
+| Price ratio | What that means | Shortfall against holding | What the pool did |
 | ---: | :--- | ---: | :--- |
-| 0.25 | −75% | −20.00% | Heavily into the falling asset |
-| 0.50 | −50% | −5.72% | Accumulating the falling asset |
-| 0.80 | −20% | −0.62% | Mild rotation |
-| 1.00 | flat | 0.00% | Unchanged |
-| 1.25 | +25% | −0.62% | Mild rotation |
-| 1.50 | +50% | −2.02% | Selling the winner |
-| 2.00 | 2x | −5.72% | Half the winner sold |
-| 4.00 | 4x | −20.00% | Most of the winner sold |
-| 5.00 | 5x | −25.46% | Position dominated by the quote asset |
+| 0.25 | Down 75% | -20.00% | Doubled its holding of the falling token |
+| 0.50 | Down 50% | -5.72% | Bought about 41% more of it |
+| 0.80 | Down 20% | -0.62% | Bought about 12% more |
+| 1.00 | Flat | 0.00% | Nothing |
+| 1.25 | Up 25% | -0.62% | Sold about 11% |
+| 1.50 | Up 50% | -2.02% | Sold about 18% |
+| 2.00 | Doubled | -5.72% | Sold about 29% of it |
+| 4.00 | Up 4x | -20.00% | Sold half of it |
+| 5.00 | Up 5x | -25.46% | Sold about 55% of it |
 
-The shape matters more than any individual row. Losses are negligible for small divergences and accelerate sharply past a 2x, which is why correlated and pegged pairs behave so differently from volatile pairs supplied on the same curve.
+An ordinary pool always keeps half its value in each token. What changes is how many of each it holds.
 
----
+The shape is the lesson, not the individual rows. Small moves cost almost nothing. Past a doubling it accelerates hard. That is the whole reason pegged pairs and volatile pairs behave so differently on the same curve.
 
-## 3. A Worked Dollar Example, End to End
+## A real position, start to finish
 
-Deposit into an ETH/USDC pool at 2,000 USDC per ETH:
+Deposit into an ETH/USDC pool at \$2,000 per ETH.
 
-- **Deposit**: 1 ETH and 2,000 USDC, total \$4,000 at entry, a balanced 50/50 basket.
-- **Exit price**: 4,000 USDC per ETH, so $k = 2$.
+- **What goes in:** 1 ETH and \$2,000 of USDC, \$4,000 total, an even split.
+- **Price at exit:** \$4,000 per ETH, so $k = 2$.
 
-Step one, the hold benchmark. The unpooled basket is worth $1 \times 4{,}000 + 2{,}000 = 6{,}000$ dollars.
+**Step one, what holding would have been worth.** One ETH at \$4,000 plus \$2,000 of USDC comes to \$6,000.
 
-Step two, the pool position. Reserves rotate to $1/\sqrt{2} = 0.7071$ ETH and $2{,}000 \times \sqrt{2} = 2{,}828$ USDC. Valued at the new price: $0.7071 \times 4{,}000 + 2{,}828 = 5{,}657$ dollars.
+**Step two, what the pool holds now.** The balances rotate by the square root of 2. You now have 0.7071 ETH and \$2,828 of USDC. At the new price that is \$5,657.
 
-Step three, the divergence. $5{,}657 / 6{,}000 - 1 = -5.72\%$, or −\$343 in dollar terms, matching the formula exactly.
+**Step three, the gap.** \$5,657 divided by \$6,000, minus one, is -5.72%. In dollars, -\$343. Exactly what the table said.
 
-Step four, the net result. Suppose the position collected \$420 in trading fees over the holding period. The net outcome against holding is +\$77, roughly +1.3%. The position was profitable in absolute terms and beat the hold benchmark, but only because fee income cleared the divergence with room to spare.
+**Step four, the part that actually decides it.** Say the position earned \$420 in fees over that period. You are ahead of holding by \$77, about 1.3%.
 
-That fourth step is the one that decides whether supplying liquidity was the right decision, and it is developed in [LP Fees vs Impermanent Loss: Finding the Break-Even](/guides/lp-fees-vs-impermanent-loss/).
+That last step is the whole game. The position was profitable and it beat holding, but only because the fees cleared the gap with something to spare. See [LP Fees vs Impermanent Loss](/guides/lp-fees-vs-impermanent-loss/).
 
----
+## The version for range positions
 
-## 4. The Concentrated Liquidity Variant
+A range position does not follow that curve, and the differences cut both ways [1].
 
-A range position does not follow the unbounded curve. Inside its interval it experiences amplified divergence, because the same capital backs a larger quoted depth; outside the interval the divergence stops growing, because the position is fully converted and no longer rebalances [1].
-
-For a position with bounds $[p_a, p_b]$ and entry price $P_0$, the value of the position at price $P$ inside the range can be computed from the reserve expressions:
+Inside your band the divergence is larger than the formula says, roughly in proportion to how much your range multiplies your capital. Outside the band the position has fully converted and stops trading, but the market keeps moving without you.
 
 $$
-x(P) = L\left(\frac{1}{\sqrt{P}} - \frac{1}{\sqrt{p_b}}\right), \qquad y(P) = L\left(\sqrt{P} - \sqrt{p_a}\right)
+x(P) = L\left(\frac{1}{\sqrt{P}} - \frac{1}{\sqrt{p_b}}\right)
 $$
 
-Two consequences follow. First, the divergence for a narrow band at a given price ratio is materially larger than the unbounded formula predicts, scaling roughly with the capital-efficiency multiplier of the range. Second, the loss is bounded: once price passes $p_b$, the position is entirely quote asset and its value is fixed in those units regardless of how much further the market runs.
+Where:
 
-Bounded does not mean small. A ±5% band that converts fully and then watches the asset double has forgone the entire subsequent move, which is an opportunity cost the formula does not display. See [Out-of-Range Liquidity: Why an LP Position Stops Earning Fees](/guides/out-of-range-liquidity/) for that side of the ledger.
+- $x(P)$ is how much of the risky token the position holds at price $P$.
+- $L$ is your liquidity size.
+- $p_b$ is the top of your band.
 
----
+Read the shape. As $P$ rises toward $p_b$, the two terms converge and your holding of the risky token goes to zero. You have sold all of it, and the selling stops there.
 
-## 5. What the Formula Deliberately Excludes
+Stopped selling is not the same as stopped losing. A tight band that converts fully and then watches the asset double finishes far behind holding, because the whole rest of the move happened without you. Always measure against holding at today's price, not at the edge of your band. See [Out-of-Range Liquidity](/guides/out-of-range-liquidity/).
 
-Running the number without these adjustments produces a benchmark that flatters or punishes the position incorrectly:
+## What the formula ignores on purpose
 
-- **Trading fees**, which are the entire reason to supply liquidity and are not part of the IL expression.
-- **Incentive emissions**, which must be valued at the price you could actually sell them, not at the price when they accrued.
-- **Gas costs** for minting, collecting, rebalancing and withdrawing, which dominate the outcome for small positions.
-- **Time out of range**, during which a concentrated position earns nothing while remaining fully exposed.
-- **Price impact and slippage on entry and exit**, particularly when a large deposit must be swapped into the correct ratio first. See [Slippage and Price Impact: What a Swap Actually Costs](/guides/slippage-and-price-impact/).
-- **The path taken**, which matters for realised outcomes: a pool that round-tripped through a 3x and back to par shows zero impermanent loss at the endpoints while having handed real value to arbitrageurs along the way. That gap is measured by loss-versus-rebalancing rather than by IL [4].
+Run the number on its own and you will get a misleading answer, in either direction.
 
----
+- **Fees.** The entire reason to be there, and not in the formula at all.
+- **Token rewards.** Value them at the price you could actually have sold them, not the price on the day they accrued.
+- **Gas.** Minting, claiming, re-ranging and withdrawing. On a small position this can be the whole result.
+- **Time spent out of range.** Earning nothing while still fully exposed.
+- **Entry and exit costs.** Price impact — the way your own order moves the rate — plus slippage, the gap between quote and fill, both bite when a large deposit has to be swapped into the right ratio first. See [Slippage and Price Impact](/guides/slippage-and-price-impact/).
+- **The cost of volatility along the way.** A pool that ran to 3x and came back shows zero here, which is accurate against holding. It says nothing about the steady cost that volatility created, which is what the fees were meant to cover. That is measured by loss-versus-rebalancing — what the pool gives up because its quote runs a block late — rather than by this formula [4].
 
-## 6. Diagnostic Checklist for Computing Your Own Number
+## How to compute your own number
 
-1. **Record the entry state**: token quantities, both prices, timestamp, transaction hash. Without this, no benchmark can be reconstructed later.
-2. **Value the hold benchmark at the exit price**, not at some intermediate high.
-3. **Apply the formula to the price ratio** and confirm it against the actual withdrawn quantities. A mismatch usually means fees were auto-compounded into the position, which changes the base.
-4. **Add fee income in the same units** as the benchmark, at realised prices.
-5. **Subtract all friction**: gas, swap costs, and any withdrawal fee imposed by a hook or vault wrapper.
-6. **Compare against the alternatives you actually had**: holding the basket, holding one asset, or supplying to a different curve. Benchmarks are only useful when they are the ones you could have chosen.
-7. **Verify with independent accounting** on [Revert Finance](https://revert.finance), which reconstructs position history and separates fee income from divergence for tick-based positions.
+1. **Write down where you started.** Quantities, both prices, the time, the transaction hash. Without this you cannot reconstruct anything later.
+2. **Value holding at the exit price**, not at some high point you remember.
+3. **Apply the formula, then check it** against what you actually withdrew. A mismatch usually means fees were compounded in, which moves the starting point.
+4. **Add fees in the same units**, at the prices you actually got.
+5. **Subtract all the friction.** Gas, swap costs, and any exit fee a vault or hook charges.
+6. **Compare against what you could really have done.** Holding the basket, holding one token, or a different pool. A benchmark you never had access to is not a benchmark.
+7. **Check it against independent accounting.** [Revert Finance](https://revert.finance) rebuilds position history and separates fees from divergence.
 
-The formula is a tool for pricing a decision in advance, not a post-hoc explanation for a disappointing outcome. Used at deposit time, with a realistic view of the volatility of the pair and the fee density of the pool, it tells you what the market has to do before the position stops being worth holding.
+Use this before you deposit, not after you are disappointed. Run at deposit time with an honest view of how much the pair moves and how much the pool earns, it tells you exactly what the market has to do before the position stops being worth holding.
 
-## Where to Go Next
+## Where to go next
 
-Run your own numbers through the [impermanent loss calculator](/tools/impermanent-loss-calculator/), then test whether fee income cleared the gap using [LP Fees vs Impermanent Loss](/guides/lp-fees-vs-impermanent-loss/).
+Run your own numbers through the [impermanent loss calculator](/tools/impermanent-loss-calculator/), then check whether fees cleared the gap using [LP Fees vs Impermanent Loss](/guides/lp-fees-vs-impermanent-loss/).
 
 ## References
 
@@ -149,7 +160,7 @@ Run your own numbers through the [impermanent loss calculator](/tools/impermanen
 4. [Automated Market Making and Loss-Versus-Rebalancing (Milionis et al., 2022)](https://arxiv.org/abs/2208.06046)
 5. [Impermanent Loss in Uniswap v3 (Loesch et al., 2021)](https://arxiv.org/abs/2111.09192)
 6. [An Analysis of Uniswap Markets (Angeris et al., 2019)](https://arxiv.org/abs/1911.03380)
-7. [Trading in the DeFi era: automated market maker (BIS Bulletin No 58, 2022)](https://www.bis.org/publ/bisbull58.htm)
+7. [Miners as intermediaries: extractable value and market manipulation in crypto and DeFi (BIS Bulletin No 58, 2022)](https://www.bis.org/publ/bisbull58.htm)
 
 [1]: https://uniswap.org/whitepaper-v3.pdf "Uniswap v3 Core Whitepaper"
 [2]: https://uniswap.org/whitepaper.pdf "Uniswap v2 Core Whitepaper"
@@ -157,4 +168,4 @@ Run your own numbers through the [impermanent loss calculator](/tools/impermanen
 [4]: https://arxiv.org/abs/2208.06046 "Automated Market Making and Loss-Versus-Rebalancing"
 [5]: https://arxiv.org/abs/2111.09192 "Impermanent Loss in Uniswap v3 (Loesch et al., 2021)"
 [6]: https://arxiv.org/abs/1911.03380 "An Analysis of Uniswap Markets (Angeris et al., 2019)"
-[7]: https://www.bis.org/publ/bisbull58.htm "Trading in the DeFi era: automated market maker (BIS Bulletin No 58, 2022)"
+[7]: https://www.bis.org/publ/bisbull58.htm "Miners as intermediaries: extractable value and market manipulation in crypto and DeFi (BIS Bulletin No 58, 2022)"
