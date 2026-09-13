@@ -2,9 +2,9 @@
 title: "Liquidity Pool Tokens Explained: What an LP Position Represents"
 description: "What you actually get back for a deposit: how pool shares, position NFTs, singleton claims and vault wrappers each track your money, and where each one bites."
 category: "Foundations"
-date: 2026-09-05
+date: 2026-09-09
 lastReviewed: "2026-09-12"
-author: "Dr. Kieran Thorne"
+author: "LiquidityPools Editorial Team"
 readTime: "8 min read"
 primaryQuery: "liquidity pool tokens"
 keywords: "liquidity pool tokens, LP tokens explained, liquidity position NFT, DeFi LP token, ERC-6909, singleton accounting, what is an LP token, liquidity pool token, LP token risks, pool share crypto"
@@ -29,8 +29,8 @@ This guide covers the main ways pools track that claim, how fees reach you under
   <figcaption>A pool token is a claim on a share of whatever the pool holds when you leave, not a receipt for what you put in. <span class="article-figure__credit">Original editorial illustration by LiquidityPools.app.</span></figcaption>
 </figure>
 
-> **Desk Field Note from Dr. Kieran Thorne:**
-> *"Each generation of pool share traded one thing for another. The old fungible share slotted into lending markets easily but could not express a price range. The position NFT could express a range but broke every money market that tried to price it. The newest claims live inside the pool contract itself, which is cheap and fast, and which most wallets still cannot see."*
+> **Editor's note:**
+> Each generation of pool share traded one thing for another. The old fungible share slotted into lending markets easily but could not express a price range. The position NFT could express a range but broke every money market that tried to price it. The newest claims live inside the pool contract itself, which is cheap and fast, and which most wallets still cannot see.
 
 ## Your claim changes value while you hold it
 

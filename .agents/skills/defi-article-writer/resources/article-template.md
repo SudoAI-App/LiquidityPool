@@ -4,7 +4,7 @@ description: "Comprehensive quantitative analysis of [Protocol/Concept], examini
 category: "mechanics" # Allowed: getting-started | strategies | advanced-concepts | case-studies | risk-management | mechanics | ecosystems
 date: "2026-03-10"
 lastReviewed: "2026-03-10"
-author: "Dr. Elena Rostova" # Must be one of: Dr. Elena Rostova, Marcus Vance, Dr. Kieran Thorne, Siddharth Mehta, Aria Chen
+author: "LiquidityPools Editorial Team" # The only allowed value
 readTime: 12
 keywords:
   - "Primary Topic"
@@ -58,8 +58,8 @@ When a swap executes against the pool, the execution pipeline enforces strict at
 4. **Flash Accounting Settlement**: The caller must settle all outstanding net deltas before the lock release, minimizing gas overhead by 60–90% across multi-hop paths.
 
 > [!TIP]
-> **Desk Field Note from Dr. Elena Rostova**:
-> *"When modeling concentrated liquidity returns, never extrapolate 24-hour annualized fee yield across market cycles. In volatile pairs like WETH/USDC, over 65% of volume in wide ranges is driven by latency arbitrageurs taking stale pool quotes against Binance order books. If your pool fee does not exceed $\sigma \sqrt{\Delta t}$, you are subsidizing HFT searchers with your inventory."*
+> **Editor's note:**
+> Annualising one day of fee yield overstates returns in volatile pairs, because much of that day's volume can come from arbitrage against stale pool prices. Compare the pool fee with realised volatility over the same window before trusting the headline APR.
 
 ## Numerical Case Study: Capital Allocation and Yield Breakdown
 

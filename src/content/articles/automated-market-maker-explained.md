@@ -2,9 +2,9 @@
 title: "Automated Market Makers Explained: How an AMM Actually Works"
 description: "How an AMM quotes a price from its own reserves, what three generations of design changed, where your execution cost really comes from, and what to check first."
 category: "Foundations"
-date: 2026-09-08
+date: 2026-09-09
 lastReviewed: "2026-09-12"
-author: "Dr. Kieran Thorne"
+author: "LiquidityPools Editorial Team"
 readTime: "8 min read"
 primaryQuery: "automated market maker"
 keywords: "automated market maker, AMM explained, AMM pool, DeFi exchange, singleton contract, hooks, flash accounting, how does an AMM work, what is an AMM, AMM crypto, AMM liquidity pool"
@@ -29,8 +29,8 @@ This guide covers how that pricing works, how the design has changed over three 
   <figcaption>An automated market maker operates as an inventory rule governed by an invariant curve. <span class="article-figure__credit">Original editorial illustration by LiquidityPools.app.</span></figcaption>
 </figure>
 
-> **Desk Field Note from Dr. Kieran Thorne:**
-> *"People read the pool rule as a price formula. It is not. It is a boundary the contract is not allowed to cross, and everything else follows from that. If you are writing pool logic yourself, round every number in the pool's favour. Round up what a trader must put in, round down what they take out. The rounding errors are where the money leaks."*
+> **Editor's note:**
+> People read the pool rule as a price formula. It is not. It is a boundary the contract is not allowed to cross, and everything else follows from that. If you are writing pool logic yourself, round every number in the pool's favour. Round up what a trader must put in, round down what they take out. The rounding errors are where the money leaks.
 
 ## An AMM is a shelf, not a price feed
 

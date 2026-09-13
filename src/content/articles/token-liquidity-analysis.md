@@ -2,9 +2,9 @@
 title: "Token Liquidity Analysis: Measuring What Can Actually Be Sold"
 description: "How to measure a token's real liquidity: active depth, exit size, venue spread, holder concentration, volume quality and lock status, from public chain data."
 category: "Risk & Research"
-date: 2026-09-11
+date: 2026-09-10
 lastReviewed: "2026-09-12"
-author: "Marcus Vance"
+author: "LiquidityPools Editorial Team"
 readTime: "6 min read"
 primaryQuery: "token liquidity analysis"
 keywords: "token liquidity analysis, on-chain pool analytics, exit liquidity, volume quality, holder concentration"
@@ -33,8 +33,8 @@ Six measurements do tell you, and all six come from public chain data. This guid
   <figcaption>Six measurements that describe a token's real liquidity, none of which is market capitalisation. <span class="article-figure__credit">Original editorial illustration by LiquidityPools.app.</span></figcaption>
 </figure>
 
-> **Desk Field Note from Marcus Vance:**
-> *"The number I want is the one nobody publishes: what does it cost to get out of this position in a bad week. Everything else, the market cap, the daily volume, the holder count, is decoration around that single figure, and it is computable in about ten minutes from pool state."*
+> **Editor's note:**
+> The decision-relevant number is the estimated cost of exiting the position under stressed depth. Market capitalization, daily volume, and holder count do not answer that question; current pool state can support a direct exit-cost scenario.
 
 ## How much money is actually near the price?
 

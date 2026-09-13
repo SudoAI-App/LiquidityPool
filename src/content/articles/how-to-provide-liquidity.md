@@ -2,9 +2,9 @@
 title: "How to Provide Liquidity: A Mechanism-First Walkthrough"
 description: "Every choice in the deposit screen is a decision about what you will be holding later. What each one does, two worked scenarios, and the sums that decide it."
 category: "LP Mechanics"
-date: 2026-09-03
+date: 2026-09-09
 lastReviewed: "2026-09-12"
-author: "Siddharth Mehta"
+author: "LiquidityPools Editorial Team"
 readTime: "7 min read"
 primaryQuery: "how to provide liquidity"
 keywords: "how to provide liquidity, provide liquidity AMM, liquidity provider guide, DeFi LP, Permit2, hooks, how to provide liquidity on Uniswap, liquidity provision DeFi, do I need both tokens to provide liquidity"
@@ -29,8 +29,8 @@ This guide walks through what each choice does, two scenarios worked end to end,
   <figcaption>Providing liquidity means choosing a pool, assets, and active range. <span class="article-figure__credit">Original editorial illustration by LiquidityPools.app.</span></figcaption>
 </figure>
 
-> **Desk Field Note from Siddharth Mehta:**
-> *"The moment you sign that approval you are running a small market-making business. Beginners forget the cost of getting in and out. On Ethereum, approving two tokens, minting the position and claiming fees can cost a few dollars on a quiet day and well over \$100 on a busy one. On a \$1,000 deposit, a busy day starts you 10% behind."*
+> **Editor's note:**
+> The moment you sign that approval you are running a small market-making business. Beginners forget the cost of getting in and out. On Ethereum, approving two tokens, minting the position and claiming fees can cost a few dollars on a quiet day and well over \$100 on a busy one. On a \$1,000 deposit, a busy day starts you 10% behind.
 
 ## What the pool does with your money
 

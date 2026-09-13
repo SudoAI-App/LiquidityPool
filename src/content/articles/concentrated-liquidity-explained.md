@@ -2,9 +2,9 @@
 title: "Concentrated Liquidity Explained: Range, Capital Efficiency, and Risk"
 description: "Picking a price range multiplies your fees and your losses by the same number. How the maths works, how wide to go, and what happens when the price leaves."
 category: "LP Mechanics"
-date: 2026-09-01
+date: 2026-09-09
 lastReviewed: "2026-09-12"
-author: "Dr. Elena Rostova"
+author: "LiquidityPools Editorial Team"
 readTime: "8 min read"
 primaryQuery: "concentrated liquidity"
 keywords: "concentrated liquidity, liquidity range, Uniswap v3, Uniswap v4, Liquidity Book, AMM capital efficiency, tick math, LVR, JIT liquidity, what is concentrated liquidity, concentrated liquidity risk, liquidity range Uniswap v3, out of range liquidity"
@@ -29,8 +29,8 @@ The catch is exact and worth stating up front. Whatever multiplier you get on th
   <figcaption>Capital can be dense in one range and inactive outside it. <span class="article-figure__credit">Original editorial illustration by LiquidityPools.app.</span></figcaption>
 </figure>
 
-> **Desk Field Note from Dr. Elena Rostova:**
-> *"Never take a 24-hour yield figure and multiply it by 365. On a pair like ETH against dollars, most of the volume in a wide range comes from bots taking a stale quote off you before your pool notices the market moved. If the fee does not cover what the pair moves in a day, you are paying them to trade. This is not passive income. It is a job."*
+> **Editor's note:**
+> Never take a 24-hour yield figure and multiply it by 365. On a pair like ETH against dollars, most of the volume in a wide range comes from bots taking a stale quote off you before your pool notices the market moved. If the fee does not cover what the pair moves in a day, you are paying them to trade. This is not passive income. It is a job.
 
 ## How picking a range multiplies your money
 

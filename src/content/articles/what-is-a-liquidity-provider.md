@@ -2,9 +2,9 @@
 title: "What Is a Liquidity Provider? The LP Role, Explained"
 description: "You become a market maker who cannot cancel. What the job pays, what it costs, and the one question to answer honestly before you take it on."
 category: "Foundations"
-date: 2026-09-11
+date: 2026-09-10
 lastReviewed: "2026-09-12"
-author: "Siddharth Mehta"
+author: "LiquidityPools Editorial Team"
 readTime: "6 min read"
 primaryQuery: "liquidity provider"
 keywords: "liquidity provider, what is an LP in crypto, how do liquidity providers make money, liquidity provision DeFi, LP role, how much can you earn providing liquidity"
@@ -33,8 +33,8 @@ The interesting part is what that bargain costs you. If pools themselves are new
   <figcaption>The two halves of the liquidity provider bargain, only one of which is quoted as a yield. <span class="article-figure__credit">Original editorial illustration by LiquidityPools.app.</span></figcaption>
 </figure>
 
-> **Desk Field Note from Siddharth Mehta:**
-> *"When somebody asks me what this role is, I say it is selling options with a fee schedule attached. You collect a small steady premium, and you lose an amount that grows with the square of how far the market travels. Say it that way and the position sizing question answers itself."*
+> **Editor's note:**
+> One useful model treats liquidity provision as an options-like exposure with a fee schedule attached. Fees accumulate incrementally, while adverse-selection costs can grow faster as relative price moves become larger. That framing makes position sizing and the holding benchmark harder to ignore.
 
 ## Three obligations a savings account does not have
 

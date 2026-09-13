@@ -4,7 +4,7 @@ description: "One short formula, one variable, and a full worked example in doll
 category: "Risk & Research"
 date: 2026-09-10
 lastReviewed: "2026-09-12"
-author: "Dr. Elena Rostova"
+author: "LiquidityPools Editorial Team"
 readTime: "6 min read"
 primaryQuery: "impermanent loss formula"
 keywords: "impermanent loss formula, how to calculate impermanent loss, impermanent loss example, IL calculation, divergence loss, HODL benchmark"
@@ -31,8 +31,8 @@ This guide derives it, gives you a table to memorise, walks a real position thro
   <figcaption>Impermanent loss as a function of the price ratio, with a worked dollar example on an ETH/USDC deposit. <span class="article-figure__credit">Original editorial illustration by LiquidityPools.app.</span></figcaption>
 </figure>
 
-> **Desk Field Note from Dr. Elena Rostova:**
-> *"Everyone can recite that a doubling costs 5.7%. Almost nobody can give you the number for their own position, because it was minted at three different prices, collected fees in two tokens, and paid gas twice. The formula is the easy part. Keeping records good enough to use it is the hard part."*
+> **Editor's note:**
+> Everyone can recite that a doubling costs 5.7%. Almost nobody can give you the number for their own position, because it was minted at three different prices, collected fees in two tokens, and paid gas twice. The formula is the easy part. Keeping records good enough to use it is the hard part.
 
 ## Where the formula comes from
 

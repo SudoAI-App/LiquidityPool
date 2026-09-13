@@ -4,7 +4,7 @@ description: "Two pools quoting different numbers can pay exactly the same. How 
 category: "Foundations"
 date: 2026-09-10
 lastReviewed: "2026-09-12"
-author: "Siddharth Mehta"
+author: "LiquidityPools Editorial Team"
 readTime: "6 min read"
 primaryQuery: "APR vs APY"
 keywords: "APR vs APY, pool APR vs APY, what is the difference between APR and APY in DeFi, real yield liquidity pools, liquidity pool APY calculator, annualised yield"
@@ -31,8 +31,8 @@ Reading these properly is mechanical and takes a few minutes. It is the cheapest
   <figcaption>The same underlying rate under five compounding conventions, and five of the costs that no headline rate includes. <span class="article-figure__credit">Original editorial illustration by LiquidityPools.app.</span></figcaption>
 </figure>
 
-> **Desk Field Note from Siddharth Mehta:**
-> *"My first question is never the yield. It is the denominator and the window. A 40% figure computed from one busy day, on a pool where our own deposit would double the liquidity, is not a forecast. It is a description of a market state that our arrival will destroy."*
+> **Editor's note:**
+> Start with the denominator and the measurement window, not the yield headline. A 40% figure computed from one busy day is not a forecast, especially when the proposed deposit would double the pool's liquidity and dilute each provider's share of fees.
 
 ## Converting between the two
 

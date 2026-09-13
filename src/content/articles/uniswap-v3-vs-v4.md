@@ -4,7 +4,7 @@ description: "Your exposure is identical. What changed is the cost of touching t
 category: "Advanced"
 date: 2026-09-10
 lastReviewed: "2026-09-12"
-author: "Dr. Kieran Thorne"
+author: "LiquidityPools Editorial Team"
 readTime: "6 min read"
 primaryQuery: "Uniswap v3 vs v4"
 keywords: "Uniswap v3 vs v4, Uniswap v4 liquidity pool, Uniswap v3 liquidity pool, singleton PoolManager, flash accounting, Uniswap v4 hooks, ERC-6909"
@@ -31,8 +31,8 @@ The first two make things cheaper. The third is the entire decision, and it is t
   <figcaption>What changed between v3 and v4, and the one row that did not change at all. <span class="article-figure__credit">Original editorial illustration by LiquidityPools.app.</span></figcaption>
 </figure>
 
-> **Desk Field Note from Dr. Kieran Thorne:**
-> *"Read the hook before you read the yield. In v4 the hook is part of the pool's identity, so two pools on the same pair with different hooks are different markets with different people to trust. I have watched teams treat a hooked pool as a drop-in replacement and never check which callbacks that hook actually holds."*
+> **Editor's note:**
+> Read the hook before the yield. In v4 the hook is part of the pool's identity, so two pools on the same pair with different hooks are different markets with different code paths and trust assumptions. A migration review must identify every callback the hook can execute.
 
 ## One contract instead of thousands
 

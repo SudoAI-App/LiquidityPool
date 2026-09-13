@@ -2,9 +2,9 @@
 title: "Cross-Chain Liquidity Explained: Bridges, Fragmentation and Risk"
 description: "Nothing actually crosses between chains. Four ways protocols fake it, which ones have lost billions, and what to check before you bridge or supply."
 category: "Risk & Research"
-date: 2026-08-26
+date: 2026-09-09
 lastReviewed: "2026-09-12"
-author: "Aria Chen"
+author: "LiquidityPools Editorial Team"
 readTime: "6 min read"
 primaryQuery: "cross-chain liquidity"
 keywords: "cross-chain liquidity, bridge risk, intent-based bridging, Circle CCTP, Chainlink CCIP, ERC-7683, liquidity fragmentation, LayerZero OFT, cross-chain liquidity pool, bridge liquidity risk, omnichain liquidity, intent based liquidity"
@@ -29,8 +29,8 @@ This guide covers the four ways it is done, which ones have failed and how, why 
   <figcaption>Bridges connect liquidity while introducing fragmentation and dependencies. <span class="article-figure__credit">Original editorial illustration by LiquidityPools.app.</span></figcaption>
 </figure>
 
-> **Desk Field Note from Aria Chen:**
-> *"Supplying liquidity across chains adds risks that simply do not exist on one chain. Settlement delay, bridge finality, and whether a solver can pay. When money is locked in a bridge escrow, one exploit leaves the wrapped version unbacked everywhere it was used. The newer intent designs fix this by handing that risk to professional market makers instead of to you."*
+> **Editor's note:**
+> Supplying liquidity across chains adds risks that simply do not exist on one chain. Settlement delay, bridge finality, and whether a solver can pay. When money is locked in a bridge escrow, one exploit leaves the wrapped version unbacked everywhere it was used. The newer intent designs fix this by handing that risk to professional market makers instead of to you.
 
 ## The four ways it is done
 

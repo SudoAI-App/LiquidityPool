@@ -2,9 +2,9 @@
 title: "Single-Sided Liquidity: What One-Sided Provision Really Does"
 description: "Depositing one token does not avoid holding two. It changes when the second one arrives and lets you choose the price, a real advantage with a real cost."
 category: "LP Mechanics"
-date: 2026-09-11
+date: 2026-09-10
 lastReviewed: "2026-09-12"
-author: "Aria Chen"
+author: "LiquidityPools Editorial Team"
 readTime: "6 min read"
 primaryQuery: "single-sided liquidity"
 keywords: "single-sided liquidity, one-sided liquidity provision, zap into liquidity pool, single asset deposit, range order conversion, do I need both tokens to provide liquidity"
@@ -33,8 +33,8 @@ Once you see it that way the structure becomes genuinely useful, because a conve
   <figcaption>A one-sided position is a scheduled conversion that earns fees while it fills. <span class="article-figure__credit">Original editorial illustration by LiquidityPools.app.</span></figcaption>
 </figure>
 
-> **Desk Field Note from Aria Chen:**
-> *"The clean way to think about it: you are not avoiding the other token, you are choosing the price at which you buy it. That is a real edge over a market order. It also has a real cost, which is that the market may never come to you, or may come through and keep going."*
+> **Editor's note:**
+> The clean way to think about it: you are not avoiding the other token, you are choosing the price at which you buy it. That is a real edge over a market order. It also has a real cost, which is that the market may never come to you, or may come through and keep going.
 
 ## Three different things with the same name
 

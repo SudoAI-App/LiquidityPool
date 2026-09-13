@@ -1,9 +1,13 @@
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
-import { join } from 'node:path';
+import { join, resolve } from 'node:path';
 
 const root = process.cwd();
-const articlesDir = join(root, 'src/content/articles');
+const articlesDir = resolve(root, process.env.CONTENT_AUDIT_ARTICLES_DIR || 'src/content/articles');
 const imagesDir = join(root, 'public/images/guides');
+const editorialAuthor = 'LiquidityPools Editorial Team';
+const siteLaunchDate = '2026-09-09';
+const fictionalIdentities = /Dr\. Elena Rostova|Marcus Vance|Dr\. Kieran Thorne|Siddharth Mehta|Aria Chen/i;
+const credentialClaims = /\b(?:Ph\.?D|CFA(?:\s+Charterholder)?|Chartered Financial Analyst|Former (?:High-Frequency Trading Quant|Options Market Maker)|Ex-(?:HFT Quant|Options MM))\b/i;
 const requiredFields = ['title', 'description', 'category', 'date', 'lastReviewed', 'author', 'readTime', 'primaryQuery', 'keywords'];
 const toolPrimaryQueries = new Set([
   'impermanent loss calculator',
@@ -91,6 +95,20 @@ for (const file of readdirSync(articlesDir).filter((name) => name.endsWith('.md'
   for (const field of requiredFields) {
     if (!new RegExp(`^${field}:`, 'm').test(frontmatter[1])) errors.push(`${slug}: missing ${field}`);
   }
+
+  const author = frontmatter[1].match(/^author:\s*["']?([^"'\n]+)["']?/m)?.[1].trim();
+  const published = frontmatter[1].match(/^date:\s*["']?([^"'\n]+)["']?/m)?.[1].trim();
+  const reviewed = frontmatter[1].match(/^lastReviewed:\s*["']?([^"'\n]+)["']?/m)?.[1].trim();
+  if (author !== editorialAuthor) errors.push(`${slug}: author must be "${editorialAuthor}", not a person`);
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(published ?? '') || published < siteLaunchDate) {
+    errors.push(`${slug}: date must be on or after the ${siteLaunchDate} site launch`);
+  }
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(reviewed ?? '') || (published && reviewed < published)) {
+    errors.push(`${slug}: lastReviewed must be a valid date on or after date`);
+  }
+  if (fictionalIdentities.test(source)) errors.push(`${slug}: contains a retired fictional author identity`);
+  if (credentialClaims.test(source)) errors.push(`${slug}: contains an unverifiable credential claim`);
+  if (/Desk Field Note|Field Note from/i.test(source)) errors.push(`${slug}: contains an attributed Desk Field Note`);
 
   const primaryQuery = (frontmatter[1].match(/^primaryQuery:\s*"([^"]+)"/m)?.[1] ?? '').trim().toLowerCase();
   if (primaryQuery) {

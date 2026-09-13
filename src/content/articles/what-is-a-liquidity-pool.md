@@ -4,7 +4,7 @@ description: "A plain-English guide to liquidity pools: how a pool sets its pric
 category: "Foundations"
 date: 2026-09-09
 lastReviewed: "2026-09-12"
-author: "Dr. Kieran Thorne"
+author: "LiquidityPools Editorial Team"
 readTime: "10 min read"
 primaryQuery: "what is a liquidity pool"
 keywords: "what is a liquidity pool, DeFi liquidity pool, automated market maker, AMM, singleton architecture, hooks, how do liquidity pools work, crypto liquidity pools, liquidity pool explained, liquidity pool meaning"
@@ -33,8 +33,8 @@ You also take on a risk that most yield pages never show you. This guide walks t
   <figcaption>How an automated market maker converts reserve balances into continuous execution quotes. <span class="article-figure__credit">Original editorial illustration by LiquidityPools.app.</span></figcaption>
 </figure>
 
-> **Desk Field Note from Dr. Kieran Thorne:**
-> *"A pool is a shared contract holding two token balances and one rule. Nobody sits on the other side arguing over price. The contract is the other side. When you deposit, you hand over your specific tokens and get back a claim on a share of whatever the pool holds later. Those are not the same thing, and the gap between them is where most of the surprises live."*
+> **Editor's note:**
+> A pool is a shared contract holding two token balances and one rule. Nobody sits on the other side arguing over price. The contract is the other side. When you deposit, you hand over your specific tokens and get back a claim on a share of whatever the pool holds later. Those are not the same thing, and the gap between them is where most of the surprises live.
 
 ## How a pool decides a price
 

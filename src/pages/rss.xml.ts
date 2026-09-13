@@ -14,7 +14,7 @@ export const GET: APIRoute = () => {
     '<item><title>' + escapeXml(article.title) + '</title>' +
     '<description>' + escapeXml(article.description) + '</description>' +
     '<pubDate>' + new Date(article.date).toUTCString() + '</pubDate>' +
-    (article.author ? '<author>research@liquiditypools.app (' + escapeXml(article.author) + ')</author>' : '') +
+    '<author>research@liquiditypools.app (LiquidityPools Editorial Team)</author>' +
     '<link>' + base + '/guides/' + article.slug + '/</link>' +
     '<guid isPermaLink="true">' + base + '/guides/' + article.slug + '/</guid></item>'
   ).join('');

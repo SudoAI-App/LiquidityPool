@@ -4,7 +4,7 @@ description: "Three different activities quoted as one number. Who pays you in e
 category: "Advanced"
 date: 2026-09-11
 lastReviewed: "2026-09-12"
-author: "Siddharth Mehta"
+author: "LiquidityPools Editorial Team"
 readTime: "6 min read"
 primaryQuery: "liquidity mining vs yield farming"
 keywords: "liquidity mining vs yield farming, yield farming vs liquidity pool, staking vs yield farming, liquidity pool vs yield farming, liquidity mining vs staking, difference between yield farming and liquidity mining"
@@ -33,8 +33,8 @@ This guide separates them by who pays, then runs the same \$25,000 through all t
   <figcaption>The same capital in three activities, separated by what actually funds the payment. <span class="article-figure__credit">Original editorial illustration by LiquidityPools.app.</span></figcaption>
 </figure>
 
-> **Desk Field Note from Siddharth Mehta:**
-> *"When somebody hands me a yield figure, the first thing I ask for is the split between fee revenue and token issuance. If nobody in the room can produce it, the position is not being managed, it is being held. Fee income survives a bear market at a lower level. Issuance goes to roughly zero and takes the depth with it."*
+> **Editor's note:**
+> Split every yield figure into fee revenue and token issuance before treating it as a managed return. Fees depend on continuing trading activity. Incentive value depends on a token budget and market price that can fall sharply, taking incentive-sensitive liquidity with it.
 
 ## Who pays you, in each
 

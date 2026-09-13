@@ -2,9 +2,9 @@
 title: "Bonding Curves and AMM Invariants: How Curve Shape Sets Risk"
 description: "A pool is a curve plus a fee. The shape of the curve decides your execution, how fast your holdings rotate, and exactly which failure you are underwriting."
 category: "Advanced"
-date: 2026-09-11
+date: 2026-09-10
 lastReviewed: "2026-09-12"
-author: "Dr. Elena Rostova"
+author: "LiquidityPools Editorial Team"
 readTime: "6 min read"
 primaryQuery: "bonding curve crypto"
 keywords: "bonding curve crypto, invariant AMM, constant sum market maker, constant product market maker, curve shape slippage, AMM invariant design"
@@ -33,8 +33,8 @@ There are three basic shapes, and every real pool is somewhere between them. Thi
   <figcaption>Three invariants on the same axes, from perfectly flat to perfectly convex. <span class="article-figure__credit">Original editorial illustration by LiquidityPools.app.</span></figcaption>
 </figure>
 
-> **Desk Field Note from Dr. Elena Rostova:**
-> *"Curvature is the price of being wrong. A flat curve gives you wonderful fills right up until the assumption behind it breaks, and then no protection whatsoever. A bent curve charges everybody a little on every trade and never leaves the pool empty. That is the whole conversation."*
+> **Editor's note:**
+> Curvature is the price of being wrong. A flat curve gives you wonderful fills right up until the assumption behind it breaks, and then no protection whatsoever. A bent curve charges everybody a little on every trade and never leaves the pool empty. That is the whole conversation.
 
 ## The flat one: perfect fills, no defence
 

@@ -4,7 +4,7 @@ description: "How to choose a bin step and shape on Meteora DLMM, what the volat
 category: "LP Mechanics"
 date: 2026-09-11
 lastReviewed: "2026-09-12"
-author: "Dr. Elena Rostova"
+author: "LiquidityPools Editorial Team"
 readTime: "9 min read"
 primaryQuery: "Meteora DLMM strategy"
 keywords: "Meteora DLMM strategy, Meteora DLMM bin step, Meteora DLMM fees, how to provide liquidity on Meteora, DLMM rebalance, Meteora DLMM impermanent loss, Solana liquidity pools, spot curve bid-ask distribution"
@@ -33,8 +33,8 @@ This guide walks you through all three, shows you what the fee rate actually doe
   <figcaption>Three distribution shapes across the same bin range, and the fee response as price crosses bins. <span class="article-figure__credit">Original editorial illustration by LiquidityPools.app.</span></figcaption>
 </figure>
 
-> **Desk Field Note from Dr. Elena Rostova:**
-> *"The bin step is a microstructure decision disguised as a settings field. Pick it narrower than the pair's typical move between trades and you pay to cross boxes that one trade would have crossed anyway. Pick it far wider and you have given up the density you came for. Start from what the pair actually does, not from a yield target."*
+> **Editor's note:**
+> The bin step is a microstructure decision disguised as a settings field. Pick it narrower than the pair's typical move between trades and you pay to cross boxes that one trade would have crossed anyway. Pick it far wider and you have given up the density you came for. Start from what the pair actually does, not from a yield target.
 
 ## What the boxes actually change
 

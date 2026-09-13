@@ -2,9 +2,9 @@
 title: "Curve v2 Explained: Cryptoswap, Internal Oracles and TriCrypto Pools"
 description: "How Curve v2 moves its own liquidity to follow the market, why it only pays for that out of fees, and when a TriCrypto pool is and is not the right place to be."
 category: "LP Mechanics"
-date: 2026-09-05
+date: 2026-09-10
 lastReviewed: "2026-09-12"
-author: "Aria Chen"
+author: "LiquidityPools Editorial Team"
 readTime: "7 min read"
 primaryQuery: "Curve v2"
 keywords: "Curve v2, Cryptoswap invariant, dynamic pegging, internal EMA oracle, TriCrypto pool, AMM repegging, Curve liquidity pool, volatile pair liquidity pool"
@@ -29,8 +29,8 @@ The interesting part is how it pays for moving. This guide covers the rule it fo
   <figcaption>The pool concentrates depth around its own smoothed price, and only moves that centre when fees it has already earned can pay for the move. <span class="article-figure__credit">Original editorial illustration by LiquidityPools.app.</span></figcaption>
 </figure>
 
-> **Desk Field Note from Aria Chen:**
-> *"The clever part is the budget. In a range-based pool you personally pay for every re-centring. Here the pool pays, and only out of fees it has already banked. If the market moves faster than the pool earns, it simply declines to move. That protects your money. It also means a quiet pool in a fast market can quote a stale price for a long time."*
+> **Editor's note:**
+> The clever part is the budget. In a range-based pool you personally pay for every re-centring. Here the pool pays, and only out of fees it has already banked. If the market moves faster than the pool earns, it simply declines to move. That protects your money. It also means a quiet pool in a fast market can quote a stale price for a long time.
 
 ## The problem this design solves
 

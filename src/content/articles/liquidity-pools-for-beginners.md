@@ -2,9 +2,9 @@
 title: "Liquidity Pools for Beginners: Five Decisions, In Order"
 description: "Five decisions settle almost everything about how your first position turns out. None requires predicting a price, and the yield is the last thing to check."
 category: "Foundations"
-date: 2026-09-11
+date: 2026-09-10
 lastReviewed: "2026-09-12"
-author: "Siddharth Mehta"
+author: "LiquidityPools Editorial Team"
 readTime: "6 min read"
 primaryQuery: "liquidity pool for beginners"
 keywords: "liquidity pool for beginners, how to start providing liquidity, DeFi liquidity beginner guide, first liquidity position, liquidity pool basics"
@@ -33,8 +33,8 @@ None of them requires predicting a price. This guide takes them in the order the
   <figcaption>The five decisions in the order they actually arrive, none of which requires predicting a price. <span class="article-figure__credit">Original editorial illustration by LiquidityPools.app.</span></figcaption>
 </figure>
 
-> **Desk Field Note from Siddharth Mehta:**
-> *"Before depositing, write down exactly what you will own if the volatile token halves, and if it triples. If either answer is one you cannot live with, this is the wrong instrument and no yield figure changes that. It takes two minutes and prevents most of the disappointment I see."*
+> **Editor's note:**
+> Before depositing, write down what you would own if the volatile token halved and if it tripled. If either inventory outcome is unacceptable, the pool is the wrong instrument regardless of its quoted yield. This quick check makes the rebalancing exposure concrete before money is committed.
 
 ## What you are actually agreeing to
 

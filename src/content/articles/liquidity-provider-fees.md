@@ -2,9 +2,9 @@
 title: "Liquidity Provider Fees: How LP Revenue Is Generated and Measured"
 description: "Where the fee actually goes, why it differs by pool generation, and the one subtraction that turns a fee number into an actual return."
 category: "LP Mechanics"
-date: 2026-09-02
+date: 2026-09-09
 lastReviewed: "2026-09-12"
-author: "Marcus Vance"
+author: "LiquidityPools Editorial Team"
 readTime: "7 min read"
 primaryQuery: "liquidity provider fees"
 keywords: "liquidity provider fees, LP fees, AMM fee tier, liquidity pool APR, dynamic fees, LVR, liquidity pool fees explained, who pays liquidity pool fees, pool fee tier"
@@ -29,8 +29,8 @@ This guide traces the money from the swap to your balance, shows why volume alon
   <figcaption>Fees accrue from eligible active flow, not from a fixed yield source. <span class="article-figure__credit">Original editorial illustration by LiquidityPools.app.</span></figcaption>
 </figure>
 
-> **Desk Field Note from Marcus Vance:**
-> *"There is a difference between fee volume and fee capture. If a pool does \$50M a day and \$40M of that is bots correcting a stale quote, the pool is collecting fees while its inventory decays. Heavy volume only helps when enough of it comes from people who do not know where the price is going."*
+> **Editor's note:**
+> There is a difference between fee volume and fee capture. If a pool does \$50M a day and \$40M of that is bots correcting a stale quote, the pool is collecting fees while its inventory decays. Heavy volume only helps when enough of it comes from people who do not know where the price is going.
 
 ## Where the fee actually goes
 

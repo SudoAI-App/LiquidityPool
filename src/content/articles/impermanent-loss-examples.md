@@ -2,9 +2,9 @@
 title: "Impermanent Loss Examples: Five Positions, Fully Worked"
 description: "Five real positions in dollars: a small drift, a doubling, a four-times run, a halving, and a stablecoin breaking. Each one with the fees needed to break even."
 category: "Risk & Research"
-date: 2026-09-11
+date: 2026-09-10
 lastReviewed: "2026-09-12"
-author: "Dr. Elena Rostova"
+author: "LiquidityPools Editorial Team"
 readTime: "6 min read"
 primaryQuery: "impermanent loss example"
 keywords: "impermanent loss example, impermanent loss calculation example, IL worked example, divergence loss scenario, stablecoin depeg example, impermanent loss vs permanent loss"
@@ -31,8 +31,8 @@ Each one below uses an even deposit in an ordinary pool, then tells you exactly 
   <figcaption>Five position outcomes on the same formula, scaled to the four-times case. <span class="article-figure__credit">Original editorial illustration by LiquidityPools.app.</span></figcaption>
 </figure>
 
-> **Desk Field Note from Dr. Elena Rostova:**
-> *"Ask anybody what a four-times move costs them and most will guess a few percent. It is twenty. The function is flat enough near the middle that intuition trained on small moves fails badly in the tail, which is exactly where the sizing decisions get made."*
+> **Editor's note:**
+> Ask anybody what a four-times move costs them and most will guess a few percent. It is twenty. The function is flat enough near the middle that intuition trained on small moves fails badly in the tail, which is exactly where the sizing decisions get made.
 
 ## One: a modest drift
 

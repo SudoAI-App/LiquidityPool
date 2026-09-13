@@ -2,9 +2,9 @@
 title: "Uniswap Liquidity Pools: How v2, v3 and v4 Pools Work"
 description: "Three generations of Uniswap pools run side by side. What each one asks you to decide, what your position actually holds, and how to pick a tier and a range."
 category: "Advanced"
-date: 2026-09-11
+date: 2026-09-10
 lastReviewed: "2026-09-12"
-author: "Dr. Kieran Thorne"
+author: "LiquidityPools Editorial Team"
 readTime: "7 min read"
 primaryQuery: "Uniswap liquidity pools"
 keywords: "Uniswap liquidity pools, Uniswap liquidity provider, Uniswap pool fees, Uniswap price impact, Uniswap v3 price range, Uniswap v2 liquidity pool"
@@ -35,8 +35,8 @@ This guide covers what each version asks of you, what your position actually hol
   <figcaption>What changes for a liquidity provider across three generations of Uniswap pools. <span class="article-figure__credit">Original editorial illustration by LiquidityPools.app.</span></figcaption>
 </figure>
 
-> **Desk Field Note from Dr. Kieran Thorne:**
-> *"The front end hides how much of this is a contract choice. The fee tier, the tick spacing and, on v4, the attached code are all part of what the pool is. Two pools on the same pair at different tiers are different markets with different depth. Routers treat them that way even when the screen shows you one price."*
+> **Editor's note:**
+> The front end hides how much of this is a contract choice. The fee tier, the tick spacing and, on v4, the attached code are all part of what the pool is. Two pools on the same pair at different tiers are different markets with different depth. Routers treat them that way even when the screen shows you one price.
 
 ## What all three versions have in common
 

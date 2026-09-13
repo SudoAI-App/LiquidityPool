@@ -4,7 +4,7 @@ description: "One question tells you whether a farm is worth anything: if the re
 category: "Advanced"
 date: 2026-09-10
 lastReviewed: "2026-09-12"
-author: "Siddharth Mehta"
+author: "LiquidityPools Editorial Team"
 readTime: "6 min read"
 primaryQuery: "yield farming liquidity pools"
 keywords: "yield farming liquidity pools, yield farming explained, farming emissions, real yield, mercenary capital"
@@ -31,8 +31,8 @@ This guide separates them, shows how to price what the printing actually costs, 
   <figcaption>The two revenue paths into a farmed position, and the deductions that separate quoted yield from realised result. <span class="article-figure__credit">Original editorial illustration by LiquidityPools.app.</span></figcaption>
 </figure>
 
-> **Desk Field Note from Siddharth Mehta:**
-> *"Ask the one question. If the answer is close to zero, you are not being paid to supply liquidity. You are being paid to hold a token that is being printed. That can still be a reasonable trade, but size it like a token position, not like a yield."*
+> **Editor's note:**
+> Ask the one question. If the answer is close to zero, you are not being paid to supply liquidity. You are being paid to hold a token that is being printed. That can still be a reasonable trade, but size it like a token position, not like a yield.
 
 ## Four layers, four things that can break
 

@@ -2,9 +2,9 @@
 title: "The Liquidity Pool Research Checklist: Questions to Ask Before You Act"
 description: "Five groups of checks to run before you deposit: the contract, the tokens, the trading, the maths, and getting your money back out."
 category: "Advanced"
-date: 2026-08-21
+date: 2026-09-09
 lastReviewed: "2026-09-12"
-author: "Siddharth Mehta"
+author: "LiquidityPools Editorial Team"
 readTime: "8 min read"
 primaryQuery: "liquidity pool checklist"
 keywords: "liquidity pool checklist, DeFi liquidity research checklist, LP due diligence checklist, hook security audit, LVR hurdle test, flow toxicity check, liquidity pool audit checklist, how to check locked liquidity, DeFi pool risk assessment"
@@ -33,8 +33,8 @@ Work through it before you sign anything. If any check fails outright, the answe
   <figcaption>Five groups of checks, run in order, before any money goes into a pool. <span class="article-figure__credit">Original editorial illustration by LiquidityPools.app.</span></figcaption>
 </figure>
 
-> **Desk Field Note from Siddharth Mehta:**
-> *"A checklist exists to stop you allocating on feeling. The single most common failure is skipping the contract and price-feed checks because the pool is advertising a big number. One upgradeable contract nobody read, or one thin price feed, and your yield calculation stops mattering entirely."*
+> **Editor's note:**
+> A checklist exists to stop you allocating on feeling. The single most common failure is skipping the contract and price-feed checks because the pool is advertising a big number. One upgradeable contract nobody read, or one thin price feed, and your yield calculation stops mattering entirely.
 
 ## One: the contract holding your money
 

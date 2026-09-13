@@ -2,9 +2,9 @@
 title: "AMM vs. Order Book: Three Ways to Get a Trade Done"
 description: "Three ways to get a trade done, what each costs, and a decision rule you can actually remember. Plus why the good flow is quietly leaving pools."
 category: "Foundations"
-date: 2026-09-06
+date: 2026-09-09
 lastReviewed: "2026-09-12"
-author: "Marcus Vance"
+author: "LiquidityPools Editorial Team"
 readTime: "7 min read"
 primaryQuery: "AMM vs order book"
 keywords: "AMM vs order book, automated market maker vs order book, DEX market structure, intent solver, CLOB, AMM vs DEX, liquidity pool vs order book, AMM vs order book exchange"
@@ -31,8 +31,8 @@ Each one is better at something different. This guide covers how each works, wha
   <figcaption>Continuous pool pricing and discrete order levels solve different problems. <span class="article-figure__credit">Original editorial illustration by LiquidityPools.app.</span></figcaption>
 </figure>
 
-> **Desk Field Note from Marcus Vance:**
-> *"Desks comparing these usually look at the headline fee and stop. The real cost in a pool is invisible: its quote does not move until somebody trades, so anyone faster gets free money whenever the market shifts. If your fee does not cover that, you are subsidising them."*
+> **Editor's note:**
+> Desks comparing these usually look at the headline fee and stop. The real cost in a pool is invisible: its quote does not move until somebody trades, so anyone faster gets free money whenever the market shifts. If your fee does not cover that, you are subsidising them.
 
 ## Three mechanisms, side by side
 

@@ -2,9 +2,9 @@
 title: "Impermanent Loss Explained: Why Pools Trail Simply Holding"
 description: "Why a pool position falls behind simply holding, how much at each price move, and the cost volatility adds that fees have to cover."
 category: "Risk & Research"
-date: 2026-08-29
+date: 2026-09-09
 lastReviewed: "2026-09-12"
-author: "Dr. Elena Rostova"
+author: "LiquidityPools Editorial Team"
 readTime: "8 min read"
 primaryQuery: "impermanent loss explained"
 keywords: "impermanent loss explained, Loss-Versus-Rebalancing, LVR, AMM market microstructure, Uniswap v3 IL, adverse selection, toxic flow, what is impermanent loss, divergence loss"
@@ -29,8 +29,8 @@ This guide shows you exactly how big that gap is at each price move, why a narro
   <figcaption>Pool rebalancing changes inventory relative to simply holding. <span class="article-figure__credit">Original editorial illustration by LiquidityPools.app.</span></figcaption>
 </figure>
 
-> **Desk Field Note from Dr. Elena Rostova:**
-> *"The name is the problem. The headline number does reset if the price comes all the way back, and people take comfort in that. But you do not get to pick the exit price, and every re-range along the way locks the loss in. Price the position on the cost volatility creates, not on the hope of a round trip."*
+> **Editor's note:**
+> The name is the problem. The headline number does reset if the price comes all the way back, and people take comfort in that. But you do not get to pick the exit price, and every re-range along the way locks the loss in. Price the position on the cost volatility creates, not on the hope of a round trip.
 
 ## Why the pool sells your winner
 

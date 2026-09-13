@@ -4,7 +4,7 @@ description: "Six separate ways a pool position loses money, roughly how much ea
 category: "Risk & Research"
 date: 2026-09-10
 lastReviewed: "2026-09-12"
-author: "Siddharth Mehta"
+author: "LiquidityPools Editorial Team"
 readTime: "6 min read"
 primaryQuery: "can you lose money in a liquidity pool"
 keywords: "can you lose money in a liquidity pool, liquidity pool risks, why is my liquidity position losing money, what happens if one token goes to zero, is high APY safe, rug pull liquidity"
@@ -31,8 +31,8 @@ This guide separates all six, gives you rough sizes for each, and gives you an o
   <figcaption>Six loss paths for a pooled position, only two of which are specific to automated market making. <span class="article-figure__credit">Original editorial illustration by LiquidityPools.app.</span></figcaption>
 </figure>
 
-> **Desk Field Note from Siddharth Mehta:**
-> *"When a position is down, the first question is always: down against what? Half the time the pair is simply lower and the pool did nothing wrong. Fix the benchmark before you diagnose anything, or you will spend a week tuning a range when the real problem is that you are long something you never wanted."*
+> **Editor's note:**
+> When a position is down, the first question is always: down against what? Half the time the pair is simply lower and the pool did nothing wrong. Fix the benchmark before you diagnose anything, or you will spend a week tuning a range when the real problem is that you are long something you never wanted.
 
 ## One: the market went down
 

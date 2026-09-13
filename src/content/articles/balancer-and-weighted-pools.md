@@ -2,9 +2,9 @@
 title: "Balancer Weighted Pools: How 80/20 and Multi-Asset Pools Work"
 description: "Why an 80/20 pool sells less of your token on the way up, how weighted pricing works, what a liquidity bootstrapping pool does, and what Balancer v3 changed."
 category: "LP Mechanics"
-date: 2026-09-06
+date: 2026-09-10
 lastReviewed: "2026-09-12"
-author: "Dr. Elena Rostova"
+author: "LiquidityPools Editorial Team"
 readTime: "8 min read"
 primaryQuery: "Balancer weighted pools"
 keywords: "Balancer weighted pools, 80/20 liquidity pools, constant mean formula, impermanent loss 80/20, Balancer v3, LBP, weighted liquidity pool, Balancer weighted pool, 80/20 liquidity pool"
@@ -29,8 +29,8 @@ That one change is why treasuries, DAOs and long-term holders use these pools. T
   <figcaption>Heavier weighting cuts the shortfall against holding, and pays for it with thinner depth on the light side. <span class="article-figure__credit">Original editorial illustration by LiquidityPools.app.</span></figcaption>
 </figure>
 
-> **Desk Field Note from Dr. Elena Rostova:**
-> *"An 80/20 pool is a rebalancing rule with a fee stream bolted on. It sells well under half of what a 50/50 pool sells on the same move, so the drag against holding roughly halves. But nothing is free. Your money is spread thinner, routers send you less flow, and the fee income falls with it. You are buying exposure and paying for it in yield."*
+> **Editor's note:**
+> An 80/20 pool is a rebalancing rule with a fee stream bolted on. It sells well under half of what a 50/50 pool sells on the same move, so the drag against holding roughly halves. But nothing is free. Your money is spread thinner, routers send you less flow, and the fee income falls with it. You are buying exposure and paying for it in yield.
 
 ## How a weighted pool sets its price
 

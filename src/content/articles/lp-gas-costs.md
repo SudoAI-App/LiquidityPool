@@ -2,9 +2,9 @@
 title: "Gas Costs for Liquidity Providers: The Minimum Viable Position"
 description: "Gas does not scale with your position, so it decides which strategies you can even use. One table tells you whether yours is viable before you deposit."
 category: "Risk & Research"
-date: 2026-09-11
+date: 2026-09-10
 lastReviewed: "2026-09-12"
-author: "Siddharth Mehta"
+author: "LiquidityPools Editorial Team"
 readTime: "6 min read"
 primaryQuery: "gas fees providing liquidity"
 keywords: "gas fees providing liquidity, LP gas costs, minimum liquidity position size, rebalancing cost, liquidity pool withdrawal risk, cost of providing liquidity"
@@ -31,8 +31,8 @@ The arithmetic takes two minutes. Do it before the first deposit rather than aft
   <figcaption>The same management cadence across five position sizes, expressed as a share of a year of fee income. <span class="article-figure__credit">Original editorial illustration by LiquidityPools.app.</span></figcaption>
 </figure>
 
-> **Desk Field Note from Siddharth Mehta:**
-> *"We keep one number on the sheet: the cost of a management cycle, divided by expected weekly fees. Above one, the strategy is paying the network instead of the mandate. It rejects proposals in ten seconds that otherwise look perfectly reasonable on a page of annualised yields."*
+> **Editor's note:**
+> Track the cost of one complete management cycle divided by expected weekly fees. A ratio above one means the expected weekly fees do not cover that cycle's network costs, even if the annualised yield looks attractive.
 
 ## Every transaction a position needs
 

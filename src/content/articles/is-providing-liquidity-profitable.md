@@ -4,7 +4,7 @@ description: "It depends on numbers you can get before depositing, and almost no
 category: "Risk & Research"
 date: 2026-09-11
 lastReviewed: "2026-09-12"
-author: "Siddharth Mehta"
+author: "LiquidityPools Editorial Team"
 readTime: "7 min read"
 primaryQuery: "is providing liquidity profitable"
 keywords: "is providing liquidity profitable, are liquidity pools profitable, how do liquidity providers make money, are liquidity pools worth it, liquidity pool returns, how do liquidity pools make money"
@@ -33,8 +33,8 @@ This guide gives you that inequality, takes apart every term in it, and works tw
   <figcaption>Fee revenue against the four deductions that decide whether a position beat holding. <span class="article-figure__credit">Original editorial illustration by LiquidityPools.app.</span></figcaption>
 </figure>
 
-> **Desk Field Note from Siddharth Mehta:**
-> *"Every disappointing position I have reviewed was modelled correctly and scoped wrongly. The fee maths was fine. What was missing was the gas, the fraction of the time the position sat out of range, and a realistic price for the reward token. Those three account for almost the whole gap between the quoted rate and the real one."*
+> **Editor's note:**
+> A position can be modelled correctly and still be scoped wrongly. Gas, time spent out of range, and a realistic value for reward tokens belong in the same ledger as fees. Omitting them can turn a positive quoted rate into a negative net result.
 
 ## The inequality
 

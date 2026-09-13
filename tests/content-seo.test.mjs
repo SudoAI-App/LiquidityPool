@@ -52,13 +52,26 @@ test('phase-one calculators contain no pool API, wallet, or transaction integrat
   }
 });
 
-test('guide authors, dates, review dates, and Desk Field Notes stay unchanged', () => {
+test('guide bylines are organizational and publication dates are honest', () => {
   for (const file of readdirSync(articlesDir).filter((name) => name.endsWith('.md'))) {
-    const current = readFileSync(new URL(file, articlesDir), 'utf8');
-    const before = execFileSync('git', ['show', `HEAD:src/content/articles/${file}`], { encoding: 'utf8' });
-    for (const field of ['author', 'date', 'lastReviewed']) {
-      assert.equal(current.match(new RegExp(`^${field}:.*$`, 'm'))?.[0], before.match(new RegExp(`^${field}:.*$`, 'm'))?.[0], `${field} changed in ${file}`);
-    }
-    assert.deepEqual(current.match(/^> \[!TIP\][\s\S]*?(?=\n\n)/gm) ?? [], before.match(/^> \[!TIP\][\s\S]*?(?=\n\n)/gm) ?? [], `field note changed in ${file}`);
+    const source = readFileSync(new URL(file, articlesDir), 'utf8');
+    const author = source.match(/^author:\s*"([^"]+)"/m)?.[1];
+    const published = source.match(/^date:\s*"?([^"\n]+)"?/m)?.[1];
+    const reviewed = source.match(/^lastReviewed:\s*"?([^"\n]+)"?/m)?.[1];
+    const added = execFileSync('git', ['log', '--diff-filter=A', '--follow', '--format=%cs', '--', `src/content/articles/${file}`], { cwd: new URL('../', import.meta.url), encoding: 'utf8' })
+      .trim().split('\n').filter(Boolean).at(-1);
+    const expectedPublished = added < '2026-09-09' ? '2026-09-09' : added;
+    assert.equal(author, 'LiquidityPools Editorial Team', `${file} has a personal or unknown byline`);
+    assert.equal(published, expectedPublished, `${file} date does not match its first public date`);
+    assert.ok(reviewed && published && reviewed >= published, `${file} was reviewed before publication`);
+  }
+});
+
+test('guides contain no fictional bylines, credential claims, or attributed Desk Field Notes', () => {
+  const prohibited = /Dr\. Elena Rostova|Marcus Vance|Dr\. Kieran Thorne|Siddharth Mehta|Aria Chen|\bPh\.?D\b|\bCFA(?:\s+Charterholder)?\b/i;
+  for (const file of readdirSync(articlesDir).filter((name) => name.endsWith('.md'))) {
+    const source = readFileSync(new URL(file, articlesDir), 'utf8');
+    assert.doesNotMatch(source, prohibited, `${file} contains a fictional identity or credential`);
+    assert.doesNotMatch(source, /Desk Field Note|Field Note from/i, `${file} contains an attributed field note`);
   }
 });

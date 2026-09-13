@@ -4,7 +4,7 @@ description: "The tier with the biggest number usually earns the least. Why rout
 category: "LP Mechanics"
 date: 2026-09-10
 lastReviewed: "2026-09-12"
-author: "Marcus Vance"
+author: "LiquidityPools Editorial Team"
 readTime: "6 min read"
 primaryQuery: "Uniswap fee tiers explained"
 keywords: "Uniswap fee tiers explained, pool fee tier, what is a pool fee tier, liquidity pool fees explained, dynamic fees, who pays liquidity pool fees"
@@ -31,8 +31,8 @@ This guide explains how the fee actually reaches you, why volume clusters where 
   <figcaption>Fee tiers, the pairs that cluster in each, and the conditions under which each one wins flow. <span class="article-figure__credit">Original editorial illustration by LiquidityPools.app.</span></figcaption>
 </figure>
 
-> **Desk Field Note from Marcus Vance:**
-> *"People pick the 30 basis point pool — that is 0.30% — because the number is bigger, then wonder why the fee counter barely moves. Look at where the aggregator actually routes before you deposit. On major pairs almost everything clears through the cheapest tier with real depth, and the expensive tier is left holding the trades nobody wanted."*
+> **Editor's note:**
+> People pick the 30 basis point pool — that is 0.30% — because the number is bigger, then wonder why the fee counter barely moves. Look at where the aggregator actually routes before you deposit. On major pairs almost everything clears through the cheapest tier with real depth, and the expensive tier is left holding the trades nobody wanted.
 
 ## How the fee reaches you
 

@@ -4,7 +4,7 @@ description: "Staking keeps your token count intact and grows it. A pool changes
 category: "Foundations"
 date: 2026-09-10
 lastReviewed: "2026-09-12"
-author: "Siddharth Mehta"
+author: "LiquidityPools Editorial Team"
 readTime: "6 min read"
 primaryQuery: "liquidity pool vs staking"
 keywords: "liquidity pool vs staking, staking vs liquidity provision, liquidity pool vs yield farming, single asset staking, LST, DeFi yield comparison"
@@ -31,8 +31,8 @@ One pays you for locking capital up. The other pays you for quoting a market. Th
   <figcaption>The same annualised quote can describe two instruments with completely different exposures. <span class="article-figure__credit">Original editorial illustration by LiquidityPools.app.</span></figcaption>
 </figure>
 
-> **Desk Field Note from Siddharth Mehta:**
-> *"A treasury that has to hold a fixed number of tokens simply cannot supply them to a two-sided pool. The pool will change that number, and no fee income makes the mandate compliant. It is the clearest case of the exposure mattering more than the yield."*
+> **Editor's note:**
+> A treasury that has to hold a fixed number of tokens simply cannot supply them to a two-sided pool. The pool will change that number, and no fee income makes the mandate compliant. It is the clearest case of the exposure mattering more than the yield.
 
 ## What each one pays you for
 

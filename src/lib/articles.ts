@@ -5,7 +5,7 @@ export type Article = {
   category: string;
   date: string;
   lastReviewed?: string;
-  author?: string;
+  author: string;
   readTime: string;
   primaryQuery: string;
   keywords: string;

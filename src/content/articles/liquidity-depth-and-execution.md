@@ -2,9 +2,9 @@
 title: "Liquidity Depth and Execution: The Only Number That Trades"
 description: "Two pools of the same size can cost seven times as much to trade against. How to measure what actually fills your order, and why it vanishes under stress."
 category: "Risk & Research"
-date: 2026-09-11
+date: 2026-09-10
 lastReviewed: "2026-09-12"
-author: "Marcus Vance"
+author: "LiquidityPools Editorial Team"
 readTime: "6 min read"
 primaryQuery: "liquidity depth crypto"
 keywords: "liquidity depth crypto, liquidity pool depth, executable depth, market depth DeFi, pool depth vs volume, spot price vs execution price AMM"
@@ -33,8 +33,8 @@ Measuring it properly takes a few minutes. This guide shows you how, works two p
   <figcaption>Three pools with the same headline deposits and very different executable depth. <span class="article-figure__credit">Original editorial illustration by LiquidityPools.app.</span></figcaption>
 </figure>
 
-> **Desk Field Note from Marcus Vance:**
-> *"We size every position from the depth within 2% on both sides, never from the headline. It is the number that tells you what happens when you need to leave in a hurry, and it is usually a fraction of what the front page of an analytics site shows."*
+> **Editor's note:**
+> Size a position from executable depth within a stated price band, such as 2% on both sides, rather than from headline TVL. That measure is closer to what can absorb an urgent exit and may be only a fraction of the total deposits shown by an analytics site.
 
 ## Defining it properly
 

@@ -4,7 +4,7 @@ description: "Six pool families, what each one is built for, and what the same d
 category: "Foundations"
 date: 2026-09-10
 lastReviewed: "2026-09-12"
-author: "Aria Chen"
+author: "LiquidityPools Editorial Team"
 readTime: "7 min read"
 primaryQuery: "types of liquidity pools"
 keywords: "types of liquidity pools, liquidity pool types, stablecoin liquidity pool, weighted liquidity pool, correlated asset liquidity pool, lending pool vs liquidity pool"
@@ -31,8 +31,8 @@ This guide runs through six families by what they are built for, not by brand, a
   <figcaption>Three invariants plotted against reserve ratio, with the exposure each pool family hands its liquidity providers. <span class="article-figure__credit">Original editorial illustration by LiquidityPools.app.</span></figcaption>
 </figure>
 
-> **Desk Field Note from Aria Chen:**
-> *"Most disappointing outcomes I look at are not bad luck. They are the wrong curve. A staked-ETH token paired against ETH belongs on a flat curve. Put it on an ordinary one and most of your money sits at prices that pair will never reach, and you pay for that in fees you never earn."*
+> **Editor's note:**
+> A disappointing outcome is not always bad luck; it can be the wrong curve. Closely correlated assets need a curve that concentrates liquidity near their expected exchange rate. An ordinary constant-product curve spreads capital across prices the pair may never reach, reducing fee efficiency.
 
 ## The six families at a glance
 

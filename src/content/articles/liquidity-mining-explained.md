@@ -2,9 +2,9 @@
 title: "Liquidity Mining Explained: Incentives, Emissions and Lasting Depth"
 description: "Where a headline yield really comes from, four generations of incentive design, and how to tell a pool that outlives its rewards from one that empties."
 category: "Advanced"
-date: 2026-08-23
+date: 2026-09-09
 lastReviewed: "2026-09-12"
-author: "Siddharth Mehta"
+author: "LiquidityPools Editorial Team"
 readTime: "6 min read"
 primaryQuery: "liquidity mining"
 keywords: "liquidity mining, DeFi incentives, ve-tokenomics, bribe markets, Hidden Hand, Votium, points programs, Uniswap v4 hook incentives, mercenary capital, liquidity incentives"
@@ -29,8 +29,8 @@ This guide shows you how to split the headline number into its parts, how the de
   <figcaption>Incentive-funded liquidity and organic market flow are different inputs. <span class="article-figure__credit">Original editorial illustration by LiquidityPools.app.</span></figcaption>
 </figure>
 
-> **Desk Field Note from Siddharth Mehta:**
-> *"This is a customer acquisition cost for the protocol, not an income stream for you. The classic cycle is guaranteed: money arrives while rewards are high, farms the token, sells it, the price falls, the yield falls, and the money leaves. The pools worth being in are the ones moving toward real fee sharing or owning their own liquidity."*
+> **Editor's note:**
+> This is a customer acquisition cost for the protocol, not an income stream for you. The classic cycle is guaranteed: money arrives while rewards are high, farms the token, sells it, the price falls, the yield falls, and the money leaves. The pools worth being in are the ones moving toward real fee sharing or owning their own liquidity.
 
 ## Split the headline number first
 

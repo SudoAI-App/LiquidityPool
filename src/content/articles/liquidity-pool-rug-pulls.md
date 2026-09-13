@@ -2,9 +2,9 @@
 title: "Rug Pulls and Locked Liquidity: Six Checks Before You Deposit"
 description: "Six checks you can run from public chain data in ten minutes. None needs code reading, and together they catch almost every failure visible in advance."
 category: "Risk & Research"
-date: 2026-09-11
+date: 2026-09-10
 lastReviewed: "2026-09-12"
-author: "Dr. Kieran Thorne"
+author: "LiquidityPools Editorial Team"
 readTime: "6 min read"
 primaryQuery: "rug pull liquidity pool"
 keywords: "rug pull liquidity pool, locked liquidity meaning, how to check locked liquidity, pool liquidity locked or unlocked, liquidity pool smart contract audit, how to check if a liquidity pool is safe"
@@ -31,8 +31,8 @@ Six checks catch almost all of it. All six use public chain data, none of them r
   <figcaption>Six pre-deposit checks, each answerable from public chain data in minutes. <span class="article-figure__credit">Original editorial illustration by LiquidityPools.app.</span></figcaption>
 </figure>
 
-> **Desk Field Note from Dr. Kieran Thorne:**
-> *"Every one of these I have reviewed came down to a permission that was visible before anybody deposited. Not a clever exploit. A mint function, an owner who never gave up control, or a pool claim sitting in somebody's wallet rather than a locker. The information was public and nobody looked."*
+> **Editor's note:**
+> Check visible permissions before depositing: token minting, upgrade authority, ownership controls, and who holds the pool claim. These facts do not prove safety, but they can reveal a direct control path that makes the advertised yield irrelevant. For proxy contracts, compare the deployed implementation with the audited commit and inspect who retains authority to replace it.
 
 ## Four different things, one outcome
 

@@ -2,9 +2,9 @@
 title: "Market Making on AMMs: How Professional Liquidity Providers Work"
 description: "What professional liquidity providers actually do: sizing ranges to volatility, hedging price risk, clearing the LVR hurdle, and reading vault strategies."
 category: "Advanced"
-date: 2026-08-22
+date: 2026-09-09
 lastReviewed: "2026-09-12"
-author: "Dr. Elena Rostova"
+author: "LiquidityPools Editorial Team"
 readTime: "12 min read"
 primaryQuery: "market making AMM"
 keywords: "market making AMM, AMM liquidity provider, delta hedging AMM, automated liquidity management, LVR minimization, concentrated liquidity market maker, passive market making DeFi, liquidity pool vs market making, market making DeFi"
@@ -29,8 +29,8 @@ That single difference explains almost everything about how pool returns behave.
   <figcaption>A pool position is a quote you cannot cancel, so desks watch the outside price and hedge the inventory the pool leaves them with. <span class="article-figure__credit">Original editorial illustration by LiquidityPools.app.</span></figcaption>
 </figure>
 
-> **Desk Field Note from Dr. Elena Rostova:**
-> *"A desk on Nasdaq repositions in microseconds. Onchain, you reprice once per block, and only when somebody trades. Your real enemy is not holding the wrong token overnight. It is the trader who saw the price move before your pool did. Everything a professional desk does here is aimed at that one problem."*
+> **Editor's note:**
+> A desk on Nasdaq repositions in microseconds. Onchain, you reprice once per block, and only when somebody trades. Your real enemy is not holding the wrong token overnight. It is the trader who saw the price move before your pool did. Everything a professional desk does here is aimed at that one problem.
 
 ## How a pool quotes without a trader
 

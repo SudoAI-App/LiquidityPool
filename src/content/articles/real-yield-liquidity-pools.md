@@ -2,9 +2,9 @@
 title: "Real Yield in Liquidity Pools: Who Actually Pays You"
 description: "Two pools quote 24%. One is paid by traders, the other by a printer. Both figures are accurate and they describe completely different instruments."
 category: "Advanced"
-date: 2026-09-11
+date: 2026-09-10
 lastReviewed: "2026-09-12"
-author: "Siddharth Mehta"
+author: "LiquidityPools Editorial Team"
 readTime: "6 min read"
 primaryQuery: "real yield liquidity pools"
 keywords: "real yield liquidity pools, real yield DeFi, fee yield vs emissions, emission funded yield, sustainable DeFi yield, is high APY liquidity pool safe"
@@ -33,8 +33,8 @@ Splitting those two lines before comparing anything is the whole discipline. Thi
   <figcaption>The same headline percentage, paid from two very different balance sheets. <span class="article-figure__credit">Original editorial illustration by LiquidityPools.app.</span></figcaption>
 </figure>
 
-> **Desk Field Note from Siddharth Mehta:**
-> *"I ask one question of any farm proposal. If issuance stopped this evening, what is the position earning tomorrow morning? If the answer is near zero, we are not running a liquidity business. We are holding a token with extra steps, and it should be sized like one."*
+> **Editor's note:**
+> Ask what the position would earn tomorrow if token issuance stopped this evening. If the answer is near zero, the return is primarily an incentive-token exposure rather than a fee-supported liquidity business, and its risk should be evaluated accordingly. Record fees and incentives separately so the position remains measurable when emission rates or token prices change.
 
 ## The two revenue lines
 

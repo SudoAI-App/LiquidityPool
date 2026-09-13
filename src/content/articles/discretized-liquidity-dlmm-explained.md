@@ -2,9 +2,9 @@
 title: "DLMM Explained: Bin-Based Liquidity, Dynamic Fees and Meteora"
 description: "How bin-based pools give trades a flat price, how the fee raises itself when the market moves fast, and how to shape your deposit across the bins."
 category: "LP Mechanics"
-date: 2026-09-07
+date: 2026-09-10
 lastReviewed: "2026-09-12"
-author: "Dr. Elena Rostova"
+author: "LiquidityPools Editorial Team"
 readTime: "7 min read"
 primaryQuery: "DLMM"
 keywords: "DLMM, discretized liquidity, Trader Joe Liquidity Book, Meteora DLMM, zero slippage bins, volatility accumulator, bin step, DLMM explained, DLMM vs concentrated liquidity, liquidity bins crypto, Liquidity Book, volatility accumulator DLMM"
@@ -33,8 +33,8 @@ Two designs work this way: Liquidity Book, built by Trader Joe (now LFJ), and Me
   <figcaption>Each bin quotes one price, only the active bin holds both tokens, and the fee rises while price is crossing bins quickly. <span class="article-figure__credit">Original editorial illustration by LiquidityPools.app.</span></figcaption>
 </figure>
 
-> **Desk Field Note from Dr. Elena Rostova:**
-> *"The flat price inside a bin is the headline, but the fee mechanism is the real innovation. On a fixed-fee pool, a violent move is a gift to whoever is fastest. Here the pool notices the move itself, from its own trades, and raises the fee while it lasts. No price feed, no delay. That is the part worth deposit money for."*
+> **Editor's note:**
+> The flat price inside a bin is the headline, but the fee mechanism is the real innovation. On a fixed-fee pool, a violent move is a gift to whoever is fastest. Here the pool notices the move itself, from its own trades, and raises the fee while it lasts. No price feed, no delay. That is the part worth deposit money for.
 
 ## Shelves instead of a curve
 

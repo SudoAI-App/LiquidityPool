@@ -2,9 +2,9 @@
 title: "MEV and Liquidity Providers: Sandwiches, JIT Liquidity and Toxic Flow"
 description: "Three ways transaction ordering takes money out of your pool position, how to tell how much is happening, and what actually defends against each one."
 category: "Risk & Research"
-date: 2026-08-27
+date: 2026-09-09
 lastReviewed: "2026-09-12"
-author: "Marcus Vance"
+author: "LiquidityPools Editorial Team"
 readTime: "7 min read"
 primaryQuery: "MEV liquidity providers"
 keywords: "MEV liquidity providers, JIT liquidity, sandwich attacks, LVR, toxic order flow, Uniswap v4 hooks, MEV-Share, PBS, how does MEV affect liquidity providers, sandwich attacks liquidity pools, adverse selection AMM"
@@ -29,8 +29,8 @@ This guide covers the three ways it reaches your position, how to measure how mu
   <figcaption>Transaction ordering can change the execution around a visible swap. <span class="article-figure__credit">Original editorial illustration by LiquidityPools.app.</span></figcaption>
 </figure>
 
-> **Desk Field Note from Marcus Vance:**
-> *"This is not a technical curiosity. It is money leaving your position. Fee sniping takes the payday without taking any risk, and cross-venue arbitrage buys your cheap token and sells you the expensive one all day. If you care about the outcome, choose pools that fight back: private routing, adaptive fees, or an auction that pays the proceeds back to depositors."*
+> **Editor's note:**
+> This is not a technical curiosity. It is money leaving your position. Fee sniping takes the payday without taking any risk, and cross-venue arbitrage buys your cheap token and sells you the expensive one all day. If you care about the outcome, choose pools that fight back: private routing, adaptive fees, or an auction that pays the proceeds back to depositors.
 
 ## Who decides what order your trades run in
 

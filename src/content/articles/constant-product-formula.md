@@ -2,9 +2,9 @@
 title: "The Constant Product Formula: How x × y = k Shapes AMM Prices"
 description: "What x × y = k actually does to your trade: why the quote is never your fill, how impact scales with size, and how other curves change the answer."
 category: "Foundations"
-date: 2026-09-07
+date: 2026-09-09
 lastReviewed: "2026-09-12"
-author: "Dr. Elena Rostova"
+author: "LiquidityPools Editorial Team"
 readTime: "6 min read"
 primaryQuery: "constant product formula"
 keywords: "constant product formula, x y k AMM, Uniswap formula, AMM pricing curve, virtual reserves, constant product AMM, constant product market maker, pool reserves AMM, bonding curve crypto"
@@ -33,8 +33,8 @@ This guide shows you what the rule does, why your fill is always worse than the 
   <figcaption>The constant product curve forces larger transactions to incur progressively higher execution friction. <span class="article-figure__credit">Original editorial illustration by LiquidityPools.app.</span></figcaption>
 </figure>
 
-> **Desk Field Note from Dr. Elena Rostova:**
-> *"The rule is beautiful and it is completely unhedged. Holding a position on this curve is selling volatility. You collect fees drip by drip, and you pay out whenever the asset moves hard in either direction. Everything about your exposure comes from how steeply the curve bends, and the curve bends hardest exactly when the pool is thinnest."*
+> **Editor's note:**
+> The rule is beautiful and it is completely unhedged. Holding a position on this curve is selling volatility. You collect fees drip by drip, and you pay out whenever the asset moves hard in either direction. Everything about your exposure comes from how steeply the curve bends, and the curve bends hardest exactly when the pool is thinnest.
 
 ## What the rule actually says
 

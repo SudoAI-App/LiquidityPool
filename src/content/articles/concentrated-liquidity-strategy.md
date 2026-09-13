@@ -2,9 +2,9 @@
 title: "Concentrated Liquidity Strategy: Choosing a Range Width"
 description: "The width is the only thing you control. Set it from how much the pair actually moves and how much attention you have, not from a yield you would like."
 category: "LP Mechanics"
-date: 2026-09-11
+date: 2026-09-10
 lastReviewed: "2026-09-12"
-author: "Dr. Elena Rostova"
+author: "LiquidityPools Editorial Team"
 readTime: "6 min read"
 primaryQuery: "concentrated liquidity strategy"
 keywords: "concentrated liquidity strategy, liquidity range width, how to choose a price range, rebalancing strategy LP, time in range, Uniswap v3 price range"
@@ -33,8 +33,8 @@ This guide gives you three measurable inputs, a table for how long each width su
   <figcaption>Fee density falls and time in range rises with width; the net of rebalancing cost peaks in between. <span class="article-figure__credit">Original editorial illustration by LiquidityPools.app.</span></figcaption>
 </figure>
 
-> **Desk Field Note from Dr. Elena Rostova:**
-> *"Ask what the position does if you go away for three weeks. If the honest answer is that it converts on day four and then sits there, the width was chosen for a spreadsheet rather than for the market. Set it so the position survives your own attention span."*
+> **Editor's note:**
+> Ask what the position does if you go away for three weeks. If the honest answer is that it converts on day four and then sits there, the width was chosen for a spreadsheet rather than for the market. Set it so the position survives your own attention span.
 
 ## Three things to measure first
 

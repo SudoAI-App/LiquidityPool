@@ -4,7 +4,7 @@ description: "Your position stopped earning because the price left your band. Wh
 category: "LP Mechanics"
 date: 2026-09-10
 lastReviewed: "2026-09-12"
-author: "Dr. Elena Rostova"
+author: "LiquidityPools Editorial Team"
 readTime: "6 min read"
 primaryQuery: "out of range liquidity"
 keywords: "out of range liquidity, out of range position Uniswap v3, liquidity position not earning fees, liquidity range, concentrated liquidity risk, rebalancing cost"
@@ -35,8 +35,8 @@ This guide explains what the contract actually did, what it costs you per day, a
   <figcaption>Fee accrual is a step function of price: full participation inside the interval, zero outside it. <span class="article-figure__credit">Original editorial illustration by LiquidityPools.app.</span></figcaption>
 </figure>
 
-> **Desk Field Note from Dr. Elena Rostova:**
-> *"Going out of range is not the mistake. The mistake is treating it as an accident rather than as the outcome you chose when you set the width. Mint a 3% band on a pair that moves 80% a year and it is designed to exit within days. That is fine, if the fees inside pay for the round trip. Almost nobody works that out first."*
+> **Editor's note:**
+> Going out of range is not the mistake. The mistake is treating it as an accident rather than as the outcome you chose when you set the width. Mint a 3% band on a pair that moves 80% a year and it is designed to exit within days. That is fine, if the fees inside pay for the round trip. Almost nobody works that out first.
 
 ## What the contract actually did
 

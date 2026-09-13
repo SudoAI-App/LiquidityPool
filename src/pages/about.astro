@@ -1,25 +1,19 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { authors } from '../lib/authors';
-const authorList = Object.values(authors);
+import { editorialTeam } from '../lib/editorial';
 
 const aboutSchema = {
   '@context': 'https://schema.org',
   '@type': 'AboutPage',
-  name: 'About LiquidityPools.app — Quantitative DeFi Research Desk',
+  name: 'About LiquidityPools.app — Editorial Policy',
   url: 'https://liquiditypools.app/about/',
-  description: 'LiquidityPools.app is an independent educational research library explaining the mechanics, mathematical invariants, and risks of decentralized liquidity.',
+  description: 'LiquidityPools.app is an educational research library published by SudoAI, with a public policy for AI assistance, source checks, review, and corrections.',
   mainEntity: {
     '@type': 'Organization',
-    name: 'LiquidityPools.app',
+    name: editorialTeam.name,
     url: 'https://liquiditypools.app',
-    member: authorList.map((author) => ({
-      '@type': 'Person',
-      name: author.name,
-      jobTitle: author.role,
-      description: author.bio,
-      url: `https://liquiditypools.app/about#${author.id}`
-    }))
+    parentOrganization: { '@type': 'Organization', name: editorialTeam.publisher },
+    description: editorialTeam.bio,
   }
 };
 
@@ -32,33 +26,26 @@ const breadcrumbSchema = {
   ]
 };
 ---
-<BaseLayout title="About LiquidityPools.app — Quantitative DeFi & AMM Research Team" description="LiquidityPools.app is an independent educational research library explaining the mechanics, mathematical invariants, and risks of decentralized liquidity.">
+<BaseLayout title="About LiquidityPools.app — Editorial Policy" description="How LiquidityPools.app uses AI assistance, checks cited sources, reviews guides before publication, and handles corrections.">
   <Fragment slot="head">
     <script is:inline type="application/ld+json" set:html={JSON.stringify(aboutSchema)} />
     <script is:inline type="application/ld+json" set:html={JSON.stringify(breadcrumbSchema)} />
   </Fragment>
-  <section class="page-hero"><div class="container"><div class="eyebrow eyebrow--mint">About the publication</div><h1 class="page-title">Research for a market that moves too fast for shortcuts.</h1><p>LiquidityPools.app is an independent educational library for people who want to understand how decentralized liquidity behaves before they rely on a quote, an APR, or a dashboard.</p></div></section>
+  <section class="page-hero"><div class="container"><div class="eyebrow eyebrow--mint">About the publication</div><h1 class="page-title">Research for a market that moves too fast for shortcuts.</h1><p>LiquidityPools.app is an educational library published by SudoAI for people who want to understand how decentralized liquidity behaves before they rely on a quote, an APR, or a dashboard.</p></div></section>
   <section class="section section--paper"><div class="container manifesto"><p class="lead">Good research does not manufacture certainty. It makes uncertainty specific enough to test.</p><p>Liquidity pools sit at the center of much of DeFi, yet the common language around them is often compressed into yield, APR, or the latest incentive program. This publication begins with the mechanism instead: who supplies inventory, how a trade changes reserves, where a position becomes inactive, and which risks remain after a headline return is removed.</p><p>Our launch library focuses on recurring concepts rather than a daily feed. Each guide is written to help readers connect an observable pool state to a decision question. The site does not publish price targets, token endorsements, or performance promises.</p><div class="principles"><div class="principle"><span>01</span><h2>Mechanism first</h2><p>We explain the moving parts before discussing outcomes. A position only makes sense in the context of the market structure that created it.</p></div><div class="principle"><span>02</span><h2>Sources in view</h2><p>Material factual claims are cited to primary protocol specifications, peer-reviewed and preprint research, and public-sector analysis. Every guide ends with a numbered reference list carrying at least five sources, of which at least one is research and one is a standards body or public institution, alongside a visible review date.</p></div><div class="principle"><span>03</span><h2>Risk in the argument</h2><p>Price movement, smart-contract design, incentives, asset dependencies, and execution conditions belong in the main argument—not in fine print.</p></div></div>
 
-    <div id="authors" style="margin-top:72px">
-      <div class="eyebrow eyebrow--mint">Research Team &amp; Authors</div>
-      <h2 class="display" style="margin:12px 0 24px">The practitioners behind the library</h2>
-      <p style="margin-bottom:32px">Every guide in this library is authored and reviewed by domain practitioners with backgrounds in quantitative finance, market microstructure, EVM security, and cross-chain architecture.</p>
-      <div style="display:grid;gap:24px">
-        {authorList.map((author) => (
-          <div id={author.id} class="article-author-card" style="margin-top:0">
-            <div class="article-author-card__avatar">{author.initials}</div>
-            <div class="article-author-card__content">
-              <div class="article-author-card__eyebrow">{author.role}</div>
-              <h3 class="article-author-card__name">{author.name}</h3>
-              <div class="article-author-card__credentials">{author.credentials}</div>
-              <p class="article-author-card__bio">{author.bio}</p>
-            </div>
-          </div>
-        ))}
+    <div id="editorial-policy" style="margin-top:72px">
+      <div class="eyebrow eyebrow--mint">Editorial policy</div>
+      <h2 class="display" style="margin:12px 0 24px">How every guide is produced</h2>
+      <div class="article-author-card" style="margin-top:0">
+        <div class="article-author-card__content">
+          <div class="article-author-card__eyebrow">Published by SudoAI</div>
+          <h3 class="article-author-card__name">{editorialTeam.name}</h3>
+          <p class="article-author-card__bio">Guides are drafted with AI assistance. Material factual claims are fact-checked against the primary sources cited in each guide, and the SudoAI team reviews the guide before publication. The organizational byline identifies this process without attributing the work to a fictional person or implying professional credentials.</p>
+        </div>
       </div>
+      <div class="principles" style="margin-top:24px"><div class="principle"><span>01</span><h2>Draft</h2><p>AI assistance may be used to organize, draft, or revise text. It is a production tool, not a named expert, source, or substitute for evidence.</p></div><div class="principle"><span>02</span><h2>Check</h2><p>Material claims are checked against the numbered sources shown in the guide. Sources remain visible so readers can inspect the evidence and changing protocol details themselves.</p></div><div class="principle"><span>03</span><h2>Review</h2><p>The SudoAI team reviews each guide before publishing it. The visible last-reviewed date changes when a substantive source, claim, mechanism, or correction is reviewed.</p></div></div>
     </div>
 
-    <h2 class="display" style="margin-top:72px">How the library is maintained</h2><p>Guides are reviewed when a material protocol mechanism, security assumption, or linked primary source changes. An automated audit blocks publication of any guide missing worked numbers, a comparison table, a question-and-answer section or the reference floor described above, and a separate link check verifies that every cited source still resolves. We correct substantive errors by updating the article, its sources, and the visible review date. The publication uses responsibly sourced editorial imagery with visible creator and license attribution.</p><p>LiquidityPools.app is educational and general in nature. Nothing here is investment, legal, tax, or financial advice. Readers should independently verify changing protocol parameters and assess whether they understand a position’s mechanism before signing a transaction.</p></div></section>
+    <div id="corrections" style="margin-top:72px"><h2 class="display">Corrections and contact</h2><p>If a factual error is reported or found, the SudoAI team reviews the claim against the cited source or other primary evidence. Substantive corrections update the guide and its visible last-reviewed date; the site does not promise that changing protocol parameters remain current between reviews.</p><p>Send correction details, the guide URL, and supporting evidence to <a href="mailto:research@liquiditypools.app">research@liquiditypools.app</a>. General feedback may use the same address.</p></div><h2 class="display" style="margin-top:72px">How the library is maintained</h2><p>Guides are reviewed when a material protocol mechanism, security assumption, or linked primary source changes. An automated audit blocks publication of any guide missing worked numbers, a comparison table, question-and-answer coverage, or the reference floor described above. We correct substantive errors by updating the article, its sources, and the visible review date.</p><p>LiquidityPools.app is educational and general in nature. Nothing here is investment, legal, tax, or financial advice. Readers should independently verify changing protocol parameters and assess whether they understand a position’s mechanism before signing a transaction.</p></div></section>
 </BaseLayout>
-

@@ -4,7 +4,7 @@ description: "How Raydium's concentrated and constant-product pools differ, what
 category: "LP Mechanics"
 date: 2026-09-11
 lastReviewed: "2026-09-12"
-author: "Aria Chen"
+author: "LiquidityPools Editorial Team"
 readTime: "8 min read"
 primaryQuery: "Raydium liquidity pool"
 keywords: "Raydium liquidity pool, Raydium CLMM explained, how to provide liquidity on Raydium, Raydium liquidity pool fees, Raydium CPMM, Solana liquidity pools, Raydium liquidity pool rewards"
@@ -33,8 +33,8 @@ Most disappointing positions on this venue come from treating the second one lik
   <figcaption>Full-range constant product against a bounded tick range, and what each holds as price moves. <span class="article-figure__credit">Original editorial illustration by LiquidityPools.app.</span></figcaption>
 </figure>
 
-> **Desk Field Note from Aria Chen:**
-> *"On Solana the cost of managing a range is trivial, which removes the usual excuse for leaving a position alone. That cuts both ways. Cheap rebalancing makes narrow ranges practical, and it also makes it painless to re-centre into a trend twelve times and realise the loss at every step. The constraint that disciplined the behaviour on Ethereum is simply absent here."*
+> **Editor's note:**
+> On Solana the cost of managing a range is trivial, which removes the usual excuse for leaving a position alone. That cuts both ways. Cheap rebalancing makes narrow ranges practical, and it also makes it painless to re-centre into a trend twelve times and realise the loss at every step. The constraint that disciplined the behaviour on Ethereum is simply absent here.
 
 ## Which of the two pools is which?
 

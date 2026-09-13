@@ -2,9 +2,9 @@
 title: "TVL Explained: What Total Value Locked Can—and Cannot—Tell You"
 description: "How one dollar becomes seven dollars of headline deposits, why a big pool can fill worse than a small one, and what to read instead."
 category: "Foundations"
-date: 2026-09-04
+date: 2026-09-09
 lastReviewed: "2026-09-12"
-author: "Aria Chen"
+author: "LiquidityPools Editorial Team"
 readTime: "7 min read"
 primaryQuery: "TVL explained"
 keywords: "TVL explained, total value locked, DeFi TVL, liquidity pool TVL, restaking leverage, TVL liquidity pool, pool utilization DeFi"
@@ -31,8 +31,8 @@ This guide shows you how the number is built, three specific ways it lies, and w
   <figcaption>Headline value and executable depth are not the same measurement. <span class="article-figure__credit">Original editorial illustration by LiquidityPools.app.</span></figcaption>
 </figure>
 
-> **Desk Field Note from Aria Chen:**
-> *"This is the easiest number in the industry to inflate. Through recursive borrowing and layers of wrapper tokens, one real dollar can be reported several times over. When you evaluate a pool, look at liquidity that is not borrowed from somewhere else, and at fees generated against that real figure."*
+> **Editor's note:**
+> This is the easiest number in the industry to inflate. Through recursive borrowing and layers of wrapper tokens, one real dollar can be reported several times over. When you evaluate a pool, look at liquidity that is not borrowed from somewhere else, and at fees generated against that real figure.
 
 ## It is a valuation, not a score
 

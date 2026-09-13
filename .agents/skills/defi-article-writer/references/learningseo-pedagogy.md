@@ -59,16 +59,16 @@ flowchart TD
 
 ---
 
-## 3. The "Practitioner Field Note" Pattern
+## 3. The "Editor's Note" Pattern
 
-LearningSEO punctuates complex topics with real-world specialist perspectives (quotes from Gerry White, Chris Green, Roxana Stingu, etc.).
+LearningSEO punctuates complex topics with real specialist perspectives, quoting named practitioners who actually said those things.
 
-In LiquidityPools.app, we implement this as **Author Field Notes** from our 5 verified personas:
+LiquidityPools.app has no named practitioners, so we never quote people. Instead a guide carries an unattributed **Editor's note** that turns the cited sources into a practical takeaway. Any figure in it must come from a source cited in the guide:
 
 ```markdown
 > [!TIP]
-> **Desk Field Note from Dr. Elena Rostova**:
-> *"When modeling concentrated liquidity returns, never extrapolate 24-hour annualized fee yield across market cycles. In volatile pairs like WETH/USDC, over 65% of volume in wide ranges is driven by latency arbitrageurs taking stale pool quotes against Binance order books. If your pool fee does not exceed $\sigma \sqrt{\Delta t}$, you are subsidizing HFT searchers with your inventory."*
+> **Editor's note:**
+> Annualising one day of fee yield overstates returns in volatile pairs, because much of that day's volume can come from arbitrage against stale pool prices. Compare the pool fee with realised volatility over the same window before trusting the headline APR (see the LVR research cited in this guide).
 ```
 
-These field notes bridge textbook equations and cut-throat onchain execution reality.
+Editor's notes bridge the equations and onchain execution without inventing experience or statistics.

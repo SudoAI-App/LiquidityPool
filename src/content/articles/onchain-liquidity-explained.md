@@ -2,9 +2,9 @@
 title: "Onchain Liquidity: How Decentralized Markets Are Assembled"
 description: "There is no single market. Five layers stitch thousands of independent pools into something that behaves like one, and each layer takes a share of your trade."
 category: "Foundations"
-date: 2026-09-11
+date: 2026-09-10
 lastReviewed: "2026-09-12"
-author: "Aria Chen"
+author: "LiquidityPools Editorial Team"
 readTime: "6 min read"
 primaryQuery: "on-chain liquidity"
 keywords: "on-chain liquidity, decentralized liquidity, onchain market structure, intent based liquidity, solver networks DeFi, liquidity fragmentation"
@@ -35,8 +35,8 @@ Understanding that assembly explains most of what looks strange about trading he
   <figcaption>From a single deposit to the quote a trader receives, five layers deep. <span class="article-figure__credit">Original editorial illustration by LiquidityPools.app.</span></figcaption>
 </figure>
 
-> **Desk Field Note from Aria Chen:**
-> *"People call fragmentation a flaw to be fixed. It is closer to a property of letting anyone deploy a market. The interesting engineering is not consolidating it. It is making scattered liquidity behave like one venue at the moment somebody trades."*
+> **Editor's note:**
+> People call fragmentation a flaw to be fixed. It is closer to a property of letting anyone deploy a market. The interesting engineering is not consolidating it. It is making scattered liquidity behave like one venue at the moment somebody trades.
 
 ## The five layers
 

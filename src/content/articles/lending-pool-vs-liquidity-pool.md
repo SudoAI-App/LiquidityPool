@@ -2,9 +2,9 @@
 title: "Lending Pool vs Liquidity Pool: Two Different Instruments"
 description: "Same word, different thing. One pays you for time and keeps your tokens. The other pays you for trades and changes them. Plus a worked rate comparison."
 category: "Foundations"
-date: 2026-09-11
+date: 2026-09-10
 lastReviewed: "2026-09-12"
-author: "Siddharth Mehta"
+author: "LiquidityPools Editorial Team"
 readTime: "6 min read"
 primaryQuery: "lending pool vs liquidity pool"
 keywords: "lending pool vs liquidity pool, Aave liquidity pool, DeFi lending vs liquidity provision, utilisation curve, supply APY, liquidity pool comparison"
@@ -33,8 +33,8 @@ This guide separates them on the three things that matter: where the money comes
   <figcaption>Same word, different instrument: what each pool type actually does with a deposit. <span class="article-figure__credit">Original editorial illustration by LiquidityPools.app.</span></figcaption>
 </figure>
 
-> **Desk Field Note from Siddharth Mehta:**
-> *"The tell is what happens when nothing happens. A lending deposit ticks along during a flat week. A liquidity position in a flat week with no trading earns exactly nothing. One is paid for time, the other for flow. That should drive the allocation before anybody compares a rate."*
+> **Editor's note:**
+> The tell is what happens when nothing happens. A lending deposit ticks along during a flat week. A liquidity position in a flat week with no trading earns exactly nothing. One is paid for time, the other for flow. That should drive the allocation before anybody compares a rate.
 
 ## Where the money comes from
 

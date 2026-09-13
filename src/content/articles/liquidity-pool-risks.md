@@ -2,9 +2,9 @@
 title: "Liquidity Pool Risks: A Complete Framework for LP Due Diligence"
 description: "Five layers of risk in a liquidity pool: the code, the traders, the collateral behind the tokens, the price feeds, and the people who can change the rules."
 category: "Risk & Research"
-date: 2026-08-28
+date: 2026-09-09
 lastReviewed: "2026-09-12"
-author: "Dr. Kieran Thorne"
+author: "LiquidityPools Editorial Team"
 readTime: "8 min read"
 primaryQuery: "liquidity pool risks"
 keywords: "liquidity pool risks, DeFi risk management, Uniswap v4 hook security, restaking contagion, oracle manipulation, LVR, smart contract vulnerabilities, risks of providing liquidity, liquidity provider risks, can you lose money in a liquidity pool, smart contract risk liquidity pool, liquidity risk DeFi, liquidity pool withdrawal risk"
@@ -35,8 +35,8 @@ This guide walks through all five in the order they actually break: the code, th
   <figcaption>Five separate ways a pool can hurt you: the code, the traders, the collateral, the price feeds and the rules. <span class="article-figure__credit">Original editorial illustration by LiquidityPools.app.</span></figcaption>
 </figure>
 
-> **Desk Field Note from Dr. Kieran Thorne:**
-> *"People fixate on price moves and ignore the rest, which is backwards. Price you can model. A reentrancy bug, a manipulated price feed, or a token that quietly changes your balance when it transfers can empty a pool in one block, and it does not care which way the market was going."*
+> **Editor's note:**
+> People fixate on price moves and ignore the rest, which is backwards. Price you can model. A reentrancy bug, a manipulated price feed, or a token that quietly changes your balance when it transfers can empty a pool in one block, and it does not care which way the market was going.
 
 ## The five layers, at a glance
 

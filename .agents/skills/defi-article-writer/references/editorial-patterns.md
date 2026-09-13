@@ -54,14 +54,14 @@ In addition, eliminate the following literary bloat:
 
 ---
 
-## 4. The "Desk Field Note" Pattern
+## 4. The "Editor's Note" Pattern
 
-Directly mirroring the expert quotes on LearningSEO.io, every guide should include an **Author Field Note** formatted as a GitHub Alert:
+Every guide should include one unattributed **Editor's note** formatted as a GitHub Alert. It never quotes a person, claims first-hand trading experience, or introduces a number that the guide's sources don't support:
 
 ```markdown
 > [!TIP]
-> **Desk Field Note from Marcus Vance**:
-> *"Retail LPs often celebrate days with record-breaking trading volume, assuming their fee accrual will spike proportionally. What they overlook is that during volatile market regimes, over 70% of that volume represents atomic sandwich bundles and MEV arbitrage taking stale quotes against CEX price movements. You aren't earning yield from organic users; you are selling underpriced tokens to searchers."*
+> **Editor's note:**
+> A record-volume day does not mean record LP income. In volatile regimes a meaningful share of volume can be arbitrage and sandwich flow trading against stale prices, which is loss-versus-rebalancing for the LP rather than organic fee income.
 ```
 
 ---

@@ -2,9 +2,9 @@
 title: "Stablecoin Liquidity Pools: Efficient Curves and Depeg Risk"
 description: "Why stablecoin pools feel safe, exactly how they fail, and the one number to watch that tells you to leave before the price does."
 category: "LP Mechanics"
-date: 2026-08-30
+date: 2026-09-09
 lastReviewed: "2026-09-12"
-author: "Aria Chen"
+author: "LiquidityPools Editorial Team"
 readTime: "7 min read"
 primaryQuery: "stablecoin liquidity pool"
 keywords: "stablecoin liquidity pool, StableSwap invariant, Curve amplification factor, Ethena USDe, RWA treasury tokens, depeg risk, Uniswap v4 hooks, stablecoin pool risks, correlated asset liquidity pool, peg defense"
@@ -29,8 +29,8 @@ This guide covers why the curve is shaped the way it is, what actually happens d
   <figcaption>Stable-asset curves are efficient near balance and defensive under stress. <span class="article-figure__credit">Original editorial illustration by LiquidityPools.app.</span></figcaption>
 </figure>
 
-> **Desk Field Note from Aria Chen:**
-> *"Your upside here is 3% to 8% a year in fees. Your downside is the whole position. When a stable token breaks, the curve sells your healthy dollars to arbitrage at nearly full price and leaves you holding all of the broken one. The trade is fine as long as you are honest about what it actually is."*
+> **Editor's note:**
+> Your upside here is 3% to 8% a year in fees. Your downside is the whole position. When a stable token breaks, the curve sells your healthy dollars to arbitrage at nearly full price and leaves you holding all of the broken one. The trade is fine as long as you are honest about what it actually is.
 
 ## Why these pools use a different curve
 

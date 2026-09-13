@@ -2,9 +2,9 @@
 title: "Onchain Liquidity Metrics: What to Measure Beyond TVL and Volume"
 description: "The five numbers that decide whether a pool is worth your money, why the two headline figures mislead, and two pools whose dashboards point the wrong way."
 category: "Risk & Research"
-date: 2026-08-24
+date: 2026-09-09
 lastReviewed: "2026-09-12"
-author: "Marcus Vance"
+author: "LiquidityPools Editorial Team"
 readTime: "7 min read"
 primaryQuery: "onchain liquidity metrics"
 keywords: "onchain liquidity metrics, executable depth, AMM analytics, LVR rate, order flow toxicity, turnover velocity, JIT dilution factor, TVL verifiability, liquidity pool data, pool analytics DeFi, liquidity pool volume, how to research a DeFi pool"
@@ -29,8 +29,8 @@ This guide gives you the five numbers that actually decide whether a pool is wor
   <figcaption>Depth, flow, and imbalance reveal more than a single TVL figure. <span class="article-figure__credit">Original editorial illustration by LiquidityPools.app.</span></figcaption>
 </figure>
 
-> **Desk Field Note from Marcus Vance:**
-> *"Any single number will mislead you. A big pool can be money waiting to leave the day the rewards end. Heavy volume can be bots. A high advertised rate is often just token issuance. Look at three things together: how much of the money actually works, how much of the volume is arbitrage, and what is left after the bleed. If a pool cannot pay its way on real fees, it is a bet, not a position."*
+> **Editor's note:**
+> Any single number will mislead you. A big pool can be money waiting to leave the day the rewards end. Heavy volume can be bots. A high advertised rate is often just token issuance. Look at three things together: how much of the money actually works, how much of the volume is arbitrage, and what is left after the bleed. If a pool cannot pay its way on real fees, it is a bet, not a position.
 
 ## Why the headline number is wrong
 

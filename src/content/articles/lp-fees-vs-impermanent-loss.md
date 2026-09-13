@@ -4,7 +4,7 @@ description: "One inequality decides whether a pool is worth supplying. Here it 
 category: "Risk & Research"
 date: 2026-09-10
 lastReviewed: "2026-09-12"
-author: "Marcus Vance"
+author: "LiquidityPools Editorial Team"
 readTime: "6 min read"
 primaryQuery: "LP fees vs impermanent loss"
 keywords: "LP fees vs impermanent loss, do liquidity pools make money, is providing liquidity profitable, fee yield break-even, LVR hurdle rate, liquidity provider profitability"
@@ -31,8 +31,8 @@ This guide gives you the single inequality that decides it, works it on a real p
   <figcaption>Fee capture grows roughly linearly with volatility; adverse selection grows with its square. The crossing point is the pair's hurdle. <span class="article-figure__credit">Original editorial illustration by LiquidityPools.app.</span></figcaption>
 </figure>
 
-> **Desk Field Note from Marcus Vance:**
-> *"When somebody asks me whether a pool pays, I want two things: hourly volume and hourly volatility. If the volume is people chasing a move, you had a good week. If it is bots repricing your stale quote, the same number is a bill. Volume is not a virtue. It has a direction and a counterparty."*
+> **Editor's note:**
+> Evaluate hourly volume beside hourly volatility. Volume from uninformed demand can pay fees without the same selection cost as arbitrage that reprices a stale pool quote. The total volume number alone does not reveal which kind of flow the position served.
 
 ## The two lines
 

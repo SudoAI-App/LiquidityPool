@@ -4,7 +4,7 @@ description: "Two different costs, one word. One you can compute before you sign
 category: "Foundations"
 date: 2026-09-10
 lastReviewed: "2026-09-12"
-author: "Marcus Vance"
+author: "LiquidityPools Editorial Team"
 readTime: "6 min read"
 primaryQuery: "slippage in liquidity pools"
 keywords: "slippage in liquidity pools, price impact AMM, slippage tolerance, execution price vs spot price, sandwich attack, swap cost"
@@ -35,8 +35,8 @@ Telling them apart changes how you size an order, what you set the slider to, an
   <figcaption>Execution price against order size for two depths, with a worked example showing where a tolerance setting binds. <span class="article-figure__credit">Original editorial illustration by LiquidityPools.app.</span></figcaption>
 </figure>
 
-> **Desk Field Note from Marcus Vance:**
-> *"A 3% tolerance on a thin pair is a public offer. You have told every bot watching exactly how much they may take, and the good ones take exactly that, not a hundredth of a percent less. If a trade only goes through with a wide setting, the answer is a smaller order or a different route. Never a wider setting."*
+> **Editor's note:**
+> A 3% tolerance on a thin pair is a public offer. You have told every bot watching exactly how much they may take, and the good ones take exactly that, not a hundredth of a percent less. If a trade only goes through with a wide setting, the answer is a smaller order or a different route. Never a wider setting.
 
 ## The part you can compute
 

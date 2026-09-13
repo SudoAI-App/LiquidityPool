@@ -66,31 +66,24 @@ Modern LLMs default to bland, sycophantic, and rhetorical writing styles that er
      - `unlock the`
      - `delve into`
    - In addition, eliminate: `tapestry`, `beacon`, `vital cog`, `testament to`, `landscape`, `paradigm shift`, `skyrocket`, `secret sauce`.
-3. **Desk Field Notes (Expert Callouts)**:
-   - Directly mirroring the specialist quotes on LearningSEO.io, embed at least one **Author Field Note** formatted as a GitHub Alert:
+3. **Editor's Notes (Callouts)**:
+   - Embed at least one unattributed **Editor's note** formatted as a GitHub Alert. It states a practical takeaway supported by the guide's cited sources; it never quotes a person or claims first-hand trading experience:
      ```markdown
      > [!TIP]
-     > **Desk Field Note from [Author Name]**:
-     > *"[First-hand practitioner insight on why naive models fail in production, unwritten battlefield reality of onchain market making]."*
+     > **Editor's note:**
+     > [Why the naive model breaks down in practice, backed by the sources cited in this guide.]
      ```
 4. **Mathematical Rigor**:
    - Invariants and equations must be explicitly stated with parameter definitions, boundary conditions, and real units ($x \cdot y = k$, $L = \sqrt{x \cdot y}$, $P = \frac{y}{x}$, or $(x + \frac{L}{\sqrt{p_b}})(y + L\sqrt{p_a}) = L^2$).
 
 ---
 
-## 3. The 5 Verified Author Personas & Domain Routing
+## 3. Editorial Byline (No Personas)
 
-Every article must be explicitly attributed in its frontmatter to one of the 5 verified subject-matter experts defined in [`src/lib/authors.ts`](file:///Users/orion/orca/workspaces/LiquidityPool/escolar/src/lib/authors.ts). Never invent unverified author names.
+Every article is attributed to `LiquidityPools Editorial Team`, published by SudoAI, as defined in `src/lib/editorial.ts` and explained on `/about/`. Guides are drafted with AI assistance, fact-checked against their cited primary sources, and reviewed by the SudoAI team.
 
-| Author Name | Role & Credentials | Primary Subject Domains | Typical Voice & Perspective |
-| :--- | :--- | :--- | :--- |
-| **Dr. Elena Rostova** | Head of Quantitative Research & AMM Invariants<br>*(PhD Financial Math, Columbia; Ex-Options MM)* | Concentrated liquidity math, AMM invariants, LVR modeling, discrete bin pricing (DLMM), dynamic fee models, options replication, delta-hedging. | Highly quantitative, mathematical, focused on stochastic calculus, fee volatility trade-offs, and delta profiles. |
-| **Marcus Vance** | Senior Market Microstructure & MEV Analyst<br>*(DeFi Microstructure Researcher; Ex-HFT Quant)* | MEV extraction, sandwich attacks, atomic cross-DEX arbitrage, Just-In-Time (JIT) liquidity, order flow toxicity, PBS, private auctions (OFAs). | Analytical, cynical about "passive yield", focuses on who is extracting value from the LP and transaction ordering. |
-| **Dr. Kieran Thorne** | Lead Protocol Architect & Security Auditor<br>*(PhD Computer Science; EVM Systems Engineer & Auditor)* | Smart contract architecture, singleton contracts, transient storage (EIP-1153), Uniswap v4 hooks, ERC-6909 balance accounting, reentrancy. | Systems-level, security-conscious, examines opcode costs, assembly routines, execution gas, and attack vectors. |
-| **Siddharth Mehta** | Principal Risk Officer & Institutional LP Strategist<br>*(CFA Charterholder; Institutional Treasury Advisor)* | Institutional LP portfolio allocation, treasury risk management, impermanent loss hedging, stablecoin de-pegs, pre-flight operational checklists. | Prudent, risk-adjusted, enterprise-oriented, focuses on Sharpe ratios, capital preservation, liquidity buffers, and audit trails. |
-| **Aria Chen** | Cross-Chain Infrastructure & Correlated Assets Lead<br>*(Systems Engineer; Interoperability Researcher)* | Cross-chain settlement, intent-based routing (ERC-7683), synthetic dollar collateral (Ethena USDe), LST/LRT redemption pegs (stETH, eETH). | Structural, network-oriented, tracks cross-chain liquidity fragmentation, solver auction dynamics, and collateral backing. |
-
-For detailed author profiles, see [`references/authors-matrix.md`](./references/authors-matrix.md).
+- Never invent authors, credentials, job titles, quotes, testimonials or first-hand trading experience. `pnpm content:audit` fails on personal author names, credential claims and attributed field notes.
+- `date` is the real first public date (never before the 2026-09-09 go-live); `lastReviewed` is on or after it.
 
 ---
 
@@ -105,7 +98,7 @@ description: "High-density summary (140–160 chars) explaining the technical me
 category: "mechanics" # Allowed: getting-started | strategies | advanced-concepts | case-studies | risk-management | mechanics | ecosystems
 date: "2026-03-10"
 lastReviewed: "2026-03-10"
-author: "Dr. Elena Rostova" # Must match exactly one of the 5 authors in src/lib/authors.ts
+author: "LiquidityPools Editorial Team" # The only allowed value; see src/lib/editorial.ts
 readTime: 11 # Integer representing minutes (calculated as words / 180)
 keywords:
   - "Primary Concept"
@@ -196,7 +189,7 @@ pnpm build
 
 # Step 4: Commit changes to Git with clear semantic message
 git add .
-git commit -m "docs: add guide on <topic-slug> by <Author Name>"
+git commit -m "docs: add guide on <topic-slug>"
 ```
 
 ---
@@ -216,5 +209,4 @@ git commit -m "docs: add guide on <topic-slug> by <Author Name>"
 - **LearningSEO Pedagogy Guide**: [`references/learningseo-pedagogy.md`](./references/learningseo-pedagogy.md)
 - **Tooling & Metrics Reference Stack**: [`references/tooling-and-metrics-stack.md`](./references/tooling-and-metrics-stack.md)
 - **Editorial Patterns & Tone Matrix**: [`references/editorial-patterns.md`](./references/editorial-patterns.md)
-- **Author Profiles & Domain Routing**: [`references/authors-matrix.md`](./references/authors-matrix.md)
 - **Ready-to-Use Markdown Template**: [`resources/article-template.md`](./resources/article-template.md)

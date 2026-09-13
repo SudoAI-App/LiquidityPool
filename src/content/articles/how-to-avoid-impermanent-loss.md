@@ -2,9 +2,9 @@
 title: "How to Avoid Impermanent Loss (and What Each Method Costs)"
 description: "You cannot remove it while quoting two assets. Six things genuinely reduce it, each buys the reduction with something else, and here is what each one costs."
 category: "Risk & Research"
-date: 2026-09-11
+date: 2026-09-10
 lastReviewed: "2026-09-12"
-author: "Dr. Elena Rostova"
+author: "LiquidityPools Editorial Team"
 readTime: "6 min read"
 primaryQuery: "how to avoid impermanent loss"
 keywords: "how to avoid impermanent loss, reduce impermanent loss, impermanent loss protection, delta hedging LP, correlated asset liquidity pool, single sided liquidity"
@@ -33,8 +33,8 @@ Six things genuinely reduce it. Each one buys that reduction with something else
   <figcaption>Six mitigations that reduce divergence, and what each one gives up in exchange. <span class="article-figure__credit">Original editorial illustration by LiquidityPools.app.</span></figcaption>
 </figure>
 
-> **Desk Field Note from Dr. Elena Rostova:**
-> *"The most common request I get is for a pool with high fees and no divergence. It does not exist, because both are paid by the same person. High fees compensate for volatility, and volatility is what produces the divergence. Anything promising one without the other has hidden the cost inside a token you are being paid in."*
+> **Editor's note:**
+> A pool cannot promise high fees with no divergence risk. Volatile trading can produce fee opportunities, while the same relative price movement changes pool inventory against holding. If a quoted return appears to remove that trade-off, check whether token incentives or another exposure are carrying the cost.
 
 ## One: pick tokens that move together
 

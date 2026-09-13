@@ -2,9 +2,9 @@
 title: "Uniswap v3 Ticks and Position NFTs Explained"
 description: "Why your range moved from what you typed, why your fees stopped, and why your position is an NFT. Four contract details that explain most operational surprises."
 category: "LP Mechanics"
-date: 2026-09-11
+date: 2026-09-10
 lastReviewed: "2026-09-12"
-author: "Dr. Kieran Thorne"
+author: "LiquidityPools Editorial Team"
 readTime: "6 min read"
 primaryQuery: "Uniswap v3 ticks explained"
 keywords: "Uniswap v3 ticks explained, tick spacing, Uniswap v3 positions NFT, LP NFT, fee growth accumulator, liquidity range Uniswap v3"
@@ -31,8 +31,8 @@ All three trace back to four things the contract does that no deposit screen sho
   <figcaption>The six internals that define what a v3 position is and what it can earn. <span class="article-figure__credit">Original editorial illustration by LiquidityPools.app.</span></figcaption>
 </figure>
 
-> **Desk Field Note from Dr. Kieran Thorne:**
-> *"When somebody says their range was rejected or their bounds moved slightly, it is always tick spacing. The contract stores whole numbers, not prices. Whatever you type gets rounded to the nearest usable one for that fee tier, and on the widest tier that rounding can be about a percent."*
+> **Editor's note:**
+> When somebody says their range was rejected or their bounds moved slightly, it is always tick spacing. The contract stores whole numbers, not prices. Whatever you type gets rounded to the nearest usable one for that fee tier, and on the widest tier that rounding can be about a percent.
 
 ## The contract stores whole numbers, not prices
 

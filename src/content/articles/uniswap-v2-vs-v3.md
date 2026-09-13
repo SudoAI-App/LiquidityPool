@@ -2,9 +2,9 @@
 title: "Uniswap v2 vs v3: Which Liquidity Position Suits You"
 description: "v2 is a deposit. v3 is a job. The efficiency multiplier is real while you are in range, and here is what it looks like after you multiply by time in range."
 category: "LP Mechanics"
-date: 2026-09-11
+date: 2026-09-10
 lastReviewed: "2026-09-12"
-author: "Dr. Elena Rostova"
+author: "LiquidityPools Editorial Team"
 readTime: "6 min read"
 primaryQuery: "Uniswap v2 vs v3 liquidity"
 keywords: "Uniswap v2 vs v3 liquidity, Uniswap v2 liquidity pool, v2 vs v3 capital efficiency, full range liquidity, passive liquidity provision"
@@ -33,8 +33,8 @@ So the question is not which contract is more advanced. It is which one matches 
   <figcaption>The same pair, two products: a passive claim and a managed position. <span class="article-figure__credit">Original editorial illustration by LiquidityPools.app.</span></figcaption>
 </figure>
 
-> **Desk Field Note from Dr. Elena Rostova:**
-> *"The efficiency multiple is quoted as a big number, and it is real while the price sits inside your band. Multiply it by the fraction of the month you were actually in range and it gets ordinary very fast. Anyone comparing these two without that second term is comparing a best case against an average."*
+> **Editor's note:**
+> The efficiency multiple is quoted as a big number, and it is real while the price sits inside your band. Multiply it by the fraction of the month you were actually in range and it gets ordinary very fast. Anyone comparing these two without that second term is comparing a best case against an average.
 
 ## What actually changed
 

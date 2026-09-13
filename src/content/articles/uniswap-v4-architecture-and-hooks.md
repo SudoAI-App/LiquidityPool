@@ -2,9 +2,9 @@
 title: "Uniswap v4 Architecture: Singleton Design, Hooks, and Flash Accounting"
 description: "What changed in Uniswap v4 and what it means for you: one contract for every pool, settle-once accounting, custom pool code, and how to read a hook."
 category: "LP Mechanics"
-date: 2026-09-08
+date: 2026-09-10
 lastReviewed: "2026-09-12"
-author: "Dr. Kieran Thorne"
+author: "LiquidityPools Editorial Team"
 readTime: "7 min read"
 primaryQuery: "Uniswap v4 architecture"
 keywords: "Uniswap v4 architecture, Uniswap v4 hooks, PoolManager.sol, transient storage EIP-1153, flash accounting, ERC-6909, dynamic fee hook, Uniswap v4 hooks liquidity pools, Uniswap v4 singleton, Uniswap v4 flash accounting, Uniswap v4 liquidity pool"
@@ -29,8 +29,8 @@ Both changes are good for your costs. The second one hands you a new job: workin
   <figcaption>What changed in Uniswap v4, and the hook permissions a depositor should read before trusting a pool. <span class="article-figure__credit">Original editorial illustration by LiquidityPools.app.</span></figcaption>
 </figure>
 
-> **Desk Field Note from Dr. Kieran Thorne:**
-> *"Hooks are the biggest security change in this corner of the market since reentrancy was first understood. Custom code runs at the exact moments money is moving. Badly written, it can freeze the pool or drain balances. Never deposit into a pool without reading what its hook is allowed to do, and whether somebody can change it later."*
+> **Editor's note:**
+> Hooks are the biggest security change in this corner of the market since reentrancy was first understood. Custom code runs at the exact moments money is moving. Badly written, it can freeze the pool or drain balances. Never deposit into a pool without reading what its hook is allowed to do, and whether somebody can change it later.
 
 ## One contract instead of thousands
 

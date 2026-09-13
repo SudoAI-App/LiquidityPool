@@ -2,9 +2,9 @@
 title: "PancakeSwap Liquidity Pools: Structure, Fees and Incentives"
 description: "How PancakeSwap liquidity pools work, how their fee tiers and CAKE emissions differ from a fee-funded pool, and what to check before supplying one."
 category: "Advanced"
-date: 2026-09-11
+date: 2026-09-10
 lastReviewed: "2026-09-12"
-author: "Aria Chen"
+author: "LiquidityPools Editorial Team"
 readTime: "6 min read"
 primaryQuery: "PancakeSwap liquidity pool"
 keywords: "PancakeSwap liquidity pool, PancakeSwap v3, CAKE emissions, BNB Chain liquidity, farm liquidity pool, protocol comparison"
@@ -33,8 +33,8 @@ So reading one of these pools means separating the two layers before you compare
   <figcaption>Similar mathematics, different chains, fee schedules and incentive design. <span class="article-figure__credit">Original editorial illustration by LiquidityPools.app.</span></figcaption>
 </figure>
 
-> **Desk Field Note from Aria Chen:**
-> *"The mechanism transfers between venues; the incentive design does not. I have watched teams port a range strategy from one chain to another and forget that half the quoted return on the destination pool was a gauge vote that could be reallocated at the next epoch."*
+> **Editor's note:**
+> Pool mechanics may transfer between venues, but incentive design does not. A quoted return can depend heavily on a gauge allocation that voters may redirect at the next epoch, so a range strategy should separate fee income from temporary incentives before comparing venues.
 
 ## Which kind of pool are you joining?
 

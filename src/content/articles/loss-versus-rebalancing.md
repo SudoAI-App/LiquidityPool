@@ -4,7 +4,7 @@ description: "The number your fees actually have to beat. How it differs from im
 category: "Advanced"
 date: 2026-09-10
 lastReviewed: "2026-09-12"
-author: "Dr. Elena Rostova"
+author: "LiquidityPools Editorial Team"
 readTime: "6 min read"
 primaryQuery: "loss versus rebalancing"
 keywords: "loss versus rebalancing, LVR DeFi, what is LVR, adverse selection AMM, arbitrage profit LP, oracle AMM, dynamic fees"
@@ -31,8 +31,8 @@ It matters because it answers the question impermanent loss — the endpoint gap
   <figcaption>LVR is the widening gap between the pool and a benchmark that rebalances at the external price; fees close part of it. <span class="article-figure__credit">Original editorial illustration by LiquidityPools.app.</span></figcaption>
 </figure>
 
-> **Desk Field Note from Dr. Elena Rostova:**
-> *"Impermanent loss flatters you because it only ever looks at two moments in time. Price the position the way a desk would price a short options book, marking it every block against a real venue, and the truth appears. You are selling volatility at a fixed price and letting the market decide how much to deliver."*
+> **Editor's note:**
+> Impermanent loss flatters you because it only ever looks at two moments in time. Price the position the way a desk would price a short options book, marking it every block against a real venue, and the truth appears. You are selling volatility at a fixed price and letting the market decide how much to deliver.
 
 ## The comparison that defines it
 

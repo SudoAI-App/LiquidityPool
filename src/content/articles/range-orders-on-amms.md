@@ -2,9 +2,9 @@
 title: "Range Orders on AMMs: How Liquidity Can Express a Price View"
 description: "A one-sided deposit works like a limit order that earns fees while it fills. It also un-fills if the price comes back, which is what catches people out."
 category: "LP Mechanics"
-date: 2026-08-31
+date: 2026-09-09
 lastReviewed: "2026-09-12"
-author: "Aria Chen"
+author: "LiquidityPools Editorial Team"
 readTime: "7 min read"
 primaryQuery: "range orders AMM"
 keywords: "range orders AMM, concentrated liquidity limit order, Uniswap v4 limit hook, Ambient knock-out liquidity, AMM order execution, LVR, range order liquidity"
@@ -29,8 +29,8 @@ It works beautifully, and it has one trap that catches almost everyone the first
   <figcaption>A bounded position can express a conditional exchange range. <span class="article-figure__credit">Original editorial illustration by LiquidityPools.app.</span></figcaption>
 </figure>
 
-> **Desk Field Note from Aria Chen:**
-> *"The catch is that it is reversible. A limit order on a normal exchange executes and the tokens are yours. A range order stays in the pool. If the price crosses your range and comes back, your completed sale is undone and you are holding the original token again. Withdraw the moment it fills, or use a design that locks it."*
+> **Editor's note:**
+> The catch is that it is reversible. A limit order on a normal exchange executes and the tokens are yours. A range order stays in the pool. If the price crosses your range and comes back, your completed sale is undone and you are holding the original token again. Withdraw the moment it fills, or use a design that locks it.
 
 ## How a one-sided deposit works
 

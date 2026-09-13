@@ -2,9 +2,9 @@
 title: "Dynamic Fees in AMMs: Charging for Volatility"
 description: "A fixed fee is wrong most of the time. Too dear in calm markets, far too cheap when somebody is picking you off. What moving fees fix, and what they cannot."
 category: "Advanced"
-date: 2026-09-11
+date: 2026-09-10
 lastReviewed: "2026-09-12"
-author: "Marcus Vance"
+author: "LiquidityPools Editorial Team"
 readTime: "6 min read"
 primaryQuery: "dynamic fees AMM"
 keywords: "dynamic fees AMM, Uniswap v4 dynamic fee hook, volatility accumulator, fee tier vs dynamic fee, adverse selection pricing, AMM fee design"
@@ -33,8 +33,8 @@ Moving fees are the attempt to fix that inside the pool rather than asking you t
   <figcaption>What a pool charges as conditions change, under fixed tiers and under a volatility-linked hook. <span class="article-figure__credit">Original editorial illustration by LiquidityPools.app.</span></figcaption>
 </figure>
 
-> **Desk Field Note from Marcus Vance:**
-> *"From the other side of the trade, a fixed-fee pool during a volatile minute is the cheapest inventory on the market. You pay five basis points to take a quote that is thirty basis points stale. A fee that moves with volatility does not stop that trade. It just means the pool keeps more of what the trade was worth."*
+> **Editor's note:**
+> From the other side of the trade, a fixed-fee pool during a volatile minute is the cheapest inventory on the market. You pay five basis points to take a quote that is thirty basis points stale. A fee that moves with volatility does not stop that trade. It just means the pool keeps more of what the trade was worth.
 
 ## What the fee is actually paying for
 

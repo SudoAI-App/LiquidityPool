@@ -2,9 +2,9 @@
 title: "How to Evaluate a Liquidity Pool: A Five-Part Research Framework"
 description: "Five questions that tell you whether a pool is worth your money, in the order that matters, with the arithmetic that settles most cases in under a minute."
 category: "Risk & Research"
-date: 2026-08-25
+date: 2026-09-09
 lastReviewed: "2026-09-12"
-author: "Siddharth Mehta"
+author: "LiquidityPools Editorial Team"
 readTime: "6 min read"
 primaryQuery: "how to evaluate liquidity pool"
 keywords: "how to evaluate liquidity pool, DeFi LP due diligence, AMM pool evaluation, LVR hurdle rate, Uniswap v4 hook audit, active depth metrics, how to choose a liquidity pool, how to compare liquidity pools, liquidity pool due diligence, is providing liquidity profitable"
@@ -33,8 +33,8 @@ Five questions do. This guide works through them in order, and the third one set
   <figcaption>A pool deserves a mechanism-by-mechanism review before capital is committed. <span class="article-figure__credit">Original editorial illustration by LiquidityPools.app.</span></figcaption>
 </figure>
 
-> **Desk Field Note from Siddharth Mehta:**
-> *"A pool advertising 80% is usually a trap. If 60 points of that is a farm token being sold as fast as it is issued, and the other 20 is fees on a wildly volatile pair, your real return is negative. Split the yield into real trading fees and token issuance every time, then ask what the position looks like after a 20% drawdown."*
+> **Editor's note:**
+> A pool advertising 80% is usually a trap. If 60 points of that is a farm token being sold as fast as it is issued, and the other 20 is fees on a wildly volatile pair, your real return is negative. Split the yield into real trading fees and token issuance every time, then ask what the position looks like after a 20% drawdown.
 
 ## One: does the curve match the pair?
 
