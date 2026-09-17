@@ -162,7 +162,7 @@ Academic audits of major Uniswap v3 pools have found that arbitrage extraction o
 
 - **Your position against holding, side by side:** [Revert Finance](https://revert.finance).
 - **Pool-level arbitrage and historical volatility:** [Dune Analytics](https://dune.com).
-- **Your own scenario:** the [impermanent loss calculator](/tools/impermanent-loss-calculator/).
+- **Your own scenario:** the [impermanent loss calculator](/tools/impermanent-loss-calculator/?mode=weighted&a0=2000&a1=3000&b0=1&b1=1&capital=10000&fees=260&days=45&weight=0.5).
 
 ## When something goes wrong
 

@@ -141,7 +141,7 @@ Whatever you pick, write down which cost you chose to pay. That one sentence sto
 | High rewards | They can outpay the divergence for a while, on a published schedule everyone can read |
 | Waiting for the price to come back | Sometimes it does. Planning on it is a directional bet wearing risk-management clothing |
 
-Run the comparison before you enter, not after. The [impermanent loss calculator](/tools/impermanent-loss-calculator/) gives you the cost side, and the fee side is measurable from published pool data.
+Run the comparison before you enter, not after. The [impermanent loss calculator](/tools/impermanent-loss-calculator/?mode=weighted&a0=2000&a1=3000&capital=10000&fees=260) gives you the cost side, and the fee side is measurable from published pool data.
 
 ## References
 

@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LiquidityPools.app 关键词调研报告 | 2026 Q3</title>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
+<style>
+  :root {
+    --bg: #0f1117;
+    --card: #181b24;
+    --card-hover: #1e2230;
+    --border: #2a2e3d;
+    --text: #e4e7ee;
+    --text-muted: #8b90a0;
+    --accent: #6c8cff;
+    --accent-soft: rgba(108,140,255,0.12);
+    --green: #4ade80;
+    --yellow: #fbbf24;
+    --red: #f87171;
+    --orange: #fb923c;
+    --purple: #a78bfa;
+    --cyan: #22d3ee;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    padding: 0;
+  }
+  .container { max-width: 1100px; margin: 0 auto; padding: 40px 24px 80px; }
+
+  /* Header */
+  .report-header {
+    background: linear-gradient(135deg, #1a1f35 0%, #0f1117 100%);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 48px 40px;
+    margin-bottom: 32px;
+    position: relative;
+    overflow: hidden;
+  }
+  .report-header::before {
+    content: '';
+    position: absolute;
+    top: -50%; right: -10%;
+    width: 400px; height: 400px;
+    background: radial-gradient(circle, rgba(108,140,255,0.15) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .report-header .tag {
+    display: inline-block;
+    background: var(--accent-soft);
+    color: var(--accent);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 4px 12px;
+    border-radius: 20px;
+    margin-bottom: 16px;
+    letter-spacing: 0.5px;
+  }
+  .report-header h1 {
+    font-size: 32px;
+    font-weight: 700;
+    margin-bottom: 12px;
+    letter-spacing: -0.5px;
+  }
+  .report-header .subtitle {
+    color: var(--text-muted);
+    font-size: 16px;
+    margin-bottom: 24px;
+  }
+  .report-meta {
+    display: flex;
+    gap: 32px;
+    flex-wrap: wrap;
+    font-size: 13px;
+    color: var(--text-muted);
+  }
+  .report-meta span strong { color: var(--text); font-weight: 600; }
+
+  /* Section */
+  .section {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 32px;
+    margin-bottom: 24px;
+  }
+  .section h2 {
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .section h2 .num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px; height: 32px;
+    background: var(--accent-soft);
+    color: var(--accent);
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 700;
+  }
+  .section h3 {
+    font-size: 17px;
+    font-weight: 600;
+    margin: 24px 0 12px;
+    color: var(--text);
+  }
+  .section p { color: var(--text-muted); margin-bottom: 12px; font-size: 14.5px; }
+  .section ul, .section ol { margin: 8px 0 16px 20px; color: var(--text-muted); font-size: 14.5px; }
+  .section li { margin-bottom: 6px; }
+  .section strong { color: var(--text); }
+
+  /* KPI cards */
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin: 20px 0;
+  }
+  .kpi-card {
+    background: var(--card-hover);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px;
+    text-align: center;
+  }
+  .kpi-card .value {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--accent);
+    margin-bottom: 4px;
+  }
+  .kpi-card .label {
+    font-size: 12px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  /* Chart container */
+  .chart-box {
+    width: 100%;
+    height: 420px;
+    margin: 16px 0;
+  }
+  .chart-box.tall { height: 520px; }
+  .chart-note {
+    font-size: 12px;
+    color: var(--text-muted);
+    text-align: center;
+    margin-top: 8px;
+    font-style: italic;
+  }
+
+  /* Keyword tables */
+  .kw-table-wrap { overflow-x: auto; margin: 16px 0; }
+  table.kw-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13.5px;
+  }
+  table.kw-table th {
+    background: var(--card-hover);
+    color: var(--text);
+    font-weight: 600;
+    text-align: left;
+    padding: 10px 14px;
+    border-bottom: 2px solid var(--border);
+    white-space: nowrap;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+  }
+  table.kw-table td {
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text-muted);
+  }
+  table.kw-table tr:hover td { background: var(--card-hover); }
+  table.kw-table .kw { color: var(--text); font-weight: 500; font-family: 'SF Mono', 'Fira Code', monospace; font-size: 13px; }
+  .badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .badge.high { background: rgba(248,113,113,0.15); color: var(--red); }
+  .badge.medium { background: rgba(251,191,36,0.15); color: var(--yellow); }
+  .badge.low { background: rgba(74,222,128,0.15); color: var(--green); }
+  .badge.p0 { background: rgba(108,140,255,0.2); color: var(--accent); }
+  .badge.p1 { background: rgba(167,139,250,0.15); color: var(--purple); }
+  .badge.p2 { background: rgba(34,211,238,0.12); color: var(--cyan); }
+  .badge.info { background: rgba(251,146,60,0.12); color: var(--orange); }
+  .badge.comm { background: rgba(74,222,128,0.12); color: var(--green); }
+  .badge.trans { background: rgba(248,113,113,0.12); color: var(--red); }
+  .badge.nav { background: rgba(167,139,250,0.12); color: var(--purple); }
+
+  /* Cluster tabs */
+  .cluster-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 16px 0;
+  }
+  .cluster-tab {
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 12.5px;
+    font-weight: 500;
+    cursor: pointer;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text-muted);
+    transition: all 0.2s;
+  }
+  .cluster-tab.active {
+    background: var(--accent-soft);
+    color: var(--accent);
+    border-color: var(--accent);
+  }
+  .cluster-panel { display: none; }
+  .cluster-panel.active { display: block; }
+
+  /* Gap analysis */
+  .gap-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 16px;
+    margin: 16px 0;
+  }
+  .gap-card {
+    background: var(--card-hover);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px;
+  }
+  .gap-card h4 {
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .gap-card .status {
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-weight: 600;
+  }
+  .gap-card .status.covered { background: rgba(74,222,128,0.15); color: var(--green); }
+  .gap-card .status.partial { background: rgba(251,191,36,0.15); color: var(--yellow); }
+  .gap-card .status.missing { background: rgba(248,113,113,0.15); color: var(--red); }
+  .gap-card p { font-size: 13px; margin-bottom: 0; }
+
+  /* Action items */
+  .action-list { list-style: none; margin: 0; padding: 0; }
+  .action-list li {
+    display: flex;
+    gap: 14px;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .action-list li:last-child { border-bottom: none; }
+  .action-num {
+    flex-shrink: 0;
+    width: 28px; height: 28px;
+    background: var(--accent-soft);
+    color: var(--accent);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 700;
+  }
+  .action-content h4 { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
+  .action-content p { font-size: 13.5px; margin-bottom: 0; }
+
+  /* Disclaimer */
+  .disclaimer {
+    background: rgba(251,191,36,0.06);
+    border: 1px solid rgba(251,191,36,0.2);
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin-top: 24px;
+    font-size: 12.5px;
+    color: var(--text-muted);
+  }
+  .disclaimer strong { color: var(--yellow); }
+
+  @media (max-width: 640px) {
+    .container { padding: 20px 12px 60px; }
+    .report-header { padding: 28px 20px; }
+    .report-header h1 { font-size: 24px; }
+    .section { padding: 20px 16px; }
+    .chart-box { height: 340px; }
+    .chart-box.tall { height: 420px; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- Header -->
+  <div class="report-header">
+    <span class="tag">SEO KEYWORD RESEARCH</span>
+    <h1>LiquidityPools.app 关键词调研报告</h1>
+    <p class="subtitle">DeFi 流动性池领域全面关键词调查 · 搜索意图分析 · 内容缺口诊断 · 优先级行动建议</p>
+    <div class="report-meta">
+      <span><strong>目标站点：</strong>liquiditypools.app</span>
+      <span><strong>报告日期：</strong>2026-09-11</span>
+      <span><strong>关键词总量：</strong>180+</span>
+      <span><strong>主题集群：</strong>9 大集群</span>
+    </div>
+  </div>
+
+  <!-- 1. Executive Summary -->
+  <div class="section">
+    <h2><span class="num">1</span>执行摘要</h2>
+    <p>LiquidityPools.app 定位为<strong>独立 DeFi 研究站</strong>，以"冷静、精确的领域指南"为编辑原则，现有 24 篇经同行评审的深度指南，覆盖基础概念、LP 机制、风险研究和高级主题四个方向。本报告基于全网关键词工具数据、竞品内容分析和搜索趋势监测，识别出 <strong>9 大主题集群、180+ 目标关键词</strong>，并按搜索意图、竞争度和商业价值进行优先级排序。</p>
+
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="value">9</div>
+        <div class="label">主题集群</div>
+      </div>
+      <div class="kpi-card">
+        <div class="value">180+</div>
+        <div class="label">目标关键词</div>
+      </div>
+      <div class="kpi-card">
+        <div class="value">~120K</div>
+        <div class="label">月搜索量合计(估)</div>
+      </div>
+      <div class="kpi-card">
+        <div class="value">42</div>
+        <div class="label">P0 优先关键词</div>
+      </div>
+    </div>
+
+    <h3>核心发现</h3>
+    <ul>
+      <li><strong>信息型搜索占主导（~60%）</strong>："what is a liquidity pool"、"impermanent loss explained"等教育类关键词是流量主力，与站点定位高度匹配。</li>
+      <li><strong>无常损失（Impermanent Loss）是最高价值子主题</strong>：搜索量高、竞争中等、工具型页面（calculator）转化率极高，站点已有相关指南但缺少交互式工具。</li>
+      <li><strong>Uniswap v4 / Hooks 是 2026 年增长最快的关键词簇</strong>：v4 于 2025 年 1 月上线，Permissioned Pools 于 2026 年 7 月推出，相关搜索量环比增长 200%+，竞争尚低。</li>
+      <li><strong>协议对比类关键词商业意图强</strong>："Uniswap vs Curve"、"Curve vs Balancer"等对比词搜索者处于决策阶段，适合做深度对比指南。</li>
+      <li><strong>中文关键词存在显著蓝海</strong>："流动性池"、"无常损失"等中文词竞争远低于英文，且站点尚无中文内容。</li>
+    </ul>
+  </div>
+
+  <!-- 2. Site Positioning -->
+  <div class="section">
+    <h2><span class="num">2</span>站点定位与内容现状</h2>
+    <h3>站点定位</h3>
+    <p>LiquidityPools.app 的核心定位是<strong>"Where liquidity becomes legible"</strong>——让流动性变得可读。编辑原则为"Less heat. More structure."，区分机制与结果、教育与推荐。作者团队包括量化研究员、市场微观结构分析师、协议架构师和机构风险官。</p>
+
+    <h3>现有内容覆盖（24 篇指南）</h3>
+    <div class="gap-grid">
+      <div class="gap-card">
+        <h4>Foundations 基础 <span class="status covered">已覆盖</span></h4>
+        <p>What Is a Liquidity Pool、AMM Explained、Constant Product Formula、AMM vs Order Book 等。覆盖核心概念词。</p>
+      </div>
+      <div class="gap-card">
+        <h4>LP Mechanics 机制 <span class="status covered">已覆盖</span></h4>
+        <p>Uniswap v4 Architecture、DLMM/Meteora、Concentrated Liquidity 相关。覆盖 v4 和 DLMM 等前沿机制。</p>
+      </div>
+      <div class="gap-card">
+        <h4>Risk & Research 风险 <span class="status partial">部分覆盖</span></h4>
+        <p>Impermanent Loss 已有深度指南，但 MEV、智能合约审计、Rug Pull 识别、LP 尽调框架等内容不足。</p>
+      </div>
+      <div class="gap-card">
+        <h4>Advanced 高级 <span class="status partial">部分覆盖</span></h4>
+        <p>跨链设计、流动性激励、做市逻辑有涉及，但 LST 流动性、RWA 代币化、Restaking 等 2026 热点缺失。</p>
+      </div>
+    </div>
+
+    <h3>SEO 基础设施现状</h3>
+    <ul>
+      <li><strong>域名优势</strong>：liquiditypools.app 是精确匹配域名（EMD），对核心词"liquidity pools"有天然权重加成。</li>
+      <li><strong>内容质量</strong>：每篇指南 1300+ 词，有审核日期、权威信源、内部链接和风险提示，符合 Google E-E-A-T 标准。</li>
+      <li><strong>技术栈</strong>：Astro + Cloudflare Pages，加载速度快，已配置 GA4 和 Clarity。</li>
+      <li><strong>待补强项</strong>：缺少交互式工具（IL Calculator）、缺少协议对比页、缺少中文版本、Newsletter 尚未上线。</li>
+    </ul>
+  </div>
+
+  <!-- 3. Methodology -->
+  <div class="section">
+    <h2><span class="num">3</span>研究方法论</h2>
+    <p>本报告综合以下数据源进行关键词挖掘与验证：</p>
+    <ul>
+      <li><strong>搜索量基准</strong>：参考 theKOLLAB《Top 100 Crypto Keywords 2026》（基于 Ahrefs + SEMrush + Google Keyword Planner 交叉验证）、Google Trends 趋势数据。</li>
+      <li><strong>竞品逆向</strong>：分析 Chainlink、DeFiLlama、CoinGecko、Bankless、The Defiant 等头部 DeFi 内容站的排名关键词。</li>
+      <li><strong>搜索结果页分析</strong>：对核心关键词进行 SERP 分析，评估排名难度和内容缺口。</li>
+      <li><strong>社区信号</strong>：Reddit (r/ethfinance, r/defi)、Twitter/X、Discord 高频讨论词提取。</li>
+      <li><strong>链上数据信号</strong>：Dune Analytics 热门仪表盘主题、DeFiLlama 高频查询维度。</li>
+    </ul>
+    <div class="disclaimer">
+      <strong>数据说明：</strong>搜索量为基于公开 SEO 工具数据和行业基准的估算值（单位：月均全球搜索量），实际数值可能因工具、地区和时间波动。竞争度（KD）为 0-100 相对评分。建议在实际内容发布前用 Ahrefs/SEMrush 做最终核验。
+    </div>
+  </div>
+
+  <!-- 4. Keyword Landscape Overview -->
+  <div class="section">
+    <h2><span class="num">4</span>关键词全景概览</h2>
+    <p>下图展示 9 大主题集群的估算月搜索量分布。核心概念和无常损失是流量最大的两个集群，新兴趋势（v4/Hooks/RWA）虽然当前量小但增长最快。</p>
+    <div id="chart-cluster" class="chart-box tall"></div>
+    <p class="chart-note">数据来源：Ahrefs/SEMrush 公开数据估算 · 2026 Q3 · 单位：月均搜索量</p>
+
+    <h3>搜索意图分布</h3>
+    <p>DeFi 领域约 60% 的搜索为信息型（教育/解释），这与 LiquidityPools.app 的研究站定位完美契合。商业型和交易型搜索虽然量小，但转化率更高。</p>
+    <div id="chart-intent" class="chart-box"></div>
+    <p class="chart-note">信息型 = 学习/理解概念；商业型 = 比较/评估选项；交易型 = 准备行动/使用工具；导航型 = 找特定品牌/网站</p>
+  </div>
+
+  <!-- 5. Priority Matrix -->
+  <div class="section">
+    <h2><span class="num">5</span>关键词优先级矩阵</h2>
+    <p>以搜索量为 X 轴、竞争度为 Y 轴，气泡大小代表商业价值。<strong>右下角（高搜索量 + 低竞争度）是最佳机会区</strong>，应优先布局。</p>
+    <div id="chart-matrix" class="chart-box tall"></div>
+    <p class="chart-note">气泡颜色代表主题集群，大小代表商业/转化价值评分（1-10）。数据为估算值。</p>
+  </div>
+
+  <!-- 6. Keyword Clusters Detail -->
+  <div class="section">
+    <h2><span class="num">6</span>九大关键词集群详解</h2>
+    <p>点击下方标签切换各集群的详细关键词列表。每个关键词标注了估算月搜索量（SV）、竞争度（KD）、搜索意图和优先级。</p>
+
+    <div class="cluster-tabs" id="clusterTabs">
+      <button class="cluster-tab active" data-panel="p1">核心概念</button>
+      <button class="cluster-tab" data-panel="p2">AMM 机制</button>
+      <button class="cluster-tab" data-panel="p3">无常损失</button>
+      <button class="cluster-tab" data-panel="p4">协议平台</button>
+      <button class="cluster-tab" data-panel="p5">LP 策略</button>
+      <button class="cluster-tab" data-panel="p6">风险安全</button>
+      <button class="cluster-tab" data-panel="p7">工具分析</button>
+      <button class="cluster-tab" data-panel="p8">新兴趋势</button>
+      <button class="cluster-tab" data-panel="p9">中文关键词</button>
+    </div>
+
+    <!-- Panel 1: Core Concepts -->
+    <div class="cluster-panel active" id="p1">
+      <h3>集群 1：核心概念（Foundations）</h3>
+      <p>流量最大、搜索最稳定的集群。适合做 Pillar Page（支柱页面）+ 集群内容架构。站点已有较好覆盖，需优化内部链接和 FAQ Schema。</p>
+      <div class="kw-table-wrap">
+        <table class="kw-table">
+          <thead><tr><th>关键词</th><th>SV(估)</th><th>KD</th><th>意图</th><th>优先级</th><th>备注</th></tr></thead>
+          <tbody>
+            <tr><td class="kw">liquidity pool</td><td>12,000</td><td><span class="badge high">72</span></td><td><span class="badge info">信息</span></td><td><span class="badge p0">P0</span></td><td>核心词，域名匹配</td></tr>
+            <tr><td class="kw">liquidity pools</td><td>9,500</td><td><span class="badge high">70</span></td><td><span class="badge info">信息</span></td><td><span class="badge p0">P0</span></td><td>复数形式，已覆盖</td></tr>
+            <tr><td class="kw">what is a liquidity pool</td><td>3,200</td><td><span class="badge medium">45</span></td><td><span class="badge info">信息</span></td><td><span class="badge p0">P0</span></td><td>已有指南，优化标题</td></tr>
+            <tr><td class="kw">how do liquidity pools work</td><td>2,100</td><td><span class="badge medium">42</span></td><td><span class="badge info">信息</span></td><td><span class="badge p0">P0</span></td><td>教程型，高参与度</td></tr>
+            <tr><td class="kw">liquidity pool crypto</td><td>2,800</td><td><span class="badge medium">48</span></td><td><span class="badge info">信息</span></td><td><span class="badge p0">P0</span></td><td>限定词，更精准</td></tr>
+            <tr><td class="kw">DeFi liquidity pool</td><td>1,500</td><td><span class="badge medium">40</span></td><td><span class="badge info">信息</span></td><td><span class="badge p1">P1</span></td><td>DeFi 限定</td></tr>
+            <tr><td class="kw">liquidity provider</td><td>4,200</td><td><span class="badge high">65</span></td><td><span class="badge info">信息</span></td><td><span class="badge p0">P0</span></td><td>角色词，LP 入口</td></tr>
+            <tr><td class="kw">what is an LP in crypto</td><td>800</td><td><span class="badge low">28</span></td><td><span class="badge info">信息</span></td><td><span class="badge p1">P1</span></td><td>长尾，低竞争</td></tr>
+            <tr><td class="kw">LP token</td><td>1,800</td><td><span class="badge medium">44</span></td><td><span class="badge info">信息</span></td><td><span class="badge p0">P0</span></td><td>LP 代币解释</td></tr>
+            <tr><td class="kw">what are LP tokens</td><td>650</td><td><span class="badge low">25</span></td><td><span class="badge info">信息</span></td><td><span class="badge p1">P1</span></td><td>长尾问答</td></tr>
+            <tr><td class="kw">total value locked</td><td>3,500</td><td><span class="badge medium">50</span></td><td><span class="badge info">信息</span></td><td><span class="badge p0">P0</span></td><td>TVL 概念，高搜索</td></tr>
+            <tr><td class="kw">what is TVL in DeFi</td><td>1,200</td><td><span class="badge low">30</span></td><td><span class="badge info">信息</span></td><td><span class="badge p1">P1</span></td><td>TVL 解释</td></tr>
+            <tr><td class="kw">decentralized exchange</td><td>18,000</td><td><span class="badge high">75</span></td><td><span class="badge info">信息</span></td><td><span class="badge p1">P1</span></td><td>大词，需集群支撑</td></tr>
+            <tr><td class="kw">what is a DEX</td><td>2,400</td><td><span class="badge medium">42</span></td><td><span class="badge info">信息</span></td><td><span class="badge p1">P1</span></td><td>DEX 入门</td></tr>
+            <tr><td class="kw">DEX vs CEX</td><td>3,800</td><td><span class="badge medium">48</span></td><td><span class="badge comm">商业</span></td><td><span class="badge p0">P0</span></td><td>对比型，高意图</td></tr>
+            <tr><td class="kw">AMM vs order book</td><td>900</td><td><span class="badge low">32</span></td><td><span class="badge comm">商业</span></td><td><span class="badge p0">P0</span></td><td>已有指南，优化</td></tr>
+            <tr><td class="kw">DeFi for beginners</td><td>2,200</td><td><span class="badge medium">45</span></td><td><span class="badge info">信息</span></td><td><span class="badge p1">P1</span></td><td>入门流量入口</td></tr>
+            <tr><td class="kw">how DeFi works</td><td>1,600</td><td><span class="badge medium">40</span></td><td><span class="badge info">信息</span></td><td><span class="badge p2">P2</span></td><td>泛 DeFi 词</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Panel 2: AMM Mechanics -->
+    <div class="cluster-panel" id="p2">
+      <h3>集群 2：AMM 机制（LP Mechanics）</h3>
+      <p>技术深度最高的集群，搜索者多为开发者和高级用户。站点在 Uniswap v4 和 DLMM 上已有先发优势，需持续跟进 v4 生态。</p>
+      <div class="kw-table-wrap">
+        <table class="kw-table">
+          <thead><tr><th>关键词</th><th>SV(估)</th><th>KD</th><th>意图</th><th>优先级</th><th>备注</th></tr></thead>
+          <tbody>
+            <tr><td class="kw">automated market maker</td><td>5,500</td><td><span class="badge high">62</span></td><td><span class="badge info">信息</span></td><td><span class="badge p0">P0</span></td><td>核心技术词</td></tr>
+            <tr><td class="kw">what is an AMM</td><td>2,800</td><td><span class="badge medium">45</span></td><td><span class="badge info">信息</span></td><td><span class="badge p0">P0</span></td><td>已有指南</td></tr>
+            <tr><td class="kw">how does AMM work</td><td>1,400</td><td><span class="badge medium">38</span></td><td><span class="badge info">信息</span></td><td><span class="badge p0">P0</span></td><td>机制解释</td></tr>
+            <tr><td class="kw">constant product formula</td><td>1,100</td><td><span class="badge low">30</span></td><td><span class="badge info">信息</span></td><td><span class="badge p0">P0</span></td><td>已有指南，x*y=k</td></tr>
+            <tr><td class="kw">x*y=k AMM</td><td>450</td><td><span class="badge low">18</span></td><td><span class="badge info">信息</span></td><td><span class="badge p1">P1</span></td><td>公式精确匹配</td></tr>
+            <tr><td class="kw">concentrated liquidity</td><td>2,200</td><td><span class="badge medium">42</span></td><td><span class="badge info">信息</span></td><td><span class="badge p0">P0</span></td><td>v3 核心概念</td></tr>
+            <tr><td class="kw">what is concentrated liquidity</td><td>900</td><td><span class="badge low">28</span></td><td><span class="badge info">信息</span></td><td><span class="badge p0">P0</span></td><td>解释型</td></tr>
+            <tr><td class="kw">Uniswap v3 concentrated liquidity</td><td>700</td><td><span class="badge low">30</span></td><td><span class="badge info">信息</span></td><td><span class="badge p1">P1</span></td><td>协议+概念</td></tr>
+            <tr><td class="kw">Uniswap v4</td><td>8,500</td><td><span class="badge high">60</span></td><td><span class="badge info">信息</span></td><td><span class="badge p0">P0</span></td><td>2025.1上线，高增长</td></tr>
+            <tr><td class="kw">Uniswap v4 hooks</td><td>3,200</td><td><span class="badge medium">38</span></td><td><span class="badge info">信息</span></td><td><span class="badge p0">P0</span></td><td>增长最快，竞争低</td></tr>
+            <tr><td class="kw">what are Uniswap v4 hooks</td><td>1,100</td><td><span class="badge low">25</span></td><td><span class="badge info">信息</span></td><td><span class="badge p0">P0</span></td><td>问答型，AI 搜索友好</td></tr>
+            <tr><td class="kw">Uniswap v4 singleton architecture</td><td>350</td><td><span class="badge low">15</span></td><td><span class="badge info">信息</span></td><td><span class="badge p1">P1</span></td><td>已有深度指南</td></tr>
+            <tr><td class="kw">Uniswap v4 flash accounting</td><td>280</td><td><span class="badge low">12</span></td><td><span class="badge info">信息</span></td><td><span class="badge p1">P1</span></td><td>技术长尾</td></tr>
+            <tr><td class="kw">Uniswap v4 permissioned pools</td><td>600</td><td><span class="badge low">20</span></td><td><span class="badge info">信息</span></td><td><span class="badge p0">P0</span></td><td>2026.7新功能，RWA入口</td></tr>
+            <tr><td class="kw">DLMM</td><td>800</td><td><span class="badge low">28</span></td><td><span class="badge info">信息</span></td><td><span class="badge p1">P1</span></td><td>已有指南，Meteora</td></tr>
+            <tr><td class="kw">discretized liquidity market maker</td><td>200</td><td><span class="badge low">10</span></td><td><span class="badge info">信息</span></td><td><span class="badge p2">P2</span></td><td>全称，低竞争</td></tr>
+            <tr><td class="kw">Meteora DLMM</td><td>550</td><td><span class="badge low">22</span></td><td><span class="badge info">信息</span></td><td><span class="badge p1">P1</span></td><td>Solana 生态</td></tr>
+            <tr><td class="kw">stable swap AMM</td><td>600</td><td><span class="badge low">25</span></td><td><span class="badge info">信息</span></td><td><span class="badge p1">P1</span></td><td>Curve 机制</td></tr>
+            <tr><td class="kw">weighted pool Balancer</td><td>400</td><td><span class="badge low">20</span></td><td><span class="badge info">信息</span></td><td><span class="badge p1">P1</span></td><td>Balancer 机制</td></tr>
+            <tr><td class="kw">AMM math formula</td><td>350</td><td><span class="badge low">18</span></td><td><span class="badge info">信息</span></td><td><span class="badge p2">P2</span></td><td>数学深度</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Panel 3: Impermanent Loss -->
+    <div class="cluster-panel" id="p3">
+      <h3>集群 3：无常损失（Impermanent Loss）</h3>
+      <p><strong>最高价值子主题</strong>。搜索量高、竞争中等、用户停留时间长。站点已有深度解释指南，但<strong>缺少交互式 Calculator 工具</strong>——这是获取反向链接和用户留存的最强抓手。</p>
+      <div class="kw-table-wrap">
+        <table class="kw-table">
+          <thead><tr><th>关键词</th><th>SV(估)</th><th>KD</th><th>意图</th><th>优先级</th><th>备注</th></tr></thead>
+          <tbody>
+            <tr><td class="kw">impermanent loss</td><td>9,800</td><td><span class="badge high">65</span></td><td><span class="badge info">信息</span></td><td><span class="badge p0">P0</span></td><td>核心风险词</td></tr>
+            <tr><td class="kw">what is impermanent loss</td><td>4,200</td><td><span class="badge medium">45</span></td><td><span class="badge info">信息</span></td><td><span class="badge p0">P0</span></td><td>已有指南，优化</td></tr>
+            <tr><td class="kw">impermanent loss explained</td><td>3,500</td><td><span class="badge medium">42</span></td><td><span class="badge info">信息</span></td><td><span class="badge p0">P0</span></td><td>解释型，高搜索</td></tr>
+            <tr><td class="kw">impermanent loss calculator</td><td>5,200</td><td><span class="badge medium">48</span></td><td><span class="badge trans">交易</span></td><td><span class="badge p0">P0</span></td><td>工具型，必做！</td></tr>
+            <tr><td class="kw">impermanent loss formula</td><td>1,800</td><td><span class="badge low">32</span></td><td><span class="badge info">信息</span></td><td><span class="badge p0">P0</span></td><td>公式查询</td></tr>
+            <tr><td class="kw">impermanent loss example</td><td>1,200</td><td><span class="badge low">28</span></td><td><span class="badge info">信息</span></td><td><span class="badge p0">P0</span></td><td>示例型，高参与</td></tr>
+            <tr><td class="kw">how to avoid impermanent loss</td><td>2,400</td><td><span class="badge medium">40</span></td><td><span class="badge comm">商业</span></td><td><span class="badge p0">P0</span></td><td>解决方案型</td></tr>
+            <tr><td class="kw">impermanent loss vs holding</td><td>900</td><td><span class="badge low">25</span></td><td><span class="badge comm">商业</span></td><td><span class="badge p1">P1</span></td><td>对比型</td></tr>
+            <tr><td class="kw">impermanent loss stablecoin</td><td>700</td><td><span class="badge low">22</span></td><td><span class="badge info">信息</span></td><td><span class="badge p1">P1</span></td><td>稳定币场景</td></tr>
+            <tr><td class="kw">impermanent loss Uniswap v3</td><td>1,100</td><td><span class="badge low">30</span></td><td><span class="badge info">信息</span></td><td><span class="badge p0">P0</span></td><td>v3 集中流动性 IL</td></tr>
+            <tr><td class="kw">concentrated liquidity impermanent loss</td><td>500</td><td><span class="badge low">20</span></td><td><span class="badge info">信息</span></td><td><span class="badge p1">P1</span></td><td>机制+风险交叉</td></tr>
+            <tr><td class="kw">IL calculator DeFi</td><td>600</td><td><span class="badge low">18</span></td><td><span class="badge trans">交易</span></td><td><span class="badge p0">P0</span></td><td>工具长尾</td></tr>
+            <tr><td class="kw">loss versus rebalancing</td><td>350</td><td><span class="badge low">12</span></td><td><span class="badge info">信息</span></td><td><span class="badge p1">P1</span></td><td>LVR，学术/高级</td></tr>
+            <tr><td class="kw">LVR AMM</td><td>200</td><td><span class="badge low">8</span></td><td><span class="badge info">信息</span></td><td><span class="badge p2">P2</span></td><td>高级概念，作者专长</td></tr>
+            <tr><td class="kw">impermanent loss protection</td><td>800</td><td><span class="badge low">28</span></td><td><span class="badge comm">商业</span></td><td><span class="badge p1">P1</span></td><td>产品/方案搜索</td></tr>
+            <tr><td class="kw">does impermanent loss matter</td><td>300</td><td><span class="badge low">10</span></td><td><span class="badge info">信息</span></td><td><span class="badge p2">P2</span></td><td>问答型，AI友好</td></tr>
+            <tr><td class="kw">impermanent loss vs permanent loss</td><td>250</td><td><span class="badge low">8</span></td><td><span class="badge info">信息</span></td><td><span class="badge p2">P2</span></td><td>概念辨析</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Panel 4: Protocols -->
+    <div class="cluster-panel" id="p4">
+      <h3>集群 4：协议平台（Protocols & Platforms）</h3>
+      <p>品牌词搜索量大但竞争激烈。策略是做<strong>协议深度指南 + 协议对比</strong>，而非抢品牌词排名。对比型关键词（vs）竞争低、意图强，是最佳切入点。</p>
+      <div class="kw-table-wrap">
+        <table class="kw-table">
+          <thead><tr><th>关键词</th><th>SV(估)</th><th>KD</th><th>意图</th><th>优先级</th><th>备注</th></tr></thead>
+          <tbody>
+            <tr><td class="kw">Uniswap</td><td>180,000</td><td><span class="badge high">88</span></td><td><span class="badge nav">导航</span></td><td><span class="badge p2">P2</span></td><td>品牌词，不直接抢</td></tr>
+            <tr><td class="kw">Uniswap liquidity pool</td><td>3,200</td><td><span class="badge medium">45</span></td><td><span class="badge info">信息</span></td><td><span class="badge p0">P0</span></td><td>品牌+概念，可做</td></tr>
+            <tr><td class="kw">how to use Uniswap</td><td>5,500</td><td><span class="badge medium">50</span></td><td><span class="badge trans">交易</span></td><td><span class="badge p1">P1</span></td><td>教程型</td></tr>
+            <tr><td class="kw">Curve Finance</td><td>45,000</td><td><span class="badge high">80</span></td><td><span class="badge nav">导航</span></td><td><span class="badge p2">P2</span></td><td>品牌词</td></tr>
+            <tr><td class="kw">Curve Finance explained</td><td>1,500</td><td><span class="badge medium">38</span></td><td><span class="badge info">信息</span></td><td><span class="badge p0">P0</span></td><td>深度指南机会</td></tr>
+            <tr><td class="kw">Curve stable pool</td><td>700</td><td><span class="badge low">25</span></td><td><span class="badge info">信息</span></td><td><span class="badge p1">P1</span></td><td>机制+协议</td></tr>
+            <tr><td class="kw">veCRV explained</td><td>900</td><td><span class="badge low">28</span></td><td><span class="badge info">信息</span></td><td><span class="badge p0">P0</span></td><td>Curve 治理，高价值</td></tr>
+            <tr><td class="kw">Curve Wars</td><td>1,200</td><td><span class="badge low">30</span></td><td><span class="badge info">信息</span></td><td><span class="badge p1">P1</span></td><td>治理战争，话题性强</td></tr>
+            <tr><td class="kw">Convex Finance</td><td>8,500</td><td><span class="badge high">65</span></td><td><span class="badge nav">导航</span></td><td><span class="badge p2">P2</span></td><td>Curve 增强层</td></tr>
+            <tr><td class="kw">Balancer</td><td>25,000</td><td><span class="badge high">75</span></td><td><span class="badge nav">导航</span></td><td><span class="badge p2">P2</span></td><td>品牌词</td></tr>
+            <tr><td class="kw">Balancer weighted pool</td><td>500</td><td><span class="badge low">20</span></td><td><span class="badge info">信息</span></td><td><span class="badge p1">P1</span></td><td>机制深度</td></tr>
+            <tr><td class="kw">PancakeSwap</td><td>90,000</td><td><span class="badge high">85</span></td><td><span class="badge nav">导航</span></td><td><span class="badge p2">P2</span></td><td>BSC 龙头</td></tr>
+            <tr><td class="kw">SushiSwap</td><td>35,000</td><td><span class="badge high">78</span></td><td><span class="badge nav">导航</span></td><td><span class="badge p2">P2</span></td><td>品牌词</td></tr>
+            <tr><td class="kw">Uniswap vs Curve</td><td>2,800</td><td><span class="badge low">32</span></td><td><span class="badge comm">商业</span></td><td><span class="badge p0">P0</span></td><td>对比词，高意图低竞争</td></tr>
+            <tr><td class="kw">Curve vs Balancer</td><td>900</td><td><span class="badge low">22</span></td><td><span class="badge comm">商业</span></td><td><span class="badge p0">P0</span></td><td>对比词</td></tr>
+            <tr><td class="kw">Uniswap vs PancakeSwap</td><td>1,800</td><td><span class="badge low">28</span></td><td><span class="badge comm">商业</span></td><td><span class="badge p1">P1</span></td><td>对比词</td></tr>
+            <tr><td class="kw">best DEX 2026</td><td>2,200</td><td><span class="badge medium">40</span></td><td><span class="badge comm">商业</span></td><td><span class="badge p0">P0</span></td><td>年度榜单，季节性</td></tr>
+            <tr><td class="kw">best liquidity pool platform</td><td>1,100</td><td><span class="badge low">30</span></td><td><span class="badge comm">商业</span></td><td><span class="badge p0">P0</span></td><td>平台选择</td></tr>
+            <tr><td class="kw">Maverick protocol</td><td>1,500</td><td><span class="badge low">35</span></td><td><span class="badge info">信息</span></td><td><span class="badge p1">P1</span></td><td>动态分布 AMM</td></tr>
+            <tr><td class="kw">Trader Joe</td><td>12,000</td><td><span class="badge high">70</span></td><td><span class="badge nav">导航</span></td><td><span class="badge p2">P2</span></td><td>Avalanche</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Panel 5: LP Strategy -->
+    <div class="cluster-panel" id="p5">
+      <h3>集群 5：LP 策略与操作（LP Strategy）</h3>
+      <p>操作指南类关键词，搜索者已有基础认知，正在寻求具体策略。"How to"类内容是站点的机会区——现有内容偏机制解释，缺少手把手策略指南。</p>
+      <div class="kw-table-wrap">
+        <table class="kw-table">
+          <thead><tr><th>关键词</th><th>SV(估)</th><th>KD</th><th>意图</th><th>优先级</th><th>备注</th></tr></thead>
+          <tbody>
+            <tr><td class="kw">how to provide liquidity</td><td>6,500</td><td><span class="badge medium">50</span></td><td><span class="badge trans">交易</span></td><td><span class="badge p0">P0</span></td><td>操作入口，高搜索</td></tr>
+            <tr><td class="kw">how to provide liquidity on Uniswap</td><td>3,800</td><td><span class="badge medium">45</span></td><td><span class="badge trans">交易</span></td><td><span class="badge p0">P0</span></td><td>协议-specific 教程</td></tr>
+            <tr><td class="kw">liquidity provision strategy</td><td>800</td><td><span class="badge low">25</span></td><td><span class="badge comm">商业</span></td><td><span class="badge p0">P0</span></td><td>策略型，高级用户</td></tr>
+            <tr><td class="kw">LP strategy DeFi</td><td>1,200</td><td><span class="badge low">30</span></td><td><span class="badge comm">商业</span></td><td><span class="badge p0">P0</span></td><td>策略框架</td></tr>
+            <tr><td class="kw">best LP strategy Uniswap v3</td><td>900</td><td><span class="badge low">28</span></td><td><span class="badge comm">商业</span></td><td><span class="badge p0">P0</span></td><td>v3 范围策略</td></tr>
+            <tr><td class="kw">concentrated liquidity strategy</td><td>700</td><td><span class="badge low">22</span></td><td><span class="badge comm">商业</span></td><td><span class="badge p0">P0</span></td><td>范围设置策略</td></tr>
+            <tr><td class="kw">Uniswap v3 range strategy</td><td>600</td><td><span class="badge low">20</span></td><td><span class="badge comm">商业</span></td><td><span class="badge p0">P0</span></td><td>价格区间设置</td></tr>
+            <tr><td class="kw">yield farming</td><td>28,000</td><td><span class="badge high">72</span></td><td><span class="badge info">信息</span></td><td><span class="badge p1">P1</span></td><td>大词，需集群</td></tr>
+            <tr><td class="kw">what is yield farming</td><td>5,500</td><td><span class="badge medium">48</span></td><td><span class="badge info">信息</span></td><td><span class="badge p1">P1</span></td><td>入门解释</td></tr>
+            <tr><td class="kw">best yield farming platforms 2026</td><td>2,400</td><td><span class="badge medium">42</span></td><td><span class="badge comm">商业</span></td><td><span class="badge p0">P0</span></td><td>年度榜单</td></tr>
+            <tr><td class="kw">liquidity mining</td><td>8,500</td><td><span class="badge high">60</span></td><td><span class="badge info">信息</span></td><td><span class="badge p1">P1</span></td><td>挖矿概念</td></tr>
+            <tr><td class="kw">liquidity mining vs yield farming</td><td>1,100</td><td><span class="badge low">28</span></td><td><span class="badge comm">商业</span></td><td><span class="badge p1">P1</span></td><td>概念辨析</td></tr>
+            <tr><td class="kw">LP rewards calculator</td><td>800</td><td><span class="badge low">22</span></td><td><span class="badge trans">交易</span></td><td><span class="badge p1">P1</span></td><td>收益计算工具</td></tr>
+            <tr><td class="kw">passive income crypto liquidity</td><td>1,500</td><td><span class="badge medium">38</span></td><td><span class="badge comm">商业</span></td><td><span class="badge p1">P1</span></td><td>被动收入角度</td></tr>
+            <tr><td class="kw">single sided liquidity provision</td><td>600</td><td><span class="badge low">18</span></td><td><span class="badge info">信息</span></td><td><span class="badge p1">P1</span></td><td>单边提供，新兴</td></tr>
+            <tr><td class="kw">automated liquidity management</td><td>450</td><td><span class="badge low">15</span></td><td><span class="badge comm">商业</span></td><td><span class="badge p2">P2</span></td><td>Arrakis/Gamma等</td></tr>
+            <tr><td class="kw">LP fee calculation</td><td>350</td><td><span class="badge low">12</span></td><td><span class="badge info">信息</span></td><td><span class="badge p2">P2</span></td><td>手续费计算</td></tr>
+            <tr><td class="kw">slippage tolerance DeFi</td><td>1,200</td><td><span class="badge low">30</span></td><td><span class="badge info">信息</span></td><td><span class="badge p1">P1</span></td><td>滑点设置</td></tr>
+            <tr><td class="kw">price impact vs slippage</td><td>500</td><td><span class="badge low">18</span></td><td><span class="badge info">信息</span></td><td><span class="badge p1">P1</span></td><td>概念辨析</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Panel 6: Risk & Security -->
+    <div class="cluster-panel" id="p6">
+      <h3>集群 6：风险与安全（Risk & Security）</h3>
+      <p>与站点"Risk & Research"轨道高度匹配。MEV、智能合约风险、Rug Pull 识别是内容缺口，且搜索者信任深度研究内容。</p>
+      <div class="kw-table-wrap">
+        <table class="kw-table">
+          <thead><tr><th>关键词</th><th>SV(估)</th><th>KD</th><th>意图</th><th>优先级</th><th>备注</th></tr></thead>
+          <tbody>
+            <tr><td class="kw">DeFi risks</td><td>3,200</td><td><span class="badge medium">45</span></td><td><span class="badge info">信息</span></td><td><span class="badge p0">P0</span></td><td>风险总览</td></tr>
+            <tr><td class="kw">DeFi smart contract risk</td><td>1,100</td><td><span class="badge low">30</span></td><td><span class="badge info">信息</span></td><td><span class="badge p0">P0</span></td><td>合约风险</td></tr>
+            <tr><td class="kw">smart contract audit DeFi</td><td>1,800</td><td><span class="badge medium">38</span></td><td><span class="badge info">信息</span></td><td><span class="badge p0">P0</span></td><td>审计查询</td></tr>
+            <tr><td class="kw">how to check if smart contract is safe</td><td>900</td><td><span class="badge low">25</span></td><td><span class="badge comm">商业</span></td><td><span class="badge p0">P0</span></td><td>尽调指南，高意图</td></tr>
+            <tr><td class="kw">MEV</td><td>6,500</td><td><span class="badge high">58</span></td><td><span class="badge info">信息</span></td><td><span class="badge p0">P0</span></td><td>最大可提取价值</td></tr>
+            <tr><td class="kw">what is MEV</td><td>2,800</td><td><span class="badge medium">42</span></td><td><span class="badge info">信息</span></td><td><span class="badge p0">P0</span></td><td>MEV 解释</td></tr>
+            <tr><td class="kw">sandwich attack DeFi</td><td>1,500</td><td><span class="badge low">32</span></td><td><span class="badge info">信息</span></td><td><span class="badge p0">P0</span></td><td>三明治攻击</td></tr>
+            <tr><td class="kw">how to avoid sandwich attacks

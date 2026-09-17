@@ -150,6 +150,7 @@ Fungible rung shares have two practical benefits. Lending markets can price a bi
 
 - **Bin distribution, live rung and current fee:** [Meteora](https://app.meteora.ag).
 - **Rung crossings and volume over time:** [Dune Analytics](https://dune.com).
+- **Model bin distributions and fees:** the [Meteora DLMM calculator](/tools/meteora-dlmm-calculator/?anchor=20&step=25&below=10&above=10&shape=curve).
 - **Per-rung fee growth:** the protocol's own indexing interface.
 
 ## When something goes wrong

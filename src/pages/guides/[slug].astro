@@ -1,6 +1,6 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import { articles, articleBySlug } from '../../lib/articles';
+import { articles, articleBySlug, trackInfoForArticle } from '../../lib/articles';
 import { editorialTeam } from '../../lib/editorial';
 import { toolForGuide } from '../../lib/tools';
 
@@ -8,7 +8,14 @@ export function getStaticPaths() { return articles.map((article) => ({ params: {
 const article = articleBySlug(Astro.params.slug!);
 if (!article) throw new Error('Article not found');
 const Content = article.Content;
-const related = articles.filter((item) => item.category === article.category && item.slug !== article.slug).slice(0, 3);
+const trackInfo = trackInfoForArticle(article.slug);
+const trackArticles = trackInfo ? trackInfo.track : [];
+const trackIndex = trackInfo ? trackInfo.index : 1;
+const nextArticle = trackInfo ? trackInfo.next : null;
+const prevArticle = trackInfo ? trackInfo.prev : null;
+const related = trackInfo
+  ? ([trackInfo.next, trackInfo.prev, trackArticles[trackIndex + 1]].filter(Boolean) as typeof trackArticles)
+  : [];
 const articleImage = '/images/guides/' + article.slug + '.webp';
 const reviewedDate = article.lastReviewed ?? article.date;
 const articleSchema = {
@@ -58,15 +65,13 @@ const faqSchema = faq.length
       }))
     }
   : null;
-const trackArticles = articles.filter((item) => item.category === article.category);
-const trackIndex = trackArticles.findIndex((item) => item.slug === article.slug) + 1;
 const trackAnchor = '/guides/#' + article.category.toLowerCase().replaceAll(' ', '-').replace('&', 'and');
 const tool = toolForGuide(article);
 ---
 <BaseLayout title={article.title + ' — LiquidityPools.app'} description={article.description} type="article" image={articleImage} author={editorialTeam.name}>
   <Fragment slot="head"><link rel="stylesheet" href="/katex/katex.min.css" /><script is:inline type="application/ld+json" set:html={JSON.stringify(articleSchema)} /><script is:inline type="application/ld+json" set:html={JSON.stringify(breadcrumbSchema)} />{faqSchema && <script is:inline type="application/ld+json" set:html={JSON.stringify(faqSchema)} />}</Fragment>
-  <section class="article-hero"><div class="container article-hero__grid"><div><div class="eyebrow eyebrow--mint"><a class="eyebrow-link" href={trackAnchor}>{article.category}</a> · Track Guide {trackIndex} of {trackArticles.length}</div><h1>{article.title}</h1><p class="dek">{article.description}</p></div><div class="article-meta"><div>Published<strong>{new Date(article.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</strong></div><div>Last reviewed<strong>{new Date(reviewedDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</strong></div><div>By<strong><a href="/about/#editorial-policy">{editorialTeam.name}</a></strong></div><div>Reading time<strong>{article.readTime}</strong></div></div></div></section>
-  <article class="container article-layout"><aside class="article-rail"><div><h2>Track Progress</h2><p><strong>{article.category}</strong><br />Part {trackIndex} of {trackArticles.length} in this sequence.</p><p style="margin-top:6px"><a href="/topics/">View learning path ↗</a></p></div><div><h2>Research standard</h2><p>Mechanism first. Material claims are sourced. Outcomes remain conditional.</p></div><div><h2>Related in Track</h2>{related.map((item) => <a href={'/guides/' + item.slug + '/'}>{item.title}</a>)}</div></aside><div class="article-content"><Content /><aside class="tool-callout" data-tool-callout><div class="tool-callout__eyebrow">Run your own numbers</div><p><strong>{tool.title}.</strong> {tool.prompt}</p><a class="tool-callout__link" href={tool.href} data-cta="guide_tool_callout">Open the calculator <span aria-hidden="true">↗</span></a></aside><script is:inline>
+  <section class="article-hero"><div class="container article-hero__grid"><div><p class="eyebrow"><a class="eyebrow-link" href={trackAnchor}>{article.category}</a>, guide {trackIndex} of {trackArticles.length}</p><h1>{article.title}</h1><p class="dek">{article.description}</p></div><div class="article-meta"><div>Published<strong>{new Date(article.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</strong></div><div>Last reviewed<strong>{new Date(reviewedDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</strong></div><div>By<strong><a href="/about/#editorial-policy">{editorialTeam.name}</a></strong></div><div>Reading time<strong>{article.readTime}</strong></div></div></div></section>
+  <article class="container article-layout"><aside class="article-rail"><div><h2>Track Progress</h2><p><strong>{article.category}</strong><br />Part {trackIndex} of {trackArticles.length} in this sequence.</p><p style="margin-top:6px"><a href="/topics/">View the reading order</a></p></div><div><h2>Research standard</h2><p>Mechanism first. Material claims are sourced. Outcomes remain conditional.</p></div><div><h2>Related in Track</h2>{related.map((item) => <a href={'/guides/' + item.slug + '/'}>{item.title}</a>)}</div></aside><div class="article-content"><Content /><aside class="tool-callout" data-tool-callout><div class="tool-callout__eyebrow">Run your own numbers</div><p><strong>{tool.title}.</strong> {tool.prompt}</p><a class="tool-callout__link" href={tool.href} data-cta="guide_tool_callout">Open the calculator</a></aside><script is:inline>
     (function () {
       // Lift the calculator prompt to just before the guide's second section, so it sits in the
       // first quarter of the read instead of after it. Without JS it stays at the end of the body.
@@ -84,7 +89,7 @@ const tool = toolForGuide(article);
         </details>
       ))}
     </div>
-  )}<div class="article-author-card"><div class="article-author-card__content"><div class="article-author-card__eyebrow">Published by SudoAI</div><h3 class="article-author-card__name"><a href="/about/#editorial-policy">{editorialTeam.name}</a></h3><p class="article-author-card__bio">{editorialTeam.bio} <a href="/about/#editorial-policy">Read the editorial policy.</a></p></div></div><div class="article-end" data-guide-end={article.slug}><h2 class="display">Keep the model, not just the answer.</h2><p>Every liquidity position has a context. Continue through the <a href="/guides/"><strong>full research library</strong></a> to connect this idea with the mechanism, risks, and market conditions around it.</p></div></div><aside class="article-rail"><div><h2>Byline</h2><p><strong><a href="/about/#editorial-policy">{editorialTeam.name}</a></strong><br /><span style="font-size:11px;color:#527366">Published by SudoAI</span></p></div><div><h2>Data sources we use</h2><p style="font-size:11.5px;color:#55705e;margin-bottom:8px">Sources for independent verification:</p><a href="https://revert.finance" target="_blank" rel="noopener">Revert Finance ↗</a><a href="https://dune.com" target="_blank" rel="noopener">Dune Analytics ↗</a><a href="https://defillama.com" target="_blank" rel="noopener">DeFiLlama Yields ↗</a></div><div><h2>Editorial note</h2><p>This guide is educational and general in nature. It is not investment, legal, tax, or financial advice.</p></div><div><h2>Method</h2><p><a href="/about/#editorial-policy">How LiquidityPools.app drafts, checks, reviews, and corrects its work.</a></p></div></aside></article>
+  )}<div class="article-author-card"><div class="article-author-card__content"><div class="article-author-card__eyebrow">Published by SudoAI</div><h3 class="article-author-card__name"><a href="/about/#editorial-policy">{editorialTeam.name}</a></h3><p class="article-author-card__bio">{editorialTeam.bio} <a href="/about/#editorial-policy">Read the editorial policy.</a></p></div></div><div class="article-end" data-guide-end={article.slug}><h2>Continue in this track</h2><p>This is guide {trackIndex} of {trackArticles.length} in <strong>{article.category}</strong>.</p>{nextArticle && <p style="margin-top:8px"><strong>Next:</strong> <a href={'/guides/' + nextArticle.slug + '/'}><strong>{nextArticle.title}</strong> →</a></p>}{prevArticle && <p style="margin-top:4px"><strong>Previous:</strong> <a href={'/guides/' + prevArticle.slug + '/'}>← {prevArticle.title}</a></p>}<p style="margin-top:8px"><a href={trackAnchor}><strong>See the full track sequence</strong></a>, or browse <a href="/guides/">all {articles.length} guides</a>.</p></div></div><aside class="article-rail"><div><h2>Byline</h2><p><strong><a href="/about/#editorial-policy">{editorialTeam.name}</a></strong><br /><span class="article-rail__note">Published by SudoAI</span></p></div><div><h2>Data sources we use</h2><p class="article-rail__note" style="margin-bottom:6px">Public data for independent verification:</p><a href="https://revert.finance" target="_blank" rel="noopener">Revert Finance ↗</a><a href="https://dune.com" target="_blank" rel="noopener">Dune Analytics ↗</a><a href="https://defillama.com" target="_blank" rel="noopener">DeFiLlama Yields ↗</a></div><div><h2>Editorial note</h2><p>This guide is educational and general in nature. It is not investment, legal, tax, or financial advice.</p></div><div><h2>Method</h2><p><a href="/about/#editorial-policy">How LiquidityPools.app drafts, checks, reviews, and corrects its work.</a></p></div></aside></article>
   <dialog class="figure-dialog" data-figure-dialog aria-label="Enlarged figure"><form method="dialog"><button class="figure-dialog__close" aria-label="Close enlarged figure">Close ✕</button></form><img alt="" /></dialog>
   <script is:inline>
     (function () {

@@ -165,7 +165,7 @@ The width that maximises a spreadsheet is almost always narrower than the width 
 
 ## Where to go next
 
-Test a candidate band in the [concentrated liquidity calculator](/tools/uniswap-v3-liquidity-calculator/), which reports the efficiency and what you hold at each bound. For the bin-based version of the same decision, see [Meteora DLMM Strategy](/guides/meteora-dlmm-strategy/).
+Test a candidate band in the [concentrated liquidity calculator](/tools/uniswap-v3-liquidity-calculator/?price=3000&lower=2700&upper=3300&capital=10000&tier=0.05), which reports the efficiency and what you hold at each bound. For the bin-based version of the same decision, see [Meteora DLMM Strategy](/guides/meteora-dlmm-strategy/).
 
 ## References
 

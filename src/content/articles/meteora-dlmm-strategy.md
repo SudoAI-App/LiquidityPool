@@ -171,7 +171,7 @@ Bins change the resolution of the decision. They do not change what the decision
 
 ## Where to go next
 
-Model the divergence side in the [impermanent loss calculator](/tools/impermanent-loss-calculator/) and the fee side in the [liquidity pool fee and APR calculator](/tools/liquidity-pool-calculator/). For the mechanism underneath, read [DLMM Explained](/guides/discretized-liquidity-dlmm-explained/). For the continuous-curve version of the same decision, read [Concentrated Liquidity Explained](/guides/concentrated-liquidity-explained/).
+Model the DLMM position directly in the [Meteora DLMM calculator](/tools/meteora-dlmm-calculator/?anchor=20&step=25&below=10&above=10&shape=curve&capital=10000), or check divergence in the [impermanent loss calculator](/tools/impermanent-loss-calculator/?mode=weighted&a0=20&a1=25&capital=10000). For the mechanism underneath, read [DLMM Explained](/guides/discretized-liquidity-dlmm-explained/). For the continuous-curve version of the same decision, read [Concentrated Liquidity Explained](/guides/concentrated-liquidity-explained/).
 
 ## References
 

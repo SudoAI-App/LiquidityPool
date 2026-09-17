@@ -166,7 +166,7 @@ The catch is the same one as doing it yourself, plus two more: contract risk, an
 
 ## Where to go next
 
-The boundary case gets its own guide in [Out-of-Range Liquidity](/guides/out-of-range-liquidity/). For picking the tier, see [Uniswap Fee Tiers Explained](/guides/uniswap-fee-tiers-explained/), and for the version differences, [Uniswap v3 vs v4](/guides/uniswap-v3-vs-v4/). For choosing the width itself, see [Concentrated Liquidity Strategy](/guides/concentrated-liquidity-strategy/) and [Uniswap v3 Ticks and Position NFTs](/guides/uniswap-v3-ticks-and-lp-nfts/). To test a specific band, use the [concentrated liquidity calculator](/tools/uniswap-v3-liquidity-calculator/).
+The boundary case gets its own guide in [Out-of-Range Liquidity](/guides/out-of-range-liquidity/). For picking the tier, see [Uniswap Fee Tiers Explained](/guides/uniswap-fee-tiers-explained/), and for the version differences, [Uniswap v3 vs v4](/guides/uniswap-v3-vs-v4/). For choosing the width itself, see [Concentrated Liquidity Strategy](/guides/concentrated-liquidity-strategy/) and [Uniswap v3 Ticks and Position NFTs](/guides/uniswap-v3-ticks-and-lp-nfts/). To test a specific band, use the [concentrated liquidity calculator](/tools/uniswap-v3-liquidity-calculator/?price=3000&lower=2700&upper=3300&capital=10000&tier=0.05).
 
 ## References
 

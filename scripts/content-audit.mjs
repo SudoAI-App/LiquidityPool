@@ -149,7 +149,7 @@ for (const file of readdirSync(articlesDir).filter((name) => name.endsWith('.md'
   const descriptionText = frontmatter[1].match(/^description:\s*"(.*)"$/m)?.[1] ?? '';
   if (titleText.length > MAX_TITLE_CHARS) errors.push(`${slug}: title is ${titleText.length} characters (max ${MAX_TITLE_CHARS})`);
   if (descriptionText.length > MAX_DESCRIPTION_CHARS) errors.push(`${slug}: description is ${descriptionText.length} characters (max ${MAX_DESCRIPTION_CHARS})`);
-  for (const link of body.matchAll(/\]\((\/(guides|tools)\/([^/)]+)\/)\)/g)) {
+  for (const link of body.matchAll(/\]\((\/(guides|tools)\/([^/?)]+)\/(?:\?[^)]*)?)\)/g)) {
     const [, href, kind, target] = link;
     const known = kind === 'guides' ? guideSlugs.has(target) : toolSlugs.has(target);
     if (!known) errors.push(`${slug}: internal link ${href} points to a page that does not exist`);

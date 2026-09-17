@@ -129,7 +129,7 @@ Out of range is not a malfunction. It is the price of the efficiency that made t
 
 ## Where to go next
 
-Price the trade-off before you mint: expected fees in the [liquidity pool fee and APR calculator](/tools/liquidity-pool-calculator/), and impermanent loss — the gap between the position and simply holding — at each edge in the [impermanent loss calculator](/tools/impermanent-loss-calculator/).
+Price the trade-off before you mint: expected fees in the [liquidity pool fee and APR calculator](/tools/liquidity-pool-calculator/?feeTier=0.05&capital=10000), and impermanent loss — the gap between the position and simply holding — at each edge in the [impermanent loss calculator](/tools/impermanent-loss-calculator/?mode=concentrated&a0=2000&a1=2400&capital=10000&lower=1800&upper=2200).
 
 ## References
 

@@ -159,7 +159,7 @@ See [How to Evaluate a Liquidity Pool](/guides/how-to-evaluate-a-liquidity-pool/
 
 ## Where to go next
 
-Model the income with the [liquidity pool fee and APR calculator](/tools/liquidity-pool-calculator/) and the cost with the [impermanent loss calculator](/tools/impermanent-loss-calculator/). For the tier decision underneath both, see [Uniswap Fee Tiers Explained](/guides/uniswap-fee-tiers-explained/). Both sides resolve into one figure in the [LP profit and return calculator](/tools/lp-profit-calculator/).
+Model the income with the [liquidity pool fee and APR calculator](/tools/liquidity-pool-calculator/?feeTier=0.05&capital=10000&volume=20000000&liquidity=5000000) and the cost with the [impermanent loss calculator](/tools/impermanent-loss-calculator/?mode=weighted&a0=2000&a1=2500&capital=10000&fees=150). For the tier decision underneath both, see [Uniswap Fee Tiers Explained](/guides/uniswap-fee-tiers-explained/). Both sides resolve into one figure in the [LP profit and return calculator](/tools/lp-profit-calculator/?priceA0=2000&priceA1=2500&capital=10000&fees=150&days=30).
 
 ## References
 

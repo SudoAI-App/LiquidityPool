@@ -146,7 +146,7 @@ See the [Liquidity Pool Research Checklist](/guides/liquidity-pool-research-chec
 
 ## Where to go next
 
-Match the curve to the pair in [Types of Liquidity Pools](/guides/liquidity-pool-types/), then price the income with the [liquidity pool fee and APR calculator](/tools/liquidity-pool-calculator/) and the cost with the [impermanent loss calculator](/tools/impermanent-loss-calculator/). The decisive comparison is in [LP Fees vs Impermanent Loss](/guides/lp-fees-vs-impermanent-loss/). Exit capacity is in [Token Liquidity Analysis](/guides/token-liquidity-analysis/), and the yield-provenance test in [Real Yield in Liquidity Pools](/guides/real-yield-liquidity-pools/).
+Match the curve to the pair in [Types of Liquidity Pools](/guides/liquidity-pool-types/), then price the income with the [liquidity pool fee and APR calculator](/tools/liquidity-pool-calculator/?feeTier=0.05&capital=20000&volume=10000000) and the cost with the [impermanent loss calculator](/tools/impermanent-loss-calculator/?mode=weighted&a0=2000&a1=2500&capital=20000). The decisive comparison is in [LP Fees vs Impermanent Loss](/guides/lp-fees-vs-impermanent-loss/). Exit capacity is in [Token Liquidity Analysis](/guides/token-liquidity-analysis/), and the yield-provenance test in [Real Yield in Liquidity Pools](/guides/real-yield-liquidity-pools/).
 
 ## References
 

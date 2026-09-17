@@ -70,7 +70,7 @@ const breadcrumbSchema = {
 
   <section class="page-hero tool-hero">
     <div class="container">
-      <div class="eyebrow eyebrow--mint">Research tools · Free, no wallet connection</div>
+      <p class="eyebrow">Calculator · free, no wallet connection</p>
       <h1 class="page-title">LP profit &amp; return calculator.</h1>
       <p>Fee income on one side, divergence and gas on the other. One net number, benchmarked against simply holding what you deposited.</p>
     </div>
@@ -160,10 +160,10 @@ const breadcrumbSchema = {
           <p class="tool-disclaimer">Educational model only. Assumes a balanced deposit on an unbounded constant-product curve, no intermediate withdrawals, and no price impact on entry or exit. Not investment advice.</p>
           <nav class="tool-next" aria-label="Understand this result">
             <span>Understand the number</span>
-            <a href="/methodology/" data-cta="calculator_methodology">Formulas and worked test cases <span aria-hidden="true">↗</span></a>
-            <a href="/guides/is-providing-liquidity-profitable/" data-cta="calculator_result_link">Is providing liquidity profitable? <span aria-hidden="true">↗</span></a>
-            <a href="/guides/lp-fees-vs-impermanent-loss/" data-cta="calculator_result_link">Fees vs impermanent loss <span aria-hidden="true">↗</span></a>
-            <a href="/guides/lp-gas-costs/" data-cta="calculator_result_link">Gas costs for LPs <span aria-hidden="true">↗</span></a>
+            <a href="/methodology/" data-cta="calculator_methodology">Formulas and worked test cases</a>
+            <a href="/guides/is-providing-liquidity-profitable/" data-cta="calculator_result_link">Is providing liquidity profitable?</a>
+            <a href="/guides/lp-fees-vs-impermanent-loss/" data-cta="calculator_result_link">Fees vs impermanent loss</a>
+            <a href="/guides/lp-gas-costs/" data-cta="calculator_result_link">Gas costs for LPs</a>
           </nav>
         </div>
       </div>
@@ -232,7 +232,7 @@ const breadcrumbSchema = {
         </div>
         <aside class="guide-aside">
           <h2>Method</h2>
-          <p style="font-size:12px;line-height:1.55;color:#5b7062">All calculations run in your browser. No inputs are transmitted, stored, or logged.</p>
+          <p>All calculations run in your browser. No inputs are transmitted, stored, or logged.</p>
           <h2 style="margin-top:22px">Verify onchain</h2>
           <a href="https://revert.finance" target="_blank" rel="noopener">Revert Finance ↗</a>
           <a href="https://dune.com" target="_blank" rel="noopener">Dune Analytics ↗</a>
@@ -309,6 +309,16 @@ const breadcrumbSchema = {
         } else {
           out.verdict.textContent = 'Income did not cover the divergence and gas. Holding the deposited basket would have produced ' + money(Math.abs(net)) + ' more.';
         }
+      }
+
+      if (location.search) {
+        var params = new URLSearchParams(location.search);
+        ids.forEach(function (id) {
+          var val = params.get(id);
+          if (val !== null && el[id] && !isNaN(Number(val))) {
+            el[id].value = val;
+          }
+        });
       }
 
       ids.forEach(function (id) { el[id].addEventListener('input', render); });

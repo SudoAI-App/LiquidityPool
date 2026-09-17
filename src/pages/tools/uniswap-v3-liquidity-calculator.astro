@@ -74,7 +74,7 @@ const breadcrumbSchema = {
 
   <section class="page-hero tool-hero">
     <div class="container">
-      <div class="eyebrow eyebrow--mint">Research tools · Free, no wallet connection</div>
+      <p class="eyebrow">Calculator · free, no wallet connection</p>
       <h1 class="page-title">Uniswap v3 &amp; concentrated liquidity calculator.</h1>
       <p>Model the shared bounded-liquidity maths used by Uniswap v3-style concentrated AMMs. Set a range and deposit to inspect token composition, capital efficiency, fees, and performance against holding.</p>
     </div>
@@ -186,10 +186,10 @@ const breadcrumbSchema = {
           <p class="tool-disclaimer">Educational model only. Fee income is an arithmetic consequence of the inputs, not a forecast. Excludes gas, entry and exit price impact, emissions, rebalancing and the path taken between prices. Not investment advice.</p>
           <nav class="tool-next" aria-label="Understand this result">
             <span>Understand the number</span>
-            <a href="/methodology/" data-cta="calculator_methodology">Formulas and worked test cases <span aria-hidden="true">↗</span></a>
-            <a href="/guides/concentrated-liquidity-explained/" data-cta="calculator_result_link">Concentrated liquidity explained <span aria-hidden="true">↗</span></a>
-            <a href="/guides/concentrated-liquidity-strategy/" data-cta="calculator_result_link">Choosing a range width <span aria-hidden="true">↗</span></a>
-            <a href="/guides/out-of-range-liquidity/" data-cta="calculator_result_link">What happens out of range <span aria-hidden="true">↗</span></a>
+            <a href="/methodology/" data-cta="calculator_methodology">Formulas and worked test cases</a>
+            <a href="/guides/concentrated-liquidity-explained/" data-cta="calculator_result_link">Concentrated liquidity explained</a>
+            <a href="/guides/concentrated-liquidity-strategy/" data-cta="calculator_result_link">Choosing a range width</a>
+            <a href="/guides/out-of-range-liquidity/" data-cta="calculator_result_link">What happens out of range</a>
           </nav>
         </div>
       </div>
@@ -276,7 +276,7 @@ const breadcrumbSchema = {
         </div>
         <aside class="guide-aside">
           <h2>Method</h2>
-          <p style="font-size:12px;line-height:1.55;color:#5b7062">All calculations run in your browser. No inputs are transmitted, stored, or logged.</p>
+          <p>All calculations run in your browser. No inputs are transmitted, stored, or logged.</p>
           <h2 style="margin-top:22px">Other calculators</h2>
           <a href="/tools/impermanent-loss-calculator/">Impermanent loss calculator</a>
           <a href="/tools/liquidity-pool-calculator/">Fee and APR calculator</a>
@@ -404,6 +404,16 @@ const breadcrumbSchema = {
           }
         });
       });
+
+      if (location.search) {
+        var params = new URLSearchParams(location.search);
+        ids.forEach(function (id) {
+          var val = params.get(id);
+          if (val !== null && el[id] && !isNaN(Number(val))) {
+            el[id].value = val;
+          }
+        });
+      }
 
       render();
     })();

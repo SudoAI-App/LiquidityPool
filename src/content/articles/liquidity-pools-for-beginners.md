@@ -143,8 +143,8 @@ Either answer is worth more than a month of reading, because it happened to your
 1. **Pick a pair you would hold in a wallet anyway.**
 2. **Pick the simplest structure that fits it.**
 3. **Check the contracts** are audited, verified, and not changeable by one key.
-4. **Estimate the income** with the [liquidity pool fee and APR calculator](/tools/liquidity-pool-calculator/).
-5. **Estimate the cost** with the [impermanent loss calculator](/tools/impermanent-loss-calculator/).
+4. **Estimate the income** with the [liquidity pool fee and APR calculator](/tools/liquidity-pool-calculator/?feeTier=0.3&capital=5000&volume=2000000&liquidity=500000).
+5. **Estimate the cost** with the [impermanent loss calculator](/tools/impermanent-loss-calculator/?mode=weighted&a0=2000&a1=2600&capital=5000).
 6. **Size it so gas is small** against expected income.
 7. **Write down what you deposited**, at what prices, with the transaction hash.
 8. **Set a review date and a written exit rule.**

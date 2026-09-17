@@ -136,7 +136,7 @@ The fourth deduction is reward tokens losing value. They accrue at one price and
 
 The volatile pool collected more than three times the fees and still lost to holding.
 
-That is the characteristic shape of this problem. The fee line is on every dashboard. The three lines that reversed the result are not. Build this same table for a specific pool in the [LP profit calculator](/tools/lp-profit-calculator/) before depositing rather than after.
+That is the characteristic shape of this problem. The fee line is on every dashboard. The three lines that reversed the result are not. Build this same table for a specific pool in the [LP profit calculator](/tools/lp-profit-calculator/?priceA0=2000&priceA1=2300&capital=20000&fees=1336&rewards=290&gas=9&txCount=6&days=90) before depositing rather than after.
 
 ## What people get wrong about profitability
 

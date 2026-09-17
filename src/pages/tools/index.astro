@@ -4,38 +4,38 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 const tools = [
   {
     href: '/tools/impermanent-loss-calculator/',
-    eyebrow: 'Risk · Divergence',
+    eyebrow: 'Divergence against holding',
     title: 'Impermanent Loss Calculator',
     description: 'Compare 50/50, weighted, and concentrated range scenarios, chart the IL curve, and share the exact inputs by URL.',
-    status: 'Live · runs in your browser'
+    status: 'Runs in your browser'
   },
   {
     href: '/tools/lp-profit-calculator/',
-    eyebrow: 'Outcome · Net result',
+    eyebrow: 'Net result on one ledger',
     title: 'LP Profit & Return Calculator',
     description: 'Fee income, divergence and gas resolved into one net figure, benchmarked against holding the assets you deposited rather than against cash.',
-    status: 'Live · runs in your browser'
+    status: 'Runs in your browser'
   },
   {
     href: '/tools/uniswap-v3-liquidity-calculator/',
-    eyebrow: 'Range · Concentrated positions',
+    eyebrow: 'Bounded price ranges',
     title: 'Uniswap v3 & Concentrated Liquidity Calculator',
     description: 'Set a price range and a deposit. Returns token composition at every price, capital efficiency against a full-range position, estimated fees and the result against holding.',
-    status: 'Live · runs in your browser'
+    status: 'Runs in your browser'
   },
   {
     href: '/tools/liquidity-pool-calculator/',
-    eyebrow: 'Revenue · Fee modelling',
+    eyebrow: 'Fee and incentive APR',
     title: 'Liquidity Pool Fees, Rewards & APR Calculator',
     description: 'Model trading-fee APR and incentive APR separately, then combine them with time in range and gas.',
-    status: 'Live · runs in your browser'
+    status: 'Runs in your browser'
   },
   {
     href: '/tools/meteora-dlmm-calculator/',
-    eyebrow: 'Bins · Meteora DLMM',
+    eyebrow: 'Discrete bins on Solana',
     title: 'Meteora DLMM Calculator',
     description: 'Model discrete bin prices, Spot, Curve and Bid-Ask shapes, dynamic fees, range state and divergence against holding.',
-    status: 'Live · runs in your browser'
+    status: 'Runs in your browser'
   }
 ];
 
@@ -79,22 +79,23 @@ const breadcrumbSchema = {
 
   <section class="page-hero">
     <div class="container">
-      <div class="eyebrow eyebrow--mint">Tools</div>
-      <h1 class="page-title">Numbers before narratives.</h1>
-      <p>Calculators that answer one question precisely, with the formula and its limitations stated on the same page. Everything runs locally; no wallet connection, no inputs stored.</p>
+      <p class="eyebrow">Calculators</p>
+      <h1 class="page-title">Five calculators with published formulas.</h1>
+      <p>Each one answers a single question and states its formula and its limits on the same page. Inputs stay in your browser: no wallet connection, nothing stored.</p>
+      <div class="hero-actions"><a class="button button--line" href="/methodology/">Read the methodology and test vectors</a></div>
     </div>
   </section>
 
   <section class="section section--paper">
     <div class="container">
       <div class="section-head">
-        <div><div class="kicker">Interactive</div><h2 class="section-title display">Model the position before you fund it.</h2></div>
+        <div><div class="kicker">Calculators</div><h2 class="section-title">Model the position before you fund it.</h2></div>
         <p class="section-intro">Each tool states its assumptions and links to the guide that derives them. A number without its model is not a result.</p>
       </div>
       <div class="article-grid article-grid--two">
         {tools.map((tool) => (
           <a class="tool-card" href={tool.href}>
-            <div class="feature-card__meta" style="color:#537063"><span>{tool.eyebrow}</span></div>
+            <div class="tool-card__eyebrow">{tool.eyebrow}</div>
             <h3>{tool.title}</h3>
             <p>{tool.description}</p>
             <span class="tool-card__status">{tool.status}</span>
@@ -106,11 +107,11 @@ const breadcrumbSchema = {
 
   <section class="section section--ink">
     <div class="container">
-      <div class="section-head"><div><div class="eyebrow eyebrow--mint">Frameworks</div><h2 class="section-title display">Checklists that do not need a calculator.</h2></div><a class="text-link" href="/guides/">Browse all guides <span>↗</span></a></div>
+      <div class="section-head"><div><div class="kicker">Frameworks</div><h2 class="section-title">Checklists that do not need a calculator.</h2></div><a class="text-link" href="/guides/">Browse all guides</a></div>
       <div class="track-grid track-grid--three">
         {frameworks.map((item, index) => (
           <a class="track" href={item.href}>
-            <span class="track__number">0{index + 1} / FRAMEWORK</span>
+            <span class="track__number">Framework {index + 1}</span>
             <h3>{item.title}</h3>
             <p>{item.description}</p>
           </a>
@@ -150,7 +151,7 @@ const breadcrumbSchema = {
         </div>
         <aside class="guide-aside">
           <h2>Editorial note</h2>
-          <p style="font-size:12px;line-height:1.55;color:#5b7062">These tools are educational. They are not investment, legal, tax or financial advice, and they make no claim about the future performance of any pool.</p>
+          <p>These tools are educational. They are not investment, legal, tax or financial advice, and they make no claim about the future performance of any pool.</p>
         </aside>
       </div>
     </div>

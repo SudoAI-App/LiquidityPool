@@ -163,7 +163,7 @@ See [How to Evaluate a Liquidity Pool](/guides/how-to-evaluate-a-liquidity-pool/
 
 ## Where to go next
 
-Two calculations belong beside this list: expected fee income, in the [liquidity pool fee and APR calculator](/tools/liquidity-pool-calculator/), and the gap it has to clear, in the [impermanent loss calculator](/tools/impermanent-loss-calculator/). For the full list of ways money is lost, see [Can You Lose Money in a Liquidity Pool?](/guides/can-you-lose-money-in-a-liquidity-pool/).
+Two calculations belong beside this list: expected fee income, in the [liquidity pool fee and APR calculator](/tools/liquidity-pool-calculator/?feeTier=0.05&capital=10000), and the gap it has to clear, in the [impermanent loss calculator](/tools/impermanent-loss-calculator/?mode=weighted&a0=2000&a1=2500&capital=10000). For the full list of ways money is lost, see [Can You Lose Money in a Liquidity Pool?](/guides/can-you-lose-money-in-a-liquidity-pool/).
 
 ## References
 

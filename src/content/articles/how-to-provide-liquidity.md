@@ -156,7 +156,7 @@ The flow reaching your pool changes your return, and it has been getting worse f
 
 ## Where to go next
 
-Price the boundary case in [Out-of-Range Liquidity](/guides/out-of-range-liquidity/) and the tier in [Uniswap Fee Tiers Explained](/guides/uniswap-fee-tiers-explained/). Then run the two numbers: expected fees in the [liquidity pool fee and APR calculator](/tools/liquidity-pool-calculator/), expected divergence in the [impermanent loss calculator](/tools/impermanent-loss-calculator/). For depositing one asset, see [Single-Sided Liquidity](/guides/single-sided-liquidity/), and for the protocol walkthrough, [Uniswap Liquidity Pools](/guides/uniswap-liquidity-pools/).
+Price the boundary case in [Out-of-Range Liquidity](/guides/out-of-range-liquidity/) and the tier in [Uniswap Fee Tiers Explained](/guides/uniswap-fee-tiers-explained/). Then run the two numbers: expected fees in the [liquidity pool fee and APR calculator](/tools/liquidity-pool-calculator/?feeTier=0.05&capital=10000&volume=15000000&liquidity=2000000), expected divergence in the [impermanent loss calculator](/tools/impermanent-loss-calculator/?mode=weighted&a0=3000&a1=3600&capital=10000). For depositing one asset, see [Single-Sided Liquidity](/guides/single-sided-liquidity/), and for the protocol walkthrough, [Uniswap Liquidity Pools](/guides/uniswap-liquidity-pools/).
 
 ## References
 

@@ -137,7 +137,7 @@ Working that list takes minutes and almost always stops before step five. Its va
 
 ## Where to go next
 
-Measure the second and third directly: divergence in the [impermanent loss calculator](/tools/impermanent-loss-calculator/), and the fees that have to offset it in the [liquidity pool fee and APR calculator](/tools/liquidity-pool-calculator/). For the same question from the revenue side, see [Is Providing Liquidity Profitable?](/guides/is-providing-liquidity-profitable/).
+Measure the second and third directly: divergence in the [impermanent loss calculator](/tools/impermanent-loss-calculator/?mode=weighted&a0=2000&a1=2800&capital=10000), and the fees that have to offset it in the [liquidity pool fee and APR calculator](/tools/liquidity-pool-calculator/?feeTier=0.3&capital=10000&volume=1000000). For the same question from the revenue side, see [Is Providing Liquidity Profitable?](/guides/is-providing-liquidity-profitable/).
 
 ## References
 

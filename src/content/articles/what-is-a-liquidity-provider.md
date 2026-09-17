@@ -71,7 +71,7 @@ Work it on \$25,000 in a 0.05% pool doing \$20M a day, with \$8M of liquidity in
 
 That 45.5% is what a pool interface would show you. The two rows underneath are why it is not your return, and in a narrow band the divergence row is several times larger.
 
-Model both sides: the [liquidity pool fee and APR calculator](/tools/liquidity-pool-calculator/) for the income, and the [impermanent loss calculator](/tools/impermanent-loss-calculator/) for impermanent loss — the gap between the pool position and simply holding.
+Model both sides: the [liquidity pool fee and APR calculator](/tools/liquidity-pool-calculator/?feeTier=0.3&capital=10000&volume=5000000&liquidity=1000000) for the income, and the [impermanent loss calculator](/tools/impermanent-loss-calculator/?mode=weighted&a0=2000&a1=2500&capital=10000) for impermanent loss — the gap between the pool position and simply holding.
 
 Some pools add their own token on top. That is funded by issuance rather than by trading, so it decays differently. See [Real Yield in Liquidity Pools](/guides/real-yield-liquidity-pools/).
 

@@ -148,7 +148,7 @@ None of this changes the economics, which are decided by volume, volatility and 
 
 ## Where to go next
 
-Apply the tick maths to a real position in the [concentrated liquidity calculator](/tools/uniswap-v3-liquidity-calculator/). The same accounting underpins [Raydium Liquidity Pools](/guides/raydium-clmm-liquidity-guide/) on Solana.
+Apply the tick maths to a real position in the [concentrated liquidity calculator](/tools/uniswap-v3-liquidity-calculator/?price=3000&lower=2500&upper=3500&capital=10000). The same accounting underpins [Raydium Liquidity Pools](/guides/raydium-clmm-liquidity-guide/) on Solana.
 
 ## References
 

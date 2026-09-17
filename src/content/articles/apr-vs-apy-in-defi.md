@@ -165,7 +165,7 @@ These numbers are not dishonest by design. They are summaries that happen to dis
 
 ## Where to go next
 
-Rebuild any quoted rate from its inputs with the [liquidity pool fee and APR calculator](/tools/liquidity-pool-calculator/), then subtract what it leaves out with the [impermanent loss calculator](/tools/impermanent-loss-calculator/).
+Rebuild any quoted rate from its inputs with the [liquidity pool fee and APR calculator](/tools/liquidity-pool-calculator/?feeTier=0.3&capital=10000&volume=5000000), then subtract what it leaves out with the [impermanent loss calculator](/tools/impermanent-loss-calculator/?mode=weighted&a0=2000&a1=2500&capital=10000).
 
 ## References
 

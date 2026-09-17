@@ -163,7 +163,7 @@ The question is never which pool type is best. It is which pricing rule you want
 
 ## Where to go next
 
-Once the curve is chosen, size the position with the [liquidity pool fee and APR calculator](/tools/liquidity-pool-calculator/) and check impermanent loss — the gap between a pool position and simply holding — with the [impermanent loss calculator](/tools/impermanent-loss-calculator/). Lending markets are compared properly in [Lending Pool vs Liquidity Pool](/guides/lending-pool-vs-liquidity-pool/).
+Once the curve is chosen, size the position with the [liquidity pool fee and APR calculator](/tools/liquidity-pool-calculator/?feeTier=0.05&capital=10000) and check impermanent loss — the gap between a pool position and simply holding — with the [impermanent loss calculator](/tools/impermanent-loss-calculator/?mode=weighted&a0=2000&a1=3000&capital=10000). Lending markets are compared properly in [Lending Pool vs Liquidity Pool](/guides/lending-pool-vs-liquidity-pool/).
 
 ## References
 

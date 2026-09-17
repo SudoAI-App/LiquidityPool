@@ -70,7 +70,7 @@ const breadcrumbSchema = {
 
   <section class="page-hero tool-hero">
     <div class="container">
-      <div class="eyebrow eyebrow--mint">Research tools · Free, no wallet connection</div>
+      <p class="eyebrow">Calculator · free, no wallet connection</p>
       <h1 class="page-title">Liquidity pool fees, rewards &amp; APR calculator.</h1>
       <p>Keep trading-fee APR and incentive APR separate, then combine them only after time in range and operating costs are visible.</p>
     </div>
@@ -161,10 +161,10 @@ const breadcrumbSchema = {
           <p class="tool-disclaimer">Educational model only. Assumes constant volume, a stable share of liquidity, and no price impact on entry or exit. Not investment advice.</p>
           <nav class="tool-next" aria-label="Understand this result">
             <span>Understand the number</span>
-            <a href="/methodology/" data-cta="calculator_methodology">Formulas and worked test cases <span aria-hidden="true">↗</span></a>
-            <a href="/guides/liquidity-provider-fees/" data-cta="calculator_result_link">How LP fees are earned <span aria-hidden="true">↗</span></a>
-            <a href="/guides/apr-vs-apy-in-defi/" data-cta="calculator_result_link">APR vs APY in DeFi <span aria-hidden="true">↗</span></a>
-            <a href="/tools/lp-profit-calculator/" data-cta="calculator_result_link">Net the fees against divergence <span aria-hidden="true">↗</span></a>
+            <a href="/methodology/" data-cta="calculator_methodology">Formulas and worked test cases</a>
+            <a href="/guides/liquidity-provider-fees/" data-cta="calculator_result_link">How LP fees are earned</a>
+            <a href="/guides/apr-vs-apy-in-defi/" data-cta="calculator_result_link">APR vs APY in DeFi</a>
+            <a href="/tools/lp-profit-calculator/" data-cta="calculator_result_link">Net the fees against divergence</a>
           </nav>
         </div>
       </div>
@@ -231,7 +231,7 @@ const breadcrumbSchema = {
         </div>
         <aside class="guide-aside">
           <h2>Method</h2>
-          <p style="font-size:12px;line-height:1.55;color:#5b7062">All calculations run in your browser. No inputs are transmitted, stored, or logged.</p>
+          <p>All calculations run in your browser. No inputs are transmitted, stored, or logged.</p>
           <h2 style="margin-top:22px">Data sources</h2>
           <a href="https://defillama.com" target="_blank" rel="noopener">DeFiLlama ↗</a>
           <a href="https://dune.com" target="_blank" rel="noopener">Dune Analytics ↗</a>
@@ -297,6 +297,20 @@ const breadcrumbSchema = {
         } else {
           out.verdict.textContent = 'Trading fees and incentives are shown separately. Subtract divergence against holding before calling the combined figure profit.';
         }
+      }
+
+      if (location.search) {
+        var params = new URLSearchParams(location.search);
+        ids.forEach(function (id) {
+          var val = params.get(id);
+          if (val !== null && el[id]) {
+            if (id === 'dataSource' || id === 'dataAsOf') {
+              el[id].value = val;
+            } else if (!isNaN(Number(val))) {
+              el[id].value = val;
+            }
+          }
+        });
       }
 
       ids.forEach(function (id) { el[id].addEventListener('input', render); });

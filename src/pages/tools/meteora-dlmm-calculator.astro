@@ -26,7 +26,7 @@ const breadcrumbSchema = { '@context': 'https://schema.org', '@type': 'Breadcrum
 ---
 <BaseLayout title={`${title} — LiquidityPools.app`} description={description}>
   <Fragment slot="head"><script is:inline type="application/ld+json" set:html={JSON.stringify(appSchema)} /><script is:inline type="application/ld+json" set:html={JSON.stringify(faqSchema)} /><script is:inline type="application/ld+json" set:html={JSON.stringify(breadcrumbSchema)} /></Fragment>
-  <section class="page-hero tool-hero"><div class="container"><div class="eyebrow eyebrow--mint">Meteora DLMM · Discrete-bin model</div><h1 class="page-title">Meteora DLMM calculator.</h1><p>Inspect the actual geometric bin ladder, compare Spot, Curve, and Bid-Ask allocation shapes, and keep base fees separate from the volatility-driven variable fee.</p></div></section>
+  <section class="page-hero tool-hero"><div class="container"><p class="eyebrow">Meteora DLMM · Discrete-bin model</p><h1 class="page-title">Meteora DLMM calculator.</h1><p>Inspect the actual geometric bin ladder, compare Spot, Curve, and Bid-Ask allocation shapes, and keep base fees separate from the volatility-driven variable fee.</p></div></section>
 
   <section class="section section--paper tool-section--first"><div class="container"><div class="tool-layout">
     <form class="tool-panel" id="dlmm-form" data-calculator="meteora_dlmm" novalidate>
@@ -47,7 +47,7 @@ const breadcrumbSchema = { '@context': 'https://schema.org', '@type': 'Breadcrum
       <div class="tool-rows"><div class="tool-row"><span>Price range</span><strong id="out-range">$19.51 – $20.51</strong></div><div class="tool-row"><span>End-bin price</span><strong id="out-exit">$20.20</strong></div><div class="tool-row"><span>Base fee</span><strong id="out-basefee">0.2500%</strong></div><div class="tool-row"><span>Variable fee</span><strong id="out-varfee">0.4000%</strong></div><div class="tool-row"><span>Total fee rate</span><strong id="out-totalfee">0.6500%</strong></div><div class="tool-row"><span>Position / hold value</span><strong id="out-values">$10,040.61 / $10,050.19</strong></div><div class="tool-row"><span>Estimated LP fee income</span><strong id="out-fees">$295.36</strong></div><div class="tool-row tool-row--net"><span>Net result vs. holding</span><strong id="out-net">+$285.79</strong></div></div>
       <figure class="dlmm-chart"><div id="bin-chart" class="dlmm-bars" role="img" aria-label="Liquidity weight by discrete price bin"></div><figcaption>Each bar is a discrete fixed-price bin. Heights show the normalized analytical distribution.</figcaption></figure>
       <p class="tool-verdict" id="out-verdict">This position is active in the modeled end bin.</p><p class="tool-disclaimer">Educational scenario only. Distribution weights follow the SDK shape and side-normalization rules before integer rounding; this is not a transaction quote. Excludes token transfer fees, composition fees, incentives, slippage, and rebalancing. Not financial advice.</p>
-      <nav class="tool-next" aria-label="Understand this result"><span>Verify the model</span><a href="/methodology/" data-cta="calculator_methodology">Formulas and worked test cases <span aria-hidden="true">↗</span></a><a href="/guides/meteora-dlmm-strategy/" data-cta="calculator_result_link">Meteora DLMM strategy <span aria-hidden="true">↗</span></a><a href="/guides/discretized-liquidity-dlmm-explained/" data-cta="calculator_result_link">How discrete bins work <span aria-hidden="true">↗</span></a></nav>
+      <nav class="tool-next" aria-label="Understand this result"><span>Verify the model</span><a href="/methodology/" data-cta="calculator_methodology">Formulas and worked test cases</a><a href="/guides/meteora-dlmm-strategy/" data-cta="calculator_result_link">Meteora DLMM strategy</a><a href="/guides/discretized-liquidity-dlmm-explained/" data-cta="calculator_result_link">How discrete bins work</a></nav>
     </div>
   </div></div></section>
 
@@ -58,7 +58,7 @@ const breadcrumbSchema = { '@context': 'https://schema.org', '@type': 'Breadcrum
     <h2>What this cannot predict</h2><p>Future volume, bin crossings, volatility decay, competing liquidity, token value, and rebalancing are unknown. A large modeled fee rate can coincide with rapid inventory conversion and loss against holding. No displayed figure is an expected return or a pool recommendation.</p>
     <h2 id="sources">Official Meteora sources</h2><ol class="tool-sources"><li><a href="https://docs.meteora.ag/core-products/dlmm/formulas" target="_blank" rel="noopener">DLMM formulas: prices, constant-sum bins, and fees</a></li><li><a href="https://docs.meteora.ag/core-products/dlmm/strategies-and-use-cases" target="_blank" rel="noopener">DLMM Spot, Curve, and Bid-Ask strategies</a></li><li><a href="https://docs.meteora.ag/developer-guides/dlmm/typescript-sdk/reference" target="_blank" rel="noopener">Meteora DLMM TypeScript SDK reference</a></li></ol>
     <div class="faq-block"><h2>Frequently asked questions</h2>{faq.map((item) => <details class="faq-item"><summary><h3>{item.q}</h3></summary><p>{item.a}</p></details>)}</div>
-  </div><aside class="guide-aside"><h2>Method</h2><p style="font-size:12px;line-height:1.55;color:#5b7062">Pure client-side maths. No wallet and no API calls.</p><a href="/methodology/">Review formulas and tests ↗</a></aside></div></div></section>
+  </div><aside class="guide-aside"><h2>Method</h2><p>Pure client-side maths. No wallet and no API calls.</p><a href="/methodology/">Review formulas and tests</a></aside></div></div></section>
 
   <script>
     // @ts-nocheck -- DOM nodes are guaranteed by the static template above.
@@ -100,6 +100,19 @@ const breadcrumbSchema = { '@context': 'https://schema.org', '@type': 'Breadcrum
       } catch (error) {
         outputs.verdict.textContent = error instanceof Error ? error.message : 'Check the inputs and try again.';
       }
+    }
+    if (location.search) {
+      const params = new URLSearchParams(location.search);
+      inputIds.forEach((id) => {
+        const val = params.get(id);
+        if (val !== null && inputs[id]) {
+          if (id === 'shape') {
+            if (['spot', 'curve', 'bidAsk'].includes(val)) inputs[id].value = val;
+          } else if (!isNaN(Number(val))) {
+            inputs[id].value = val;
+          }
+        }
+      });
     }
     inputIds.forEach((id) => { inputs[id].addEventListener('input', render); inputs[id].addEventListener('change', render); });
     render();

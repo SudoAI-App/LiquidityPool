@@ -32,7 +32,7 @@ const breadcrumbSchema = { '@context': 'https://schema.org', '@type': 'Breadcrum
   </Fragment>
 
   <section class="page-hero tool-hero"><div class="container">
-    <div class="eyebrow eyebrow--mint">Research tools · Free, no wallet connection</div>
+    <p class="eyebrow">Calculator · free, no wallet connection</p>
     <h1 class="page-title">Impermanent loss calculator.</h1>
     <p>Compare holding with a 50/50 pool, a weighted pool, or a bounded concentrated range. The scenario curve and every input can travel in one shareable URL.</p>
   </div></section>
@@ -78,7 +78,7 @@ const breadcrumbSchema = { '@context': 'https://schema.org', '@type': 'Breadcrum
       <figure class="tool-chart"><svg id="il-chart" viewBox="0 0 640 240" role="img" aria-labelledby="il-chart-title il-chart-desc"><title id="il-chart-title">Impermanent loss across relative-price scenarios</title><desc id="il-chart-desc">A curve from one quarter to four times the entry relative price.</desc><line x1="44" y1="20" x2="44" y2="206"></line><line x1="44" y1="20" x2="624" y2="20"></line><polyline id="il-curve" points=""></polyline><circle id="il-marker" r="5" cx="334" cy="50"></circle><text x="44" y="228">0.25×</text><text x="319" y="228">1×</text><text x="600" y="228">4×</text></svg><figcaption id="chart-caption">50/50 full-range curve; current scenario marked.</figcaption></figure>
       <p class="tool-verdict" id="out-verdict">Fee income has covered the divergence over this holding period.</p>
       <p class="tool-disclaimer">Educational model only. Excludes gas, price impact, emissions, rebalancing, and path-dependent loss. Not financial advice.</p>
-      <nav class="tool-next" aria-label="Understand this result"><span>Verify the model</span><a href="/methodology/" data-cta="calculator_methodology">Formulas and worked test cases <span aria-hidden="true">↗</span></a><a href="/guides/impermanent-loss-explained/" data-cta="calculator_result_link">Impermanent loss explained <span aria-hidden="true">↗</span></a><a href="/tools/uniswap-v3-liquidity-calculator/" data-cta="calculator_result_link">Full concentrated-liquidity calculator <span aria-hidden="true">↗</span></a></nav>
+      <nav class="tool-next" aria-label="Understand this result"><span>Verify the model</span><a href="/methodology/" data-cta="calculator_methodology">Formulas and worked test cases</a><a href="/guides/impermanent-loss-explained/" data-cta="calculator_result_link">Impermanent loss explained</a><a href="/tools/uniswap-v3-liquidity-calculator/" data-cta="calculator_result_link">Full concentrated-liquidity calculator</a></nav>
     </div>
   </div></div></section>
 
@@ -91,7 +91,7 @@ const breadcrumbSchema = { '@context': 'https://schema.org', '@type': 'Breadcrum
       <h2>Limits and risk</h2><p>Endpoint models do not measure loss-versus-rebalancing along the path, gas, slippage, tick rounding, inactive time, or changing liquidity competition. Fees entered here are observed income, not a forecast. Use the output as a scenario check, not a return promise.</p>
       <h2 id="sources">Sources</h2><ol class="tool-sources"><li><a href="https://uniswap.org/whitepaper.pdf" target="_blank" rel="noopener">Uniswap v2 Core Whitepaper</a></li><li><a href="https://uniswap.org/whitepaper-v3.pdf" target="_blank" rel="noopener">Uniswap v3 Core Whitepaper</a></li><li><a href="https://docs.balancer.fi/concepts/explore-available-balancer-pools/weighted-pool/weighted-pool.html" target="_blank" rel="noopener">Balancer weighted-pool documentation</a></li></ol>
       <div class="faq-block"><h2>Frequently asked questions</h2>{faq.map((item) => <details class="faq-item"><summary><h3>{item.q}</h3></summary><p>{item.a}</p></details>)}</div>
-    </div><aside class="guide-aside"><h2>Method</h2><p style="font-size:12px;line-height:1.55;color:#5b7062">No inputs are transmitted, stored, or logged.</p><a href="/methodology/">Review formulas and tests ↗</a></aside>
+    </div><aside class="guide-aside"><h2>Method</h2><p>No inputs are transmitted, stored, or logged.</p><a href="/methodology/">Review formulas and tests</a></aside>
   </div></div></section>
 
   <script>

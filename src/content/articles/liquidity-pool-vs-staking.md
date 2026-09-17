@@ -135,7 +135,7 @@ These are complements, not competitors. What they are not is interchangeable, an
 
 ## Where to go next
 
-Quantify the pool side with the [impermanent loss calculator](/tools/impermanent-loss-calculator/) and the [liquidity pool fee and APR calculator](/tools/liquidity-pool-calculator/). Add the reward layer in [Liquidity Mining vs Yield Farming vs Staking](/guides/liquidity-mining-vs-yield-farming/), and work the whole thing in [Is Providing Liquidity Profitable?](/guides/is-providing-liquidity-profitable/).
+Quantify the pool side with the [impermanent loss calculator](/tools/impermanent-loss-calculator/?mode=weighted&a0=2000&a1=2500&capital=10000) and the [liquidity pool fee and APR calculator](/tools/liquidity-pool-calculator/?feeTier=0.3&capital=10000&volume=2000000). Add the reward layer in [Liquidity Mining vs Yield Farming vs Staking](/guides/liquidity-mining-vs-yield-farming/), and work the whole thing in [Is Providing Liquidity Profitable?](/guides/is-providing-liquidity-profitable/).
 
 ## References
 
