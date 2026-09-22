@@ -3,7 +3,7 @@ title: "Raydium Liquidity Pools: CLMM, CPMM and Choosing Between Them"
 description: "How Raydium's concentrated and constant-product pools differ, what a CLMM position holds at each end of its range, and the Solana checks to run first."
 category: "LP Mechanics"
 date: 2026-09-11
-lastReviewed: "2026-09-12"
+lastReviewed: "2026-09-22"
 author: "LiquidityPools Editorial Team"
 readTime: "8 min read"
 primaryQuery: "Raydium liquidity pool"

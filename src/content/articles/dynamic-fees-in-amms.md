@@ -3,7 +3,7 @@ title: "Dynamic Fees in AMMs: Charging for Volatility"
 description: "A fixed fee is wrong most of the time. Too dear in calm markets, far too cheap when somebody is picking you off. What moving fees fix, and what they cannot."
 category: "Advanced"
 date: 2026-09-10
-lastReviewed: "2026-09-12"
+lastReviewed: "2026-09-22"
 author: "LiquidityPools Editorial Team"
 readTime: "6 min read"
 primaryQuery: "dynamic fees AMM"
@@ -76,7 +76,7 @@ The volatile week wiped out most of the calm month. Now apply a fee averaging 0.
 
 The lost volume is the cost, and it was worth paying because the trades that left were the expensive ones.
 
-Whether it works out this way in a specific pool depends entirely on the mix of ordinary and informed flow, which is measurable. See [Onchain Liquidity Metrics](/guides/onchain-liquidity-metrics/).
+Whether it works out this way in a specific pool depends entirely on the mix of ordinary and informed flow, which is measurable. See [Onchain Liquidity Metrics](/guides/onchain-liquidity-metrics/). For a position you already hold, the [LP profit calculator](/tools/lp-profit-calculator/) nets that variable fee income against divergence and gas.
 
 ## Four things it cannot fix
 
@@ -95,7 +95,7 @@ Every implementation reduces to a function turning some observation into a fee, 
 
 Neither has a universally correct value, and both are usually set once at deployment for a pair whose behaviour will change.
 
-So ask when they were last reviewed and against what data. A fee function tuned for one volatility regime is just a differently wrong fixed fee in another.
+So ask when they were last reviewed and against what data. A fee function tuned for one volatility regime is just a differently wrong fixed fee in another. The bin-based design where the fee raises itself from price crossings is followed step by step in [Meteora DLMM Strategy](/guides/meteora-dlmm-strategy/).
 
 ## Reading a pool's fee history
 

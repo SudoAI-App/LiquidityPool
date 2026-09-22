@@ -107,6 +107,8 @@ Lower drag is not free, and the cost shows up in three places.
 - **Less routing.** Aggregators send trades where the fill is best. A lopsided pool often loses that comparison, so volume and fees go elsewhere.
 - **Kept exposure.** You still hold 80% of a falling token on the way down. Weighting cuts the selling, not the risk.
 
+Before accepting that trade-off, run the pool's volume and your share of its liquidity through the [liquidity pool fee and APR calculator](/tools/liquidity-pool-calculator/) to see the income the weighting gives up.
+
 ## How token launches use shifting weights
 
 A liquidity bootstrapping pool, or LBP, is a weighted pool whose weights move on a schedule [5]. Projects use it to sell a new token without needing much cash up front.
@@ -163,7 +165,7 @@ A hook is code somebody wrote, and it can change fees or restrict withdrawals. F
 
 ## Where to go next
 
-For where weighted pools sit among the other designs, see [Types of Liquidity Pools](/guides/liquidity-pool-types/). For the arithmetic that weighting softens but never removes, see [The Impermanent Loss Formula](/guides/impermanent-loss-formula/).
+For where weighted pools sit among the other designs, see [Types of Liquidity Pools](/guides/liquidity-pool-types/). For the arithmetic that weighting softens but never removes, see [The Impermanent Loss Formula](/guides/impermanent-loss-formula/). For the curve that re-pegs itself to follow price, see [Curve v2 CryptoSwap Explained](/guides/curve-v2-cryptoswap-explained/).
 
 ## References
 

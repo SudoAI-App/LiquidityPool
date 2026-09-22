@@ -64,7 +64,7 @@ Traders call that being short gamma. The plain version: you make a steady trickl
 | Inside your band | A mix that shifts as price moves | Fees on every swap | The good case, as long as it lasts |
 | Above your band | All of the stable token | Nothing | You sold the whole way up and stopped |
 
-So the whole strategy reduces to one question. Does the fee income while you sit inside the band beat what the band costs you on the way out? Band width is covered in [Concentrated Liquidity Explained](/guides/concentrated-liquidity-explained/).
+So the whole strategy reduces to one question. Does the fee income while you sit inside the band beat what the band costs you on the way out? Band width is covered in [Concentrated Liquidity Explained](/guides/concentrated-liquidity-explained/). For a specific band, the [Uniswap v3 liquidity calculator](/tools/uniswap-v3-liquidity-calculator/) prices both sides of that question — the fee income and the shortfall against holding.
 
 ## The number your fees have to beat
 

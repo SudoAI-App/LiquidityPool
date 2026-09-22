@@ -101,6 +101,7 @@ Now change one thing at a time and watch how differently the two sides behave.
 | Volume dries up | Falls toward zero | Unchanged |
 
 That is the asymmetry to remember. Your earning is capped by how many other people want to do the same thing. Your losing is capped by nothing at all. The endpoint version of that loss — impermanent loss, the gap between a pool position and simply holding — is derived in [The Impermanent Loss Formula](/guides/impermanent-loss-formula/).
+More positions worked this way, at other tiers and volatilities, are in [Impermanent Loss Examples](/guides/impermanent-loss-examples/).
 
 ## How much trading a pair needs
 
@@ -155,7 +156,7 @@ Uniswap's own risk documentation says the same thing plainly: fee income is not 
 5. **Set the exit rule now.** A volatility trigger, a floor on time in range, or a drawdown limit against holding.
 6. **Size for the friction.** If one round trip of gas costs more than a few days of fees, this position belongs in a wide passive range instead.
 
-See [How to Evaluate a Liquidity Pool](/guides/how-to-evaluate-a-liquidity-pool/) and [The Liquidity Pool Research Checklist](/guides/liquidity-pool-research-checklist/).
+See [How to Evaluate a Liquidity Pool](/guides/how-to-evaluate-a-liquidity-pool/) and [The Liquidity Pool Research Checklist](/guides/liquidity-pool-research-checklist/). For the structural ways to tilt this contest before it starts, see [How to Avoid Impermanent Loss](/guides/how-to-avoid-impermanent-loss/).
 
 ## Where to go next
 

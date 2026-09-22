@@ -38,7 +38,7 @@ Six measurements do tell you, and all six come from public chain data. This guid
 
 ## How much money is actually near the price?
 
-Start with the pools. For every venue holding real liquidity in the token, add up the capital sitting within a defined band of the current price. Two percent in each direction is a good default.
+Start with the pools. For every venue holding real liquidity in the token, add up the capital sitting within a defined band of the current price. Two percent in each direction is a good default. How that capital comes to sit in pools on the chain in the first place is the subject of [Onchain Liquidity Explained](/guides/onchain-liquidity-explained/).
 
 In a simple constant-product pool that follows straight from the reserves. In a concentrated pool you have to sum the liquidity across the ticks inside your band, because deposits parked in distant ranges contribute nothing to your exit. The full method is in [Liquidity Depth and Execution](/guides/liquidity-depth-and-execution/).
 
@@ -101,7 +101,7 @@ Reported volume mixes several activities that mean completely different things.
 | Wash trading | Nothing at all | Repeating addresses, round sizes, self-matching |
 | Just-in-time liquidity | Depth that was never really there | Money minted and burned around one large swap |
 
-Attribution tools such as [EigenPhi](https://eigenphi.io) separate arbitrage and sandwich flow from ordinary trading. If you are supplying liquidity, the mix matters directly to you. Arbitrage volume pays you a fee while repricing the pool at your expense, a relationship measured by loss-versus-rebalancing — what a pool pays out because its quote runs a block behind the wider market. See [Loss-Versus-Rebalancing](/guides/loss-versus-rebalancing/).
+Attribution tools such as [EigenPhi](https://eigenphi.io) separate arbitrage and sandwich flow from ordinary trading. If you are supplying liquidity, the mix matters directly to you. Arbitrage volume pays you a fee while repricing the pool at your expense, a relationship measured by loss-versus-rebalancing — what a pool pays out because its quote runs a block behind the wider market. See [Loss-Versus-Rebalancing](/guides/loss-versus-rebalancing/). For what routed volume pays a provider holding a share of that depth, the [liquidity pool fee and APR calculator](/tools/liquidity-pool-calculator/) runs the numbers.
 
 ### Every number above expires
 

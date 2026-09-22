@@ -98,7 +98,7 @@ See [TVL Explained](/guides/tvl-explained/) for how those layers make headline n
 
 Contracts cannot see prices on their own, so they read them from somewhere [2]. That creates loops worth understanding.
 
-If a lending market values collateral using a pool's own price, somebody can borrow a huge amount temporarily, shove the pool's price up, borrow against the inflated value, and walk away [2] [8]. The lender is left insolvent and the pool badly lopsided.
+If a lending market values collateral using a pool's own price, somebody can borrow a huge amount temporarily, shove the pool's price up, borrow against the inflated value, and walk away [2] [8]. The lender is left insolvent and the pool badly lopsided. How lending markets work as instruments separate from swap pools is set out in [Lending Pool vs Liquidity Pool](/guides/lending-pool-vs-liquidity-pool/).
 
 Averaging over time helps, and it is not a cure. A thin pool's average can be pushed across several blocks in a row [8].
 
@@ -127,7 +127,7 @@ Pegged pools have their own version. Pairs like a staked-ETH token against ETH r
 4. **Find out where the prices come from.** A well-known multi-source feed, or something written for this pool alone?
 5. **Test the exit before you need it.** Put a small amount in and take it out. Confirm the path works and note what it costs.
 
-See [How to Evaluate a Liquidity Pool](/guides/how-to-evaluate-a-liquidity-pool/) and the [Liquidity Pool Research Checklist](/guides/liquidity-pool-research-checklist/) for the long-form versions.
+See [How to Evaluate a Liquidity Pool](/guides/how-to-evaluate-a-liquidity-pool/) and the [Liquidity Pool Research Checklist](/guides/liquidity-pool-research-checklist/) for the long-form versions. For any pool that passes, the net outcome — fees against divergence and gas, measured on holding — is what the [LP profit and return calculator](/tools/lp-profit-calculator/) settles.
 
 ## Where to watch the numbers
 

@@ -40,7 +40,7 @@ An ordinary pool spreads money across every price from zero upward. For a pair m
 
 A perfectly flat curve fixes the cost but has no defence. The moment the real price moves a fraction of a cent, traders empty one side completely.
 
-The stable-pair design sits between them. Near balance it behaves like the flat rule, so large trades cost almost nothing. As the balances skew, it bends toward the ordinary rule, which keeps the pool from being drained [2].
+The stable-pair design sits between them. Near balance it behaves like the flat rule, so large trades cost almost nothing. As the balances skew, it bends toward the ordinary rule, which keeps the pool from being drained [2]. The same idea stretched over volatile pairs, with the flat zone following the market, is [Curve v2 Explained](/guides/curve-v2-cryptoswap-explained/).
 
 One setting, called amplification, decides where that bend happens:
 
@@ -80,7 +80,7 @@ The sequence is always the same, and it is faster than you think.
 3. **The healthy side runs out.** By the time the price visibly falls to 0.80, the good token is gone. Nothing is left to sell.
 4. **You withdraw and get the broken one.** All of it.
 
-Follow the balances rather than the price. The pool can still be quoting 0.995 after 70% of the healthy reserves have been extracted. The price is the last thing to tell you, and by then there is nothing to save.
+Follow the balances rather than the price. The pool can still be quoting 0.995 after 70% of the healthy reserves have been extracted. The price is the last thing to tell you, and by then there is nothing to save. What a given depeg costs against holding is a price-ratio question — run the entry-to-now ratio through the [impermanent loss calculator](/tools/impermanent-loss-calculator/).
 
 Federal Reserve research makes the same point from the other direction: pools provide excellent liquidity in normal conditions, and prices diverge fast under stress when the issuer's own redemption is slow or restricted [5]. See [TVL Explained](/guides/tvl-explained/) for how headline numbers hide this.
 

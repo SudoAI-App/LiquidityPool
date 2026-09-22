@@ -142,7 +142,7 @@ Farming is not a mistake, and reward programmes do a real job bootstrapping dept
 
 ## Where to go next
 
-Separate the durable part of any farm with the [liquidity pool fee and APR calculator](/tools/liquidity-pool-calculator/), and read the protocol's side in [Liquidity Mining Explained](/guides/liquidity-mining-explained/). A worked example of the same structure is in [PancakeSwap Liquidity Pools](/guides/pancakeswap-liquidity-pools/). For who funds each activity, see [Liquidity Mining vs Yield Farming vs Staking](/guides/liquidity-mining-vs-yield-farming/), and for the underlying position, [Is Providing Liquidity Profitable?](/guides/is-providing-liquidity-profitable/).
+Separate the durable part of any farm with the [liquidity pool fee and APR calculator](/tools/liquidity-pool-calculator/), and read the protocol's side in [Liquidity Mining Explained](/guides/liquidity-mining-explained/). For how supplying the pool differs from staking one token, see [Liquidity Pool vs Staking](/guides/liquidity-pool-vs-staking/). A worked example of the same structure is in [PancakeSwap Liquidity Pools](/guides/pancakeswap-liquidity-pools/). For who funds each activity, see [Liquidity Mining vs Yield Farming vs Staking](/guides/liquidity-mining-vs-yield-farming/), and for the underlying position, [Is Providing Liquidity Profitable?](/guides/is-providing-liquidity-profitable/).
 
 ## References
 

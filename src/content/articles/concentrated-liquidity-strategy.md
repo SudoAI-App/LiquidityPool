@@ -99,7 +99,7 @@ So there is an optimum in the middle. Neither the tightest band nor the widest, 
 
 **One-sided.** Place everything on one side to accumulate or distribute across a chosen band. See [Single-Sided Liquidity](/guides/single-sided-liquidity/).
 
-None of these requires knowing where the price is going. All of them require an honest estimate of volatility and of how much attention you actually have.
+None of these requires knowing where the price is going. All of them require an honest estimate of volatility and of how much attention you actually have. The same strategies run on any venue with v3-style ranges, such as [PancakeSwap liquidity pools](/guides/pancakeswap-liquidity-pools/) on BNB Chain.
 
 ## Rebalancing rules that survive contact
 
@@ -165,7 +165,7 @@ The width that maximises a spreadsheet is almost always narrower than the width 
 
 ## Where to go next
 
-Test a candidate band in the [concentrated liquidity calculator](/tools/uniswap-v3-liquidity-calculator/?price=3000&lower=2700&upper=3300&capital=10000&tier=0.05), which reports the efficiency and what you hold at each bound. For the bin-based version of the same decision, see [Meteora DLMM Strategy](/guides/meteora-dlmm-strategy/).
+Test a candidate band in the [concentrated liquidity calculator](/tools/uniswap-v3-liquidity-calculator/?price=3000&lower=2700&upper=3300&capital=10000&tier=0.05), which reports the efficiency and what you hold at each bound. For the bin-based version of the same decision, see [Meteora DLMM Strategy](/guides/meteora-dlmm-strategy/). For the tick-based version on Solana, see [Raydium Liquidity Pools](/guides/raydium-clmm-liquidity-guide/).
 
 ## References
 

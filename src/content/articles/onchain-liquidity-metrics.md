@@ -146,7 +146,7 @@ Pool Beta has seven times the usable depth on a third of the capital, and most o
 2. **Does the real fee yield clear the bleed?** Annual volatility squared, divided by eight [4].
 3. **Is at least half the volume from actual users?** Check where the trades originate.
 4. **How often do big trades get fee-sniped?** Look at swaps over \$50,000 in the last thousand blocks, and check for liquidity that appeared and vanished around them [5].
-5. **Are you reading the chain or a dashboard?** Balances from the contract, not from an indexer you cannot check [2].
+5. **Are you reading the chain or a dashboard?** Balances from the contract, not from an indexer you cannot check [2]. For how liquidity actually lives onchain across pools, see [Onchain Liquidity Explained](/guides/onchain-liquidity-explained/).
 
 ## Where to watch the numbers
 

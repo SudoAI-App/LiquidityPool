@@ -59,6 +59,10 @@ const KNOWN_FALSE_CLAIMS = [
 const guideSlugs = new Set(readdirSync(articlesDir).filter((file) => file.endsWith('.md')).map((file) => file.replace(/\.md$/, '')));
 const toolSlugs = new Set(readdirSync(join(root, 'src/pages/tools')).filter((file) => file.endsWith('.astro') && file !== 'index.astro').map((file) => file.replace(/\.astro$/, '')));
 const GLOSS_MARKERS = /(—|–| \(|, which |, that is|, meaning|i\.e\.|in other words|known as|refers to|the gap between|short for)/i;
+// --- §6.3 — link-graph floor. Every guide must be reachable from at least this many other guides,
+// so no page (especially a new one) is left without internal link equity.
+const MIN_GUIDE_INDEGREE = 4;
+const linkSources = new Map(); // target slug -> Set of distinct source slugs
 
 const reportOnly = process.argv.includes('--report');
 const errors = [];
@@ -131,6 +135,11 @@ for (const file of readdirSync(articlesDir).filter((name) => name.endsWith('.md'
   const academicSources = referenceUrls.filter((url) => academicDomains.test(url)).length;
   const institutionalSources = referenceUrls.filter((url) => institutionalDomains.test(url)).length;
   const internalLinks = (body.match(/\]\(\/guides\//g) ?? []).length;
+  for (const [, target] of body.matchAll(/\]\(\/guides\/([a-z0-9-]+)\/?\)/g)) {
+    if (target === slug || !guideSlugs.has(target)) continue;
+    if (!linkSources.has(target)) linkSources.set(target, new Set());
+    linkSources.get(target).add(slug);
+  }
   const headings = (body.match(/^## /gm) ?? []).length;
   const hasFigure = body.includes('<figure class="article-figure">');
   const faqCount = (frontmatter[1].match(/^ {2}- q:/gm) ?? []).length;
@@ -266,6 +275,13 @@ for (const file of readdirSync(articlesDir).filter((name) => name.endsWith('.md'
 }
 
 if (rows.length < 20) errors.push(`expected at least 20 article files, found ${rows.length}`);
+// --- §6.3 — link-graph floor. A guide below this in-degree is starved of internal link equity.
+const indegrees = [...guideSlugs].map((target) => linkSources.get(target)?.size ?? 0);
+for (const target of guideSlugs) {
+  const indegree = linkSources.get(target)?.size ?? 0;
+  if (indegree < MIN_GUIDE_INDEGREE) errors.push(`${target}: linked from only ${indegree} other guides (min ${MIN_GUIDE_INDEGREE}) (§6.3)`);
+}
+
 
 if (reportOnly) {
   const pad = (value, width) => String(value).padStart(width);
@@ -299,4 +315,5 @@ const totals = rows.reduce((sum, row) => ({
 const mean = (key) => rows.reduce((sum, row) => sum + row[key], 0) / rows.length;
 
 console.log(`CONTENT AUDIT PASSED — ${rows.length} guides, ${totals.words.toLocaleString()} words, ${totals.references} cited sources (${totals.academic} research, ${totals.institutional} standards or public-sector), ${totals.internalLinks} internal guide links, ${totals.faq} FAQ entries.`);
+console.log(`LINK GRAPH — min in-degree ${Math.min(...indegrees)}, mean ${(indegrees.reduce((a, b) => a + b, 0) / (indegrees.length || 1)).toFixed(1)} (floor ${MIN_GUIDE_INDEGREE}).`);
 console.log(`READABILITY — ${mean('avgSentence').toFixed(1)} words per sentence, ${mean('longPer1k').toFixed(1)} long words per 1,000, ${mean('youPer1k').toFixed(1)} “you” per 1,000, ${mean('formulas').toFixed(1)} display formulas per guide.`);

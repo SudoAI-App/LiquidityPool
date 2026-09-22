@@ -18,7 +18,7 @@ faq:
     a: "One matched to the pair's realised volatility and your willingness to rebalance. A band narrower than typical daily movement will exit range constantly; a very wide band earns little more than a full-range position."
 ---
 
-In an old-style pool, your money is spread across every price ETH could ever trade at. Ten dollars. Ten thousand. Almost all of it sits somewhere the market will never go, doing nothing.
+In an old-style pool, your money is spread across every price ETH could ever trade at. Ten dollars. Ten thousand. Almost all of it sits somewhere the market will never go, doing nothing. The [Uniswap v2 vs v3](/guides/uniswap-v2-vs-v3/) comparison works through what that switch costs and when the old design still wins.
 
 Concentrated liquidity lets you say where you want your money to work. Put it between \$2,800 and \$3,200 and every dollar is in the fight. The same deposit can earn ten, fifty, sometimes a thousand times more in fees.
 
@@ -70,7 +70,7 @@ Not every protocol concentrates liquidity the same way, and the difference chang
 
 **Uniswap-style ticks.** The price line is chopped into steps of one hundredth of a percent, and the edges of your band have to land on the pool's tick spacing, a fixed multiple of those steps [1] [3]. A trade eats through the curve continuously until it reaches the next step that has liquidity waiting, then picks up whatever is there and carries on.
 
-**Bin-style books.** Liquidity Book, built by Trader Joe (now LFJ), throws the curve away and uses flat price shelves instead [6]. Only one shelf is live at a time, and a trade clears at exactly that price until the shelf empties. Then the price jumps to the next one.
+**Bin-style books.** Liquidity Book, built by Trader Joe (now LFJ), throws the curve away and uses flat price shelves instead [6]. Only one shelf is live at a time, and a trade clears at exactly that price until the shelf empties. Then the price jumps to the next one. How bin pricing works end to end, including the fee that raises itself, is in [Discretized Liquidity (DLMM) Explained](/guides/discretized-liquidity-dlmm-explained/).
 
 | | Tick-based, Uniswap v3 and v4 | Bin-based, Liquidity Book |
 | :--- | :--- | :--- |
@@ -151,6 +151,8 @@ The catch is the same one as doing it yourself, plus two more: contract risk, an
 3. **Budget the gas.** Adding, collecting, re-ranging and exiting all cost. If they eat a month of fees, the range is too tight for your size.
 4. **Decide the out-of-range rule now.** Write down what you will do if the price crosses either edge, before it does.
 5. **On v4, read the hook.** Does it protect against just-in-time liquidity, and can anyone change it later?
+
+For the practical sequence of picking a pair and minting a position, see [How to Provide Liquidity](/guides/how-to-provide-liquidity/).
 
 ## Where to watch the numbers
 

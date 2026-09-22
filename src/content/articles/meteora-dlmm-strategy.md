@@ -3,7 +3,7 @@ title: "Meteora DLMM Strategy: Bin Step, Shape and When Positions Stop Earning"
 description: "How to choose a bin step and shape on Meteora DLMM, what the volatility accumulator does to your fee rate, and rebalancing rules for a fast Solana market."
 category: "LP Mechanics"
 date: 2026-09-11
-lastReviewed: "2026-09-12"
+lastReviewed: "2026-09-22"
 author: "LiquidityPools Editorial Team"
 readTime: "9 min read"
 primaryQuery: "Meteora DLMM strategy"
@@ -26,7 +26,7 @@ Meteora chops the price axis into a row of small boxes called bins. You choose w
 
 That sounds like a settings screen. It is really three decisions that decide how the position behaves: how wide each box is, how many you fund, and how you spread money across them.
 
-This guide walks you through all three, shows you what the fee rate actually does during a fast market, and gives you rebalancing rules that hold up on Solana.
+This guide walks you through all three, shows you what the fee rate actually does during a fast market, and gives you rebalancing rules that hold up on Solana. For the tick-based concentrated pools on the same chain, see [Raydium Liquidity Pools](/guides/raydium-clmm-liquidity-guide/).
 
 <figure class="article-figure">
   <img src="/images/guides/meteora-dlmm-strategy.webp" alt="A bin grid showing spot, curve and bid-ask liquidity distributions around an active bin, with a volatility accumulator trace." width="1600" height="1067" loading="lazy" decoding="async" />

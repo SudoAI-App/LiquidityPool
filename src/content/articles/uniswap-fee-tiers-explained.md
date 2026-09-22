@@ -40,7 +40,7 @@ The fee comes off the trader's input and goes to whichever liquidity was live fo
 
 One detail catches people out. Those fees sit as a claimable balance. They are not added back into your position, so they earn nothing until you collect them and put them back to work yourself.
 
-The bigger structural point: **each tier is a completely separate pool.** ETH against dollars at 0.05% and at 0.30% are different contracts with different money in them. Arbitrage keeps their prices aligned, which means the cheap one sets the reference and the expensive one only sees what the cheap one could not absorb.
+The bigger structural point: **each tier is a completely separate pool.** ETH against dollars at 0.05% and at 0.30% are different contracts with different money in them. Arbitrage keeps their prices aligned, which means the cheap one sets the reference and the expensive one only sees what the cheap one could not absorb. The pools underneath are covered from the ground up in [Uniswap Liquidity Pools](/guides/uniswap-liquidity-pools/).
 
 Tick spacing is tied to the tier too. Cheaper tiers allow finer price steps, suitable for pairs that barely move. Expensive tiers use coarser ones.
 

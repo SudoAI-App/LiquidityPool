@@ -47,7 +47,7 @@ Different pool designs fail in different ways. Putting a pair into the wrong one
 | Stable-pair, Curve | Near-zero cost around a peg | Past a certain imbalance the cost explodes and you hold the broken token [2] |
 | Full range, Uniswap v2 | Nothing to manage, never runs dry | Most of your money never does any work |
 
-The test is simple. Ask what this pair actually does, then ask which design is built for that. A high-amplification stable curve on two tokens that might genuinely diverge is not a yield opportunity. It is a wager that they will not. See [Constant Product Formula](/guides/constant-product-formula/).
+The test is simple. Ask what this pair actually does, then ask which design is built for that. A high-amplification stable curve on two tokens that might genuinely diverge is not a yield opportunity. It is a wager that they will not. See [Constant Product Formula](/guides/constant-product-formula/). Lending markets are a different instrument again rather than another row in this table — that comparison is in [Lending Pool vs Liquidity Pool](/guides/lending-pool-vs-liquidity-pool/).
 
 ## Two: how much of the money is actually working?
 

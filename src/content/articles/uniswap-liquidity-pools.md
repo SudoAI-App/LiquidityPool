@@ -53,7 +53,7 @@ Where:
 
 The price is one balance divided by the other, so every trade moves it against the trader. That is the same in all three versions.
 
-v3 and v4 use the same curve, shifted so your money runs out at the two prices you chose rather than at zero and infinity [2]. The consequences for you are identical either way. Only where your money sits, and what it costs to touch it, change.
+v3 and v4 use the same curve, shifted so your money runs out at the two prices you chose rather than at zero and infinity [2]. The consequences for you are identical either way. Only where your money sits, and what it costs to touch it, change. The head-to-head between the passive v2 deposit and the managed v3 position is worked through in [Uniswap v2 vs v3](/guides/uniswap-v2-vs-v3/).
 
 | | v2 | v3 | v4 |
 | :--- | :--- | :--- | :--- |
@@ -92,7 +92,7 @@ See [Liquidity Pool Tokens Explained](/guides/liquidity-pool-tokens/) and [Unisw
 
 1. **Pick the pair, and be honest.** Would you hold either token on its own? The pool will decide the proportions, not you.
 2. **Pick the tier on measured volume.** Look at what routes through that specific tier, not the pair overall.
-3. **Pick the range, and do the arithmetic first.** At your lower bound you hold only the base asset. At your upper bound, only the quote asset. Work out both amounts before you continue.
+3. **Pick the range, and do the arithmetic first.** At your lower bound you hold only the base asset. At your upper bound, only the quote asset. Work out both amounts in the [Uniswap v3 liquidity calculator](/tools/uniswap-v3-liquidity-calculator/) before you continue.
 4. **Approve only what you are depositing.** Modern interfaces use signatures with expiry dates rather than unlimited approvals. Use them.
 5. **Mint it, and check the ratio** the interface asks for against what you meant to put in.
 6. **Write down where you started.** Quantities, prices, transaction hash. Without that you can never tell later whether this worked.
@@ -149,7 +149,7 @@ Two are version-specific and worth repeating:
 7. **Is the position big enough to absorb the gas** of how often you plan to touch it?
 8. **Set an alert near your boundary**, so you never discover a conversion weeks later.
 
-The contracts here are mature and well documented. Most bad outcomes on Uniswap trace back to two things: a range chosen without looking at how much the pair moves, and a tier chosen without looking at where the volume goes.
+The contracts here are mature and well documented. Most bad outcomes on Uniswap trace back to two things: a range chosen without looking at how much the pair moves, and a tier chosen without looking at where the volume goes. The same mechanics run elsewhere — [PancakeSwap liquidity pools](/guides/pancakeswap-liquidity-pools/) apply them on BNB Chain with an incentive layer on top.
 
 ## References
 

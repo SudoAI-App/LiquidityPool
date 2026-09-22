@@ -22,7 +22,7 @@ faq:
 
 A trader pays a fee. Somewhere between their wallet and yours, four different pool designs do four different things with it, and the differences decide whether your fees compound, whether they stop, and whether you ever see them.
 
-This guide traces the money from the swap to your balance, shows why volume alone tells you nothing, and gives you the one subtraction that turns a fee number into an actual return.
+This guide traces the money from the swap to your balance, shows why volume alone tells you nothing, and gives you the one subtraction that turns a fee number into an actual return. If the role receiving those fees is new to you, it is profiled in [What Is a Liquidity Provider?](/guides/what-is-a-liquidity-provider/).
 
 <figure class="article-figure">
   <img src="/images/guides/liquidity-provider-fees.webp" alt="Swap flow moves through an active liquidity range while a smaller fee stream accumulates separately." width="1600" height="1067" loading="lazy" decoding="async" />

@@ -65,7 +65,7 @@ Here is that drawdown in numbers. You start with \$10,000 when ETH is \$2,000, a
 | The right benchmark | 5 ETH untouched, \$6,000 | The same basket untouched, \$8,000 |
 | Against that benchmark | +\$120 | -\$254 |
 
-The pool lost less in dollars, but only because half of it started in dollars. Against its own benchmark it is behind, and the lending deposit is ahead. That gap is impermanent loss — the shortfall between the pool position and simply keeping the tokens. See [The Impermanent Loss Formula](/guides/impermanent-loss-formula/).
+The pool lost less in dollars, but only because half of it started in dollars. Against its own benchmark it is behind, and the lending deposit is ahead. That gap is impermanent loss — the shortfall between the pool position and simply keeping the tokens. See [The Impermanent Loss Formula](/guides/impermanent-loss-formula/). The full comparison for a pool position — fees, divergence and gas against holding the basket — is what the [LP profit and return calculator](/tools/lp-profit-calculator/) works out.
 
 ## How each one breaks
 

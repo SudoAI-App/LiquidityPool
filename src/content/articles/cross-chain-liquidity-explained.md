@@ -69,7 +69,7 @@ Two standards matter here. Chainlink's protocol adds a separate network that wat
 
 This part gets less attention than bridge hacks and costs more in aggregate [4].
 
-On one chain, every trader hits the same reserves. Depth is unified, fees are concentrated, and price impact — the way an order pushes the rate against itself — stays low.
+On one chain, every trader hits the same reserves. Depth is unified, fees are concentrated, and price impact — the way an order pushes the rate against itself — stays low. How that unified depth comes to exist onchain is covered in [Onchain Liquidity Explained](/guides/onchain-liquidity-explained/).
 
 Split that across ten rollups and the arithmetic turns against you:
 

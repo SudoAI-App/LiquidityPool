@@ -3,7 +3,7 @@ title: "Uniswap v4 Architecture: Singleton Design, Hooks, and Flash Accounting"
 description: "What changed in Uniswap v4 and what it means for you: one contract for every pool, settle-once accounting, custom pool code, and how to read a hook."
 category: "LP Mechanics"
 date: 2026-09-10
-lastReviewed: "2026-09-12"
+lastReviewed: "2026-09-22"
 author: "LiquidityPools Editorial Team"
 readTime: "7 min read"
 primaryQuery: "Uniswap v4 architecture"
@@ -43,7 +43,7 @@ In the old design, creating a pool meant deploying a whole new contract. That wa
 | Moving between fee tiers | Separate approvals, separate calls | Handled inside the same contract |
 | Where your tokens sit | In each individual pool | In the one contract, tracked per pool |
 
-That single contract is called a singleton — one contract holding every pool rather than one per pair [1]. Creating a pool now costs almost nothing, which matters more than it sounds: it makes long-tail pairs and experimental fee settings economically possible. The pricing rule inside is unchanged, and is covered in [Constant Product Formula](/guides/constant-product-formula/).
+That single contract is called a singleton — one contract holding every pool rather than one per pair [1]. Creating a pool now costs almost nothing, which matters more than it sounds: it makes long-tail pairs and experimental fee settings economically possible. The pricing rule inside is unchanged, and is covered in [Constant Product Formula](/guides/constant-product-formula/). The range and position maths are v3's as well, so the [Uniswap v3 liquidity calculator](/tools/uniswap-v3-liquidity-calculator/) models a v4 position unchanged.
 
 ## Why settling once makes everything cheaper
 

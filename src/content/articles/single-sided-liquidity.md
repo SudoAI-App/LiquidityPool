@@ -141,7 +141,7 @@ Setting an alert for full conversion, and acting on it, is what turns this into 
 1. **Do you actually want the other token** at the prices inside your band? That is the whole trade.
 2. **Check what your interface is doing.** A real one-sided range, or a swap dressed up as one?
 3. **For a zap, read the route**, the quoted impact, and any extra fee.
-4. **Work out what you hold** if the band fills completely.
+4. **Work out what you hold** if the band fills completely, in the [Uniswap v3 liquidity calculator](/tools/uniswap-v3-liquidity-calculator/).
 5. **Set an alert for full conversion**, so a finished position does not sit there for weeks.
 6. **Decide now** whether a fill means withdraw, or means leave it exposed to a reversal.
 7. **Size the band to how the pair actually moves**, so it is reachable in your timeframe.

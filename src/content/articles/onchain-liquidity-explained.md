@@ -139,7 +139,7 @@ That does not make supplying liquidity worse. It means competitiveness is a syst
 6. **If supplying, compute fee revenue per unit of liquidity** at each venue and compare.
 7. **If trading, compare an aggregator quote** against the best single pool at your size.
 
-This all works well when you treat the layers as separate systems with separate incentives. Treating the whole thing as one exchange produces expectations it was never built to meet.
+This all works well when you treat the layers as separate systems with separate incentives. Treating the whole thing as one exchange produces expectations it was never built to meet. For working one token’s depth and flow end to end, see [Token Liquidity Analysis](/guides/token-liquidity-analysis/).
 
 ## References
 

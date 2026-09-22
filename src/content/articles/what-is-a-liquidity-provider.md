@@ -136,7 +136,7 @@ Three consequences worth internalising:
 6. **Decide the exit rule now.** A price, a date, or a measured shortfall against holding.
 7. **Write down what you deposited and at what prices**, so you can reconstruct the benchmark later.
 
-The job is legitimate, useful and often profitable. It is not a savings account with a better rate, and the people who do well are the ones who priced the second half of the bargain before signing the first.
+The job is legitimate, useful and often profitable. It is not a savings account with a better rate, and the people who do well are the ones who priced the second half of the bargain before signing the first. When you are ready to price a real one, the practical walkthrough is [How to Provide Liquidity](/guides/how-to-provide-liquidity/).
 
 ## References
 

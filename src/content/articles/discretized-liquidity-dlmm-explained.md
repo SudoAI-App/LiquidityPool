@@ -3,7 +3,7 @@ title: "DLMM Explained: Bin-Based Liquidity, Dynamic Fees and Meteora"
 description: "How bin-based pools give trades a flat price, how the fee raises itself when the market moves fast, and how to shape your deposit across the bins."
 category: "LP Mechanics"
 date: 2026-09-10
-lastReviewed: "2026-09-12"
+lastReviewed: "2026-09-22"
 author: "LiquidityPools Editorial Team"
 readTime: "7 min read"
 primaryQuery: "DLMM"

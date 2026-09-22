@@ -20,7 +20,7 @@ faq:
 
 A pool advertising 45% is almost never earning 45% from trading. Most of it is a protocol printing its own token to persuade you to show up.
 
-That is liquidity mining. It is a marketing budget, paid in equity, and it works exactly as long as the budget lasts.
+That is liquidity mining. It is a marketing budget, paid in equity, and it works exactly as long as the budget lasts. The people it is trying to recruit, and what they actually sign up to do, are profiled in [What Is a Liquidity Provider?](/guides/what-is-a-liquidity-provider/).
 
 This guide shows you how to split the headline number into its parts, how the design has evolved through four generations, and how to tell a pool that survives the rewards ending from one that empties overnight.
 
@@ -42,7 +42,7 @@ Before anything else, break the advertised rate into where the money comes from.
 | The protocol printing its own token | 28.5% | Ends when the programme ends |
 | Payments from outside sponsors | 12.0% | Ends when the sponsor stops paying |
 
-Only the first row is income. The other two are a schedule with an end date, and everybody farming alongside you knows when it is.
+Only the first row is income. The other two are a schedule with an end date, and everybody farming alongside you knows when it is. Work out your own split — fee APR from routed volume against incentive APR from the reward stream — with the [liquidity pool fee and APR calculator](/tools/liquidity-pool-calculator/).
 
 Run the protocol's side of the same sum:
 

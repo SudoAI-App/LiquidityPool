@@ -24,7 +24,7 @@ faq:
 
 Every pool you can put money into is a curve plus a fee. Nothing else.
 
-The curve decides how much depth sits at each price, how fast your holdings flip from one token to the other, and which specific disaster you are being paid to absorb. So picking a pool really means picking a curve.
+The curve decides how much depth sits at each price, how fast your holdings flip from one token to the other, and which specific disaster you are being paid to absorb. So picking a pool really means picking a curve. One curve family goes further and moves itself to follow the market price; that design is unpacked in [Curve v2 CryptoSwap Explained](/guides/curve-v2-cryptoswap-explained/).
 
 There are three basic shapes, and every real pool is somewhere between them. This guide shows you what each one does, what it costs you, and how to read an unfamiliar one before you put money behind it.
 
@@ -146,7 +146,7 @@ The test is not what neighbouring pools charge. It is whether the fee has kept u
 6. **Check whether concentration is layered on top**, because that changes the answer to every question above.
 7. **Size the position against the failure**, not against the yield.
 
-A curve that answers all seven cleanly is almost always a small variation on one of the three shapes. One that cannot answer the second or fourth is not a new curve. It is an unpriced governance risk with a diagram attached.
+A curve that answers all seven cleanly is almost always a small variation on one of the three shapes. One that cannot answer the second or fourth is not a new curve. It is an unpriced governance risk with a diagram attached. Weighted pools are the classic variation — the product rule with a tunable weight on each token — covered in [Balancer Weighted Pools](/guides/balancer-and-weighted-pools/).
 
 ## References
 

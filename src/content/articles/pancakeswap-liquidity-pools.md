@@ -44,7 +44,7 @@ Two designs run side by side, and they ask different things of you.
 
 **Concentrated range pools** let you pick upper and lower bounds. Your money works far harder inside that band, and outside it the position converts to one token and stops earning. See [Out-of-Range Liquidity](/guides/out-of-range-liquidity/).
 
-Because the underlying mathematics is shared with other venues, everything in [Concentrated Liquidity Strategy](/guides/concentrated-liquidity-strategy/) applies here unchanged. The economics around it are what differ.
+Because the underlying mathematics is shared with other venues, everything in [Concentrated Liquidity Strategy](/guides/concentrated-liquidity-strategy/) applies here unchanged. The economics around it are what differ. The position arithmetic carries over too: the [Uniswap v3 liquidity calculator](/tools/uniswap-v3-liquidity-calculator/) models a PancakeSwap v3 range, because the tick and liquidity accounting is the same.
 
 ## How do the fee tiers affect what you earn?
 
@@ -146,6 +146,8 @@ A protocol with a large incentive programme is not worse than one without. It is
 5. [PancakeSwap Documentation](https://docs.pancakeswap.finance/)
 6. [SoK: Decentralized Exchanges (DEX) with Automated Market Maker (AMM) Protocols (Xu et al., 2021)](https://arxiv.org/abs/2103.12732)
 7. [SoK: Yield Aggregators in DeFi (Cousaert et al., 2021)](https://arxiv.org/abs/2105.13891)
+8. [veCAKE Sunset (PancakeSwap Documentation, 2025)](https://docs.pancakeswap.finance/welcome-to-pancakeswap/vecake-sunset)
+9. [CAKE Tokenomics (PancakeSwap Documentation)](https://docs.pancakeswap.finance/protocol/cake-tokenomics)
 
 [1]: https://uniswap.org/whitepaper-v3.pdf "Uniswap v3 Core Whitepaper"
 [2]: https://uniswap.org/whitepaper.pdf "Uniswap v2 Core Whitepaper"
@@ -154,3 +156,5 @@ A protocol with a large incentive programme is not worse than one without. It is
 [5]: https://docs.pancakeswap.finance/ "PancakeSwap Documentation"
 [6]: https://arxiv.org/abs/2103.12732 "SoK: Decentralized Exchanges (DEX) with Automated Market Maker (AMM) Protocols (Xu et al., 2021)"
 [7]: https://arxiv.org/abs/2105.13891 "SoK: Yield Aggregators in DeFi (Cousaert et al., 2021)"
+[8]: https://docs.pancakeswap.finance/welcome-to-pancakeswap/vecake-sunset "veCAKE Sunset"
+[9]: https://docs.pancakeswap.finance/protocol/cake-tokenomics "CAKE Tokenomics"

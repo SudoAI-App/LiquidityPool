@@ -56,7 +56,7 @@ When the relative price changes, the pool sells the one going up and buys the on
 
 A range-based position feels amplified versions of these inside its band, then stops once it fully converts. See [The Impermanent Loss Formula](/guides/impermanent-loss-formula/).
 
-**Check before you deposit:** apply the formula to a plausible move for this pair, and confirm expected fees over your holding period beat it.
+**Check before you deposit:** apply the formula to a plausible move for this pair, and confirm expected fees over your holding period beat it. The structural ways to keep that gap small are collected in [How to Avoid Impermanent Loss](/guides/how-to-avoid-impermanent-loss/).
 
 ## Three: the position stopped working
 
@@ -137,7 +137,7 @@ Working that list takes minutes and almost always stops before step five. Its va
 
 ## Where to go next
 
-Measure the second and third directly: divergence in the [impermanent loss calculator](/tools/impermanent-loss-calculator/?mode=weighted&a0=2000&a1=2800&capital=10000), and the fees that have to offset it in the [liquidity pool fee and APR calculator](/tools/liquidity-pool-calculator/?feeTier=0.3&capital=10000&volume=1000000). For the same question from the revenue side, see [Is Providing Liquidity Profitable?](/guides/is-providing-liquidity-profitable/).
+Measure the second and third directly: divergence in the [impermanent loss calculator](/tools/impermanent-loss-calculator/?mode=weighted&a0=2000&a1=2800&capital=10000), and the fees that have to offset it in the [liquidity pool fee and APR calculator](/tools/liquidity-pool-calculator/?feeTier=0.3&capital=10000&volume=1000000). For the same question from the revenue side, see [Is Providing Liquidity Profitable?](/guides/is-providing-liquidity-profitable/). If the pool mechanics themselves are still new, start with [Liquidity Pools for Beginners](/guides/liquidity-pools-for-beginners/).
 
 ## References
 

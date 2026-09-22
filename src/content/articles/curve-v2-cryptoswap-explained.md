@@ -53,7 +53,7 @@ The shape of the curve is then controlled by two dials.
 | Amplification | How flat the curve is at the centre | Deeper liquidity right at the current price |
 | Gamma | How wide the flat part is, and how fast it steepens | A broader comfortable zone before costs climb |
 
-The behaviour is what matters. Near the middle, the curve is nearly flat, so trades clear at almost no cost. Push the pool badly out of balance and it steepens smoothly into an ordinary constant-product curve.
+The behaviour is what matters. Near the middle, the curve is nearly flat, so trades clear at almost no cost. Push the pool badly out of balance and it steepens smoothly into an ordinary constant-product curve. How that shape compares with the other curve families is the subject of [Bonding Curves and AMM Invariants](/guides/bonding-curves-and-amm-invariants/).
 
 That steepening is a safety feature, not a flaw. A curve that stayed flat forever would let a falling asset drain everything the pool holds before the price moved enough to stop it [4] [5]. Compare with the pegged-pair case in [Stablecoin Liquidity Pools](/guides/stablecoin-liquidity-pools/).
 
@@ -108,7 +108,7 @@ The flagship use of this design is the TriCrypto family, which puts three quite 
 | The macro asset | Wrapped BTC | Large, liquid, moves slowly relative to the rest |
 | The chain asset | Wrapped ETH | The most volatile leg |
 
-The practical gain is routing. On most venues, going from Bitcoin to Ethereum means two hops and two fees, or a thin direct pair [1]. In a TriCrypto pool, all three trade against each other inside one contract, and the pool rebalances across all three at once [4].
+The practical gain is routing. On most venues, going from Bitcoin to Ethereum means two hops and two fees, or a thin direct pair [1]. In a TriCrypto pool, all three trade against each other inside one contract, and the pool rebalances across all three at once [4]. Multi-asset pools come in another form entirely — value-weighted baskets rather than a shared curve — covered in [Balancer Weighted Pools](/guides/balancer-and-weighted-pools/).
 
 ## Where Curve v1 and v2 differ
 
@@ -136,6 +136,8 @@ The practical gain is routing. On most venues, going from Bitcoin to Ethereum me
 3. **Does the fee cover the bleed?** Compare the fee range against how much the pair moves, since a fast pair hands more away to arbitrage [7].
 4. **What are the wrapped assets actually backed by?** In a TriCrypto pool, confirm the Bitcoin and Ethereum legs are the canonical wrapped versions and not a thinner synthetic.
 5. **How much of the yield is emissions?** Separate real fee income from token rewards, because only one of them survives an incentive programme ending [5].
+
+The first check is measurable: the [liquidity pool fee and APR calculator](/tools/liquidity-pool-calculator/) turns a pool's volume and your share of it into the fee income that has to fund those rebalances.
 
 ## Where to watch the numbers
 

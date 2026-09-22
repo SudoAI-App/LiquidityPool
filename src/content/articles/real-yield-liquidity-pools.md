@@ -46,7 +46,7 @@ Splitting those two lines before comparing anything is the whole discipline. Thi
 | Does your own selling affect it | No | Yes, and everybody sells at once |
 | What you receive | The pool's own assets | Whatever the market absorbs |
 
-That fourth row is the one you should sit with. Fee income is unaffected by your decision to take it. Reward income is not, because everybody receiving it faces the same decision at the same moment.
+That fourth row is the one you should sit with. Fee income is unaffected by your decision to take it. Reward income is not, because everybody receiving it faces the same decision at the same moment. Lending interest is a third source with its own character — the instrument comparison is in [Lending Pool vs Liquidity Pool](/guides/lending-pool-vs-liquidity-pool/).
 
 ## Splitting any quoted rate
 
@@ -61,7 +61,7 @@ Where:
 - **Fees over a window** is what the pool actually collected.
 - **Liquidity supplying them** is the money competing for those fees.
 
-Everything above that figure in the quoted rate is issuance. Verify the base over at least thirty days, because volume clusters around events and one day will not repeat.
+Everything above that figure in the quoted rate is issuance. Verify the base over at least thirty days, because volume clusters around events and one day will not repeat. The fee side of that split, from routed volume and your share of the active liquidity, is what the [liquidity pool fee and APR calculator](/tools/liquidity-pool-calculator/) computes.
 
 Worked:
 

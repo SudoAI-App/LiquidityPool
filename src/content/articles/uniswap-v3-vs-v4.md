@@ -81,7 +81,7 @@ This is the section that matters most, and it is the shortest.
 | How fees accrue | Per price step | Identical |
 | Being picked off | Arbitrage against a stale quote | Identical, unless a hook prices it |
 
-A band of plus or minus 5% behaves the same way on both. The reasons to prefer one are gas, where the volume goes, and whether a hook improves the fee side. The reasons to be careful about a specific v4 pool are entirely about its hook.
+A band of plus or minus 5% behaves the same way on both. The reasons to prefer one are gas, where the volume goes, and whether a hook improves the fee side. The reasons to be careful about a specific v4 pool are entirely about its hook. Because the range maths is inherited, the [Uniswap v3 liquidity calculator](/tools/uniswap-v3-liquidity-calculator/) prices a v4 band exactly as it prices a v3 one.
 
 If the range mechanics are new, start with [Concentrated Liquidity Explained](/guides/concentrated-liquidity-explained/) and [Out-of-Range Liquidity](/guides/out-of-range-liquidity/).
 

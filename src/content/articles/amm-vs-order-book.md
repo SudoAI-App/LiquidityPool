@@ -46,9 +46,9 @@ Each one is better at something different. This guide covers how each works, wha
 
 ### Pools
 
-Money sits in a contract, and a formula turns the balances into a price [1]. Somebody can always trade, at any hour, in any size.
+Money sits in a contract, and a formula turns the balances into a price [1]. Somebody can always trade, at any hour, in any size. What sits in that contract is a liquidity pool, and the inventory side of it is covered in [What Is a Liquidity Pool?](/guides/what-is-a-liquidity-pool/).
 
-That availability is the point, and it is also the flaw. The quote does not update until a transaction happens, so whenever a real market moves, the pool is briefly wrong and somebody takes the difference.
+That availability is the point, and it is also the flaw. The quote does not update until a transaction happens, so whenever a real market moves, the pool is briefly wrong and somebody takes the difference. The formula itself varies by design — two-asset constant product, multi-asset weighted baskets as in [Balancer Weighted Pools](/guides/balancer-and-weighted-pools/), or stepped bins — but every one of them quotes from its own balances.
 
 ### Order books
 

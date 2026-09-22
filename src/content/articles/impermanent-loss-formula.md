@@ -87,7 +87,7 @@ The mechanism behind all of it is in [Impermanent Loss Explained](/guides/imperm
 
 An ordinary pool always keeps half its value in each token. What changes is how many of each it holds.
 
-The shape is the lesson, not the individual rows. Small moves cost almost nothing. Past a doubling it accelerates hard. That is the whole reason pegged pairs and volatile pairs behave so differently on the same curve.
+The shape is the lesson, not the individual rows. Small moves cost almost nothing. Past a doubling it accelerates hard. That is the whole reason pegged pairs and volatile pairs behave so differently on the same curve. Each row is worked through as a full position in dollars in [Impermanent Loss Examples](/guides/impermanent-loss-examples/).
 
 ## A real position, start to finish
 
@@ -147,7 +147,7 @@ Run the number on its own and you will get a misleading answer, in either direct
 6. **Compare against what you could really have done.** Holding the basket, holding one token, or a different pool. A benchmark you never had access to is not a benchmark.
 7. **Check it against independent accounting.** [Revert Finance](https://revert.finance) rebuilds position history and separates fees from divergence.
 
-Use this before you deposit, not after you are disappointed. Run at deposit time with an honest view of how much the pair moves and how much the pool earns, it tells you exactly what the market has to do before the position stops being worth holding.
+Use this before you deposit, not after you are disappointed. Run at deposit time with an honest view of how much the pair moves and how much the pool earns, it tells you exactly what the market has to do before the position stops being worth holding. The structural levers for keeping that number small — pair choice, range width, holding period — are collected in [How to Avoid Impermanent Loss](/guides/how-to-avoid-impermanent-loss/).
 
 ## Where to go next
 

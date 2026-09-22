@@ -38,7 +38,7 @@ Picture a shop with two shelves. One holds ETH, the other holds USDC. The rule s
 
 Take ETH off the first shelf and you have to put enough USDC on the second to keep that number level. Take more and you have to put on proportionally more still. That is where the price comes from, and it is why the rate gets worse as your order gets bigger.
 
-The pool never checks anywhere else. It does not know ETH just moved on Binance. It keeps offering yesterday's rate until someone walks in and takes the good side, which is exactly what arbitrage traders do all day. The formal treatment is in [Constant Product Formula](/guides/constant-product-formula/).
+The pool never checks anywhere else. It does not know ETH just moved on Binance. It keeps offering yesterday's rate until someone walks in and takes the good side, which is exactly what arbitrage traders do all day. The formal treatment is in [Constant Product Formula](/guides/constant-product-formula/). If the pool itself is new to you, start with [What Is a Liquidity Pool?](/guides/what-is-a-liquidity-pool/).
 
 The one relationship the pool refuses to break is called its invariant — the rule holding the shelves in line. Different pools use different ones, and that choice decides how the price behaves.
 
@@ -105,7 +105,7 @@ Newer pools let the fee move rather than sit fixed:
 - **Fees that track volatility.** Trader Joe and hook-enabled Uniswap v4 pools watch how fast the price is moving and widen the fee while it lasts. That charges more to the traders picking off stale quotes [1] [3].
 - **Fees that track imbalance.** Curve pools charge more when a trade pushes the pool further out of balance [4].
 
-Two rules fall out of this. If you are trading, a low headline fee guarantees nothing about your total cost. If you are depositing, your fees stop the instant the price leaves your band, and they stop completely, not partially [2] [3].
+Two rules fall out of this. If you are trading, a low headline fee guarantees nothing about your total cost. If you are depositing, your fees stop the instant the price leaves your band, and they stop completely, not partially [2] [3]. To turn a pool's routed volume, your share of the active liquidity and your time in range into a fee APR, use the [liquidity pool fee and APR calculator](/tools/liquidity-pool-calculator/).
 
 ## What happens when the price leaves your band
 

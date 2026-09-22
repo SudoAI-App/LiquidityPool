@@ -36,7 +36,7 @@ It works beautifully, and it has one trap that catches almost everyone the first
 
 Normally a pool makes you deposit both tokens in the ratio it currently holds. Range-based pools do not, as long as your range sits entirely on one side of the current price [1].
 
-Put a range above the market and you deposit only the risky token. The pool has no reason to hold any dollars up there yet [2]. Put it below and you deposit only the quote token.
+Put a range above the market and you deposit only the risky token. The pool has no reason to hold any dollars up there yet [2]. Put it below and you deposit only the quote token. The same one-sided placement exists on Solana's tick-based CLMMs — see [Raydium Liquidity Pools](/guides/raydium-clmm-liquidity-guide/).
 
 Then the market does the work. As the price rises into your range, traders buy your ETH and leave dollars behind. By the time it passes your upper bound, the conversion is complete.
 
@@ -54,7 +54,7 @@ Where:
 - $P_u$ is the top.
 - $\bar{P}$ is the average price your fill actually achieved.
 
-Put numbers on it. A range from \$3,100 to \$3,300 fills at about \$3,198, not \$3,300. Set the range wide and you will be disappointed by the average.
+Put numbers on it. A range from \$3,100 to \$3,300 fills at about \$3,198, not \$3,300. Set the range wide and you will be disappointed by the average. The [concentrated liquidity calculator](/tools/uniswap-v3-liquidity-calculator/) runs this fill arithmetic for any band, including the token mix it produces.
 
 So the width is the whole decision. A narrow range of one or two steps fills at almost exactly the price you wanted. A wide range spreads the fill across the whole move.
 

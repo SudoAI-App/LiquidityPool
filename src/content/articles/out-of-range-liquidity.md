@@ -40,7 +40,7 @@ This guide explains what the contract actually did, what it costs you per day, a
 
 ## What the contract actually did
 
-Your position is defined by a size and two prices. Inside them, it holds both tokens, and how much of each depends on where the price sits [1].
+Your position is defined by a size and two prices. Inside them, it holds both tokens, and how much of each depends on where the price sits [1]. The machinery behind those ranges is covered from the ground up in [Uniswap Liquidity Pools](/guides/uniswap-liquidity-pools/).
 
 $$
 x = L\left(\frac{1}{\sqrt{P}} - \frac{1}{\sqrt{p_b}}\right)

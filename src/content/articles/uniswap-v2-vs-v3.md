@@ -42,7 +42,7 @@ In v2, every provider supplies the same curve across every price from zero upwar
 
 In v3 you choose two prices. The same curve gets shifted so your money runs out at those bounds, which means it backs far more depth inside the band and none outside it [2]. Each fee tier becomes a separate pool, and your claim becomes an NFT.
 
-The pricing maths is identical. Divergence, being picked off, and fee accrual all work the same way. The only difference is where the liquidity sits.
+The pricing maths is identical. Divergence, being picked off, and fee accrual all work the same way. The only difference is where the liquidity sits. The machinery both versions share is laid out in [Uniswap Liquidity Pools](/guides/uniswap-liquidity-pools/).
 
 ## The efficiency multiple, honestly
 
@@ -55,7 +55,7 @@ Where:
 - $p_a$ and $p_b$ are the bottom and top of your band.
 - $C$ is how many times more depth your money backs.
 
-A band of plus or minus 10% gives roughly twenty times. Plus or minus 2% gives roughly a hundred.
+A band of plus or minus 10% gives roughly twenty times. Plus or minus 2% gives roughly a hundred. The [concentrated liquidity calculator](/tools/uniswap-v3-liquidity-calculator/) works out the multiplier, the fee projection, and the token mix at both edges for a specific band.
 
 Now apply the second term, which nobody quotes:
 

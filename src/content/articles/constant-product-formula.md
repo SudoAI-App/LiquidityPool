@@ -52,7 +52,7 @@ Where:
 
 Everything else is a consequence. The price is simply one balance divided by the other. Trade in one direction and you raise one balance and lower the other, which moves the price against you.
 
-The word for that fixed relationship is the pool's invariant — the one thing the contract will not let change. It never consults a price feed, it never looks at another exchange, and it never gets an opinion. It just refuses to let $k$ fall.
+The word for that fixed relationship is the pool's invariant — the one thing the contract will not let change. It never consults a price feed, it never looks at another exchange, and it never gets an opinion. It just refuses to let $k$ fall. How invariants generalise beyond this one, and what each shape charges you for, is covered in [Bonding Curves and AMM Invariants](/guides/bonding-curves-and-amm-invariants/).
 
 ## Why your fill is always worse than the quote
 
@@ -124,7 +124,7 @@ For the range-based version of this maths, see [Concentrated Liquidity Explained
 3. **In range-based pools, look at the live band.** Check that enough money sits at and around the current price to absorb your order without jumping into an empty stretch [1].
 4. **Protect anything above \$20,000.** Send it through a private relay so bots cannot read your order and trade in front of it [5].
 
-For what this same curve costs a depositor — impermanent loss, the gap between a pool position and simply holding the tokens — see [Impermanent Loss Explained](/guides/impermanent-loss-explained/).
+For what this same curve costs a depositor — impermanent loss, the gap between a pool position and simply holding the tokens — see [Impermanent Loss Explained](/guides/impermanent-loss-explained/). A specific price ratio, run through the [impermanent loss calculator](/tools/impermanent-loss-calculator/), shows what that reserve shift hands back to a depositor.
 
 ## Where to watch the numbers
 

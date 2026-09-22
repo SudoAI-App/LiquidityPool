@@ -176,3 +176,27 @@ A readable guide that is wrong is worse than a dense one that is right. A full r
 8. Add the worked example if a section is missing one.
 9. Recompute every number and verify every citation per §4.1.
 10. Run `pnpm content:audit`, then `pnpm links:check`.
+
+## 6. The standing cadence — freshness and the data loop
+
+Launch quality is done; from here the library improves on a loop, not in campaigns.
+
+### 6.1 Rolling review
+
+- Protocol-specific guides drift: fee defaults, parameter lists and launch status change under them. Re-verify about five protocol pages per week so every protocol page is re-checked against its primary documentation inside a 90-day window (the cadence SEO-LAUNCH-PLAN.md §Editorial Standards already promised). Evergreen foundations re-verify annually.
+- Rotation order: Uniswap v4 → Meteora DLMM and LFJ Liquidity Book → Raydium CLMM → PancakeSwap → dynamic-fee designs → Curve → Balancer, then repeat.
+- `lastReviewed` moves ONLY when volatile claims were actually re-checked against primary sources that day. A cosmetic date bump is a lie to readers and to search engines.
+- The verdict (pass, or what changed and against which source) is recorded in the commit message, so the review trail lives in git.
+
+### 6.2 Weekly data loop
+
+Content priorities come from measurement, not intuition:
+
+1. **GA4 + Clarity, weekly.** Scroll depth per guide. Find the guides where readers leave before the first worked example or calculator embed, and move the payoff earlier.
+2. **Search Console, monthly.** Classify every URL: impressions with CTR under ~1–2% → rewrite title and description only; average position 8–30 → depth plus internal links; zero impressions after two weeks → indexing or cannibalization check.
+3. **Validate before commissioning.** Before any new guide, pull Keyword Planner volume and difficulty for the target theme and reconcile against the Search Console performance of the pages already serving that cluster (`docs/keyword-coverage.md` lists what remains unvalidated).
+4. **Feed the sequence.** Verdicts set the order of the expansion sequence in SEO-LAUNCH-PLAN.md §Next 90-Day Expansion.
+
+### 6.3 Link-graph floor
+
+Every guide is linked from at least four other guides, so no page — above all a newly published one — sits without internal link equity. `pnpm content:audit` enforces the floor and fails the build on a violation. A new guide therefore ships in the same commit as the neighbour links that feed it: write the guide, then wire its three or four topical neighbours in the same change.

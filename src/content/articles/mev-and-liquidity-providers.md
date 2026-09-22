@@ -98,7 +98,7 @@ Split what goes through a pool into two piles [5].
 | What they cost you | Nothing, they pay you | More than the fee they pay |
 | What you want | As much as possible | As little as possible |
 
-A pool whose volume is mostly the second kind is not a business you are participating in. It is a mechanism for moving your money elsewhere.
+A pool whose volume is mostly the second kind is not a business you are participating in. It is a mechanism for moving your money elsewhere. The [LP profit calculator](/tools/lp-profit-calculator/) nets fee capture against divergence and gas for a specific position, which is the arithmetic that tells you which kind of pool you are in.
 
 ## What people get wrong about this
 

@@ -80,7 +80,7 @@ The same rounding explains why two positions that look identical on a dashboard 
 
 ## Why your position is an NFT
 
-Because every position has its own bounds, no two are interchangeable. So each one is recorded as an NFT holding the pool, the two bounds, the size, and a snapshot of the fee accounting at the last update [1].
+Because every position has its own bounds, no two are interchangeable. So each one is recorded as an NFT holding the pool, the two bounds, the size, and a snapshot of the fee accounting at the last update [1]. In v2 the same claim was a fungible token; the trade-offs between the two designs are set out in [Uniswap v2 vs v3](/guides/uniswap-v2-vs-v3/).
 
 Four practical consequences:
 
@@ -148,7 +148,7 @@ None of this changes the economics, which are decided by volume, volatility and 
 
 ## Where to go next
 
-Apply the tick maths to a real position in the [concentrated liquidity calculator](/tools/uniswap-v3-liquidity-calculator/?price=3000&lower=2500&upper=3500&capital=10000). The same accounting underpins [Raydium Liquidity Pools](/guides/raydium-clmm-liquidity-guide/) on Solana.
+Apply the tick maths to a real position in the [concentrated liquidity calculator](/tools/uniswap-v3-liquidity-calculator/?price=3000&lower=2500&upper=3500&capital=10000). The same accounting underpins [Raydium Liquidity Pools](/guides/raydium-clmm-liquidity-guide/) on Solana. For what changed and what did not, see [Uniswap v3 vs v4](/guides/uniswap-v3-vs-v4/).
 
 ## References
 

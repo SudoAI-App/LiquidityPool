@@ -22,7 +22,7 @@ Put money into a pool and you do not get a receipt for what you put in. You get 
 
 Those are very different things. Your deposit was two specific token amounts. Your claim is a slice of whatever the pool has ended up with, which will not be the same mix and may not be the same value.
 
-This guide covers the main ways pools track that claim, how fees reach you under each one, and what to check before you deposit, stake, or unwind a position.
+This guide covers the main ways pools track that claim, how fees reach you under each one, and what to check before you deposit, stake, or unwind a position. If the pool mechanics underneath are still new, [Liquidity Pools for Beginners](/guides/liquidity-pools-for-beginners/) covers them from the ground up.
 
 <figure class="article-figure">
   <img src="/images/guides/liquidity-pool-tokens.webp" alt="A pool-share token is linked to a two-sided reserve vault." width="1600" height="1067" loading="lazy" decoding="async" />
@@ -68,7 +68,7 @@ In plain terms, you get exactly the fraction of the pool that you funded. Nothin
 
 Fees make this design pleasant. They are not paid out separately; they are simply left in the pool. The pool gets bigger, the number of shares does not, so each share quietly becomes worth more. There is nothing to claim and nothing to compound by hand.
 
-When you leave, the contract destroys your shares and hands back that same fraction of whatever the pool currently holds. If prices moved while you were in, you get back more of the loser and less of the winner [1]. The reason is in [Constant Product Formula](/guides/constant-product-formula/).
+When you leave, the contract destroys your shares and hands back that same fraction of whatever the pool currently holds. If prices moved while you were in, you get back more of the loser and less of the winner [1]. The reason is in [Constant Product Formula](/guides/constant-product-formula/). What that exit is worth after fees, divergence and gas, measured against holding, is what the [LP profit and return calculator](/tools/lp-profit-calculator/) works out.
 
 ## The range case: every position is its own thing
 

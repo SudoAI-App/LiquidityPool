@@ -134,7 +134,7 @@ None of these is a forecast. Each shortfall follows from the rule and the price 
 
 ## The same curve appears under many names
 
-Branding hides how much overlap there is. A range-based pool on one chain and a fork of it on another are the same rule with different step sizes and tiers. A flat stable curve appears under several names with different default settings.
+Branding hides how much overlap there is. A range-based pool on one chain and a fork of it on another are the same rule with different step sizes and tiers. A flat stable curve appears under several names with different default settings. PancakeSwap's v3 pools are a direct example of the first kind — the same range-based rule as Uniswap v3 with their own tiers — mapped out in [PancakeSwap Liquidity Pools](/guides/pancakeswap-liquidity-pools/).
 
 So the questions transfer. Whatever it is called, ask which rule prices the trades, what the settings are, where the curve is flat and where it bends, and what you hold at each extreme.
 
