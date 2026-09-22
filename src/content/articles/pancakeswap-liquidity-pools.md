@@ -3,7 +3,7 @@ title: "PancakeSwap Liquidity Pools: Structure, Fees and Incentives"
 description: "How PancakeSwap liquidity pools work, how their fee tiers and CAKE emissions differ from a fee-funded pool, and what to check before supplying one."
 category: "Advanced"
 date: 2026-09-10
-lastReviewed: "2026-09-12"
+lastReviewed: "2026-09-22"
 author: "LiquidityPools Editorial Team"
 readTime: "6 min read"
 primaryQuery: "PancakeSwap liquidity pool"
@@ -11,20 +11,20 @@ keywords: "PancakeSwap liquidity pool, PancakeSwap v3, CAKE emissions, BNB Chain
 featured: false
 faq:
   - q: "How do PancakeSwap liquidity pools work?"
-    a: "They use the same curve families as other major automated market makers: a constant-product pool for the older design and concentrated ranges for the newer one. Providers deposit a pair, receive a claim, and earn a share of swap fees, with optional token emissions on top through farms."
+    a: "They use the same curve families as other major automated market makers: constant-product pools, concentrated ranges, stablecoin pools, and — since Infinity — bin-based pools. Providers deposit a pair, receive a claim, and earn a share of swap fees, with optional token emissions on top through farms."
   - q: "What is the difference between PancakeSwap and Uniswap pools?"
-    a: "The pricing mathematics is largely the same. The differences are the chains they run on, the fee tiers available, and the incentive layer: PancakeSwap directs CAKE emissions to selected pools through gauge voting, so a meaningful part of quoted yield is issuance rather than fees."
+    a: "The pricing mathematics is largely the same. The differences are the chains they run on, the fee tiers available, and the incentive layer: PancakeSwap pays CAKE emissions to selected farm pools, so a meaningful part of quoted yield is issuance rather than fees."
   - q: "Are PancakeSwap farms worth it?"
     a: "It depends entirely on the split between fee income and emissions. Run the emissions-to-zero test: if fee-only yield does not justify the divergence the pair generates, the position is a CAKE exposure with a liquidity position attached."
   - q: "Is providing liquidity on BNB Chain cheaper?"
     a: "Transaction costs are typically much lower than on Ethereum mainnet, which makes narrow ranges and frequent rebalancing viable at smaller position sizes. Lower routed volume on many pairs partly offsets that advantage."
   - q: "What should I check before supplying a PancakeSwap pool?"
-    a: "The same checks as any pool: contract verification and audits, routed volume for the specific pool, active depth in your band, and the emission schedule and gauge weight if you are entering for the farm yield."
+    a: "The same checks as any pool: contract verification and audits, routed volume for the specific pool, active depth in your band, and the current farm reward schedule if you are entering for the farm yield."
 ---
 
 If you have supplied a pool anywhere else, the mechanics here will look familiar. The pricing rules are the ones you already know.
 
-What is different is the money. A large part of what a PancakeSwap pool quotes you is not paid by traders. It is a token the protocol is printing, directed to that pool by a vote.
+What is different is the money. A large part of what a PancakeSwap pool quotes you is not paid by traders. It is a token the protocol is printing, directed to that pool by the protocol's own emission decisions.
 
 So reading one of these pools means separating the two layers before you compare anything. This guide shows you how to split them and what to check on each side.
 
@@ -34,15 +34,19 @@ So reading one of these pools means separating the two layers before you compare
 </figure>
 
 > **Editor's note:**
-> Pool mechanics may transfer between venues, but incentive design does not. A quoted return can depend heavily on a gauge allocation that voters may redirect at the next epoch, so a range strategy should separate fee income from temporary incentives before comparing venues.
+> Pool mechanics may transfer between venues, but incentive design does not. A quoted return can depend heavily on an emission programme the protocol can resize or end, so a range strategy should separate fee income from temporary incentives before comparing venues.
 
 ## Which kind of pool are you joining?
 
-Two designs run side by side, and they ask different things of you.
+Four designs now run side by side, and they ask different things of you.
 
 **Constant-product pools** spread your money across every possible price. You get a fungible claim and there is nothing to manage. What you give up is impermanent loss — the shortfall a pool position runs against simply holding the two tokens — and it follows the standard symmetric shape set out in [The Impermanent Loss Formula](/guides/impermanent-loss-formula/).
 
 **Concentrated range pools** let you pick upper and lower bounds. Your money works far harder inside that band, and outside it the position converts to one token and stops earning. See [Out-of-Range Liquidity](/guides/out-of-range-liquidity/).
+
+**StableSwap pools** specialise in pegged pairs; the curve trades nearly flat while things behave, and the damage concentrates when they do not. See [Stablecoin Liquidity Pools](/guides/stablecoin-liquidity-pools/).
+
+**Bin-based pools**, added with PancakeSwap Infinity in 2025, split liquidity into discrete price shelves instead of a continuous curve. See [Discretized Liquidity (DLMM) Explained](/guides/discretized-liquidity-dlmm-explained/).
 
 Because the underlying mathematics is shared with other venues, everything in [Concentrated Liquidity Strategy](/guides/concentrated-liquidity-strategy/) applies here unchanged. The economics around it are what differ. The position arithmetic carries over too: the [Uniswap v3 liquidity calculator](/tools/uniswap-v3-liquidity-calculator/) models a PancakeSwap v3 range, because the tick and liquidity accounting is the same.
 
@@ -56,13 +60,13 @@ One thing is chain-specific. On a network with cheap transactions, aggregators s
 
 ## Where does the rest of the yield come from?
 
-This is where the protocol differs most from a purely fee-funded venue. The protocol issues its own token to selected pools, and which pools get how much is decided by a vote among token holders.
+This is where the protocol differs most from a purely fee-funded venue. The protocol issues its own token to selected pools. Which pools get how much is decided by PancakeSwap itself: the vote-driven gauge system that used to direct emissions was retired in April 2025, and allocation now arrives as an announced farm schedule [8].
 
 Three things follow for you.
 
-**The quoted yield is a sum, not a rate.** Part of it is fees paid by traders. Part is freshly printed supply. Only the first survives the end of a programme. See [Real Yield in Liquidity Pools](/guides/real-yield-liquidity-pools/).
+**The quoted yield is a sum, not a rate.** Part of it is fees paid by traders. Part is freshly printed supply — CAKE is capped at 400 million and burns a share of every fee, but farm rewards to you are still newly issued tokens [9]. Only the first survives the end of a programme. See [Real Yield in Liquidity Pools](/guides/real-yield-liquidity-pools/).
 
-**The allocation can change.** A vote can raise or cut your pool's share at an epoch boundary. If your case for holding rests on the emission part, you need to watch the governance calendar as closely as you watch the market.
+**The allocation can change.** Emissions are set by the protocol, not locked. A farm's reward can be cut or ended between announcements, so if your case for holding rests on the emission part, watch the farm schedule as closely as you watch the market [8].
 
 **You have to sell the token to realise it.** Everybody receiving it faces that same decision at the same moment, which is the dilution mechanism examined in [Liquidity Mining Explained](/guides/liquidity-mining-explained/).
 
@@ -100,9 +104,9 @@ Take \$15,000 into a mid-cap pair quoting 48%, of which measured fee income is a
 
 The emission line is why the pool looks attractive at all. Now the costs against it.
 
-The pair's volatility implies a hurdle of roughly 3 to 5% over a quarter for a full-range position, more for a concentrated one. Weekly harvest-and-sell cycles cost gas and move the price on a thin book. And the gauge weight funding those emissions gets reallocated by a vote that has not happened yet.
+The pair's volatility implies a hurdle of roughly 3 to 5% over a quarter for a full-range position, more for a concentrated one. Weekly harvest-and-sell cycles cost gas and move the price on a thin book. And the emission stream funding those rewards can be resized or ended by protocol decision, with notice measured in announcements [8].
 
-The position can be perfectly sound. What it cannot be is a 48% yield, because about 85% of that figure depends on a token price holding up against continuous printing and on a future vote. Size it as a token exposure with a fee kicker and you make different decisions than if you size it as a high-yield pool. Only one of those descriptions matches the contract.
+The position can be perfectly sound. What it cannot be is a 48% yield, because about 85% of that figure depends on a token price holding up against continuous printing and on emission decisions you do not control. Size it as a token exposure with a fee kicker and you make different decisions than if you size it as a high-yield pool. Only one of those descriptions matches the contract.
 
 ## What carries over from other protocols?
 
@@ -120,7 +124,7 @@ One habit closes the gap. Write down the fee-only yield at entry next to the quo
 | :--- | :--- |
 | A 48% pool pays 48% | Most of it is printing, sold by everybody who receives it |
 | The mechanics are different here | The pricing rules are the ones you already know |
-| My emission rate is fixed | A vote can move it at the next epoch boundary |
+| My emission rate is fixed | The protocol sets and can change emission allocation; check the farm schedule |
 | Cheap gas means more profit | It also means aggregators split flow across more pools |
 | A wrapped token is the token | It is a claim on a bridge, with its own peg risk |
 
@@ -131,7 +135,7 @@ One habit closes the gap. Write down the fee-only yield at entry next to the quo
 - [ ] Routed volume for that specific pool and tier over thirty days.
 - [ ] Active depth inside your intended band, not the pool's headline total.
 - [ ] The quoted yield split into its fee and emission parts.
-- [ ] The emission schedule, the current gauge weight, and the governance calendar.
+- [ ] The current farm reward schedule and the protocol's emission announcements.
 - [ ] For bridged assets, the bridge itself and the peg history of the wrapped token.
 - [ ] Your position size, set against whatever the zero test classified this as.
 
