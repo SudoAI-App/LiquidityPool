@@ -16,6 +16,8 @@ faq:
     a: "It cannot be removed while supplying a two-sided pool, only reduced or offset: correlated or pegged pairs diverge less, weighted pools rotate less, fee income offsets what remains, and a hedge can neutralise the delta at a cost."
   - q: "Is impermanent loss vs permanent loss a real distinction?"
     a: "Only until you withdraw. The word impermanent refers to the possibility that relative prices return to their entry ratio, which closes the gap. Withdrawing crystallises whatever gap exists at that moment."
+  - q: "Is impermanent loss permanent once it appears?"
+    a: "The word is misleading. The gap is measurable at any moment and is locked in when you withdraw. If price returns to the entry level, the gap closes; if you exit elsewhere, you realise whatever gap exists then."
 ---
 
 You put \$10,000 into an ETH/USDC pool when ETH was \$3,000. A month later ETH is \$6,000. You are up, but less up than the friend who did nothing and just held the same tokens.

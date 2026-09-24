@@ -165,6 +165,10 @@ The question is never which pool type is best. It is which pricing rule you want
 
 Once the curve is chosen, size the position with the [liquidity pool fee and APR calculator](/tools/liquidity-pool-calculator/?feeTier=0.05&capital=10000) and check impermanent loss — the gap between a pool position and simply holding — with the [impermanent loss calculator](/tools/impermanent-loss-calculator/?mode=weighted&a0=2000&a1=3000&capital=10000). Lending markets are compared properly in [Lending Pool vs Liquidity Pool](/guides/lending-pool-vs-liquidity-pool/).
 
+Related reading: [Bonding Curves and AMM Invariants](/guides/bonding-curves-and-amm-invariants/).
+
+Related reading: [Single-Sided Liquidity](/guides/single-sided-liquidity/).
+
 ## References
 
 1. [Uniswap v2 Core Whitepaper (Adams et al., 2020)](https://uniswap.org/whitepaper.pdf)

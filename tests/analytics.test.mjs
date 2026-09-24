@@ -35,6 +35,7 @@ function executeAnalytics(slug, calculator) {
     URLSearchParams,
     Date,
     console,
+    addEventListener: (name, handler) => { listeners[name] = handler; },
   };
   context.window = context;
   vm.runInNewContext(script, context);

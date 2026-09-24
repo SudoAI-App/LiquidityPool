@@ -167,6 +167,8 @@ These numbers are not dishonest by design. They are summaries that happen to dis
 
 Rebuild any quoted rate from its inputs with the [liquidity pool fee and APR calculator](/tools/liquidity-pool-calculator/?feeTier=0.3&capital=10000&volume=5000000), then subtract what it leaves out with the [impermanent loss calculator](/tools/impermanent-loss-calculator/?mode=weighted&a0=2000&a1=2500&capital=10000). For the pool mechanics underneath any quoted rate, see [Liquidity Pools for Beginners](/guides/liquidity-pools-for-beginners/).
 
+Related reading: [Liquidity Pool vs Staking](/guides/liquidity-pool-vs-staking/) and [Liquidity Mining vs Yield Farming](/guides/liquidity-mining-vs-yield-farming/).
+
 ## References
 
 1. [Uniswap v3 Core Whitepaper (Adams et al., 2021)](https://uniswap.org/whitepaper-v3.pdf)

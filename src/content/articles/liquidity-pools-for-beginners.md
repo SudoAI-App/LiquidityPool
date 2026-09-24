@@ -152,6 +152,8 @@ Either answer is worth more than a month of reading, because it happened to your
 
 If the first position teaches you the pair was wrong, that is a cheap lesson and the right one to learn first. Everything else in this subject is refinement on top of these five decisions. The mechanical walkthrough of actually placing the deposit is in [How to Provide Liquidity](/guides/how-to-provide-liquidity/).
 
+Related reading: [Automated Market Makers Explained](/guides/automated-market-maker-explained/).
+
 ## References
 
 1. [Uniswap v2 Core Whitepaper (Adams et al., 2020)](https://uniswap.org/whitepaper.pdf)

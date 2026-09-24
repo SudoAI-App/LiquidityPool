@@ -132,6 +132,8 @@ If you are choosing between two pools on the same pair, one fixed and one moving
 
 None removes the underlying condition, which is that a passive quote cannot be cancelled. They redistribute who keeps the value that condition creates.
 
+Compare the design against Curve's internal re-centring in [Curve v2 Explained](/guides/curve-v2-cryptoswap-explained/), and against Meteora's bin-level variable fee in [Meteora DLMM Strategy](/guides/meteora-dlmm-strategy/).
+
 ## Before you supply a dynamic-fee pool
 
 1. **Read the fee code.** What does it look at, what is the floor, what is the cap, and can either change?

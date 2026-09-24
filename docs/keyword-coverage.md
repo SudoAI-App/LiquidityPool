@@ -67,7 +67,7 @@ Traceability between the keyword research review of LiquidityPools.app and the p
 
 ## Question-intent coverage
 
-The question long-tails from the research are served through FAQ blocks rather than through separate thin pages. Every guide carries a `faq` list in its frontmatter, rendered as a question-and-answer section and emitted as FAQPage structured data. Current coverage is 235 questions across 55 guides, plus 15 across the three calculators.
+The question long-tails from the research are served through FAQ blocks rather than through separate thin pages. Every guide carries a `faq` list in its frontmatter, rendered as a question-and-answer section and emitted as FAQPage structured data. Current coverage is 254 questions across 59 guides, plus FAQ blocks on the five calculators.
 
 
 

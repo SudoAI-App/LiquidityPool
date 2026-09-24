@@ -143,7 +143,7 @@ The right response to all three is position sizing, not more inspection. A pool 
 6. **Simulate a buy and a sell** at the size you actually intend.
 7. **Size it so a total loss here is survivable.**
 
-None of this proves a pool is sound. It removes the failures that were visible in advance, which is most of them, and leaves you underwriting only the risks you actually chose.
+None of this proves a pool is sound. It removes the failures that were visible in advance, which is most of them, and leaves you underwriting only the risks you actually chose. File the rest under [Liquidity Pool Risks](/guides/liquidity-pool-risks/), and read [Token Liquidity Analysis](/guides/token-liquidity-analysis/) when concentration and exit depth decide whether a position can be unwound at all. Run the numbers you can compute with the [LP profit and return calculator](/tools/lp-profit-calculator/).
 
 ## References
 

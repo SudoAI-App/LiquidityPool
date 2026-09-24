@@ -143,6 +143,8 @@ Whatever you pick, write down which cost you chose to pay. That one sentence sto
 
 Run the comparison before you enter, not after. The [impermanent loss calculator](/tools/impermanent-loss-calculator/?mode=weighted&a0=2000&a1=3000&capital=10000&fees=260) gives you the cost side, and the fee side is measurable from published pool data.
 
+Related reading: [Impermanent Loss Examples](/guides/impermanent-loss-examples/).
+
 ## References
 
 1. [Uniswap v3 Core Whitepaper (Adams et al., 2021)](https://uniswap.org/whitepaper-v3.pdf)

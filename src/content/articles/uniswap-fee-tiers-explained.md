@@ -131,6 +131,8 @@ The tier that pays best is rarely the one with the biggest number. It is the one
 
 Test each candidate with the [liquidity pool fee and APR calculator](/tools/liquidity-pool-calculator/?feeTier=0.05&capital=50000&volume=20000000&liquidity=2500000), then check it against impermanent loss — the gap between a pool position and simply holding — in [LP Fees vs Impermanent Loss](/guides/lp-fees-vs-impermanent-loss/).
 
+Related reading: [Dynamic Fees in AMMs](/guides/dynamic-fees-in-amms/).
+
 ## References
 
 1. [Uniswap v3 Core Whitepaper (Adams et al., 2021)](https://uniswap.org/whitepaper-v3.pdf)

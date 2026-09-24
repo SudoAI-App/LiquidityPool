@@ -8,3 +8,4 @@
 - Managed-preview verification confirmed the Astro server accepts the Manus preview host and serves the homepage without a blocked-host response.
 - Static production build completed successfully with 25 pages, XML sitemap, robots.txt, and RSS feed.
 - `pnpm check` completed with 0 errors, 0 warnings, and 0 hints after the correction.
+- Current library (2026-09-24): 70 public routes before the glossary page (59 guides + 11 static/tool pages); `tests/built-pages.test.mjs` asserts custom sitemap, generated sitemap-index, and IndexNow parity on every build.

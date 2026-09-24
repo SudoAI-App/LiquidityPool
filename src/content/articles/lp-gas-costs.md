@@ -159,7 +159,7 @@ The same logic applies to claiming generally. Claim when the amount is a large m
 5. **Add expected entry and exit impact** to the same budget.
 6. **Redo it when conditions change.** Gas is not a constant.
 
-Fee yield is quoted as a percentage. Gas is charged as a fixed amount. Everything difficult about small liquidity positions follows from that mismatch.
+Fee yield is quoted as a percentage. Gas is charged as a fixed amount. Everything difficult about small liquidity positions follows from that mismatch. Compare the bill against fees and divergence together in the [LP profit and return calculator](/tools/lp-profit-calculator/), and see [Is Providing Liquidity Profitable?](/guides/is-providing-liquidity-profitable/) for the full decision arithmetic.
 
 ## References
 

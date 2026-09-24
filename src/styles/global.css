@@ -310,6 +310,14 @@ button { font-family: inherit; }
 .article-rail a:hover { color: var(--moss); }
 .article-rail p a { display: inline; padding: 0; border: 0; color: var(--moss); text-decoration: underline; text-decoration-color: rgba(30, 91, 61, .35); text-underline-offset: .2em; }
 .article-rail__note { color: var(--text-3); font-size: 12.5px; }
+.toc { display: none; }
+.toc ol { margin: 0; padding: 0; list-style: none; counter-reset: toc; }
+.toc li { margin: 0; }
+.toc a { display: block; padding: 6px 0 6px 12px; border: 0; border-left: 2px solid var(--rule); color: var(--text-2); font-size: 13px; font-weight: 400; line-height: 1.4; text-decoration: none; transition: color .15s, border-color .15s; }
+.toc a:hover { color: var(--moss); border-left-color: var(--moss); }
+.toc--mobile { display: none; margin: 0 0 1.6em; padding: 14px 16px; border: 1px solid var(--rule); border-radius: var(--r-md); background: var(--surface); }
+.toc--mobile::before { content: 'On this page'; display: block; margin-bottom: 8px; color: var(--text-3); font-size: 12.5px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; }
+.toc--mobile ol { max-height: 220px; overflow-y: auto; }
 .article-content { min-width: 0; font-size: 17px; line-height: 1.72; color: #223529; }
 .article-content > :first-child { margin-top: 0; }
 .article-content h2 { margin: 2.4em 0 .6em; color: var(--text); font-family: var(--display); font-size: 30px; font-weight: 500; line-height: 1.2; letter-spacing: -.012em; }
@@ -470,6 +478,8 @@ details.faq-item[open] > p { margin-top: 10px; }
   .proof-item { padding: 20px 20px 20px 0; margin-right: 20px; }
   .article-layout { grid-template-columns: minmax(0, 1fr) 200px; }
   .article-layout > .article-rail:first-child { display: none; }
+  .article-rail .toc { display: none !important; }
+  .toc--mobile { display: block; }
 }
 @media (max-width: 900px) {
   .nav-links, .nav-cta { display: none; }
@@ -485,6 +495,8 @@ details.faq-item[open] > p { margin-top: 10px; }
   .article-layout { grid-template-columns: 1fr; gap: 32px; padding: 40px 0 72px; }
   .article-rail { position: static; }
   .article-layout > .article-rail:first-child { display: none; }
+  .article-rail .toc { display: none !important; }
+  .toc--mobile { display: block; }
   .article-layout > .article-rail:last-child { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px 32px; padding-top: 24px; border-top: 1px solid var(--rule); }
   .article-layout > .article-rail:last-child > div + div { margin-top: 0; }
   .article-meta { grid-template-columns: repeat(4, 1fr); }

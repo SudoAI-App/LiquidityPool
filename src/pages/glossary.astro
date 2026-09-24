@@ -1,0 +1,265 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const title = 'DeFi Liquidity Glossary — Terms Used Across Our Guides';
+const description = 'Plain-language definitions of the technical terms our guides are required to gloss on first use: impermanent loss, LVR, hooks, flash accounting, MEV, slippage, and more.';
+const canonical = 'https://liquiditypools.app/glossary/';
+
+const terms = [
+  {
+    term: 'Adverse selection',
+    slug: 'adverse-selection',
+    def: 'The pattern where informed traders trade against a pool precisely when the pool is wrong. The pool keeps selling the asset that is about to rise, which is why raw volume overstates the value of flow to a liquidity provider.',
+    guide: 'mev-and-liquidity-providers',
+    guideTitle: 'MEV and Liquidity Providers',
+  },
+  {
+    term: 'Arbitrageur',
+    slug: 'arbitrageur',
+    def: 'A trader who closes a price gap between venues. On an AMM the arbitrageur is the counterparty that reprices a stale pool, and the cost of that repricing is the liquidity provider’s loss against a rebalancing benchmark.',
+    guide: 'loss-versus-rebalancing',
+    guideTitle: 'Loss-Versus-Rebalancing',
+  },
+  {
+    term: 'Basis point',
+    slug: 'basis-point',
+    def: 'One hundredth of one percent: 0.01%. Fee tiers, bin steps and APR differences are quoted in basis points so that 30 bps and 33 bps stay distinct.',
+    guide: 'uniswap-fee-tiers-explained',
+    guideTitle: 'Uniswap Fee Tiers Explained',
+  },
+  {
+    term: 'Bonding curve',
+    slug: 'bonding-curve',
+    def: 'The rule that maps reserves to price inside a pool. The constant product curve x × y = k is one bonding curve; stableswap and concentrated ranges are others. The shape decides how much price moves for a given trade.',
+    guide: 'bonding-curves-and-amm-invariants',
+    guideTitle: 'Bonding Curves and AMM Invariants',
+  },
+  {
+    term: 'CFMM (constant function market maker)',
+    slug: 'cfmm',
+    def: 'A pool that prices trades by keeping a mathematical function of its reserves constant. Every swap moves along the curve defined by that function; the function is the pricing rule.',
+    guide: 'constant-product-formula',
+    guideTitle: 'The Constant Product Formula',
+  },
+  {
+    term: 'Concentrated liquidity',
+    slug: 'concentrated-liquidity',
+    def: 'Liquidity that an LP binds to a price band instead of the full range. Capital inside the band is denser and earns fees only while price stays there; outside the band the position holds one asset and earns nothing.',
+    guide: 'concentrated-liquidity-explained',
+    guideTitle: 'Concentrated Liquidity Explained',
+  },
+  {
+    term: 'Divergence loss',
+    slug: 'divergence-loss',
+    def: 'The shortfall of a pool position against holding the same assets untouched, measured at entry and exit prices. It is the endpoint arithmetic that the phrase “impermanent loss” usually refers to.',
+    guide: 'impermanent-loss-explained',
+    guideTitle: 'Impermanent Loss Explained',
+  },
+  {
+    term: 'ERC-6909',
+    slug: 'erc-6909',
+    def: 'A multi-token balance standard used inside Uniswap v4’s singleton so one contract can track many token balances. Position claims themselves remain NFTs from the position manager; ERC-6909 is for balances, not positions.',
+    guide: 'uniswap-v4-architecture-and-hooks',
+    guideTitle: 'Uniswap v4 Architecture',
+  },
+  {
+    term: 'ERC-721',
+    slug: 'erc-721',
+    def: 'The NFT standard. Uniswap v3 and v4 liquidity positions are ERC-721 tokens: each position is its own non-fungible claim with its own range, fees and history.',
+    guide: 'uniswap-v3-ticks-and-lp-nfts',
+    guideTitle: 'Uniswap v3 Ticks and Position NFTs',
+  },
+  {
+    term: 'Flash accounting',
+    slug: 'flash-accounting',
+    def: 'Settlement that records net balance changes during a transaction and transfers only the net amounts at the end, instead of moving tokens at each hop. It is why multi-pool routes in Uniswap v4 cost far less gas.',
+    guide: 'uniswap-v4-architecture-and-hooks',
+    guideTitle: 'Uniswap v4 Architecture',
+  },
+  {
+    term: 'Hooks',
+    slug: 'hooks',
+    def: 'Contracts attached to a Uniswap v4 pool at creation that run at defined lifecycle points—before or after a swap or a liquidity change. A pool inherits the trust assumptions of its hook.',
+    guide: 'uniswap-v4-architecture-and-hooks',
+    guideTitle: 'Uniswap v4 Architecture',
+  },
+  {
+    term: 'Impermanent loss',
+    slug: 'impermanent-loss',
+    def: 'The gap between a pool position and holding the deposited assets, arising because the pool rebalances as price moves. “Impermanent” is misleading: the gap is realisable the moment you withdraw.',
+    guide: 'impermanent-loss-explained',
+    guideTitle: 'Impermanent Loss Explained',
+  },
+  {
+    term: 'Invariant',
+    slug: 'invariant',
+    def: 'The quantity a pool’s rule preserves across trades—most often the product of reserves. Swaps change the reserves but leave the invariant intact; fees are what grow it.',
+    guide: 'bonding-curves-and-amm-invariants',
+    guideTitle: 'Bonding Curves and AMM Invariants',
+  },
+  {
+    term: 'Intent',
+    slug: 'intent',
+    def: 'A signed statement of what a user wants to achieve, left for someone else to execute. Solvers compete to fill intents, which can route around thin pool depth rather than through it.',
+    guide: 'onchain-liquidity-explained',
+    guideTitle: 'Onchain Liquidity Explained',
+  },
+  {
+    term: 'LP token',
+    slug: 'lp-token',
+    def: 'The receipt a liquidity provider receives for a deposit. In full-range pools it is a fungible share of everything in the pool; in concentrated pools the position is usually an NFT instead.',
+    guide: 'liquidity-pool-tokens',
+    guideTitle: 'Liquidity Pool Tokens Explained',
+  },
+  {
+    term: 'Loss-versus-rebalancing (LVR)',
+    slug: 'lvr',
+    def: 'The shortfall of an AMM position against a strategy that rebalances to the same portfolio at market prices. It measures the cost of letting arbitrage trade against you, not the cost of a single round trip in isolation.',
+    guide: 'loss-versus-rebalancing',
+    guideTitle: 'Loss-Versus-Rebalancing',
+  },
+  {
+    term: 'MEV (maximal extractable value)',
+    slug: 'mev',
+    def: 'Value extracted by choosing, ordering or censoring transactions in a block. For liquidity providers it shows up as sandwiches, JIT fills and toxic arbitrage against stale pool prices.',
+    guide: 'mev-and-liquidity-providers',
+    guideTitle: 'MEV and Liquidity Providers',
+  },
+  {
+    term: 'Mempool',
+    slug: 'mempool',
+    def: 'The set of pending transactions waiting to be included in a block. What is visible there is what searchers can reorder around—and what a sandwich attack needs to see before it strikes.',
+    guide: 'mev-and-liquidity-providers',
+    guideTitle: 'MEV and Liquidity Providers',
+  },
+  {
+    term: 'Oracle',
+    slug: 'oracle',
+    def: 'An onchain data feed that reports an external price or state. Pools and vaults that lean on an oracle inherit its delay, its failure modes, and whoever can influence it.',
+    guide: 'liquidity-pool-risks',
+    guideTitle: 'Liquidity Pool Risks',
+  },
+  {
+    term: 'Peg / depeg',
+    slug: 'peg',
+    def: 'The peg is a stablecoin’s intended one-to-one price; a depeg is when it trades away from that price. Stable pools are built around the peg and change character the moment it breaks.',
+    guide: 'stablecoin-liquidity-pools',
+    guideTitle: 'Stablecoin Liquidity Pools',
+  },
+  {
+    term: 'Price impact',
+    slug: 'price-impact',
+    def: 'How far a trade moves the pool’s own price because it consumes depth. It is a property of trade size relative to liquidity—not a fee, and not the same as slippage.',
+    guide: 'slippage-and-price-impact',
+    guideTitle: 'Slippage and Price Impact',
+  },
+  {
+    term: 'Sandwich attack',
+    slug: 'sandwich-attack',
+    def: 'Two transactions placed around a victim’s trade—front-run before, back-run after—so the victim pays a worse price and the attacker captures the difference.',
+    guide: 'mev-and-liquidity-providers',
+    guideTitle: 'MEV and Liquidity Providers',
+  },
+  {
+    term: 'Singleton',
+    slug: 'singleton',
+    def: 'A single contract that holds many pools. Uniswap v4’s PoolManager is a singleton: one address owns every pool’s state, which is what makes multi-hop settlement cheap.',
+    guide: 'uniswap-v4-architecture-and-hooks',
+    guideTitle: 'Uniswap v4 Architecture',
+  },
+  {
+    term: 'Slippage',
+    slug: 'slippage',
+    def: 'The difference between the price you expected and the price you actually got, after price impact, routing and any pending moves in the market. It is measured on the fill, not on the quote.',
+    guide: 'slippage-and-price-impact',
+    guideTitle: 'Slippage and Price Impact',
+  },
+  {
+    term: 'Solver',
+    slug: 'solver',
+    def: 'An offchain searcher that competes to execute a user’s intent. Solvers turn signed goals into concrete transactions, which is one way liquidity can be assembled across venues without routing through a single pool.',
+    guide: 'onchain-liquidity-explained',
+    guideTitle: 'Onchain Liquidity Explained',
+  },
+  {
+    term: 'Tick',
+    slug: 'tick',
+    def: 'The discrete price boundary Uniswap v3 divides the price axis into. Liquidity is allocated between ticks; crossing a tick converts inventory from one asset to the other.',
+    guide: 'uniswap-v3-ticks-and-lp-nfts',
+    guideTitle: 'Uniswap v3 Ticks and Position NFTs',
+  },
+  {
+    term: 'Transient storage',
+    slug: 'transient-storage',
+    def: 'Contract storage that exists only for the duration of one transaction (EIP-1153). Uniswap v4 uses it to hold net balances during flash accounting, then clears them before the transaction ends.',
+    guide: 'uniswap-v4-architecture-and-hooks',
+    guideTitle: 'Uniswap v4 Architecture',
+  },
+  {
+    term: 'TVL (total value locked)',
+    slug: 'tvl',
+    def: 'The dollar value of assets deposited in a protocol or pool. It is a context metric: high TVL does not mean depth at the price where trades actually happen.',
+    guide: 'tvl-explained',
+    guideTitle: 'TVL Explained',
+  },
+];
+
+const glossarySchema = {
+  '@context': 'https://schema.org',
+  '@type': 'DefinedTermSet',
+  name: 'LiquidityPools.app DeFi Liquidity Glossary',
+  url: canonical,
+  description,
+  hasDefinedTerm: terms.map((entry) => ({
+    '@type': 'DefinedTerm',
+    name: entry.term,
+    description: entry.def,
+    inDefinedTermSet: canonical,
+    url: `${canonical}#${entry.slug}`,
+  })),
+};
+const breadcrumbSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://liquiditypools.app/' },
+    { '@type': 'ListItem', position: 2, name: 'Glossary', item: canonical },
+  ],
+};
+const byLetter = terms.reduce((acc, entry) => {
+  const letter = entry.term[0].toUpperCase();
+  (acc[letter] ||= []).push(entry);
+  return acc;
+}, {} as Record<string, typeof terms>);
+const letters = Object.keys(byLetter).sort();
+---
+<BaseLayout title={title} description={description}>
+  <Fragment slot="head"><script is:inline type="application/ld+json" set:html={JSON.stringify(glossarySchema)} /><script is:inline type="application/ld+json" set:html={JSON.stringify(breadcrumbSchema)} /></Fragment>
+  <section class="page-hero"><div class="container"><p class="eyebrow">Glossary</p><h1 class="page-title">The terms our guides must explain before they use them.</h1><p>Every entry below is one of the hard terms the editorial standard requires a plain-language gloss on first use. Each definition links to the guide that works the idea through with numbers.</p></div></section>
+  <section class="section section--paper"><div class="container">
+    <nav class="category-nav" aria-label="Glossary letters">{letters.map((letter) => <a class="category-pill" href={`#letter-${letter}`}>{letter}</a>)}</nav>
+    {letters.map((letter) => (
+      <section class="guide-group" id={`letter-${letter}`} style="margin-top:40px">
+        <div class="section-head"><div><div class="kicker">{letter}</div><h2>Terms starting with {letter}</h2></div></div>
+        <div class="glossary-list">
+          {byLetter[letter].map((entry) => (
+            <article class="glossary-entry" id={entry.slug}>
+              <h3>{entry.term}</h3>
+              <p>{entry.def}</p>
+              <p class="glossary-entry__link">Full treatment in <a href={`/guides/${entry.guide}/`}>{entry.guideTitle}</a>.</p>
+            </article>
+          ))}
+        </div>
+      </section>
+    ))}
+    <p style="margin-top:48px;color:var(--text-2);font-size:15px">Missing a term you met in a guide? Write to <a href="mailto:research@liquiditypools.app">research@liquiditypools.app</a> and we will add it with its sources.</p>
+  </div></section>
+</BaseLayout>
+<style is:global>
+  .glossary-list { display: grid; gap: 18px; }
+  .glossary-entry { padding: 18px 20px; border: 1px solid var(--rule); border-radius: var(--r-md); background: #fff; }
+  .glossary-entry h3 { margin: 0 0 8px; font-family: var(--display); font-size: 20px; font-weight: 500; color: var(--text); }
+  .glossary-entry p { margin: 0; font-size: 15.5px; line-height: 1.65; color: var(--text-2); }
+  .glossary-entry__link { margin-top: 10px !important; font-size: 14px !important; }
+  .glossary-entry a { color: var(--moss); text-decoration: underline; text-underline-offset: .18em; }
+</style>

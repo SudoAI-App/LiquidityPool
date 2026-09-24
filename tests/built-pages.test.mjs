@@ -12,7 +12,7 @@ const calculatorRoutes = [
   '/tools/meteora-dlmm-calculator/',
 ];
 const expectedStaticRoutes = [
-  '/', '/about/', '/guides/', '/topics/', '/tools/', '/methodology/',
+  '/', '/about/', '/guides/', '/topics/', '/tools/', '/methodology/', '/glossary/',
   '/tools/impermanent-loss-calculator/', '/tools/liquidity-pool-calculator/',
   '/tools/lp-profit-calculator/', '/tools/uniswap-v3-liquidity-calculator/',
   '/tools/meteora-dlmm-calculator/',

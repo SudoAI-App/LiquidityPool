@@ -18,6 +18,8 @@ The initial site architecture intentionally favors a **hub-and-spoke SEO model**
 
 ## Launch Content: 20 Premium Guides
 
+> **Note (2026-09-24):** this table is the launch baseline of 20 pillars. The live library now holds **59 guides**; see [`README.md`](./README.md) and `/guides/` for the current inventory. Keep using this table only as the record of the original launch set and pillar URLs.
+
 | # | Article | Track | Primary keyword theme | Search-intent promise |
 | --- | --- | --- | --- | --- |
 | 01 | [What Is a Liquidity Pool? A Clear Guide to DeFi Market Depth](https://liquiditypools.app/guides/what-is-a-liquidity-pool) | Foundations | what is a liquidity pool, DeFi liquidity pool, automated market maker, AMM | Learn what a liquidity pool is, how it replaces the traditional order book, and why supplied assets make decentralized trading possible. |

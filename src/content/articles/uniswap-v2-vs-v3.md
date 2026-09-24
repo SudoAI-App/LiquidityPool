@@ -144,7 +144,9 @@ A full-range position that gets forgotten just keeps quoting. For a portfolio th
 5. **Check where volume routes** before assuming the newer pool is deeper.
 6. **Record what you deposited**, either way, so you can compare the two approaches on your own data later.
 
-The newer contract is more capable. Whether it is more profitable for you specifically is an operational question, and the answer is often no.
+The newer contract is more capable. Whether it is more profitable for you specifically is an operational question, and the answer is often no. Before migrating, read [Uniswap v3 Ticks and Position NFTs](/guides/uniswap-v3-ticks-and-lp-nfts/) for how a band is actually stored, and [Uniswap v3 vs v4](/guides/uniswap-v3-vs-v4/) for what a later migration would change.
+
+Related reading: [Raydium CLMM Liquidity Guide](/guides/raydium-clmm-liquidity-guide/).
 
 ## References
 

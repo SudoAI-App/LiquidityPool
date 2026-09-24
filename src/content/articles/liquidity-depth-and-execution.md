@@ -159,9 +159,9 @@ Add volatility as the third axis. Thin and volatile is the one combination where
 - **Aggregator quotes** are a practical shortcut. Request quotes at several sizes and see where the cost curve turns up.
 - **Reading the contract** gives the authoritative answer: current price, liquidity, and the initialised steps around it.
 
-Whichever you use, measure at the moment you intend to act. Depth changes every block.
+Whichever you use, measure at the moment you intend to act. Depth changes every block. Turn the measurement into a decision with [How to Evaluate a Liquidity Pool](/guides/how-to-evaluate-a-liquidity-pool/), and keep the five numbers that matter in [Onchain Liquidity Metrics](/guides/onchain-liquidity-metrics/).
 
-Depth is the only liquidity number that participates in a trade. Everything else is an accounting summary of capital that may or may not be standing where the market is.
+Depth is the only liquidity number that participates in a trade. Everything else is an accounting summary of capital that may or may not be standing where the market is. The gap between a quote and a fill is [slippage and price impact](/guides/slippage-and-price-impact/), which is what this measurement exists to predict.
 
 ## References
 

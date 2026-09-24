@@ -16,6 +16,8 @@ faq:
     a: "The claim inherits everything about the underlying pool, including divergence and contract risk, and adds any risk from wherever the token is staked. A wrapped or staked LP claim depends on that additional contract functioning correctly."
   - q: "What happens when I remove liquidity?"
     a: "The contract burns your claim and returns your share of the current reserves, in whatever ratio the pool holds them at that moment, plus any uncollected fees. The quantities returned will usually differ from what you deposited."
+  - q: "Can I lose my LP token and still have a claim?"
+    a: "The token is the claim. Without it you cannot withdraw through the standard interface. An NFT position works the same way: losing the token or its ID is losing the ability to exit, which is why custody and recovery paths matter before you deposit."
 ---
 
 Put money into a pool and you do not get a receipt for what you put in. You get a claim on a share of what the pool holds, whenever you decide to leave.
@@ -161,6 +163,8 @@ For the full risk picture, see [Liquidity Pool Risks](/guides/liquidity-pool-ris
 ## Where to go next
 
 What your claim is worth on the way out depends on impermanent loss — the gap between a pool position and simply holding the same tokens — worked out in [The Impermanent Loss Formula](/guides/impermanent-loss-formula/). Staking that claim adds another layer, covered in [Yield Farming Explained](/guides/yield-farming-explained/). The position NFT gets its own treatment in [Uniswap v3 Ticks and Position NFTs](/guides/uniswap-v3-ticks-and-lp-nfts/).
+
+Related reading: [What Is a Liquidity Provider?](/guides/what-is-a-liquidity-provider/).
 
 ## References
 

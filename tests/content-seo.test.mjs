@@ -28,11 +28,24 @@ test('known cannibalization clusters have one declared owner', () => {
     'liquidity-mining-explained.md': 'liquidity mining',
     'liquidity-mining-vs-yield-farming.md': 'liquidity mining vs yield farming',
     'yield-farming-explained.md': 'yield farming liquidity pools',
+    // Comparison intent owns the head term; the architecture guide owns the internals vocabulary.
+    'uniswap-v3-vs-v4.md': 'Uniswap v3 vs v4',
+    'uniswap-v4-architecture-and-hooks.md': 'Uniswap v4 architecture',
+    // Framework owns evaluation language; the checklist owns operational check language.
+    'how-to-evaluate-a-liquidity-pool.md': 'how to evaluate liquidity pool',
+    'liquidity-pool-research-checklist.md': 'liquidity pool checklist',
   };
   for (const [file, query] of Object.entries(expected)) {
     const source = readFileSync(new URL(file, articlesDir), 'utf8');
     assert.match(source, new RegExp(`^primaryQuery: "${query}"$`, 'm'));
   }
+  const v3v4 = readFileSync(new URL('uniswap-v3-vs-v4.md', articlesDir), 'utf8');
+  const v4arch = readFileSync(new URL('uniswap-v4-architecture-and-hooks.md', articlesDir), 'utf8');
+  const v3v4Keywords = v3v4.match(/^keywords:\s*"([^"]+)"/m)?.[1] ?? '';
+  const v4archKeywords = v4arch.match(/^keywords:\s*"([^"]+)"/m)?.[1] ?? '';
+  assert.equal(/singleton poolmanager/i.test(v3v4Keywords), false, 'architecture vocabulary must not sit on the comparison page');
+  assert.equal(/flash accounting/i.test(v3v4Keywords), false, 'architecture vocabulary must not sit on the comparison page');
+  assert.match(v4archKeywords, /flash accounting/i);
 });
 
 test('launch copy uses the sourced 49.5% result and discloses Bancor funding', () => {

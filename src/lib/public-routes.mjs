@@ -13,6 +13,7 @@ export const staticRouteDefinitions = [
   { path: '/tools/uniswap-v3-liquidity-calculator/', source: 'src/pages/tools/uniswap-v3-liquidity-calculator.astro', priority: '0.9', changefreq: 'monthly' },
   { path: '/tools/meteora-dlmm-calculator/', source: 'src/pages/tools/meteora-dlmm-calculator.astro', priority: '0.9', changefreq: 'monthly' },
   { path: '/methodology/', source: 'src/pages/methodology.astro', priority: '0.8', changefreq: 'monthly' },
+  { path: '/glossary/', source: 'src/pages/glossary.astro', priority: '0.7', changefreq: 'monthly' },
   { path: '/about/', source: 'src/pages/about.astro', priority: '0.6', changefreq: 'monthly' },
 ];
 

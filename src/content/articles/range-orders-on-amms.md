@@ -16,6 +16,8 @@ faq:
     a: "It fills gradually across the range rather than at one price, it earns fees while filling, and it can un-fill if price moves back through the range before you withdraw."
   - q: "What happens after a range order fills?"
     a: "The position sits fully converted and stops earning. Unless you withdraw, a reversal will convert it back, which is the main operational difference from a conventional limit order."
+  - q: "How is a range order different from a limit order?"
+    a: "A limit order rests unfilled until price touches it. A range order is live liquidity across a band: it fills as price crosses, but also earns fees while it waits and can partially reverse if price comes back through the band."
 ---
 
 You want to sell ETH at \$3,200 but it is trading at \$3,000. On an exchange you would leave a limit order and wait.

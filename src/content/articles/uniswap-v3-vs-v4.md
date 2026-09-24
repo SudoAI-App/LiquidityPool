@@ -1,13 +1,13 @@
 ---
 title: "Uniswap v3 vs v4 Liquidity: What Actually Changed for LPs"
-description: "Your exposure is identical. What changed is the cost of touching the pool and who may run code when a swap arrives, and that second part is the decision."
+description: "Side-by-side for LPs: same range math in both versions, cheaper settlement in v4, and a migration decision that depends on depth, gas, and hook risk."
 category: "Advanced"
 date: 2026-09-10
 lastReviewed: "2026-09-12"
 author: "LiquidityPools Editorial Team"
 readTime: "6 min read"
 primaryQuery: "Uniswap v3 vs v4"
-keywords: "Uniswap v3 vs v4, Uniswap v4 liquidity pool, Uniswap v3 liquidity pool, singleton PoolManager, flash accounting, Uniswap v4 hooks, ERC-6909"
+keywords: "Uniswap v3 vs v4, Uniswap v4 liquidity pool, Uniswap v3 liquidity pool, migrate liquidity v3 to v4, Uniswap v4 dynamic fees, v4 gas costs for LPs"
 featured: true
 faq:
   - q: "What is the main difference between Uniswap v3 and v4?"
@@ -131,6 +131,8 @@ The architecture is better. That is a statement about execution cost and what is
 ## Where to go next
 
 The exposure both versions share is impermanent loss — the gap between a pool position and simply holding — derived in [The Impermanent Loss Formula](/guides/impermanent-loss-formula/), and the fee decision in [Uniswap Fee Tiers Explained](/guides/uniswap-fee-tiers-explained/). For the earlier comparison that still matters to most people, see [Uniswap v2 vs v3](/guides/uniswap-v2-vs-v3/).
+
+Related reading: [Uniswap Liquidity Pools](/guides/uniswap-liquidity-pools/).
 
 ## References
 

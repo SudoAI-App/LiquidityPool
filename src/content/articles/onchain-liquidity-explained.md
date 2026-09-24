@@ -141,6 +141,8 @@ That does not make supplying liquidity worse. It means competitiveness is a syst
 
 This all works well when you treat the layers as separate systems with separate incentives. Treating the whole thing as one exchange produces expectations it was never built to meet. For working one token’s depth and flow end to end, see [Token Liquidity Analysis](/guides/token-liquidity-analysis/).
 
+Turn the assembled picture into a position scenario with the [liquidity pool fee and APR calculator](/tools/liquidity-pool-calculator/).
+
 ## References
 
 1. [Uniswap v3 Core Whitepaper (Adams et al., 2021)](https://uniswap.org/whitepaper-v3.pdf)

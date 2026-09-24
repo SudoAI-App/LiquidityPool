@@ -16,6 +16,8 @@ faq:
     a: "Long enough for fee income to clear the divergence the position takes on, which depends on turnover and volatility rather than on a calendar. Positions judged over a few days are dominated by noise."
   - q: "When should I remove liquidity?"
     a: "When the reason for the position no longer holds: the pair's volatility has risen beyond what the fee tier compensates, volume has migrated elsewhere, the incentive programme has ended, or you no longer want exposure to either asset."
+  - q: "Should I deposit both assets in the exact pool ratio?"
+    a: "For a full-range constant-product pool, yes: the pool prices at the current ratio, so an imbalanced deposit is arbitrated back and you pay that gap on entry. For a concentrated band, deposit the inventory the band implies at the current price, or expect a swap on deposit."
 ---
 
 The deposit screen makes this look like choosing a savings account. Pick a pool, pick an amount, confirm.
@@ -157,6 +159,8 @@ The flow reaching your pool changes your return, and it has been getting worse f
 ## Where to go next
 
 Price the boundary case in [Out-of-Range Liquidity](/guides/out-of-range-liquidity/) and the tier in [Uniswap Fee Tiers Explained](/guides/uniswap-fee-tiers-explained/). Then run the two numbers: expected fees in the [liquidity pool fee and APR calculator](/tools/liquidity-pool-calculator/?feeTier=0.05&capital=10000&volume=15000000&liquidity=2000000), expected divergence in the [impermanent loss calculator](/tools/impermanent-loss-calculator/?mode=weighted&a0=3000&a1=3600&capital=10000). For depositing one asset, see [Single-Sided Liquidity](/guides/single-sided-liquidity/), and for the protocol walkthrough, [Uniswap Liquidity Pools](/guides/uniswap-liquidity-pools/).
+
+Related reading: [Curve v2 Explained](/guides/curve-v2-cryptoswap-explained/).
 
 ## References
 

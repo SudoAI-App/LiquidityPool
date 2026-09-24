@@ -156,7 +156,7 @@ Fees partly compensate, because a narrow band earns much more per dollar while y
 4. **The curve decides where the risk lives.** Flat curves move it out of the ratio and into the composition, where the usual formula cannot see it.
 5. **The decision happens at deposit, not at exit.** Every number above was computable in advance from a price assumption.
 
-Run your own position through the [impermanent loss calculator](/tools/impermanent-loss-calculator/?mode=weighted&a0=2000&a1=2500&b0=1&b1=1&capital=10000&fees=70&days=30&weight=0.5), then check whether the fees clear it with the [liquidity pool fee and APR calculator](/tools/liquidity-pool-calculator/?feeTier=0.05&capital=10000&volume=20000000&liquidity=5000000). For what each mitigation costs, see [How to Avoid Impermanent Loss](/guides/how-to-avoid-impermanent-loss/).
+Run your own position through the [impermanent loss calculator](/tools/impermanent-loss-calculator/?mode=weighted&a0=2000&a1=2500&b0=1&b1=1&capital=10000&fees=70&days=30&weight=0.5), then check whether the fees clear it with the [liquidity pool fee and APR calculator](/tools/liquidity-pool-calculator/?feeTier=0.05&capital=10000&volume=20000000&liquidity=5000000). For what each mitigation costs, see [How to Avoid Impermanent Loss](/guides/how-to-avoid-impermanent-loss/). The arithmetic behind every table above is derived step by step in [The Impermanent Loss Formula](/guides/impermanent-loss-formula/), and fees are set against that shortfall in [LP Fees vs Impermanent Loss](/guides/lp-fees-vs-impermanent-loss/).
 
 ## References
 

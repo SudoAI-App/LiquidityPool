@@ -16,6 +16,8 @@ faq:
     a: "The bridge contract and its validators or relayers become part of the trust chain, wrapped representations can dislocate from their canonical asset, and liquidity fragmenting across chains reduces depth everywhere."
   - q: "What is intent-based bridging?"
     a: "A model where the user states the outcome they want and a solver fronts the assets on the destination chain, settling later. It shifts latency and inventory risk to the solver in exchange for a fee."
+  - q: "Does bridging create new liquidity, or move it?"
+    a: "It moves a claim on value; it does not duplicate depth on the destination venue until someone supplies there. Fragmentation is what happens when the same economic exposure is spread across representations that cannot be pooled atomically."
 ---
 
 Nothing actually moves between chains. Your ETH does not travel anywhere. Every bridge is a way of pretending it did, and the differences between those pretences decide whether your money is safe.
@@ -122,6 +124,8 @@ Same money, a tenth of the usefulness, on every chain [4]. Large trades then pay
 ## Where to go next
 
 Split depth shows up first in what a trade costs, including slippage — the gap between the quote and the fill — covered in [Slippage and Price Impact](/guides/slippage-and-price-impact/). For the loss paths bridging adds on top of ordinary pool risk, see [Can You Lose Money in a Liquidity Pool?](/guides/can-you-lose-money-in-a-liquidity-pool/).
+
+Fragmented depth still shows up as execution cost on the venue you actually use; model that side with the [liquidity pool fee and APR calculator](/tools/liquidity-pool-calculator/) on the pool you would supply.
 
 ## References
 

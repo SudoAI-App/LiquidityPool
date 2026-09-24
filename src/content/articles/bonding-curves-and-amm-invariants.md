@@ -148,6 +148,8 @@ The test is not what neighbouring pools charge. It is whether the fee has kept u
 
 A curve that answers all seven cleanly is almost always a small variation on one of the three shapes. One that cannot answer the second or fourth is not a new curve. It is an unpriced governance risk with a diagram attached. Weighted pools are the classic variation — the product rule with a tunable weight on each token — covered in [Balancer Weighted Pools](/guides/balancer-and-weighted-pools/).
 
+Price any point on the curve you just derived with the [impermanent loss calculator](/tools/impermanent-loss-calculator/), which evaluates the same invariants against a holding benchmark.
+
 ## References
 
 1. [Uniswap v2 Core Whitepaper (Adams et al., 2020)](https://uniswap.org/whitepaper.pdf)

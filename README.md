@@ -12,7 +12,7 @@
 
 ---
 
-## 📚 The 55 Core Mechanism Guides
+## 📚 The 59 Core Mechanism Guides
 
 ### Track 1: Foundations (Core Vocabulary & AMM Pricing)
 - [AMM vs. Order Book: Two Ways to Organize a Market](https://liquiditypools.app/guides/amm-vs-order-book)
@@ -38,8 +38,10 @@
 - [Discretized Liquidity (DLMM): Zero-Slippage Bins, Volatility Accumulators, and Meteora](https://liquiditypools.app/guides/discretized-liquidity-dlmm-explained)
 - [How to Provide Liquidity: A Mechanism-First Walkthrough](https://liquiditypools.app/guides/how-to-provide-liquidity)
 - [Liquidity Provider Fees: How LP Revenue Is Generated and Measured](https://liquiditypools.app/guides/liquidity-provider-fees)
+- [Meteora DLMM Strategy: Spot, Curve, and Bid-Ask Distributions](https://liquiditypools.app/guides/meteora-dlmm-strategy)
 - [Out-of-Range Liquidity: Why an LP Position Stops Earning Fees](https://liquiditypools.app/guides/out-of-range-liquidity)
 - [Range Orders on AMMs: How Liquidity Can Express a Price View](https://liquiditypools.app/guides/range-orders-on-amms)
+- [Raydium CLMM Liquidity Guide: CPMM and Concentrated Pools on Solana](https://liquiditypools.app/guides/raydium-clmm-liquidity-guide)
 - [Single-Sided Liquidity: What One-Sided Provision Really Does](https://liquiditypools.app/guides/single-sided-liquidity)
 - [Stablecoin Liquidity Pools: Efficient Curves, Depeg Risk, and Due Diligence](https://liquiditypools.app/guides/stablecoin-liquidity-pools)
 - [Uniswap Fee Tiers Explained: Choosing 1, 5, 30, or 100 bps](https://liquiditypools.app/guides/uniswap-fee-tiers-explained)
@@ -55,6 +57,7 @@
 - [Impermanent Loss Examples: Five Positions, Fully Worked](https://liquiditypools.app/guides/impermanent-loss-examples)
 - [Impermanent Loss Explained: Rebalancing, Relative Price, and LP Outcomes](https://liquiditypools.app/guides/impermanent-loss-explained)
 - [The Impermanent Loss Formula: How to Calculate IL Step by Step](https://liquiditypools.app/guides/impermanent-loss-formula)
+- [Is Providing Liquidity Profitable? The Decision Arithmetic](https://liquiditypools.app/guides/is-providing-liquidity-profitable)
 - [Liquidity Depth and Execution: The Only Number That Trades](https://liquiditypools.app/guides/liquidity-depth-and-execution)
 - [Liquidity Pool Risks: A Complete Framework for LP Due Diligence](https://liquiditypools.app/guides/liquidity-pool-risks)
 - [Rug Pulls and Locked Liquidity: Six Checks Before You Deposit](https://liquiditypools.app/guides/liquidity-pool-rug-pulls)
@@ -68,6 +71,7 @@
 - [Bonding Curves and AMM Invariants: How Curve Shape Sets Risk](https://liquiditypools.app/guides/bonding-curves-and-amm-invariants)
 - [Dynamic Fees in AMMs: Charging for Volatility](https://liquiditypools.app/guides/dynamic-fees-in-amms)
 - [Liquidity Mining Explained: Incentives, Emissions, and Durable Market Depth](https://liquiditypools.app/guides/liquidity-mining-explained)
+- [Liquidity Mining vs Yield Farming: Two Words, Different Cash Flows](https://liquiditypools.app/guides/liquidity-mining-vs-yield-farming)
 - [The Liquidity Pool Research Checklist: Questions to Ask Before You Act](https://liquiditypools.app/guides/liquidity-pool-research-checklist)
 - [Loss-Versus-Rebalancing: The LP's Real Hurdle Rate](https://liquiditypools.app/guides/loss-versus-rebalancing)
 - [Market Making on AMMs: A Practical Framework for Understanding LP Behavior](https://liquiditypools.app/guides/market-making-on-amms)
@@ -82,8 +86,10 @@
 - [Impermanent Loss Calculator](https://liquiditypools.app/tools/impermanent-loss-calculator) — divergence against a hold benchmark, break-even fee income, and the net result of a position.
 - [Liquidity Pool Fee & APR Calculator](https://liquiditypools.app/tools/liquidity-pool-calculator) — fee income modelled from tier, routed volume, liquidity share, time in range and gas.
 - [LP Profit & Return Calculator](https://liquiditypools.app/tools/lp-profit-calculator) — fee income, divergence and friction resolved into one net figure against holding.
+- [Uniswap v3 & Concentrated Liquidity Calculator](https://liquiditypools.app/tools/uniswap-v3-liquidity-calculator) — capital efficiency, token mix at each bound, and fees against holding for a bounded range.
+- [Meteora DLMM Calculator](https://liquiditypools.app/tools/meteora-dlmm-calculator) — discrete bin prices, Spot/Curve/Bid-Ask shapes, base and variable fees, divergence against holding.
 
-All three run entirely in the browser. No wallet connection, no inputs stored.
+All five run entirely in the browser. No wallet connection, no inputs stored.
 ---
 
 ## 🛠️ Local Development & Contributing
@@ -110,7 +116,7 @@ The static production output is written to `dist/public`. The project has been v
 
 Guide content lives in `src/content/articles/`. Each Markdown article contains title, description, category, publication date, review date, author, reading time, keyword theme, featured status, and an optional `faq` list in frontmatter. The `faq` entries render as a question-and-answer block on the guide and emit FAQPage structured data. The guide pages and XML sitemap are generated statically during the build.
 
-Article visuals are stored under `public/images/guides/`. The library uses original, mechanism-led editorial illustrations rather than generic crypto imagery: each visual explains the pool behavior addressed by its guide. The visual brief and asset record are tracked in [`VISUAL-SYSTEM.md`](./VISUAL-SYSTEM.md) and [`ASSET-SOURCES.md`](./ASSET-SOURCES.md). Run `pnpm content:audit` before publishing to enforce the quality floor: at least 1,300 words, five substantive sections, worked numbers, a comparison table, three or more FAQ entries, internal links, a visual with attribution, review metadata, and a rendered reference list of five or more sources including at least one research paper and one standards body or public-sector publication. It also rejects guaranteed-yield and best-pool style claims. `pnpm links:check` verifies that every cited source still resolves and requires outbound network access, so it runs manually rather than in the audit.
+Article visuals are stored under `public/images/guides/`. The library uses original, mechanism-led editorial illustrations rather than generic crypto imagery: each visual explains the pool behavior addressed by its guide. The visual brief and asset record are tracked in [`VISUAL-SYSTEM.md`](./VISUAL-SYSTEM.md) and [`ASSET-SOURCES.md`](./ASSET-SOURCES.md). Run `pnpm content:audit` before publishing to enforce the quality floor: at least 1,300 words, five substantive sections, worked numbers, a comparison table, three or more FAQ entries, internal links, a visual with attribution, review metadata, and a rendered reference list of six or more sources including at least one research paper and one standards body or public-sector publication. It also rejects guaranteed-yield and best-pool style claims. `pnpm links:check` verifies that every cited source still resolves and requires outbound network access, so it runs manually rather than in the audit.
 
 The launch SEO strategy is documented in [`SEO-LAUNCH-PLAN.md`](./SEO-LAUNCH-PLAN.md). Guide figures are generated programmatically by `scripts/generate-guide-figures.py`, which renders each diagram as a 1600x1067 WebP in the house palette.
 

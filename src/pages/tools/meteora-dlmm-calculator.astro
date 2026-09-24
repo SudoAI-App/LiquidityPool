@@ -24,7 +24,7 @@ const breadcrumbSchema = { '@context': 'https://schema.org', '@type': 'Breadcrum
   { '@type': 'ListItem', position: 3, name: title, item: canonical },
 ] };
 ---
-<BaseLayout title={`${title} — LiquidityPools.app`} description={description}>
+<BaseLayout title={`${title} — LiquidityPools.app`} description={description} image="/images/guides/meteora-dlmm-calculator.webp" imageAlt="Meteora DLMM calculator: bin ladder, allocation shapes, and fee split">
   <Fragment slot="head"><script is:inline type="application/ld+json" set:html={JSON.stringify(appSchema)} /><script is:inline type="application/ld+json" set:html={JSON.stringify(faqSchema)} /><script is:inline type="application/ld+json" set:html={JSON.stringify(breadcrumbSchema)} /></Fragment>
   <section class="page-hero tool-hero"><div class="container"><p class="eyebrow">Meteora DLMM · Discrete-bin model</p><h1 class="page-title">Meteora DLMM calculator.</h1><p>Inspect the actual geometric bin ladder, compare Spot, Curve, and Bid-Ask allocation shapes, and keep base fees separate from the volatility-driven variable fee.</p></div></section>
 

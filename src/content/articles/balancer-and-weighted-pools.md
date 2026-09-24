@@ -16,6 +16,8 @@ faq:
     a: "For the same price move, yes, because less of the portfolio rotates. The position keeps more directional exposure to the heavier asset, which is a feature for some mandates and a risk for others."
   - q: "What is a liquidity bootstrapping pool?"
     a: "A weighted pool whose weights shift over time, typically starting heavily weighted toward the token being sold. The shifting weights create downward price pressure that discourages early buying at inflated prices."
+  - q: "Is an 80/20 pool always better than a 50/50 pool for the heavy asset?"
+    a: "It rotates less when the heavy asset moves, so divergence against holding shrinks. The cost is depth on the light side: the same capital quotes a wider spread, and fee income depends on routed volume clearing that wider cost."
 ---
 
 Say you hold a token you believe in and you want to earn fees on it. A normal pool makes you put in half your money in USDC, then sells your token every time it goes up. You wanted exposure. The pool keeps taking it away.

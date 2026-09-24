@@ -16,6 +16,8 @@ faq:
     a: "Because assets expected to trade near a fixed ratio need depth concentrated at that ratio. An amplified curve is nearly flat near the peg, allowing large trades with minimal slippage, and steepens as reserves skew."
   - q: "What happens if a stablecoin depegs?"
     a: "Traders sell it into the pool while the curve still quotes near par. The pool accumulates it until reserves are heavily imbalanced, at which point price impact rises sharply and the LP position is dominated by the depegged asset."
+  - q: "What should I watch first in a stablecoin pool?"
+    a: "The peg of each asset and the pool’s exposure to the weak side. Depth near one, the curve’s amplification, and how quickly the pool can be drained of the depegging token matter more than the headline APY."
 ---
 
 A stablecoin pool looks like the sensible choice. Both sides are meant to be worth a dollar, so nothing can really go wrong, and you collect a few percent for doing very little.

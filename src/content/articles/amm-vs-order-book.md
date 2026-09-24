@@ -155,6 +155,8 @@ This is an engineering trade-off, not a debate about ideology. Judge each route 
 
 The cost comparison — price impact, meaning the way your own order moves the rate, against slippage, the gap between quote and fill — is worked through in [Slippage and Price Impact](/guides/slippage-and-price-impact/). What a quote that cannot be cancelled costs is measured in [Loss-Versus-Rebalancing](/guides/loss-versus-rebalancing/). The wider system of routers and solvers is described in [Onchain Liquidity](/guides/onchain-liquidity-explained/).
 
+Try the trade-cost side of the comparison with the [liquidity pool fee and APR calculator](/tools/liquidity-pool-calculator/), which models how fee tier, routed volume and liquidity share decide what an LP keeps.
+
 ## References
 
 1. [Concentrated Liquidity | Uniswap Developers](https://developers.uniswap.org/docs/get-started/concepts/liquidity-providers/concentrated-liquidity)

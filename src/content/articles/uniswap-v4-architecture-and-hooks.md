@@ -7,7 +7,7 @@ lastReviewed: "2026-09-22"
 author: "LiquidityPools Editorial Team"
 readTime: "7 min read"
 primaryQuery: "Uniswap v4 architecture"
-keywords: "Uniswap v4 architecture, Uniswap v4 hooks, PoolManager.sol, transient storage EIP-1153, flash accounting, ERC-6909, dynamic fee hook, Uniswap v4 hooks liquidity pools, Uniswap v4 singleton, Uniswap v4 flash accounting, Uniswap v4 liquidity pool"
+keywords: "Uniswap v4 architecture, Uniswap v4 hooks, PoolManager.sol, transient storage EIP-1153, flash accounting, ERC-6909, dynamic fee hook, Uniswap v4 hooks liquidity pools, Uniswap v4 singleton, Uniswap v4 flash accounting"
 featured: true
 faq:
   - q: "What are Uniswap v4 hooks?"
@@ -16,6 +16,8 @@ faq:
     a: "They are arbitrary code with permissions over the pool's lifecycle, so a pool inherits the trust assumptions of its hook. Check whether the hook is verified, audited, immutable, and what it may do on liquidity removal."
   - q: "What is flash accounting?"
     a: "Settlement that records net balance changes in transient storage during a transaction and transfers only the net amounts at the end, rather than moving tokens at each hop. It sharply reduces gas on multi-hop and multi-pool operations."
+  - q: "Do Uniswap v4 positions still use NFTs?"
+    a: "Yes. Positions are minted as NFTs by the position manager. ERC-6909 inside the PoolManager tracks token balances during settlement; it does not replace the NFT that represents your range."
 ---
 
 Uniswap v3 gave every trading pair its own contract. Swap through three pools and your tokens were physically moved three times, and you paid for each move.

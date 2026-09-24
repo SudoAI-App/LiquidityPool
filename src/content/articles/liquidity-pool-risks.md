@@ -145,6 +145,10 @@ See [How to Evaluate a Liquidity Pool](/guides/how-to-evaluate-a-liquidity-pool/
 
 For a plain list of the ways money is actually lost, see [Can You Lose Money in a Liquidity Pool?](/guides/can-you-lose-money-in-a-liquidity-pool/). The trader-driven part is isolated in [Loss-Versus-Rebalancing](/guides/loss-versus-rebalancing/), the income side in [LP Fees vs Impermanent Loss](/guides/lp-fees-vs-impermanent-loss/). Security checks are in [Rug Pulls and Locked Liquidity](/guides/liquidity-pool-rug-pulls/), and the costs that quietly eat small positions in [Gas Costs for Liquidity Providers](/guides/lp-gas-costs/).
 
+Related reading: [Cross-Chain Liquidity Explained](/guides/cross-chain-liquidity-explained/).
+
+Related reading: [Token Liquidity Analysis](/guides/token-liquidity-analysis/).
+
 ## References
 
 1. [Concentrated Liquidity (Uniswap Developer Documentation)](https://developers.uniswap.org/docs/get-started/concepts/liquidity-providers/concentrated-liquidity)

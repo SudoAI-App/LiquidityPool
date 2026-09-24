@@ -106,7 +106,7 @@ Fenced blocks are for real code only, and must declare a language (`solidity`, `
 
 On first appearance, a technical term gets a plain-language gloss in the same sentence — an em-dash clause, a parenthetical, or "which means." Second use onward is free.
 
-Terms on the gloss list: adverse selection, arbitrageur, bonding curve, CFMM, concentrated liquidity, divergence loss, impermanent loss, invariant, LVR, loss-versus-rebalancing, MEV, sandwich attack, singleton, slippage, price impact, tick, TVL, transient storage, flash accounting, hooks, oracle, peg, depeg, basis point, ERC-6909, ERC-721, LP token, mempool, solver, intent.
+Terms on the gloss list: adverse selection, arbitrageur, bonding curve, CFMM, concentrated liquidity, divergence loss, impermanent loss, invariant, LVR, loss-versus-rebalancing, MEV, sandwich attack, singleton, slippage, price impact, tick, TVL, transient storage, flash accounting, hooks, oracle, peg, depeg, basis point, ERC-6909, ERC-721, LP token, mempool, solver, intent. Each term also has a standing definition on [`/glossary/`](./src/pages/glossary.astro), which the sitemap and footer expose.
 
 ### 3.5 Prose targets
 

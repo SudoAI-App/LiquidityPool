@@ -151,6 +151,8 @@ Two are version-specific and worth repeating:
 
 The contracts here are mature and well documented. Most bad outcomes on Uniswap trace back to two things: a range chosen without looking at how much the pair moves, and a tier chosen without looking at where the volume goes. The same mechanics run elsewhere — [PancakeSwap liquidity pools](/guides/pancakeswap-liquidity-pools/) apply them on BNB Chain with an incentive layer on top.
 
+Related reading: [Uniswap v3 vs v4](/guides/uniswap-v3-vs-v4/).
+
 ## References
 
 1. [Uniswap v2 Core Whitepaper (Adams et al., 2020)](https://uniswap.org/whitepaper.pdf)

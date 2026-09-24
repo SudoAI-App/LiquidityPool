@@ -16,6 +16,8 @@ faq:
     a: "A searcher buys immediately before a victim's trade and sells immediately after, profiting from the price movement the victim's own order creates. The profit is bounded by the slippage tolerance the victim set."
   - q: "Can liquidity providers avoid MEV?"
     a: "Not individually, but pool design changes the exposure: dynamic fees price volatility, auctions can return arbitrage profit to LPs, and batch settlement removes the ordering advantage that makes extraction possible."
+  - q: "Can an LP avoid MEV entirely while keeping a pool position?"
+    a: "Not while the pool is public and composable. You can reduce exposure with wider ranges, fee tiers that price toxic flow, and designs that charge dynamic fees when volatility spikes. Elimination would mean not quoting."
 ---
 
 Your transactions are public before they happen. Anyone can read them, and somebody decides what order they run in. That is the whole story behind why pool positions underperform what the dashboard promised.

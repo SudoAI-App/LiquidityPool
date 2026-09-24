@@ -138,6 +138,8 @@ Three consequences worth internalising:
 
 The job is legitimate, useful and often profitable. It is not a savings account with a better rate, and the people who do well are the ones who priced the second half of the bargain before signing the first. When you are ready to price a real one, the practical walkthrough is [How to Provide Liquidity](/guides/how-to-provide-liquidity/).
 
+Related reading: [Liquidity Pools for Beginners](/guides/liquidity-pools-for-beginners/).
+
 ## References
 
 1. [Uniswap v2 Core Whitepaper (Adams et al., 2020)](https://uniswap.org/whitepaper.pdf)

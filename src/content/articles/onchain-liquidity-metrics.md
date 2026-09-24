@@ -16,6 +16,8 @@ faq:
     a: "Start with the pool contract and its parameters, then read the liquidity distribution, then reconstruct swap history to separate ordinary flow from arbitrage, then compare fee accrual against a hold benchmark for a representative position."
   - q: "What is pool utilisation?"
     a: "A measure of how much of the supplied liquidity is actually being used to price trades. In tick-based pools it is closer to the share of liquidity that is in range and receiving flow, rather than a lending-style utilisation figure."
+  - q: "Which single metric best predicts whether a pool will earn?"
+    a: "None alone. Routed volume relative to active depth at the price where trades happen, after incentives, is the closest summary. Pair it with concentration and fee-tier share so a single spike does not stand in for a regime."
 ---
 
 Every pool dashboard leads with two numbers: how much money is in the pool, and how much traded yesterday. Both are close to useless on their own.

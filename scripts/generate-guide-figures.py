@@ -1142,6 +1142,30 @@ def fig_v3_calculator(d):
               "at all. Both effects are computable before the position is funded.",
               font(22), MUTED, 1400)
 
+
+def fig_meteora_dlmm_calculator(d):
+    chrome(d, "DLMM calculator", "Bins, fees, and divergence in one model",
+           "Discrete fixed-price bins, allocation shape, and the fee split that decides net result.")
+    layout_ledger(
+        d, "bin model", "One active bin at a time",
+        "Price only moves when a swap consumes the active bin and advances.",
+        ("Inputs", MINT, [
+            ("Active-bin price", "Anchor price for the geometric ladder"),
+            ("Bin step (bps)", "Price multiplier between neighbouring bins"),
+            ("Allocation shape", "Spot, Curve, or Bid-Ask weights"),
+            ("End-price move", "Integer bins from active to final price"),
+        ]),
+        ("Outputs", AMBER, [
+            ("Price range", "Lowest and highest price the position quotes"),
+            ("Divergence vs holding", "Endpoint inventory marked against the hold basket"),
+            ("Base + variable fee", "Program base fee kept separate from volatility fee"),
+            ("Net vs holding", "Modeled fee income plus divergence, minus nothing else"),
+        ]),
+        "Only the active bin earns fees on a swap. Future volume, competing liquidity, and rebalancing "
+        "are unknown; every displayed figure is a scenario, not a quote.",
+    )
+
+
 def fig_balancer(d):
     layout_rows(d, "weighted pools", "Heavier weighting trades divergence for depth",
                 "Shortfall against holding when the heavy token moves, and what the weighting costs.",
@@ -1255,6 +1279,7 @@ FIGURES = {
     "meteora-dlmm-strategy": fig_meteora_strategy,
     "raydium-clmm-liquidity-guide": fig_raydium_clmm,
     "uniswap-v3-liquidity-calculator": fig_v3_calculator,
+    "meteora-dlmm-calculator": fig_meteora_dlmm_calculator,
     "balancer-and-weighted-pools": fig_balancer,
     "curve-v2-cryptoswap-explained": fig_curve_v2,
     "discretized-liquidity-dlmm-explained": fig_dlmm_explained,

@@ -16,6 +16,8 @@ faq:
     a: "A decentralised exchange is the venue; an automated market maker is one mechanism a venue can use to price trades. Some decentralised exchanges run order books instead, and intent-based systems settle through solvers rather than either."
   - q: "How does a liquidity pool set price?"
     a: "By the invariant. In a constant-product pool the marginal price is the ratio of the two reserves, so buying an asset reduces its reserve and raises its price for the next trade. Other curve designs change how quickly that happens."
+  - q: "Does an AMM need an order book to set a price?"
+    a: "No. The pool computes a price from its reserves and the curve rule. Traders do not post bids and asks; each swap moves along the curve, and arbitrage brings the quote back in line with other venues."
 ---
 
 On a normal exchange, your buy order waits until somebody posts a matching sell. An automated market maker, or AMM, removes the waiting. It always has a price, because it works one out from what it is holding right now.

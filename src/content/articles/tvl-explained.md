@@ -166,6 +166,8 @@ That gap against holding is impermanent loss — the shortfall between a pool po
 
 The practical consequence shows up in what a trade costs, covered in [Slippage and Price Impact](/guides/slippage-and-price-impact/), and in fee income, which you can model with the [liquidity pool fee and APR calculator](/tools/liquidity-pool-calculator/). For how the same problem distorts quoted yields, see [APR vs APY in DeFi](/guides/apr-vs-apy-in-defi/). The measurement that replaces it is in [Liquidity Depth and Execution](/guides/liquidity-depth-and-execution/).
 
+Related reading: [Onchain Liquidity Explained](/guides/onchain-liquidity-explained/).
+
 ## References
 
 1. [Towards verifiability of total value locked (TVL) in decentralized finance | BIS Working Paper 1268](https://www.bis.org/publ/work1268.htm)

@@ -153,6 +153,8 @@ For a longer version of this list, see [How to Evaluate a Liquidity Pool](/guide
 
 Three questions usually follow. What the pricing rule costs you is worked out in [The Impermanent Loss Formula](/guides/impermanent-loss-formula/), and you can test your own numbers in the [impermanent loss calculator](/tools/impermanent-loss-calculator/?mode=weighted&a0=2000&a1=3000&b0=1&b1=1&capital=10000&fees=260&days=45&weight=0.5). Which pool suits which pair is covered in [Types of Liquidity Pools](/guides/liquidity-pool-types/). Whether any of this beats simply holding is settled in [LP Fees vs Impermanent Loss](/guides/lp-fees-vs-impermanent-loss/). Starting from zero, read [Liquidity Pools for Beginners](/guides/liquidity-pools-for-beginners/) and [What Is a Liquidity Provider?](/guides/what-is-a-liquidity-provider/).
 
+Related reading: [AMM vs order book](/guides/amm-vs-order-book/).
+
 ## References
 
 1. [Uniswap v4 Core Whitepaper (Adams et al., 2024)](https://uniswap.org/whitepaper-v4.pdf)

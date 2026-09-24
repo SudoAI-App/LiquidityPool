@@ -25,11 +25,11 @@ const academicDomains = /(arxiv\.org|doi\.org|academic\.oup\.com|web\.stanford\.
 const institutionalDomains = /(bis\.org|imf\.org|fsb\.org|oecd\.org|federalreserve\.gov|ecb\.europa\.eu|eips\.ethereum\.org|ethereum\.org)/i;
 const prohibitedClaims = ['guaranteed apy', 'guaranteed yield', 'guaranteed return', 'guaranteed income', 'guaranteed profit', 'safe income', 'safe yield', 'best pool', 'best liquidity pool', 'highest apy', 'passive income machine'];
 
-// --- Readability gates. Rationale, measured competitor benchmark and targets: EDITORIAL-STANDARD.md
-const MAX_AVG_SENTENCE_WORDS = 19;
+// --- Readability gates. Rationale, measured competitor benchmark and targets: EDITORIAL-STANDARD.md §3.5
+const MAX_AVG_SENTENCE_WORDS = 18;
 const MAX_PARAGRAPH_WORDS = 90;
-const MAX_LONG_WORDS_PER_1K = 36; // words of 12+ characters
-const MIN_SECOND_PERSON_PER_1K = 7; // "you / your / yours"
+const MAX_LONG_WORDS_PER_1K = 34; // words of 12+ characters
+const MIN_SECOND_PERSON_PER_1K = 8; // "you / your / yours"
 const ONRAMP_WORDS = 150;
 const FORMULA_GLOSSARY_WINDOW = 420; // characters after a display formula that may carry the "Where:" list
 // Guides whose subject is a formula may carry more display math than the rest of the library.
@@ -175,7 +175,7 @@ for (const file of readdirSync(articlesDir).filter((name) => name.endsWith('.md'
     if (pattern.test(readingBody) || pattern.test(frontmatter[1])) errors.push(`${slug}: repeats a claim the review found false — ${why}`);
   }
   if (!body.includes('## References')) errors.push(`${slug}: missing a References section`);
-  if (references < 5) errors.push(`${slug}: only ${references} cited sources (need 5+)`);
+  if (references < 6) errors.push(`${slug}: only ${references} cited sources (need 6+) (§3.8)`);
   if (visibleReferences !== references) errors.push(`${slug}: ${references} source definitions but ${visibleReferences} rendered in the reference list`);
   if (!academicSources) errors.push(`${slug}: no peer-reviewed or preprint research source`);
   if (!institutionalSources) errors.push(`${slug}: no standards body or public-sector source`);

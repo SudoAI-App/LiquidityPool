@@ -16,6 +16,8 @@ faq:
     a: "Liquidity mining describes the protocol issuing incentives. Yield farming describes the user moving capital toward whatever combination of fees and incentives currently pays most."
   - q: "What happens when liquidity mining rewards end?"
     a: "Capital that arrived for emissions usually leaves quickly, depth falls, routers send less volume, and fee income for remaining LPs declines. Pools that were viable on fees alone survive the transition; others do not."
+  - q: "Do liquidity mining rewards create durable liquidity?"
+    a: "Only if the rewards buy depth that stays after emissions taper. Mercenary capital follows the rate, so headline TVL during a programme often leaves when the programme does. Measure depth after the taper, not during it."
 ---
 
 A pool advertising 45% is almost never earning 45% from trading. Most of it is a protocol printing its own token to persuade you to show up.
@@ -137,6 +139,8 @@ See the [Liquidity Pool Research Checklist](/guides/liquidity-pool-research-chec
 ## Where to go next
 
 The user's side of the same mechanism is in [Yield Farming Explained](/guides/yield-farming-explained/). To compare against a simple staked position, see [Liquidity Pool vs Staking](/guides/liquidity-pool-vs-staking/), and to read the rate correctly, [APR vs APY in DeFi](/guides/apr-vs-apy-in-defi/). The test that separates durable income from issuance is in [Real Yield in Liquidity Pools](/guides/real-yield-liquidity-pools/), and the three activities are separated in [Liquidity Mining vs Yield Farming vs Staking](/guides/liquidity-mining-vs-yield-farming/).
+
+Related reading: [PancakeSwap Liquidity Pools](/guides/pancakeswap-liquidity-pools/).
 
 ## References
 

@@ -16,6 +16,8 @@ faq:
     a: "By sizing ranges against realised volatility, rebalancing on rules rather than reactions, hedging delta on a perpetual or options venue when the position is large, and measuring performance against a rebalancing benchmark rather than a dollar return."
   - q: "Is passive liquidity provision viable?"
     a: "On pairs where turnover is high relative to volatility, yes. On volatile pairs with modest volume, passive positions tend to underperform holding once divergence and gas are included."
+  - q: "Is passive AMM market making still viable after MEV and LVR?"
+    a: "It is viable where fees and flow quality compensate for adverse selection. Heavy toxic flow and thin fee tiers make the same range uneconomic. The hurdle is loss-versus-rebalancing plus gas, not a headline APR."
 ---
 
 A market maker on a normal exchange quotes a price to buy and a price to sell, and changes those quotes whenever the market moves. Cancel, requote, repeat, thousands of times a second.

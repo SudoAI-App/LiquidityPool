@@ -142,6 +142,8 @@ For what this same curve costs a depositor — impermanent loss, the gap between
 
 The same rule produces two separate costs. What a trader pays — price impact plus slippage, the gap between quote and fill — is in [Slippage and Price Impact](/guides/slippage-and-price-impact/). What a depositor absorbs is impermanent loss, the gap between the pool position and simply holding, worked out in [The Impermanent Loss Formula](/guides/impermanent-loss-formula/). For how other curves change both, see [Types of Liquidity Pools](/guides/liquidity-pool-types/).
 
+Related reading: [Market Making on AMMs](/guides/market-making-on-amms/).
+
 ## References
 
 1. [Uniswap v4 Core Whitepaper (Adams et al., 2024)](https://uniswap.org/whitepaper-v4.pdf)

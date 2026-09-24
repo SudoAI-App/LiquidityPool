@@ -165,7 +165,7 @@ That policy is dull, which is the point. It removes the failure mode where a por
 6. **Run the zero test** and classify the position accordingly.
 7. **Set an alert** for proposals that change reward weights or rates.
 
-Real yield is not a marketing category. It is a question about who is paying you, and the answer changes how you should size the position.
+Real yield is not a marketing category. It is a question about who is paying you, and the answer changes how you should size the position. Split APR against APY with [APR vs APY in DeFi](/guides/apr-vs-apy-in-defi/), and separate emissions from fee income with [Yield Farming Explained](/guides/yield-farming-explained/).
 
 ## References
 

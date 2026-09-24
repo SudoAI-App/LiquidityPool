@@ -146,7 +146,7 @@ Setting an alert for full conversion, and acting on it, is what turns this into 
 6. **Decide now** whether a fill means withdraw, or means leave it exposed to a reversal.
 7. **Size the band to how the pair actually moves**, so it is reachable in your timeframe.
 
-This is a scheduling tool, not an exemption from how pools work. Used deliberately, it is one of the few ways to get paid for being patient.
+This is a scheduling tool, not an exemption from how pools work. Used deliberately, it is one of the few ways to get paid for being patient. The same one-sided structure, expressed as a resting order, is covered in [Range Orders on AMMs](/guides/range-orders-on-amms/); what happens after full conversion is [Out-of-Range Liquidity](/guides/out-of-range-liquidity/).
 
 ## References
 

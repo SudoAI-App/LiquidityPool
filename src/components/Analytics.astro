@@ -25,6 +25,7 @@
 // - cta_click        { cta_id, link_url }      clicks on [data-cta] links and any link into /tools/
 // - outbound_click   { link_url, link_domain } clicks on links to another host
 // - guide_read       { guide_slug }            reader reaches the end of a guide body, once per page view
+// - scroll_depth     { depth, guide_slug? }    25/50/75/90% scroll milestones, each once per page view
 
 const isProd = import.meta.env.PROD;
 const ga = (
@@ -144,6 +145,27 @@ const allowedHosts = ['liquiditypools.app', 'www.liquiditypools.app'];
       }
       if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', watchGuideEnd);
       else watchGuideEnd();
+
+      // scroll_depth: 25/50/75/90% milestones (EDITORIAL-STANDARD §6.2 weekly data loop).
+      var scrollMilestones = [25, 50, 75, 90];
+      var scrollHit = {};
+      var scrollGuide = (document.querySelector('[data-guide-end]') || {}).getAttribute
+        ? document.querySelector('[data-guide-end]').getAttribute('data-guide-end')
+        : '';
+      function onScrollDepth() {
+        var doc = document.documentElement;
+        var max = Math.max(doc.scrollHeight - window.innerHeight, 1);
+        var pct = Math.min(100, Math.round((window.scrollY / max) * 100));
+        for (var i = 0; i < scrollMilestones.length; i++) {
+          var depth = scrollMilestones[i];
+          if (pct < depth || scrollHit[depth]) continue;
+          scrollHit[depth] = true;
+          var params = { depth: depth };
+          if (scrollGuide) params.guide_slug = scrollGuide;
+          track('scroll_depth', params);
+        }
+      }
+      window.addEventListener('scroll', onScrollDepth, { passive: true });
     })();
   </script>
 )}

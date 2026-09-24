@@ -16,6 +16,17 @@ const prevArticle = trackInfo ? trackInfo.prev : null;
 const related = trackInfo
   ? ([trackInfo.next, trackInfo.prev, trackArticles[trackIndex + 1]].filter(Boolean) as typeof trackArticles)
   : [];
+const keywordSet = new Set(article.keywords.split(',').map((k) => k.trim().toLowerCase()).filter(Boolean));
+const crossTrackRelated = articles
+  .filter((item) => item.slug !== article.slug && item.category !== article.category)
+  .map((item) => ({
+    item,
+    score: item.keywords.split(',').filter((k) => keywordSet.has(k.trim().toLowerCase())).length,
+  }))
+  .filter((entry) => entry.score > 0)
+  .sort((a, b) => b.score - a.score || a.item.title.localeCompare(b.item.title))
+  .slice(0, 3)
+  .map((entry) => entry.item);
 const articleImage = '/images/guides/' + article.slug + '.webp';
 const reviewedDate = article.lastReviewed ?? article.date;
 const articleSchema = {
@@ -68,10 +79,10 @@ const faqSchema = faq.length
 const trackAnchor = '/guides/#' + article.category.toLowerCase().replaceAll(' ', '-').replace('&', 'and');
 const tool = toolForGuide(article);
 ---
-<BaseLayout title={article.title + ' — LiquidityPools.app'} description={article.description} type="article" image={articleImage} author={editorialTeam.name}>
+<BaseLayout title={article.title + ' — LiquidityPools.app'} description={article.description} type="article" image={articleImage} imageAlt={article.description} author={editorialTeam.name} publishedTime={article.date} modifiedTime={reviewedDate}>
   <Fragment slot="head"><link rel="stylesheet" href="/katex/katex.min.css" /><script is:inline type="application/ld+json" set:html={JSON.stringify(articleSchema)} /><script is:inline type="application/ld+json" set:html={JSON.stringify(breadcrumbSchema)} />{faqSchema && <script is:inline type="application/ld+json" set:html={JSON.stringify(faqSchema)} />}</Fragment>
   <section class="article-hero"><div class="container article-hero__grid"><div><p class="eyebrow"><a class="eyebrow-link" href={trackAnchor}>{article.category}</a>, guide {trackIndex} of {trackArticles.length}</p><h1>{article.title}</h1><p class="dek">{article.description}</p></div><div class="article-meta"><div>Published<strong>{new Date(article.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</strong></div><div>Last reviewed<strong>{new Date(reviewedDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</strong></div><div>By<strong><a href="/about/#editorial-policy">{editorialTeam.name}</a></strong></div><div>Reading time<strong>{article.readTime}</strong></div></div></div></section>
-  <article class="container article-layout"><aside class="article-rail"><div><h2>Track Progress</h2><p><strong>{article.category}</strong><br />Part {trackIndex} of {trackArticles.length} in this sequence.</p><p style="margin-top:6px"><a href="/topics/">View the reading order</a></p></div><div><h2>Research standard</h2><p>Mechanism first. Material claims are sourced. Outcomes remain conditional.</p></div><div><h2>Related in Track</h2>{related.map((item) => <a href={'/guides/' + item.slug + '/'}>{item.title}</a>)}</div></aside><div class="article-content"><Content /><aside class="tool-callout" data-tool-callout><div class="tool-callout__eyebrow">Run your own numbers</div><p><strong>{tool.title}.</strong> {tool.prompt}</p><a class="tool-callout__link" href={tool.href} data-cta="guide_tool_callout">Open the calculator</a></aside><script is:inline>
+  <article class="container article-layout"><aside class="article-rail"><div><h2>Track Progress</h2><p><strong>{article.category}</strong><br />Part {trackIndex} of {trackArticles.length} in this sequence.</p><p style="margin-top:6px"><a href="/topics/">View the reading order</a></p></div><div><h2>On this page</h2><nav class="toc" data-toc aria-label="On this page"></nav></div><div><h2>Research standard</h2><p>Mechanism first. Material claims are sourced. Outcomes remain conditional.</p></div><div><h2>Related in Track</h2>{related.map((item) => <a href={'/guides/' + item.slug + '/'}>{item.title}</a>)}</div>{crossTrackRelated.length > 0 && <div><h2>Related across tracks</h2>{crossTrackRelated.map((item) => <a href={'/guides/' + item.slug + '/'}>{item.title}</a>)}</div>}</aside><div class="article-content"><nav class="toc toc--mobile" data-toc aria-label="On this page"></nav><Content /><aside class="tool-callout" data-tool-callout><div class="tool-callout__eyebrow">Run your own numbers</div><p><strong>{tool.title}.</strong> {tool.prompt}</p><a class="tool-callout__link" href={tool.href} data-cta="guide_tool_callout">Open the calculator</a></aside><script is:inline>
     (function () {
       // Lift the calculator prompt to just before the guide's second section, so it sits in the
       // first quarter of the read instead of after it. Without JS it stays at the end of the body.
@@ -113,6 +124,35 @@ const tool = toolForGuide(article);
         });
       });
       dialog.addEventListener('click', function (event) { if (event.target === dialog || event.target === large) dialog.close(); });
+    })();
+  </script>
+  <script is:inline>
+    (function () {
+      // Build the in-page contents list from the guide's own H2s (heading ids are set at render).
+      var content = document.querySelector('.article-content');
+      if (!content) return;
+      var headings = content.querySelectorAll(':scope > h2[id]');
+      if (headings.length < 3) return;
+      var links = [];
+      Array.prototype.forEach.call(headings, function (heading) {
+        var text = (heading.textContent || '').trim();
+        if (!text || text === 'Frequently asked questions') return;
+        links.push({ id: heading.id, text: text });
+      });
+      if (links.length < 3) return;
+      Array.prototype.forEach.call(document.querySelectorAll('[data-toc]'), function (nav) {
+        var list = document.createElement('ol');
+        links.forEach(function (entry) {
+          var li = document.createElement('li');
+          var a = document.createElement('a');
+          a.href = '#' + entry.id;
+          a.textContent = entry.text;
+          li.appendChild(a);
+          list.appendChild(li);
+        });
+        nav.appendChild(list);
+        nav.hidden = false;
+      });
     })();
   </script>
 </BaseLayout>

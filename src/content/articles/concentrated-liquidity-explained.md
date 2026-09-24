@@ -16,6 +16,8 @@ faq:
     a: "It concentrates the same risks rather than adding new ones. Divergence is amplified inside the range, income stops outside it, and the strategy requires active monitoring that a full-range position does not."
   - q: "What is a good range width?"
     a: "One matched to the pair's realised volatility and your willingness to rebalance. A band narrower than typical daily movement will exit range constantly; a very wide band earns little more than a full-range position."
+  - q: "How often do I need to manage a concentrated position?"
+    a: "As often as price leaves your band. Outside the band you hold one asset and earn no fees, so the management cadence is a real input: each rebalance costs gas and realizes the current composition. Wider bands reduce how often that happens."
 ---
 
 In an old-style pool, your money is spread across every price ETH could ever trade at. Ten dollars. Ten thousand. Almost all of it sits somewhere the market will never go, doing nothing. The [Uniswap v2 vs v3](/guides/uniswap-v2-vs-v3/) comparison works through what that switch costs and when the old design still wins.

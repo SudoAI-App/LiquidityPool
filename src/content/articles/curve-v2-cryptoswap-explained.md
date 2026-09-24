@@ -16,6 +16,8 @@ faq:
     a: "Uniswap v3 asks the liquidity provider to choose and maintain a range. Curve v2 concentrates liquidity automatically around an internal oracle price and shoulders the rebalancing decision at the protocol level, funded by trading fees."
   - q: "What are the risks of an internal oracle?"
     a: "The repegging mechanism relies on the pool's own exponentially weighted price. Sharp moves can leave the centre lagging, and repegging itself consumes pool profits, so LP returns depend on the interaction between volatility and the repeg schedule."
+  - q: "Does Curve v2 use an external price oracle to re-centre?"
+    a: "No. It re-centres around a smoothed average of its own trade prices, subject to a profit budget. That internal memory is why one block cannot rewrite the centre, and why a quiet pool can lag a fast market."
 ---
 
 Choosing a price range is the part of liquidity provision most people get wrong. Pick it too wide and you earn almost nothing. Too narrow and the market walks out of it while you sleep.

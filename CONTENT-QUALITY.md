@@ -1,5 +1,19 @@
 # Editorial quality release note
 
+## Current library state (2026-09-24)
+
+| Metric | Value |
+| --- | ---: |
+| Guides | 59 |
+| Reading words before references | 107,296 |
+| Cited sources | 464 (min 6 per guide) |
+| Internal guide links | 418+ |
+| FAQ entries in guides | 254 |
+| Interactive calculators | 5 |
+| Link-graph floor | in-degree ≥ 4 from other guides |
+
+The historical release tables below are kept as published snapshots of each release, not as live counts.
+
 The initial LiquidityPool library used short explanatory drafts. This release replaces all 20 guides with **source-led long-form articles** built around concrete market situations, mechanism-first explanations, citations, counterexamples, reader decision questions, and internal links to adjacent concepts.
 
 | Metric | Release result |
