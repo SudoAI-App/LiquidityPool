@@ -1,5 +1,6 @@
 ---
 title: "Token Liquidity Analysis: Measuring What Can Actually Be Sold"
+seoTitle: "Token Liquidity Analysis: Measuring What Can Be Sold"
 description: "How to measure a token's real liquidity: active depth, exit size, venue spread, holder concentration, volume quality and lock status, from public chain data."
 category: "Risk & Research"
 date: 2026-09-10

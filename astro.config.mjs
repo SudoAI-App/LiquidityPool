@@ -1,6 +1,5 @@
 import { defineConfig } from 'astro/config';
 import { satteri } from '@astrojs/markdown-satteri';
-import sitemap from '@astrojs/sitemap';
 import { satteriKatex } from './src/lib/satteri-katex.mjs';
 
 export default defineConfig({
@@ -8,7 +7,6 @@ export default defineConfig({
   trailingSlash: 'always',
   output: 'static',
   outDir: './dist/public',
-  integrations: [sitemap()],
   markdown: {
     processor: satteri({
       features: { math: true },

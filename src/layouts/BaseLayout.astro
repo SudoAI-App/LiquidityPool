@@ -3,7 +3,9 @@ import '../styles/global.css';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import Analytics from '../components/Analytics.astro';
+import { documentTitle } from '../lib/seo.mjs';
 const { title = 'LiquidityPools.app — DeFi Liquidity Research', description = 'Clear, durable research for anyone learning how decentralized liquidity works.', image = '/images/liquiditypool-hero.webp', type = 'website', author = 'LiquidityPools Editorial Team', noIndex = false, imageAlt, publishedTime, modifiedTime } = Astro.props;
+const fullTitle = documentTitle(title);
 const canonical = new URL(Astro.url.pathname, 'https://liquiditypools.app');
 const imageUrl = new URL(image, 'https://liquiditypools.app').href;
 const organizationSchema = {
@@ -37,27 +39,27 @@ const websiteSchema = {
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" />
     <link rel="canonical" href={canonical} />
-    <title>{title}</title>
+    <title>{fullTitle}</title>
     <meta name="description" content={description} />
     <meta name="author" content={author} />
     <meta name="robots" content={noIndex ? 'noindex,nofollow' : 'index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1'} />
     <meta property="og:type" content={type} />
     <meta property="og:site_name" content="LiquidityPools.app" />
     <meta property="og:locale" content="en_US" />
-    <meta property="og:title" content={title} />
+    <meta property="og:title" content={fullTitle} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
     <meta property="og:image" content={imageUrl} />
-    <meta property="og:image:alt" content={imageAlt || title} />
+    <meta property="og:image:alt" content={imageAlt || fullTitle} />
     <meta property="og:image:width" content="1600" />
     <meta property="og:image:height" content="1067" />
     {type === 'article' && publishedTime && <meta property="article:published_time" content={publishedTime} />}
     {type === 'article' && modifiedTime && <meta property="article:modified_time" content={modifiedTime} />}
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content={title} />
+    <meta name="twitter:title" content={fullTitle} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={imageUrl} />
-    <meta name="twitter:image:alt" content={imageAlt || title} />
+    <meta name="twitter:image:alt" content={imageAlt || fullTitle} />
     <link rel="alternate" type="application/rss+xml" title="LiquidityPools.app guides" href="/rss.xml" />
     <script is:inline type="application/ld+json" set:html={JSON.stringify(organizationSchema)} />
     <script is:inline type="application/ld+json" set:html={JSON.stringify(websiteSchema)} />

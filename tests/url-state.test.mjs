@@ -5,6 +5,7 @@ import {
   DEFAULT_IMPERMANENT_LOSS_STATE,
   decodeImpermanentLossState,
   encodeImpermanentLossState,
+  readPresetParams,
 } from '../src/lib/calculators/url-state.mjs';
 
 test('impermanent-loss share state round-trips through a stable query string', () => {
@@ -25,4 +26,11 @@ test('impermanent-loss share state round-trips through a stable query string', (
 test('invalid share parameters fall back without accepting unsafe model values', () => {
   const restored = decodeImpermanentLossState('?mode=wallet&a0=-1&days=0&weight=2&lower=nope');
   assert.deepEqual(restored, DEFAULT_IMPERMANENT_LOSS_STATE);
+});
+
+test('preset state is read from the fragment first and falls back to a legacy query string', () => {
+  assert.equal(readPresetParams('#feeTier=0.3&capital=5000', '').get('capital'), '5000');
+  assert.equal(readPresetParams('#feeTier=0.3', '?feeTier=0.05').get('feeTier'), '0.3');
+  assert.equal(readPresetParams('#methodology', '?capital=7000').get('capital'), '7000');
+  assert.equal(readPresetParams('', '').toString(), '');
 });

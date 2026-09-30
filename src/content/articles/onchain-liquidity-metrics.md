@@ -1,5 +1,6 @@
 ---
 title: "Onchain Liquidity Metrics: What to Measure Beyond TVL and Volume"
+seoTitle: "Onchain Liquidity Metrics: Measuring Beyond TVL and Volume"
 description: "The five numbers that decide whether a pool is worth your money, why the two headline figures mislead, and two pools whose dashboards point the wrong way."
 category: "Risk & Research"
 date: 2026-09-09

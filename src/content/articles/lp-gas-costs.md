@@ -1,5 +1,6 @@
 ---
 title: "Gas Costs for Liquidity Providers: The Minimum Viable Position"
+seoTitle: "Gas Costs for LPs: The Minimum Viable Position Size"
 description: "Gas does not scale with your position, so it decides which strategies you can even use. One table tells you whether yours is viable before you deposit."
 category: "Risk & Research"
 date: 2026-09-10
@@ -86,7 +87,7 @@ The first two rows are not marginal. They are strategies that cannot work at all
 
 If your position sits in one of the top rows, you have three honest options. Add capital until a cycle costs a few days of fees at most. Cut the plan to one or two transactions a quarter. Or move to a network where the same cycle costs cents. Anything else is paying the network for the privilege of watching a chart.
 
-The same arithmetic runs in the [liquidity pool fee and APR calculator](/tools/liquidity-pool-calculator/?gas=15&txCount=4&capital=5000), which puts gas straight into the net figure.
+The same arithmetic runs in the [liquidity pool fee and APR calculator](/tools/liquidity-pool-calculator/#gas=15&txCount=4&capital=5000), which puts gas straight into the net figure.
 
 ## Rebalancing is the expensive habit
 

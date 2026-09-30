@@ -46,6 +46,8 @@ const GLOSS_REQUIRED = [
 ];
 // Metadata that search results truncate beyond these lengths.
 const MAX_TITLE_CHARS = 70;
+// The document <title> (seoTitle when set, otherwise title) must fit a search result line.
+const MAX_SEO_TITLE_CHARS = 60;
 const MAX_DESCRIPTION_CHARS = 160;
 const WORDS_PER_MINUTE = 220;
 // Claims a review found to be mathematically false. Kept as a regression guard so they cannot return.
@@ -157,8 +159,10 @@ for (const file of readdirSync(articlesDir).filter((name) => name.endsWith('.md'
   const titleText = frontmatter[1].match(/^title:\s*"(.*)"$/m)?.[1] ?? '';
   const descriptionText = frontmatter[1].match(/^description:\s*"(.*)"$/m)?.[1] ?? '';
   if (titleText.length > MAX_TITLE_CHARS) errors.push(`${slug}: title is ${titleText.length} characters (max ${MAX_TITLE_CHARS})`);
+  const seoTitleText = frontmatter[1].match(/^seoTitle:\s*"(.*)"$/m)?.[1] ?? titleText;
+  if (seoTitleText.length > MAX_SEO_TITLE_CHARS) errors.push(`${slug}: document title is ${seoTitleText.length} characters (max ${MAX_SEO_TITLE_CHARS}); add or shorten seoTitle`);
   if (descriptionText.length > MAX_DESCRIPTION_CHARS) errors.push(`${slug}: description is ${descriptionText.length} characters (max ${MAX_DESCRIPTION_CHARS})`);
-  for (const link of body.matchAll(/\]\((\/(guides|tools)\/([^/?)]+)\/(?:\?[^)]*)?)\)/g)) {
+  for (const link of body.matchAll(/\]\((\/(guides|tools)\/([^/?#)]+)\/(?:[?#][^)]*)?)\)/g)) {
     const [, href, kind, target] = link;
     const known = kind === 'guides' ? guideSlugs.has(target) : toolSlugs.has(target);
     if (!known) errors.push(`${slug}: internal link ${href} points to a page that does not exist`);

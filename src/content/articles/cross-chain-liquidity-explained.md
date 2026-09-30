@@ -1,5 +1,6 @@
 ---
 title: "Cross-Chain Liquidity Explained: Bridges, Fragmentation and Risk"
+seoTitle: "Cross-Chain Liquidity: Bridges, Fragmentation and Risk"
 description: "Nothing actually crosses between chains. Four ways protocols fake it, which ones have lost billions, and what to check before you bridge or supply."
 category: "Risk & Research"
 date: 2026-09-09

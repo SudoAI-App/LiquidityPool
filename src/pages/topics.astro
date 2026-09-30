@@ -21,21 +21,21 @@ const collectionSchema = {
   name: 'DeFi Liquidity Research Tracks — LiquidityPools.app',
   url: 'https://liquiditypools.app/topics/',
   description: 'Structured research tracks covering foundations, LP mechanics, risk research, and advanced market microstructure.',
+  // schema.org only accepts CreativeWork under hasPart, so each track is a Collection of Articles.
   hasPart: categories.map((category) => ({
-    '@type': 'ItemList',
+    '@type': 'Collection',
     name: category,
     description: copy[category],
-    numberOfItems: categoryArticles(category).length,
-    itemListElement: categoryArticles(category).map((art, idx) => ({
-      '@type': 'ListItem',
-      position: idx + 1,
-      name: art.title,
+    collectionSize: categoryArticles(category).length,
+    hasPart: categoryArticles(category).map((art) => ({
+      '@type': 'Article',
+      headline: art.title,
       url: `https://liquiditypools.app/guides/${art.slug}/`
     }))
   }))
 };
 ---
-<BaseLayout title="Research Tracks — LiquidityPools.app" description="Explore the LiquidityPools.app research tracks: foundations, LP mechanics, risk research, and advanced DeFi liquidity.">
+<BaseLayout title="Research Tracks" description="Explore the LiquidityPools.app research tracks: foundations, LP mechanics, risk research, and advanced DeFi liquidity.">
   <Fragment slot="head">
     <script is:inline type="application/ld+json" set:html={JSON.stringify(collectionSchema)} />
     <script is:inline type="application/ld+json" set:html={JSON.stringify(breadcrumbSchema)} />

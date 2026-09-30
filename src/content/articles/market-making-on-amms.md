@@ -1,5 +1,6 @@
 ---
 title: "Market Making on AMMs: How Professional Liquidity Providers Work"
+seoTitle: "Market Making on AMMs: How Professional LPs Work"
 description: "What professional liquidity providers actually do: sizing ranges to volatility, hedging price risk, clearing the LVR hurdle, and reading vault strategies."
 category: "Advanced"
 date: 2026-09-09

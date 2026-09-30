@@ -1,5 +1,6 @@
 ---
 title: "Rug Pulls and Locked Liquidity: Six Checks Before You Deposit"
+seoTitle: "Rug Pulls and Locked Liquidity: Six Checks Before Depositing"
 description: "Six checks you can run from public chain data in ten minutes. None needs code reading, and together they catch almost every failure visible in advance."
 category: "Risk & Research"
 date: 2026-09-10

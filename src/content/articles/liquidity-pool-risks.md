@@ -1,5 +1,6 @@
 ---
 title: "Liquidity Pool Risks: A Complete Framework for LP Due Diligence"
+seoTitle: "Liquidity Pool Risks: A Framework for LP Due Diligence"
 description: "Five layers of risk in a liquidity pool: the code, the traders, the collateral behind the tokens, the price feeds, and the people who can change the rules."
 category: "Risk & Research"
 date: 2026-09-09

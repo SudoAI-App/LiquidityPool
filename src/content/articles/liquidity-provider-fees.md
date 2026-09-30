@@ -1,5 +1,6 @@
 ---
 title: "Liquidity Provider Fees: How LP Revenue Is Generated and Measured"
+seoTitle: "Liquidity Provider Fees: How LP Revenue Is Generated"
 description: "Where the fee actually goes, why it differs by pool generation, and the one subtraction that turns a fee number into an actual return."
 category: "LP Mechanics"
 date: 2026-09-09

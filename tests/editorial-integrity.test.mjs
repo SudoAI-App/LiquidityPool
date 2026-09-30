@@ -51,11 +51,9 @@ test('editorial policy is published and linked from methodology', () => {
 
 test('old author profiles are absent from routes, sitemaps, and IndexNow', () => {
   const custom = readFileSync(new URL('./sitemap.xml', dist), 'utf8');
-  const generated = readFileSync(new URL('./sitemap-0.xml', dist), 'utf8');
   for (const slug of authorSlugs) {
     assert.equal(existsSync(new URL(`./authors/${slug}/index.html`, dist)), false, `${slug} still builds as an author page`);
     assert.doesNotMatch(custom, new RegExp(`/authors/${slug}/|#${slug}`));
-    assert.doesNotMatch(generated, new RegExp(`/authors/${slug}/|#${slug}`));
     assert.equal(indexNowUrls.some((url) => url.includes(`/authors/${slug}/`) || url.includes(`#${slug}`)), false);
   }
 });

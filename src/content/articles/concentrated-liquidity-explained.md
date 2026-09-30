@@ -1,5 +1,6 @@
 ---
 title: "Concentrated Liquidity Explained: Range, Capital Efficiency, and Risk"
+seoTitle: "Concentrated Liquidity Explained: Range, Efficiency & Risk"
 description: "Picking a price range multiplies your fees and your losses by the same number. How the maths works, how wide to go, and what happens when the price leaves."
 category: "LP Mechanics"
 date: 2026-09-09
@@ -170,7 +171,7 @@ For the practical sequence of picking a pair and minting a position, see [How to
 
 ## Where to go next
 
-The boundary case gets its own guide in [Out-of-Range Liquidity](/guides/out-of-range-liquidity/). For picking the tier, see [Uniswap Fee Tiers Explained](/guides/uniswap-fee-tiers-explained/), and for the version differences, [Uniswap v3 vs v4](/guides/uniswap-v3-vs-v4/). For choosing the width itself, see [Concentrated Liquidity Strategy](/guides/concentrated-liquidity-strategy/) and [Uniswap v3 Ticks and Position NFTs](/guides/uniswap-v3-ticks-and-lp-nfts/). To test a specific band, use the [concentrated liquidity calculator](/tools/uniswap-v3-liquidity-calculator/?price=3000&lower=2700&upper=3300&capital=10000&tier=0.05).
+The boundary case gets its own guide in [Out-of-Range Liquidity](/guides/out-of-range-liquidity/). For picking the tier, see [Uniswap Fee Tiers Explained](/guides/uniswap-fee-tiers-explained/), and for the version differences, [Uniswap v3 vs v4](/guides/uniswap-v3-vs-v4/). For choosing the width itself, see [Concentrated Liquidity Strategy](/guides/concentrated-liquidity-strategy/) and [Uniswap v3 Ticks and Position NFTs](/guides/uniswap-v3-ticks-and-lp-nfts/). To test a specific band, use the [concentrated liquidity calculator](/tools/uniswap-v3-liquidity-calculator/#price=3000&lower=2700&upper=3300&capital=10000&tier=0.0005).
 
 ## References
 

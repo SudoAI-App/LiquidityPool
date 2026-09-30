@@ -16,7 +16,7 @@ const breadcrumbSchema = { '@context': 'https://schema.org', '@type': 'Breadcrum
   { '@type': 'ListItem', position: 2, name: 'Methodology', item: canonical },
 ] };
 ---
-<BaseLayout title={`${title} — LiquidityPools.app`} description={description}>
+<BaseLayout title={title} description={description}>
   <Fragment slot="head"><script is:inline type="application/ld+json" set:html={JSON.stringify(pageSchema)} /><script is:inline type="application/ld+json" set:html={JSON.stringify(breadcrumbSchema)} /></Fragment>
   <section class="page-hero"><div class="container"><p class="eyebrow">Methodology, reviewed Sep 13, 2026</p><h1 class="page-title">The formulas behind every calculator.</h1><p>Every result is reproducible from the equations and fixed test vectors below. The same vectors are imported by the automated unit tests; changing a formula without updating and explaining its reference result fails the suite.</p></div></section>
   <section class="section section--paper"><div class="container"><div class="guide-layout">

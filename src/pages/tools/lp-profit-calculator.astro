@@ -61,7 +61,7 @@ const breadcrumbSchema = {
   ]
 };
 ---
-<BaseLayout title={`${title} — LiquidityPools.app`} description={description} image="/images/guides/lp-profit-calculator.webp">
+<BaseLayout title={title} description={description} image="/images/guides/lp-profit-calculator.webp">
   <Fragment slot="head">
     <script is:inline type="application/ld+json" set:html={JSON.stringify(appSchema)} />
     <script is:inline type="application/ld+json" set:html={JSON.stringify(faqSchema)} />
@@ -245,6 +245,7 @@ const breadcrumbSchema = {
   <script>
     // @ts-nocheck -- DOM nodes are guaranteed by the static template above.
     import { calculateLpProfit } from '../../lib/calculators/lp-profit.mjs';
+    import { readPresetParams } from '../../lib/calculators/url-state.mjs';
     (function () {
       var ids = ['priceA0', 'priceA1', 'priceB0', 'priceB1', 'capital', 'fees', 'rewards', 'gas', 'txCount', 'days'];
       var el = {};
@@ -311,15 +312,13 @@ const breadcrumbSchema = {
         }
       }
 
-      if (location.search) {
-        var params = new URLSearchParams(location.search);
-        ids.forEach(function (id) {
-          var val = params.get(id);
-          if (val !== null && el[id] && !isNaN(Number(val))) {
-            el[id].value = val;
-          }
-        });
-      }
+      var params = readPresetParams(location.hash, location.search);
+      ids.forEach(function (id) {
+        var val = params.get(id);
+        if (val !== null && el[id] && !isNaN(Number(val))) {
+          el[id].value = val;
+        }
+      });
 
       ids.forEach(function (id) { el[id].addEventListener('input', render); });
       render();

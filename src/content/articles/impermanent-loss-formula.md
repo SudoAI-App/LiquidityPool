@@ -1,5 +1,6 @@
 ---
 title: "The Impermanent Loss Formula: How to Calculate IL Step by Step"
+seoTitle: "Impermanent Loss Formula: How to Calculate IL Step by Step"
 description: "One short formula, one variable, and a full worked example in dollars. Plus the range-position variant and everything the formula deliberately leaves out."
 category: "Risk & Research"
 date: 2026-09-10

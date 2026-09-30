@@ -1,5 +1,6 @@
 ---
 title: "MEV and Liquidity Providers: Sandwiches, JIT Liquidity and Toxic Flow"
+seoTitle: "MEV and LPs: Sandwiches, JIT Liquidity and Toxic Flow"
 description: "Three ways transaction ordering takes money out of your pool position, how to tell how much is happening, and what actually defends against each one."
 category: "Risk & Research"
 date: 2026-09-09

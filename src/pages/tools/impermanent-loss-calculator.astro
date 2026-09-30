@@ -24,7 +24,7 @@ const breadcrumbSchema = { '@context': 'https://schema.org', '@type': 'Breadcrum
   { '@type': 'ListItem', position: 3, name: title, item: canonical },
 ] };
 ---
-<BaseLayout title={`${title} — LiquidityPools.app`} description={description} image="/images/guides/impermanent-loss-calculator.webp">
+<BaseLayout title={title} description={description} image="/images/guides/impermanent-loss-calculator.webp">
   <Fragment slot="head">
     <script is:inline type="application/ld+json" set:html={JSON.stringify(appSchema)} />
     <script is:inline type="application/ld+json" set:html={JSON.stringify(faqSchema)} />
@@ -98,7 +98,7 @@ const breadcrumbSchema = { '@context': 'https://schema.org', '@type': 'Breadcrum
     // @ts-nocheck -- DOM nodes are guaranteed by the static template above.
     import { calculateWeightedPosition, weightedIlCurve } from '../../lib/calculators/impermanent-loss.mjs';
     import { calculateConcentratedPosition, concentratedIlCurve } from '../../lib/calculators/concentrated-liquidity.mjs';
-    import { decodeImpermanentLossState, encodeImpermanentLossState } from '../../lib/calculators/url-state.mjs';
+    import { decodeImpermanentLossState, encodeImpermanentLossState, readPresetParams } from '../../lib/calculators/url-state.mjs';
     const ids = ['mode', 'priceA0', 'priceA1', 'priceB0', 'priceB1', 'capital', 'fees', 'days', 'weightA', 'lowerPrice', 'upperPrice'];
     const el = Object.fromEntries(ids.map((id) => [id, document.getElementById(id)]));
     const out = Object.fromEntries(['il', 'ratio', 'hodl', 'pool', 'div', 'fees', 'net', 'breakeven', 'apr', 'verdict'].map((key) => [key, document.getElementById(`out-${key}`)]));
@@ -121,14 +121,14 @@ const breadcrumbSchema = { '@context': 'https://schema.org', '@type': 'Breadcrum
         if (input.mode === 'weighted') { result = calculateWeightedPosition(input); points = weightedIlCurve(input.weightA); drawCurve(points, ratio, `${Math.round(input.weightA * 100)}/${Math.round((1 - input.weightA) * 100)} full-range curve; current scenario marked.`); }
         else { const range = calculateConcentratedPosition({ entryPrice: entryRelative, exitPrice: exitRelative, lowerPrice: input.lowerPrice, upperPrice: input.upperPrice, capital: input.capital }); result = { ...range, poolValue: range.positionValue, feesEarned: input.feesEarned, netVsHold: range.divergence + input.feesEarned, feeAprPercent: input.feesEarned / input.capital * (365 / Math.max(1, input.days)) * 100 }; points = concentratedIlCurve({ entryPrice: entryRelative, lowerPrice: input.lowerPrice, upperPrice: input.upperPrice, capital: input.capital }); drawCurve(points, ratio, `Range ${input.lowerPrice.toLocaleString()}–${input.upperPrice.toLocaleString()}; current scenario marked.`); }
         out.il.textContent = percent(result.impermanentLoss); out.ratio.textContent = `Relative price ratio = ${ratio.toFixed(4)} · ${input.mode === 'weighted' ? 'weighted full range' : `${result.rangeState} range`}`; out.hodl.textContent = money(result.holdValue); out.pool.textContent = money(result.poolValue); out.div.textContent = signedMoney(result.divergence); out.fees.textContent = money(input.feesEarned); out.net.textContent = signedMoney(result.netVsHold); out.breakeven.textContent = money(Math.abs(result.divergence)); out.apr.textContent = `${result.feeAprPercent.toFixed(1)}%`; out.verdict.textContent = result.netVsHold >= 0 ? 'Entered fee income covers the modeled divergence for this scenario.' : `Holding the entry basket is ahead by ${money(Math.abs(result.netVsHold))} after entered fees.`;
-        if (updateUrl) history.replaceState(null, '', `${location.pathname}?${encodeImpermanentLossState(input)}${location.hash}`);
+        if (updateUrl) history.replaceState(null, '', `${location.pathname}#${encodeImpermanentLossState(input)}`);
       } catch (error) { out.verdict.textContent = error instanceof Error ? error.message : 'Check the inputs and try again.'; }
     }
-    if (location.search) { const restored = decodeImpermanentLossState(location.search); el.mode.value = restored.mode; for (const id of ['priceA0', 'priceA1', 'priceB0', 'priceB1', 'capital', 'days', 'lowerPrice', 'upperPrice']) el[id].value = String(restored[id]); el.fees.value = String(restored.feesEarned); el.weightA.value = String(restored.weightA * 100); }
+    const presetParams = readPresetParams(location.hash, location.search); if (presetParams.has('mode')) { const restored = decodeImpermanentLossState(presetParams); el.mode.value = restored.mode; for (const id of ['priceA0', 'priceA1', 'priceB0', 'priceB1', 'capital', 'days', 'lowerPrice', 'upperPrice']) el[id].value = String(restored[id]); el.fees.value = String(restored.feesEarned); el.weightA.value = String(restored.weightA * 100); }
     ids.forEach((id) => { el[id].addEventListener('input', () => render(true)); el[id].addEventListener('change', () => render(true)); });
     document.querySelectorAll('[data-ratio]').forEach((button) => button.addEventListener('click', () => { el.priceA1.value = String(value('priceA0') * Number(button.dataset.ratio)); render(true); }));
     document.querySelectorAll('[data-weight]').forEach((button) => button.addEventListener('click', () => { el.weightA.value = button.dataset.weight; render(true); }));
-    document.getElementById('share-link').addEventListener('click', async () => { const url = `${location.origin}${location.pathname}?${encodeImpermanentLossState(state())}`; try { await navigator.clipboard.writeText(url); document.getElementById('share-status').textContent = 'Copied.'; } catch { document.getElementById('share-status').textContent = 'Copy the URL from the address bar.'; } });
+    document.getElementById('share-link').addEventListener('click', async () => { const url = `${location.origin}${location.pathname}#${encodeImpermanentLossState(state())}`; try { await navigator.clipboard.writeText(url); document.getElementById('share-status').textContent = 'Copied.'; } catch { document.getElementById('share-status').textContent = 'Copy the URL from the address bar.'; } });
     render(false);
   </script>
 </BaseLayout>

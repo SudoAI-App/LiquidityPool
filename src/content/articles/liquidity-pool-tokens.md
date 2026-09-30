@@ -1,5 +1,6 @@
 ---
 title: "Liquidity Pool Tokens Explained: What an LP Position Represents"
+seoTitle: "LP Tokens Explained: What a Liquidity Position Represents"
 description: "What you actually get back for a deposit: how pool shares, position NFTs, singleton claims and vault wrappers each track your money, and where each one bites."
 category: "Foundations"
 date: 2026-09-09

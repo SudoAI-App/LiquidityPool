@@ -1,5 +1,6 @@
 ---
 title: "Balancer Weighted Pools: How 80/20 and Multi-Asset Pools Work"
+seoTitle: "Balancer Weighted Pools: How 80/20 & Multi-Asset Pools Work"
 description: "Why an 80/20 pool sells less of your token on the way up, how weighted pricing works, what a liquidity bootstrapping pool does, and what Balancer v3 changed."
 category: "LP Mechanics"
 date: 2026-09-10

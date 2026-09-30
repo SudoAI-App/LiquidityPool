@@ -79,21 +79,49 @@ test('no-JavaScript fallback results match the default calculator inputs', () =>
   assert.match(dlmm, /id="out-net">\+\$285\.79/);
 });
 
-test('custom sitemap, generated sitemap index, and IndexNow share the complete new route set', () => {
+test('sitemap index points only at the custom sitemap, which lists every route once, as does IndexNow', () => {
   const sitemap = readFileSync(new URL('./sitemap.xml', dist), 'utf8');
-  const generated = readFileSync(new URL('./sitemap-0.xml', dist), 'utf8');
   const index = readFileSync(new URL('./sitemap-index.xml', dist), 'utf8');
-  assert.match(index, /sitemap-0\.xml/);
+  assert.deepEqual([...index.matchAll(/<loc>([^<]+)<\/loc>/g)].map((match) => match[1]), ['https://liquiditypools.app/sitemap.xml']);
+  assert.equal(existsSync(new URL('./sitemap-0.xml', dist)), false, 'a second sitemap would list every URL twice');
   assert.doesNotMatch(sitemap, /<changefreq>daily<\/changefreq>/);
   assert.doesNotMatch(sitemap, /<loc>[^<]*\?/);
   for (const route of expectedStaticRoutes) {
     const url = `https://liquiditypools.app${route}`;
     assert.ok(sitemap.includes(`<loc>${url}</loc>`), `${route} missing from custom sitemap`);
-    assert.ok(generated.includes(`<loc>${url}</loc>`), `${route} missing from generated sitemap`);
     assert.ok(indexNowUrls.includes(url), `${route} missing from IndexNow list`);
   }
   const articleCount = readdirSync(new URL('../src/content/articles/', import.meta.url)).filter((file) => file.endsWith('.md')).length;
   assert.equal((sitemap.match(/<loc>/g) ?? []).length, expectedStaticRoutes.length + articleCount);
+});
+
+test('every built page keeps its document title and meta description within search-result limits', () => {
+  const pages = [...expectedStaticRoutes, ...readdirSync(new URL('./guides/', dist), { withFileTypes: true }).filter((entry) => entry.isDirectory()).map((entry) => `/guides/${entry.name}/`)];
+  const decode = (text) => text.replace(/&amp;/g, '&').replace(/&#39;/g, "'").replace(/&quot;/g, '"');
+  for (const route of pages) {
+    const html = htmlFor(route);
+    const title = decode(html.match(/<title>([^<]*)<\/title>/)[1]);
+    const description = decode(html.match(/<meta name="description" content="([^"]*)"/)[1]);
+    assert.ok(title.length <= 60, `${route} title is ${title.length} characters: ${title}`);
+    assert.ok(description.length <= 160, `${route} description is ${description.length} characters`);
+  }
+});
+
+test('guide links to calculator presets carry state in the fragment, not crawlable query strings', () => {
+  for (const entry of readdirSync(new URL('./guides/', dist), { withFileTypes: true }).filter((item) => item.isDirectory())) {
+    const html = htmlFor(`/guides/${entry.name}/`);
+    assert.doesNotMatch(html, /href="\/tools\/[^"]*\?/, `${entry.name} links to a parameterised calculator URL`);
+  }
+});
+
+test('topics collection schema nests only CreativeWork types under hasPart', () => {
+  const collection = jsonLd(htmlFor('/topics/')).find((item) => item['@type'] === 'CollectionPage');
+  assert.equal(collection.hasPart.length, 4);
+  for (const track of collection.hasPart) {
+    assert.equal(track['@type'], 'Collection');
+    assert.ok(track.hasPart.length > 0);
+    assert.ok(track.hasPart.every((article) => article['@type'] === 'Article' && article.url.startsWith('https://liquiditypools.app/guides/')));
+  }
 });
 
 test('robots and analytics privacy invariants remain present, and guide rail language is neutral', () => {

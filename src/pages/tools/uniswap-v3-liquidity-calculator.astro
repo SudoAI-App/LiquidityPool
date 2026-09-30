@@ -65,7 +65,7 @@ const breadcrumbSchema = {
   ]
 };
 ---
-<BaseLayout title={`${title} — LiquidityPools.app`} description={description} image="/images/guides/uniswap-v3-liquidity-calculator.webp">
+<BaseLayout title={title} description={description} image="/images/guides/uniswap-v3-liquidity-calculator.webp">
   <Fragment slot="head">
     <script is:inline type="application/ld+json" set:html={JSON.stringify(appSchema)} />
     <script is:inline type="application/ld+json" set:html={JSON.stringify(faqSchema)} />
@@ -131,6 +131,7 @@ const breadcrumbSchema = {
               <select id="tier" name="tier">
                 <option value="0.0001">0.01% (1 bp)</option>
                 <option value="0.0005" selected>0.05% (5 bp)</option>
+                <option value="0.0025">0.25% (25 bp)</option>
                 <option value="0.003">0.30% (30 bp)</option>
                 <option value="0.01">1.00% (100 bp)</option>
               </select>
@@ -292,6 +293,7 @@ const breadcrumbSchema = {
   <script>
     // @ts-nocheck -- DOM nodes are guaranteed by the static template above.
     import { calculateConcentratedPosition, concentratedTokenAmounts } from '../../lib/calculators/concentrated-liquidity.mjs';
+    import { readPresetParams } from '../../lib/calculators/url-state.mjs';
     (function () {
       var ids = ['price', 'lower', 'upper', 'capital', 'exit', 'tier', 'days', 'volume', 'activeliq', 'tir'];
       var el = {};
@@ -405,15 +407,13 @@ const breadcrumbSchema = {
         });
       });
 
-      if (location.search) {
-        var params = new URLSearchParams(location.search);
-        ids.forEach(function (id) {
-          var val = params.get(id);
-          if (val !== null && el[id] && !isNaN(Number(val))) {
-            el[id].value = val;
-          }
-        });
-      }
+      var params = readPresetParams(location.hash, location.search);
+      ids.forEach(function (id) {
+        var val = params.get(id);
+        if (val !== null && el[id] && !isNaN(Number(val))) {
+          el[id].value = val;
+        }
+      });
 
       render();
     })();

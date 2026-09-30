@@ -1,5 +1,6 @@
 ---
 title: "The Constant Product Formula: How x × y = k Shapes AMM Prices"
+seoTitle: "Constant Product Formula: How x × y = k Shapes AMM Prices"
 description: "What x × y = k actually does to your trade: why the quote is never your fill, how impact scales with size, and how other curves change the answer."
 category: "Foundations"
 date: 2026-09-09

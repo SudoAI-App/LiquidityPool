@@ -1,5 +1,6 @@
 ---
 title: "Curve v2 Explained: Cryptoswap, Internal Oracles and TriCrypto Pools"
+seoTitle: "Curve v2 Explained: Cryptoswap, Oracles and TriCrypto Pools"
 description: "How Curve v2 moves its own liquidity to follow the market, why it only pays for that out of fees, and when a TriCrypto pool is and is not the right place to be."
 category: "LP Mechanics"
 date: 2026-09-10

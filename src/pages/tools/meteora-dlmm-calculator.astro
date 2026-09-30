@@ -24,7 +24,7 @@ const breadcrumbSchema = { '@context': 'https://schema.org', '@type': 'Breadcrum
   { '@type': 'ListItem', position: 3, name: title, item: canonical },
 ] };
 ---
-<BaseLayout title={`${title} — LiquidityPools.app`} description={description} image="/images/guides/meteora-dlmm-calculator.webp" imageAlt="Meteora DLMM calculator: bin ladder, allocation shapes, and fee split">
+<BaseLayout title={title} description={description} image="/images/guides/meteora-dlmm-calculator.webp" imageAlt="Meteora DLMM calculator: bin ladder, allocation shapes, and fee split">
   <Fragment slot="head"><script is:inline type="application/ld+json" set:html={JSON.stringify(appSchema)} /><script is:inline type="application/ld+json" set:html={JSON.stringify(faqSchema)} /><script is:inline type="application/ld+json" set:html={JSON.stringify(breadcrumbSchema)} /></Fragment>
   <section class="page-hero tool-hero"><div class="container"><p class="eyebrow">Meteora DLMM · Discrete-bin model</p><h1 class="page-title">Meteora DLMM calculator.</h1><p>Inspect the actual geometric bin ladder, compare Spot, Curve, and Bid-Ask allocation shapes, and keep base fees separate from the volatility-driven variable fee.</p></div></section>
 
@@ -63,6 +63,7 @@ const breadcrumbSchema = { '@context': 'https://schema.org', '@type': 'Breadcrum
   <script>
     // @ts-nocheck -- DOM nodes are guaranteed by the static template above.
     import { calculateDlmmScenario } from '../../lib/calculators/meteora-dlmm.mjs';
+    import { readPresetParams } from '../../lib/calculators/url-state.mjs';
     const inputIds = ['anchor', 'step', 'below', 'above', 'shape', 'capital', 'baseShare', 'endBin', 'baseFactor', 'power', 'variableControl', 'volatility', 'volume', 'activeLiquidity', 'tir', 'days'];
     const inputs = Object.fromEntries(inputIds.map((id) => [id, document.getElementById(id)]));
     const outputs = Object.fromEntries(['il', 'state', 'range', 'exit', 'basefee', 'varfee', 'totalfee', 'values', 'fees', 'net', 'verdict'].map((id) => [id, document.getElementById(`out-${id}`)]));
@@ -101,19 +102,17 @@ const breadcrumbSchema = { '@context': 'https://schema.org', '@type': 'Breadcrum
         outputs.verdict.textContent = error instanceof Error ? error.message : 'Check the inputs and try again.';
       }
     }
-    if (location.search) {
-      const params = new URLSearchParams(location.search);
-      inputIds.forEach((id) => {
-        const val = params.get(id);
-        if (val !== null && inputs[id]) {
-          if (id === 'shape') {
-            if (['spot', 'curve', 'bidAsk'].includes(val)) inputs[id].value = val;
-          } else if (!isNaN(Number(val))) {
-            inputs[id].value = val;
-          }
+    const params = readPresetParams(location.hash, location.search);
+    inputIds.forEach((id) => {
+      const val = params.get(id);
+      if (val !== null && inputs[id]) {
+        if (id === 'shape') {
+          if (['spot', 'curve', 'bidAsk'].includes(val)) inputs[id].value = val;
+        } else if (!isNaN(Number(val))) {
+          inputs[id].value = val;
         }
-      });
-    }
+      }
+    });
     inputIds.forEach((id) => { inputs[id].addEventListener('input', render); inputs[id].addEventListener('change', render); });
     render();
   </script>

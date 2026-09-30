@@ -1,5 +1,6 @@
 ---
 title: "Uniswap v4 Architecture: Singleton Design, Hooks, and Flash Accounting"
+seoTitle: "Uniswap v4 Architecture: Singleton, Hooks & Flash Accounting"
 description: "What changed in Uniswap v4 and what it means for you: one contract for every pool, settle-once accounting, custom pool code, and how to read a hook."
 category: "LP Mechanics"
 date: 2026-09-10

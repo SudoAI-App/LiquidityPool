@@ -1,5 +1,6 @@
 ---
 title: "Out-of-Range Liquidity: Why an LP Position Stops Earning Fees"
+seoTitle: "Out-of-Range Liquidity: Why an LP Position Stops Earning"
 description: "Your position stopped earning because the price left your band. What you are holding now, what waiting costs, and how to decide whether to move it."
 category: "LP Mechanics"
 date: 2026-09-10
@@ -129,7 +130,7 @@ Out of range is not a malfunction. It is the price of the efficiency that made t
 
 ## Where to go next
 
-Price the trade-off before you mint: expected fees in the [liquidity pool fee and APR calculator](/tools/liquidity-pool-calculator/?feeTier=0.05&capital=10000), and impermanent loss — the gap between the position and simply holding — at each edge in the [impermanent loss calculator](/tools/impermanent-loss-calculator/?mode=concentrated&a0=2000&a1=2400&capital=10000&lower=1800&upper=2200).
+Price the trade-off before you mint: expected fees in the [liquidity pool fee and APR calculator](/tools/liquidity-pool-calculator/#feeTier=0.05&capital=10000), and impermanent loss — the gap between the position and simply holding — at each edge in the [impermanent loss calculator](/tools/impermanent-loss-calculator/#mode=concentrated&a0=2000&a1=2400&capital=10000&lower=1800&upper=2200).
 
 Related reading: [Meteora DLMM Strategy](/guides/meteora-dlmm-strategy/).
 

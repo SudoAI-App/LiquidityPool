@@ -1,6 +1,8 @@
 export type Article = {
   slug: string;
   title: string;
+  /** Shorter <title> for search results when the H1 exceeds 60 characters. */
+  seoTitle?: string;
   description: string;
   category: string;
   date: string;

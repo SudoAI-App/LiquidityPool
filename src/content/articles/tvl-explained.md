@@ -1,5 +1,6 @@
 ---
 title: "TVL Explained: What Total Value Locked Can—and Cannot—Tell You"
+seoTitle: "TVL Explained: What Total Value Locked Really Tells You"
 description: "How one dollar becomes seven dollars of headline deposits, why a big pool can fill worse than a small one, and what to read instead."
 category: "Foundations"
 date: 2026-09-09

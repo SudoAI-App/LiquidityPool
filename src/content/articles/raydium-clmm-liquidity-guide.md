@@ -1,5 +1,6 @@
 ---
 title: "Raydium Liquidity Pools: CLMM, CPMM and Choosing Between Them"
+seoTitle: "Raydium Liquidity Pools: CLMM vs CPMM and How to Choose"
 description: "How Raydium's concentrated and constant-product pools differ, what a CLMM position holds at each end of its range, and the Solana checks to run first."
 category: "LP Mechanics"
 date: 2026-09-11
@@ -173,7 +174,7 @@ Both designs are usable. They fail differently, and the failure that catches peo
 
 ## Where to go next
 
-Model the range decision in the [concentrated liquidity calculator](/tools/uniswap-v3-liquidity-calculator/?price=150&lower=120&upper=180&capital=5000&tier=0.25), which implements the same tick mathematics Raydium uses, and the shortfall side in the [impermanent loss calculator](/tools/impermanent-loss-calculator/?mode=concentrated&a0=150&a1=180&capital=5000&lower=120&upper=180). For the Solana bin-based alternative, read [Meteora DLMM Strategy](/guides/meteora-dlmm-strategy/).
+Model the range decision in the [concentrated liquidity calculator](/tools/uniswap-v3-liquidity-calculator/#price=150&lower=120&upper=180&capital=5000&tier=0.0025), which implements the same tick mathematics Raydium uses, and the shortfall side in the [impermanent loss calculator](/tools/impermanent-loss-calculator/#mode=concentrated&a0=150&a1=180&capital=5000&lower=120&upper=180). For the Solana bin-based alternative, read [Meteora DLMM Strategy](/guides/meteora-dlmm-strategy/).
 
 ## References
 

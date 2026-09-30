@@ -1,5 +1,6 @@
 ---
 title: "Liquidity Mining Explained: Incentives, Emissions and Lasting Depth"
+seoTitle: "Liquidity Mining Explained: Incentives, Emissions and Depth"
 description: "Where a headline yield really comes from, four generations of incentive design, and how to tell a pool that outlives its rewards from one that empties."
 category: "Advanced"
 date: 2026-09-09

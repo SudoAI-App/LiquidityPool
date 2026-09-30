@@ -49,3 +49,11 @@ export function decodeImpermanentLossState(search) {
     && state.weightA > 0 && state.weightA < 1 && state.lowerPrice > 0 && state.upperPrice > state.lowerPrice;
   return valid ? state : { ...DEFAULT_IMPERMANENT_LOSS_STATE };
 }
+
+// Guide presets link to `/tools/x/#a=1&b=2` so crawlers see one canonical calculator URL
+// instead of a parameterised duplicate per preset. Older shared links used `?a=1`, so a
+// query string is still honoured when the fragment carries no state (e.g. `#methodology`).
+export function readPresetParams(hash, search) {
+  const fragment = hash.replace(/^#/, '');
+  return new URLSearchParams(fragment.includes('=') ? fragment : search);
+}
