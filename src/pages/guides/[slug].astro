@@ -153,6 +153,16 @@ const tool = toolForGuide(article);
         nav.appendChild(list);
         nav.hidden = false;
       });
+      if (!('IntersectionObserver' in window)) return;
+      var current = null;
+      var observer = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) { if (entry.isIntersecting) current = entry.target.id; });
+        if (!current) return;
+        Array.prototype.forEach.call(document.querySelectorAll('[data-toc] a'), function (a) {
+          a.setAttribute('aria-current', a.getAttribute('href') === '#' + current ? 'true' : 'false');
+        });
+      }, { rootMargin: '0px 0px -70% 0px' });
+      links.forEach(function (entry) { var el = document.getElementById(entry.id); if (el) observer.observe(el); });
     })();
   </script>
 </BaseLayout>

@@ -168,8 +168,14 @@ for (const file of readdirSync(articlesDir).filter((name) => name.endsWith('.md'
     if (!known) errors.push(`${slug}: internal link ${href} points to a page that does not exist`);
   }
   const definedRefs = new Set([...body.matchAll(/^\[(\d+)\]:/gm)].map((match) => match[1]));
+  const citedRefs = new Set();
   for (const cite of readingBody.matchAll(/\[(\d+)\](?![(:])/g)) {
+    citedRefs.add(cite[1]);
     if (!definedRefs.has(cite[1])) errors.push(`${slug}: citation [${cite[1]}] has no matching reference`);
+  }
+  // A source list nobody cites inline is decoration: each reference must back a claim in the text.
+  for (const ref of definedRefs) {
+    if (!citedRefs.has(ref)) errors.push(`${slug}: reference [${ref}] is listed but never cited in the text`);
   }
   const refUrls = [...body.matchAll(/^\[\d+\]:\s+(\S+)/gm)].map((match) => match[1]);
   for (const url of new Set(refUrls)) {
@@ -296,6 +302,7 @@ if (reportOnly) {
       + pad(row.longPer1k.toFixed(1), 9) + pad(row.youPer1k.toFixed(1), 8) + pad(row.formulas, 6),
     );
   }
+  if (errors.length) console.log(`\n${errors.map((error) => `- ${error}`).join('\n')}`);
   console.log(`\n${errors.length} finding(s). Run without --report to fail the build on them.`);
   process.exit(0);
 }

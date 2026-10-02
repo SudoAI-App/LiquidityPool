@@ -3,9 +3,9 @@ title: "What Is a Liquidity Provider? The LP Role, Explained"
 description: "You become a market maker who cannot cancel. What the job pays, what it costs, and the one question to answer honestly before you take it on."
 category: "Foundations"
 date: 2026-09-10
-lastReviewed: "2026-09-12"
+lastReviewed: "2026-10-02"
 author: "LiquidityPools Editorial Team"
-readTime: "6 min read"
+readTime: "7 min read"
 primaryQuery: "liquidity provider"
 keywords: "liquidity provider, what is an LP in crypto, how do liquidity providers make money, liquidity provision DeFi, LP role, how much can you earn providing liquidity"
 featured: false
@@ -22,29 +22,35 @@ faq:
     a: "No. The revenue arrives without effort, but the position is an active short-volatility exposure that continuously sells whichever asset is appreciating. Treating it as passive income is the most common way LPs are surprised by their own results."
 ---
 
-A liquidity provider is a market maker who cannot cancel. That one constraint explains almost everything about the job: where the money comes from, who is on the other side, and why the outcome depends more on what the market did than on anything you decided.
+A liquidity provider is a market maker who cannot cancel. That one constraint explains most of the job: where the money comes from, who is on the other side, and why the outcome depends more on what the market did than on anything you decided.
 
 The mechanics fit in a sentence. Put two tokens into a pool, get a claim, collect a share of the fee on every trade that goes through your money.
 
-The interesting part is what that bargain costs you. If pools themselves are new, start with [What Is a Liquidity Pool?](/guides/what-is-a-liquidity-pool/).
+The harder part is what that bargain costs you. By the end you should be able to estimate both halves for a real pool, and decide whether you want the job at all. If pools themselves are new, start with [What Is a Liquidity Pool?](/guides/what-is-a-liquidity-pool/).
 
 <figure class="article-figure">
   <img src="/images/guides/what-is-a-liquidity-provider.webp" alt="Two panels comparing what a liquidity provider is paid against what the same position underwrites." width="1600" height="1067" loading="lazy" decoding="async" />
   <figcaption>The two halves of the liquidity provider bargain, only one of which is quoted as a yield. <span class="article-figure__credit">Original editorial illustration by LiquidityPools.app.</span></figcaption>
 </figure>
 
-> **Editor's note:**
+> **Key point:**
 > One useful model treats liquidity provision as an options-like exposure with a fee schedule attached. Fees accumulate incrementally, while adverse-selection costs can grow faster as relative price moves become larger. That framing makes position sizing and the holding benchmark harder to ignore.
 
 ## Three obligations a savings account does not have
 
-**You have to supply both tokens.** In the ratio the pool holds them at the current price. Interfaces that accept one token just swap half of it first, which costs a fee and price impact rather than removing the requirement. See [Single-Sided Liquidity](/guides/single-sided-liquidity/).
+**You have to supply both tokens.** In the ratio the pool holds them at the current price [1]. Interfaces that accept one token just swap half of it first, which costs a fee and price impact rather than removing the requirement. See [Single-Sided Liquidity](/guides/single-sided-liquidity/).
 
 **You quote continuously, at a price you do not choose.** The pool prices every trade from its own balances. When the market moves elsewhere, your quote is stale until somebody trades against it, and that somebody is not doing you a favour.
 
 **You are paid per trade, not per day.** A pool with no volume pays nothing no matter how much money is sitting in it. That is the structural difference from lending or staking, which both accrue with time.
 
+What you get back for all this is a claim, and its form depends on the pool. In a Uniswap v2-style pool it is a fungible LP token, minted in proportion to your share of the reserves [1] and built on the ERC-20 token standard, so it can be moved like any other token [4].
+
+In a range-based pool such as Uniswap v3, every position has its own price range, so positions are no longer interchangeable [2]. Each one is usually held as a non-fungible token under the ERC-721 standard [5].
+
 ## What the job pays
+
+Your fee income is the pool's fee rate, times the volume that ran through it, times your share of the liquidity that was live for those trades. Fees are split pro rata among the providers active at the moment of each swap [3].
 
 $$
 F = f \times V \times s
@@ -52,26 +58,29 @@ $$
 
 Where:
 
+- $F$ is the fee income you collect.
 - $f$ is the fee rate of the pool.
 - $V$ is the volume that actually went through it.
 - $s$ is your share of the liquidity that was live for those trades.
 
-In a range-based pool, multiply again by the fraction of the time you were in range.
+In a range-based pool, multiply again by the fraction of the time you were in range, because a position earns nothing while the price sits outside it [3].
 
-Work it on \$25,000 in a 0.05% pool doing \$20M a day, with \$8M of liquidity in your band.
+Work it on \$25,000 in a 0.05% pool doing \$20M a day, with \$8M of other providers' liquidity in your band. Your share is your money divided by the total including yours.
 
 | | Value |
 | :--- | ---: |
-| Your share of the liquidity | 0.312% |
-| Fees per day | \$31.20 |
-| Fees over 30 days | \$936 |
+| Your share of the liquidity | 0.31% |
+| Fees per day | \$31.15 |
+| Fees over 30 days | \$935 |
 | Annualised | 45.5% |
-| Divergence if the pair moves 30% apart, on a full-range position | about -0.9%, or -\$225 |
-| Gas across five transactions | -\$90 |
+| Divergence against holding if ETH rises 30%, on a full-range position | about -\$246 |
+| Gas across five transactions at about \$18 each | -\$90 |
 
 That 45.5% is what a pool interface would show you. The two rows underneath are why it is not your return, and in a narrow band the divergence row is several times larger.
 
-Model both sides: the [liquidity pool fee and APR calculator](/tools/liquidity-pool-calculator/#feeTier=0.3&capital=10000&volume=5000000&liquidity=1000000) for the income, and the [impermanent loss calculator](/tools/impermanent-loss-calculator/#mode=weighted&a0=2000&a1=2500&capital=10000) for impermanent loss — the gap between the pool position and simply holding.
+Check, too, that the whole fee reaches you. On Uniswap, governance switched on a protocol fee in December 2025, and on an enabled v3 pool in the 0.05% tier providers keep 0.0375%, three-quarters of the fee [3]. If this pool were one of them, the annualised figure would fall to about 34%.
+
+Model both sides: the [liquidity pool fee and APR calculator](/tools/liquidity-pool-calculator/#feeTier=0.3&capital=10000&volume=5000000&liquidity=1000000) for the income, and the [impermanent loss calculator](/tools/impermanent-loss-calculator/#mode=weighted&a0=2000&a1=2500&capital=10000) for impermanent loss, which is how far the position falls behind the same tokens held outside the pool.
 
 Some pools add their own token on top. That is funded by issuance rather than by trading, so it decays differently. See [Real Yield in Liquidity Pools](/guides/real-yield-liquidity-pools/).
 
@@ -79,8 +88,8 @@ Some pools add their own token on top. That is funded by issuance rather than by
 
 Four things sit against the fee line, and only the first is specific to pools.
 
-1. **The pool sells your winner.** It rotates into whichever token is falling, so withdrawing after a move returns less than holding would have. See [The Impermanent Loss Formula](/guides/impermanent-loss-formula/).
-2. **Faster traders get there first.** Because your quote cannot be cancelled, the people who trade against it are disproportionately the ones who already know the price moved. The measure of that is loss-versus-rebalancing — what a pool pays out for quoting a block late — covered in [loss-versus-rebalancing](/guides/loss-versus-rebalancing/).
+1. **The pool sells your winner.** It rotates into whichever token is falling, so withdrawing after a move returns less than holding would have. The cost grows faster than the move: a 30% move costs under 1% of the held value, a doubling costs 5.7%. One study of 17 large Uniswap v3 pools found this loss exceeded the fees providers earned, in aggregate [8]. See [The Impermanent Loss Formula](/guides/impermanent-loss-formula/).
+2. **Faster traders get there first.** Because your quote cannot be cancelled, the people who trade against it are disproportionately the ones who already know the price moved. Research decomposes a provider's return into fees earned minus these losses to arbitrage, which it names loss-versus-rebalancing [6]. Think of it as the toll a pool pays for always quoting a block late; [loss-versus-rebalancing](/guides/loss-versus-rebalancing/) works through it.
 3. **Friction.** Gas on entry, claiming, rebalancing and exit, plus any swap to reach the right ratio. On small positions this dominates everything. See [Gas Costs for Liquidity Providers](/guides/lp-gas-costs/).
 4. **Code.** The pool, any hook, and any farm or vault all have to keep working for you to get your money back.
 
@@ -95,36 +104,28 @@ Four things sit against the fee line, and only the first is specific to pools.
 | Size that suits | Any, as long as gas is small | Big enough to absorb the management |
 | How you measure it | Against holding, quarterly | Time in range and net result, weekly |
 
-Neither is more sophisticated. The mistake is choosing the active structure and then managing it passively, which gives you the worst of both: the amplified losses without the fees that were supposed to pay for them.
+Neither is more sophisticated. Data on real Uniswap v3 providers shows the simple strategies earning modest returns on calm pairs, and larger returns only for those who accepted more risk and managed actively [7]. The mistake is choosing the active structure and then managing it passively. That gives you the larger losses without the fees that were supposed to pay for them.
 
 ## The question to answer before any of this
 
 Would you hold this basket at all?
 
-A pool position is a leveraged expression of a view you may not have formed. Supplying ETH against dollars means you are content to hold more ETH if it falls and less if it rises. Supplying two volatile tokens against each other means you are content to hold whichever one does worse.
+A pool position expresses a view you may not have formed. Supplying ETH against dollars means you are content to hold more ETH if it falls and less if it rises. Supplying two volatile tokens against each other means you are content to hold whichever one does worse.
 
-People who answer that honestly are rarely upset by divergence, because divergence is just the pool doing exactly what it said it would. People who answer it by looking at a yield figure end up holding a token they never wanted, at a price they would not have chosen, and calling the mechanism unfair.
+People who answer that honestly are rarely upset by divergence, because divergence is just the pool doing exactly what it said it would. People who answer it by looking at a yield figure end up holding a token they never wanted, at a price they would not have chosen.
 
 ## Where you sit in the market
 
 Between two groups, and they want different things from you.
 
-On one side, traders and aggregators who need depth and pay a fee for it. On the other, arbitrage bots who keep your pool's price honest and get paid out of your inventory for doing it.
+On one side, traders and aggregators who need depth and pay a fee for it. On the other, arbitrage bots who keep your pool's price in line with other markets and get paid out of your inventory for doing it.
 
-Three consequences worth internalising:
+Four consequences follow:
 
-- **Your counterparty is anonymous and often better informed.** Not all volume is worth the same. An aggregator routing someone's purchase is very different from a bot correcting your stale quote for MEV — value taken by controlling the order transactions run in. See [MEV and Liquidity Providers](/guides/mev-and-liquidity-providers/).
-- **Your competition is other providers.** Adding money to a crowded band dilutes everybody, including you, before a single trade happens.
+- **Your counterparty is anonymous and often better informed.** Not all volume is worth the same. An aggregator routing someone's purchase is very different from a bot correcting your stale quote. Some of that bot activity is MEV, short for maximal extractable value: profit from choosing the order in which transactions run [9]. See [MEV and Liquidity Providers](/guides/mev-and-liquidity-providers/).
+- **Your competition is other providers.** Adding money to a crowded band dilutes everybody, including you, before a single trade happens. A busy pool earns less per dollar once the band fills up.
 - **Your leverage is selection, not effort.** Which pair, which curve, which tier, which range, what size. After that, the market decides and you watch.
-
-## What people get wrong about the role
-
-| What people assume | What actually happens |
-| :--- | :--- |
-| It is passive income | The revenue arrives passively. The exposure is an active bet on volatility staying low |
-| More capital means more yield | Your share of a band falls as others join. The rate falls with it |
-| The pool protects me from picking wrong | It concentrates the consequence. You end up with more of whichever token did worse |
-| A busy pool is a profitable pool | Depends entirely on who is doing the trading |
+- **The pool does not protect you from picking wrong.** It concentrates the consequence: you end up holding more of whichever token did worse.
 
 ## Before you take it on
 
@@ -136,24 +137,26 @@ Three consequences worth internalising:
 6. **Decide the exit rule now.** A price, a date, or a measured shortfall against holding.
 7. **Write down what you deposited and at what prices**, so you can reconstruct the benchmark later.
 
-The job is legitimate, useful and often profitable. It is not a savings account with a better rate, and the people who do well are the ones who priced the second half of the bargain before signing the first. When you are ready to price a real one, the practical walkthrough is [How to Provide Liquidity](/guides/how-to-provide-liquidity/).
-
-Related reading: [Liquidity Pools for Beginners](/guides/liquidity-pools-for-beginners/).
+The job is legitimate and useful, and it can pay. It is not a savings account with a better rate, and the people who do well price the second half of the bargain before signing the first. For a first position, [Liquidity Pools for Beginners](/guides/liquidity-pools-for-beginners/) sets out the five decisions in order, and [How to Provide Liquidity](/guides/how-to-provide-liquidity/) walks through the deposit itself.
 
 ## References
 
 1. [Uniswap v2 Core Whitepaper (Adams et al., 2020)](https://uniswap.org/whitepaper.pdf)
 2. [Uniswap v3 Core Whitepaper (Adams et al., 2021)](https://uniswap.org/whitepaper-v3.pdf)
-3. [What are the risks when providing liquidity? (Uniswap Labs)](https://support.uniswap.org/hc/en-us/articles/37113550065549-What-are-the-risks-when-providing-liquidity)
-4. [Automated Market Making and Loss-Versus-Rebalancing (Milionis et al., 2022)](https://arxiv.org/abs/2208.06046)
-5. [Risks and Returns of Uniswap V3 Liquidity Providers (Heimbach et al., 2022)](https://arxiv.org/abs/2205.08904)
-6. [SoK: Decentralized Exchanges (DEX) with Automated Market Maker (AMM) Protocols (Xu et al., 2021)](https://arxiv.org/abs/2103.12732)
-7. [Miners as intermediaries: extractable value and market manipulation in crypto and DeFi (BIS Bulletin No 58, 2022)](https://www.bis.org/publ/bisbull58.htm)
+3. [Fees (Uniswap Developer Documentation)](https://developers.uniswap.org/docs/get-started/concepts/fees)
+4. [ERC-20: Token Standard (Ethereum Improvement Proposals)](https://eips.ethereum.org/EIPS/eip-20)
+5. [ERC-721: Non-Fungible Token Standard (Ethereum Improvement Proposals)](https://eips.ethereum.org/EIPS/eip-721)
+6. [Automated Market Making and Loss-Versus-Rebalancing (Milionis et al., 2022)](https://arxiv.org/abs/2208.06046)
+7. [Risks and Returns of Uniswap V3 Liquidity Providers (Heimbach et al., 2022)](https://arxiv.org/abs/2205.08904)
+8. [Impermanent Loss in Uniswap v3 (Loesch et al., 2021)](https://arxiv.org/abs/2111.09192)
+9. [Miners as intermediaries: extractable value and market manipulation in crypto and DeFi (BIS Bulletin No 58, 2022)](https://www.bis.org/publ/bisbull58.htm)
 
 [1]: https://uniswap.org/whitepaper.pdf "Uniswap v2 Core Whitepaper"
 [2]: https://uniswap.org/whitepaper-v3.pdf "Uniswap v3 Core Whitepaper"
-[3]: https://support.uniswap.org/hc/en-us/articles/37113550065549-What-are-the-risks-when-providing-liquidity "What are the risks when providing liquidity?"
-[4]: https://arxiv.org/abs/2208.06046 "Automated Market Making and Loss-Versus-Rebalancing"
-[5]: https://arxiv.org/abs/2205.08904 "Risks and Returns of Uniswap V3 Liquidity Providers (Heimbach et al., 2022)"
-[6]: https://arxiv.org/abs/2103.12732 "SoK: Decentralized Exchanges (DEX) with Automated Market Maker (AMM) Protocols (Xu et al., 2021)"
-[7]: https://www.bis.org/publ/bisbull58.htm "Miners as intermediaries: extractable value and market manipulation in crypto and DeFi (BIS Bulletin No 58, 2022)"
+[3]: https://developers.uniswap.org/docs/get-started/concepts/fees "Fees (Uniswap Developer Documentation)"
+[4]: https://eips.ethereum.org/EIPS/eip-20 "ERC-20: Token Standard"
+[5]: https://eips.ethereum.org/EIPS/eip-721 "ERC-721: Non-Fungible Token Standard"
+[6]: https://arxiv.org/abs/2208.06046 "Automated Market Making and Loss-Versus-Rebalancing"
+[7]: https://arxiv.org/abs/2205.08904 "Risks and Returns of Uniswap V3 Liquidity Providers (Heimbach et al., 2022)"
+[8]: https://arxiv.org/abs/2111.09192 "Impermanent Loss in Uniswap v3"
+[9]: https://www.bis.org/publ/bisbull58.htm "Miners as intermediaries: extractable value and market manipulation in crypto and DeFi (BIS Bulletin No 58, 2022)"

@@ -4,9 +4,9 @@ seoTitle: "Constant Product Formula: How x × y = k Shapes AMM Prices"
 description: "What x × y = k actually does to your trade: why the quote is never your fill, how impact scales with size, and how other curves change the answer."
 category: "Foundations"
 date: 2026-09-09
-lastReviewed: "2026-09-12"
+lastReviewed: "2026-10-02"
 author: "LiquidityPools Editorial Team"
-readTime: "6 min read"
+readTime: "7 min read"
 primaryQuery: "constant product formula"
 keywords: "constant product formula, x y k AMM, Uniswap formula, AMM pricing curve, virtual reserves, constant product AMM, constant product market maker, pool reserves AMM, bonding curve crypto"
 featured: false
@@ -23,23 +23,23 @@ faq:
     a: "Because price is a function of the reserve ratio. Every swap changes the reserves, so the marginal price moves against the trade, and arbitrage then aligns that price with the wider market."
 ---
 
-Almost every pool in decentralised finance runs on one line of arithmetic. Multiply the two token balances together. Never let that number fall.
+The most widely copied pool design in decentralised finance runs on one line of arithmetic. Multiply the two token balances together. Never let that number fall.
 
-From that single rule comes every price the pool quotes, every cost you pay to trade, and most of what happens to your money if you deposit. It is worth an hour of your time.
+From that single rule comes every price the pool quotes, every cost you pay to trade, and much of what happens to your money if you deposit.
 
-This guide shows you what the rule does, why your fill is always worse than the quote on the screen, how much worse at each trade size, and how other pool designs change the answer.
+By the end you should be able to work out what a trade will really cost you at a given size, and judge when a different pool design gives a better answer.
 
 <figure class="article-figure">
   <img src="/images/guides/constant-product-formula.webp" alt="A pricing curve shows trade size moving through changing pool reserves." width="1600" height="1067" loading="lazy" decoding="async" />
   <figcaption>The constant product curve forces larger transactions to incur progressively higher execution friction. <span class="article-figure__credit">Original editorial illustration by LiquidityPools.app.</span></figcaption>
 </figure>
 
-> **Editor's note:**
-> The rule is beautiful and it is completely unhedged. Holding a position on this curve is selling volatility. You collect fees drip by drip, and you pay out whenever the asset moves hard in either direction. Everything about your exposure comes from how steeply the curve bends, and the curve bends hardest exactly when the pool is thinnest.
+> **Key point:**
+> Holding a position on this curve means selling volatility. You collect fees a little at a time, and you give up value whenever the price moves far in either direction. The rule guarantees one thing — the product holds — and to keep it, the pool must sell whichever token is rising and buy whichever is falling.
 
 ## What the rule actually says
 
-A pool holds two balances. Call them $x$ and $y$. The contract enforces one thing [1] [2]:
+A pool holds two balances. Call them $x$ and $y$. The contract enforces one thing: after every trade, their product must be at least what it was before [1].
 
 $$
 x \cdot y = k
@@ -51,15 +51,15 @@ Where:
 - $y$ is how many of the second.
 - $k$ is the number their product must stay at.
 
-Everything else is a consequence. The price is simply one balance divided by the other. Trade in one direction and you raise one balance and lower the other, which moves the price against you.
+Everything else is a consequence. The price, before fees, is simply one balance divided by the other [1]. Trade in one direction and you raise one balance and lower the other, which moves the price against you.
 
-The word for that fixed relationship is the pool's invariant — the one thing the contract will not let change. It never consults a price feed, it never looks at another exchange, and it never gets an opinion. It just refuses to let $k$ fall. How invariants generalise beyond this one, and what each shape charges you for, is covered in [Bonding Curves and AMM Invariants](/guides/bonding-curves-and-amm-invariants/).
+The word for that fixed relationship is the pool's invariant — the one thing the contract will not let change. It never consults a price feed or another exchange. It just refuses to let $k$ fall, and arbitrage traders keep its price close to the wider market [7]. How invariants generalise beyond this one is covered in [Bonding Curves and AMM Invariants](/guides/bonding-curves-and-amm-invariants/), and formally in the constant function market maker framework [8].
 
 ## Why your fill is always worse than the quote
 
 The number on the screen is the rate for a trade of almost nothing. Your trade is not nothing, so it moves the balances while it executes, and you pay the average across that whole move.
 
-With a fee of $f$ taken off your input first, here is what you actually receive:
+The pool takes its fee off your input first, then pays out whatever keeps the product level [1]. Here is what you actually receive:
 
 $$
 \Delta y = \frac{y \cdot \Delta x \cdot (1 - f)}{x + \Delta x \cdot (1 - f)}
@@ -74,13 +74,13 @@ Where:
 
 Look at where your input sits. It is in the denominator. Every extra unit you send makes the bottom of that fraction bigger, which means each extra unit brings back a little less than the one before it.
 
-That penalty is price impact — the cost of moving the pool's own balances to get your trade done. It is not a fee anyone charges you. It is geometry. The architecture that executes it is covered in [Automated Market Makers Explained](/guides/automated-market-maker-explained/).
+That penalty is price impact — the cost of moving the pool's own balances to get your trade done. It is not a fee anyone charges you. It is the shape of the curve, and the value stays in the pool rather than going to a company. The less liquidity sits at the current price, the larger it is [3]. The architecture that executes it is covered in [Automated Market Makers Explained](/guides/automated-market-maker-explained/).
 
 ## How bad it gets at each size
 
-Here is the whole thing in one table. Each row is your order measured against the pool's balance of the token you are paying in.
+Here is the whole thing in one table. Each row is your order measured against the pool's balance of the token you are paying in. The cost is the share of output you lose against the quoted rate, before fees.
 
-| Your order, as a share of the pool | Roughly what the curve costs you |
+| Your order, as a share of the pool | What the curve costs you |
 | :--- | ---: |
 | 1% | 0.99% |
 | 5% | 4.76% |
@@ -90,42 +90,35 @@ Here is the whole thing in one table. Each row is your order measured against th
 
 Fees are on top of those numbers. A \$10,000 trade into a pool holding \$100,000 of the token you are paying with loses about 9% to the curve before you pay a cent of fee.
 
-Three things follow, and all three are worth internalising:
+The pattern is exact: an order worth a share $s$ of the pool loses $s / (1 + s)$ of its output. Double the pool and you halve $s$, which roughly halves the cost of a small order. In range-based pools that only holds if the extra money sits near the current price, and often most of it does not.
 
-- **Your tolerance setting does not reduce the cost.** It only decides whether the trade reverts. Raising it from 1% to 5% does not get you a better rate. It just authorises the contract to fill you at the bad one [2].
-- **Splitting the order helps.** Spreading it across several pools, or letting an aggregator do it, lowers the share of each pool you consume. The curve punishes size because the cost grows faster than the order does [1] [4].
-- **Somebody is waiting behind you.** A large trade leaves the pool's price out of line with the rest of the market, and a bot corrects it in the same block and keeps the difference [5].
+Three things follow:
+
+- **Your tolerance setting does not reduce the cost.** Interfaces quote you an output that already includes the impact, and the tolerance only allows extra movement beyond that quote [3]. If the quote baked in 8% of impact, a 1% tolerance still lets you end up about 9% below the starting rate. Raising the tolerance does not get you a better rate. It only widens what the contract will accept.
+- **Splitting the order helps.** Spreading it across several pools, or letting an aggregator do it, lowers the share of each pool you consume. Because the cost grows faster than the order, smaller pieces cost less in total.
+- **Somebody is waiting behind you.** A large trade leaves the pool's price out of line with the rest of the market, and an arbitrage bot will trade it back, often in the same block, and keep the difference [6].
 
 ## How other curves change the answer
 
-The constant product rule is the general-purpose one. Other designs trade that generality for depth in a narrower place.
+The constant product rule is the general-purpose one. Other designs trade that generality for depth in a narrower place [9].
 
 | Pool design | What it does differently | Where the money sits | How it fails |
 | :--- | :--- | :--- | :--- |
-| Constant product, Uniswap v2 | Nothing, this is the base case | Spread across every possible price | Large orders get expensive fast [3] |
-| Chosen ranges, Uniswap v3 and v4 | Same curve, shifted to run out at your band's edges | Packed into your band | Price leaves the band and depth vanishes [1] |
-| Stable pairs, Curve | Nearly flat near the peg, curved further out | Piled up around a one-to-one rate | Cost accelerates once the pair skews badly [4] |
-| Stepped bins | Flat price inside each step | Sorted into fixed steps | A fast move can jump empty steps |
+| Constant product, Uniswap v2 | Nothing, this is the base case | Spread across every possible price | Large orders get expensive fast |
+| Chosen ranges, Uniswap v3 and v4 | Same curve, shifted to run out at your band's edges [2] | Packed into your band | Price leaves the band and depth vanishes |
+| Stable pairs, Curve | Nearly flat near the peg, curved further out [4] | Piled up around a one-to-one rate | Cost accelerates once the pair skews badly |
+| Stepped bins, such as LFJ's Liquidity Book | Flat price inside each bin [5] | Sorted into fixed steps | A fast move can jump empty steps |
 
 For the range-based version of this maths, see [Concentrated Liquidity Explained](/guides/concentrated-liquidity-explained/).
 
-## What people get wrong about the formula
-
-| What people assume | What actually happens |
-| :--- | :--- |
-| A 1% tolerance caps my loss at 1% | It caps the drift from an estimate that already includes impact. If the estimate baked in 8%, you can still lose 9% |
-| Twice the pool size means half the cost | Only if the extra money sits near the price. In range-based pools, most of it often does not |
-| The rule protects depositors | It guarantees one thing: the product holds. It also forces the pool to sell the winner and buy the loser every time prices move |
-| Price impact is a fee somebody charges | Nobody charges it. It is the shape of the curve, and it goes to the pool, not to a company |
-
 ## What to check before you trade
 
-1. **Work out the output yourself.** Read the two balances from the contract and run them through the formula above. Compare that with what the interface quotes [1] [2].
-2. **Set a real floor.** Decide the worst rate you will accept in absolute terms, and pass that number rather than a percentage you picked by habit [2].
-3. **In range-based pools, look at the live band.** Check that enough money sits at and around the current price to absorb your order without jumping into an empty stretch [1].
-4. **Protect anything above \$20,000.** Send it through a private relay so bots cannot read your order and trade in front of it [5].
+1. **Work out the output yourself.** Read the two balances from the contract and run them through the formula above. Compare that with what the interface quotes.
+2. **Set a real floor.** Decide the worst rate you will accept in absolute terms, and pass that number rather than a percentage you picked by habit.
+3. **In range-based pools, look at the live band.** Check that enough money sits at and around the current price to absorb your order without jumping into an empty stretch.
+4. **Send orders that move the pool privately.** The further your trade moves the price, the more a bot can take by trading in front of it, up to your tolerance. A private relay keeps the order out of view until it lands [6].
 
-For what this same curve costs a depositor — impermanent loss, the gap between a pool position and simply holding the tokens — see [Impermanent Loss Explained](/guides/impermanent-loss-explained/). A specific price ratio, run through the [impermanent loss calculator](/tools/impermanent-loss-calculator/), shows what that reserve shift hands back to a depositor.
+For what this same curve costs a depositor — impermanent loss, how far a pool position falls behind the same tokens held outright — see [Impermanent Loss Explained](/guides/impermanent-loss-explained/). A specific price ratio, run through the [impermanent loss calculator](/tools/impermanent-loss-calculator/), shows what that reserve shift hands back to a depositor.
 
 ## Where to watch the numbers
 
@@ -136,31 +129,31 @@ For what this same curve costs a depositor — impermanent loss, the gap between
 ## When something goes wrong
 
 - **Your cost was worse than the formula predicted.** Either the balances were smaller than you assumed, or somebody traded in front of you in the same block. Read the reserves immediately before trading and use a private relay.
-- **One side of the pool keeps draining.** The market has moved somewhere else, and the pool is a one-way door for arbitrage. If the falling token looks permanently broken, take out what is left.
+- **One side of the pool keeps draining.** The market has moved somewhere else, and arbitrage keeps trading the pool toward it. If the falling token looks permanently broken, take out what is left.
 - **Fees are coming in below what the page promised.** Volume has moved to pools that quote better, so routers no longer send trades your way. Move to a design that competes on execution.
 
 ## Where to go next
 
-The same rule produces two separate costs. What a trader pays — price impact plus slippage, the gap between quote and fill — is in [Slippage and Price Impact](/guides/slippage-and-price-impact/). What a depositor absorbs is impermanent loss, the gap between the pool position and simply holding, worked out in [The Impermanent Loss Formula](/guides/impermanent-loss-formula/). For how other curves change both, see [Types of Liquidity Pools](/guides/liquidity-pool-types/).
-
-Related reading: [Market Making on AMMs](/guides/market-making-on-amms/).
+The same rule produces two separate costs. What a trader pays — price impact plus slippage, the gap between quote and fill — is in [Slippage and Price Impact](/guides/slippage-and-price-impact/). What a depositor absorbs is worked out in [The Impermanent Loss Formula](/guides/impermanent-loss-formula/), and how professionals quote on this curve is covered in [Market Making on AMMs](/guides/market-making-on-amms/). For how other curves change both, see [Types of Liquidity Pools](/guides/liquidity-pool-types/).
 
 ## References
 
-1. [Uniswap v4 Core Whitepaper (Adams et al., 2024)](https://uniswap.org/whitepaper-v4.pdf)
-2. [Uniswap v2 Core Whitepaper (Adams, 2020)](https://uniswap.org/whitepaper.pdf)
+1. [Uniswap v2 Core Whitepaper (Adams et al., 2020)](https://uniswap.org/whitepaper.pdf)
+2. [Uniswap v3 Core Whitepaper (Adams et al., 2021)](https://uniswap.org/whitepaper-v3.pdf)
 3. [Understanding Swaps on Uniswap (Uniswap Developer Documentation)](https://developers.uniswap.org/docs/get-started/concepts/traders/swaps)
 4. [Curve StableSwap Exchange: Overview (Curve Knowledge Hub)](https://docs.curve.finance/developer/amm/legacy/stableswap-overview)
-5. [Miners as intermediaries: extractable value and market manipulation in crypto and DeFi (BIS Bulletin No 58, 2022)](https://www.bis.org/publ/bisbull58.htm)
-6. [An Analysis of Uniswap Markets (Angeris et al., 2019)](https://arxiv.org/abs/1911.03380)
-7. [Constant Function Market Makers: Multi-Asset Trades via Convex Optimization (Angeris et al., Stanford)](https://web.stanford.edu/~boyd/papers/pdf/cfmm.pdf)
-8. [SoK: Decentralized Exchanges (DEX) with Automated Market Maker (AMM) Protocols (Xu et al., 2021)](https://arxiv.org/abs/2103.12732)
+5. [Concentrated Liquidity (LFJ Developer Docs)](https://developers.lfj.gg/concepts/concentrated-liquidity)
+6. [Maximal extractable value (MEV) (ethereum.org)](https://ethereum.org/en/developers/docs/mev/)
+7. [An Analysis of Uniswap Markets (Angeris et al., 2019)](https://arxiv.org/abs/1911.03380)
+8. [Constant Function Market Makers: Multi-asset Trades via Convex Optimization (Angeris et al., Stanford)](https://web.stanford.edu/~boyd/papers/pdf/cfmm.pdf)
+9. [SoK: Decentralized Exchanges (DEX) with Automated Market Maker (AMM) Protocols (Xu et al., 2021)](https://arxiv.org/abs/2103.12732)
 
-[1]: https://uniswap.org/whitepaper-v4.pdf "Uniswap v4 Core Whitepaper"
-[2]: https://uniswap.org/whitepaper.pdf "Uniswap v2 Core Whitepaper"
+[1]: https://uniswap.org/whitepaper.pdf "Uniswap v2 Core Whitepaper"
+[2]: https://uniswap.org/whitepaper-v3.pdf "Uniswap v3 Core Whitepaper"
 [3]: https://developers.uniswap.org/docs/get-started/concepts/traders/swaps "Understanding Swaps on Uniswap"
 [4]: https://docs.curve.finance/developer/amm/legacy/stableswap-overview "Curve StableSwap Exchange: Overview"
-[5]: https://www.bis.org/publ/bisbull58.htm "Miners as intermediaries: extractable value and market manipulation in crypto and DeFi (BIS Bulletin No 58, 2022)"
-[6]: https://arxiv.org/abs/1911.03380 "An Analysis of Uniswap Markets (Angeris et al., 2019)"
-[7]: https://web.stanford.edu/~boyd/papers/pdf/cfmm.pdf "Constant Function Market Makers: Multi-Asset Trades via Convex Optimization (Angeris et al., Stanford)"
-[8]: https://arxiv.org/abs/2103.12732 "SoK: Decentralized Exchanges (DEX) with Automated Market Maker (AMM) Protocols (Xu et al., 2021)"
+[5]: https://developers.lfj.gg/concepts/concentrated-liquidity "Concentrated Liquidity (LFJ Developer Docs)"
+[6]: https://ethereum.org/en/developers/docs/mev/ "Maximal extractable value (MEV)"
+[7]: https://arxiv.org/abs/1911.03380 "An Analysis of Uniswap Markets (Angeris et al., 2019)"
+[8]: https://web.stanford.edu/~boyd/papers/pdf/cfmm.pdf "Constant Function Market Makers: Multi-asset Trades via Convex Optimization (Angeris et al., Stanford)"
+[9]: https://arxiv.org/abs/2103.12732 "SoK: Decentralized Exchanges (DEX) with Automated Market Maker (AMM) Protocols (Xu et al., 2021)"

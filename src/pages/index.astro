@@ -3,7 +3,8 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import ArticleCard from '../components/ArticleCard.astro';
 import { articles, articleBySlug, categories, categoryArticles } from '../lib/articles';
 import { toolCatalog } from '../lib/tools';
-const latest = articles.slice(0, 6);
+const reviewedOn = (article: (typeof articles)[number]) => article.lastReviewed ?? article.date;
+const latest = [...articles].sort((a, b) => reviewedOn(b).localeCompare(reviewedOn(a))).slice(0, 6);
 const tools = [
   { ...toolCatalog.impermanentLoss, eyebrow: 'Divergence against holding' },
   { ...toolCatalog.lpProfit, eyebrow: 'Net result on one ledger' },
@@ -185,7 +186,7 @@ const markerY = (10 + ilAt(1.5) / -0.2 * 80).toFixed(1);
 
   <section class="section section--paper">
     <div class="container">
-      <div class="section-head"><div><div class="kicker">Recently reviewed</div><h2 class="section-title">The latest additions to the library.</h2></div><a class="text-link" href="/guides/">Browse all {articles.length} guides</a></div>
+      <div class="section-head"><div><div class="kicker">Recently reviewed</div><h2 class="section-title">The guides most recently checked against their sources.</h2></div><a class="text-link" href="/guides/">Browse all {articles.length} guides</a></div>
       <div class="article-grid">{latest.map((article) => <ArticleCard article={article} />)}</div>
     </div>
   </section>

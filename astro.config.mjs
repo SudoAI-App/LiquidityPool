@@ -1,5 +1,6 @@
 import { defineConfig } from 'astro/config';
 import { satteri } from '@astrojs/markdown-satteri';
+import { satteriCitations } from './src/lib/satteri-citations.mjs';
 import { satteriKatex } from './src/lib/satteri-katex.mjs';
 
 export default defineConfig({
@@ -10,7 +11,7 @@ export default defineConfig({
   markdown: {
     processor: satteri({
       features: { math: true },
-      mdastPlugins: [satteriKatex]
+      mdastPlugins: [satteriKatex, satteriCitations]
     }),
     shikiConfig: { theme: 'github-dark', wrap: false }
   },

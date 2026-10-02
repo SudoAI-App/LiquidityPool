@@ -3,9 +3,9 @@ title: "Lending Pool vs Liquidity Pool: Two Different Instruments"
 description: "Same word, different thing. One pays you for time and keeps your tokens. The other pays you for trades and changes them. Plus a worked rate comparison."
 category: "Foundations"
 date: 2026-09-10
-lastReviewed: "2026-09-12"
+lastReviewed: "2026-10-02"
 author: "LiquidityPools Editorial Team"
-readTime: "6 min read"
+readTime: "7 min read"
 primaryQuery: "lending pool vs liquidity pool"
 keywords: "lending pool vs liquidity pool, Aave liquidity pool, DeFi lending vs liquidity provision, utilisation curve, supply APY, liquidity pool comparison"
 featured: false
@@ -26,23 +26,23 @@ Both are called pools. Both take deposits. Both quote an annual percentage. Unde
 
 One lends your token to somebody who pays interest. The other uses two of your tokens to quote prices for strangers.
 
-This guide separates them on the three things that matter: where the money comes from, what happens to your balance, and what stops you getting out.
+This guide separates them on three questions: where the money comes from, what happens to your balance, and what stops you getting out. By the end you can tell which one fits what you need to hold a year from now.
 
 <figure class="article-figure">
   <img src="/images/guides/lending-pool-vs-liquidity-pool.webp" alt="Table comparing lending pools and liquidity pools across assets supplied, revenue, rate setting, principal risk, withdrawal and quantity held." width="1600" height="1067" loading="lazy" decoding="async" />
   <figcaption>Same word, different instrument: what each pool type actually does with a deposit. <span class="article-figure__credit">Original editorial illustration by LiquidityPools.app.</span></figcaption>
 </figure>
 
-> **Editor's note:**
+> **Key point:**
 > The tell is what happens when nothing happens. A lending deposit ticks along during a flat week. A liquidity position in a flat week with no trading earns exactly nothing. One is paid for time, the other for flow. That should drive the allocation before anybody compares a rate.
 
 ## Where the money comes from
 
-**A lending pool** matches you with borrowers. They post collateral, take a loan, and pay interest. The rate is set by how much of the supply is currently borrowed, usually with a sharp increase past a threshold to pull the pool back toward liquidity.
+**A lending pool** matches you with borrowers. They post collateral worth more than the loan, borrow, and pay interest [1]. The rate is set by how much of the supply is currently borrowed, a ratio called utilisation [2]. Aave, for example, uses two slopes: a gentle one up to a target utilisation and a steep one above it, to pull the pool back toward spare cash [3].
 
-**A liquidity pool** holds two tokens and prices trades from them. Traders pay a fee per swap, which goes to whoever was live at that price. Your income depends on volume, not on the calendar. See [Liquidity Provider Fees](/guides/liquidity-provider-fees/).
+**A liquidity pool** holds two tokens and prices trades from them. Traders pay a fee per swap, which goes to the providers whose liquidity covered that price [4]. Your income depends on volume, not on the calendar. See [Liquidity Provider Fees](/guides/liquidity-provider-fees/).
 
-That single difference explains most of the rest. Lending income is smooth and rate-like. Pool income is lumpy, clusters around volatile stretches, and is zero when the pair is quiet.
+That single difference explains most of the rest. Lending income accrues like interest. Pool income is lumpy, tends to cluster in busy stretches, and is zero when nobody trades the pair.
 
 ## What happens to your balance
 
@@ -54,9 +54,9 @@ That single difference explains most of the rest. Lending income is smooth and r
 | After a price move | Value follows the token | Value follows the pair, minus the divergence |
 | What to compare against | Holding the token unlent | Holding both tokens untouched |
 
-The third row is the one that surprises people. Lend ETH through a 40% drawdown and you still have ETH, slightly more of it. Pool ETH through the same drawdown and your mix has shifted, because the pool bought ETH the whole way down. You finish with more ETH and fewer dollars than you put in.
+The fourth row is the one that surprises people. Lend ETH through a 40% drawdown and you still have ETH, slightly more of it. Pool ETH through the same drawdown and your mix has shifted, because the pool bought ETH the whole way down [5]. You finish with more ETH and fewer dollars than you put in.
 
-Here is that drawdown in numbers. You start with \$10,000 when ETH is \$2,000, and ETH falls 40% to \$1,200.
+Here is that drawdown in numbers. You start with \$10,000 when ETH is \$2,000, and ETH falls 40% to \$1,200. The lending deposit earns 2% over the period. The pool is a full-range constant-product pool, shown before any fee income.
 
 | | Lend 5 ETH at 2% | Pool 2.5 ETH and \$5,000 |
 | :--- | ---: | ---: |
@@ -65,26 +65,30 @@ Here is that drawdown in numbers. You start with \$10,000 when ETH is \$2,000, a
 | The right benchmark | 5 ETH untouched, \$6,000 | The same basket untouched, \$8,000 |
 | Against that benchmark | +\$120 | -\$254 |
 
-The pool lost less in dollars, but only because half of it started in dollars. Against its own benchmark it is behind, and the lending deposit is ahead. That gap is impermanent loss — the shortfall between the pool position and simply keeping the tokens. See [The Impermanent Loss Formula](/guides/impermanent-loss-formula/). The full comparison for a pool position — fees, divergence and gas against holding the basket — is what the [LP profit and return calculator](/tools/lp-profit-calculator/) works out.
+The pool lost less in dollars, but only because half of it started in dollars. Against its own benchmark it is \$254 behind, and the lending deposit is \$120 ahead. The pool's gap is impermanent loss — what a pool position gives up against keeping the same tokens in your wallet. Fees earned over the period would offset some or all of it.
+
+See [The Impermanent Loss Formula](/guides/impermanent-loss-formula/). The full comparison for a pool position — fees, divergence and gas against holding the basket — is what the [LP profit and return calculator](/tools/lp-profit-calculator/) works out.
 
 ## How each one breaks
 
 | Lending goes wrong when | A pool goes wrong when |
 | :--- | :--- |
-| A liquidation does not cover the loan, and suppliers eat the shortfall | The two tokens move apart and the pool sold the winner |
-| A price feed is wrong, so loans get made that cannot be liquidated | Faster traders pick off a quote that is a block behind |
-| Liquidators cannot clear fast enough during a sharp move | A peg breaks and the curve fills you with the broken token |
-| Everything is borrowed, so you cannot withdraw | Your range is out of range and earning nothing |
+| A liquidation does not cover the loan, and suppliers absorb the shortfall | The two tokens move apart and the pool sold the winner |
+| A price feed is wrong or manipulated, so loans get made that cannot be liquidated | Faster traders pick off a quote that is a block behind |
+| Liquidators hold back during a sharp move, because the collateral may fall before they can sell it | A peg breaks and the curve fills you with the broken token |
+| Everything is borrowed, so you cannot withdraw | The price leaves your range and you earn nothing |
 
-Both lists are real. Neither is a subset of the other, which is why a portfolio holding both is genuinely diversified rather than just spread around. The pool-side bleed is loss-versus-rebalancing — what a pool pays out for quoting a block late — covered in [Loss-Versus-Rebalancing](/guides/loss-versus-rebalancing/).
+The lending column comes from how collateral and liquidation work [1] [6], and price-feed attacks are a documented weakness across DeFi [7]. Neither list is a subset of the other, so holding both spreads you across different failures. A market-wide crash can still hit both at once [6].
+
+The pool-side cost of trading against faster traders is loss-versus-rebalancing — the value arbitrageurs take because the pool's quote lags the market [8] — covered in [Loss-Versus-Rebalancing](/guides/loss-versus-rebalancing/).
 
 ## Getting out is not the same
 
-This is the operational difference people miss most.
+This is the operational difference that is easiest to miss.
 
-**A pool position exits in any block.** What varies is what you get back and at what price, not whether you can. The contract always returns your share of what it holds.
+**A pool position exits in any block.** What varies is what you get back and at what price, not whether you can. A standard pool contract returns your share of whatever it holds when you withdraw [5].
 
-**A lending deposit exits only if somebody has not borrowed it.** At high utilisation you are queued behind repayments. Rates rise to attract new supply and push borrowers out, which usually resolves it, and "usually" is doing real work in that sentence during a crisis.
+**A lending deposit exits only if somebody has not borrowed it.** At high utilisation you wait for repayments or new deposits. Rates rise steeply to attract supply and push borrowers out [3], which usually resolves it. A study of Compound, Aave and dYdX found that stretches where most funds were lent out and unavailable to withdraw were common [2].
 
 Anyone treating a lending deposit as cash should test that assumption at the utilisation levels the market actually reaches, not the average one.
 
@@ -96,9 +100,9 @@ A lending rate and a pool yield are not comparable as printed. Five steps first:
 2. **Subtract expected divergence** from the pool figure, over your intended horizon.
 3. **Subtract gas** for how often each needs touching.
 4. **Haircut any part funded by token issuance**, at prices you could actually realise.
-5. **Price the certainty of withdrawal.** It is worth something and almost nobody counts it.
+5. **Price the certainty of withdrawal.** It is worth something, and it is easy to leave out.
 
-Work it. A lending market quotes 6.4% compounded on USDC. A stablecoin pool quotes 9.1% simple, of which 3.0 points are token rewards.
+Work it. A lending market quotes a 6.4% APY on USDC, compounded daily. A stablecoin pool quotes 9.1% simple, of which 3.0 points are token rewards. Assume you can realise about two-thirds of the reward value when you sell.
 
 | Step | Lending | The pool |
 | :--- | ---: | ---: |
@@ -108,18 +112,9 @@ Work it. A lending market quotes 6.4% compounded on USDC. A stablecoin pool quot
 | What it is underwriting | Bad debt, and being gated at high utilisation | Both tokens holding their peg |
 | Gas on \$25,000 for a quarter | Immaterial | Immaterial |
 
-The ranking holds. The pool pays more, and it pays more precisely because it is underwriting a different and less familiar tail.
+The ranking holds. The pool pays about 1.9 points more, and it pays more because it is underwriting a different tail: two stablecoins holding their peg.
 
-That is the right conclusion, and it is very different from concluding the pool is simply the better product.
-
-## What people get wrong comparing them
-
-| What people assume | What actually happens |
-| :--- | :--- |
-| Both are pools, so compare the rates | One keeps your tokens, one changes them. Different instruments |
-| Lending has no equivalent of divergence | True. It has bad debt instead, and that is a total-loss tail |
-| A lending deposit is like cash | Only while somebody has not borrowed it |
-| A pool is riskier because it is more complicated | Different risk, not more. Lending concentrates in collateral and liquidations |
+That is a different conclusion from "the pool is the better product". The extra yield is payment for a risk the lending deposit does not carry, and the lending deposit carries bad-debt and withdrawal risk the pool does not.
 
 ## When each one fits
 
@@ -140,22 +135,24 @@ A third structure combines them: supplying a staked-ETH receipt to a lending mar
 5. **Ask whether you need a fixed quantity of one token.** If yes, the choice is already made.
 6. **Size each one against its own failure**, not against a shared yield figure.
 
-These are complements. The error is not picking one over the other. It is failing to notice they answer different questions.
+These are complements. Lending answers "how do I earn on a fixed amount of one token?" A pool answers "how do I earn from trading in a pair I am happy to hold in any mix?" Pick the one whose question matches yours.
 
 ## References
 
-1. [Uniswap v3 Core Whitepaper (Adams et al., 2021)](https://uniswap.org/whitepaper-v3.pdf)
-2. [What are the risks when providing liquidity? (Uniswap Labs)](https://support.uniswap.org/hc/en-us/articles/37113550065549-What-are-the-risks-when-providing-liquidity)
-3. [Miners as intermediaries: extractable value and market manipulation in crypto and DeFi (BIS Bulletin No 58, 2022)](https://www.bis.org/publ/bisbull58.htm)
-4. [DeFi lending: intermediation without information? (Bank for International Settlements, 2022)](https://www.bis.org/publ/bisbull57.htm)
-5. [DeFi Protocols for Loanable Funds (Gudgeon et al., 2020)](https://arxiv.org/abs/2006.13922)
-6. [Aave Protocol Documentation](https://aave.com/docs)
-7. [Global Financial Stability Report, April 2022 (International Monetary Fund)](https://www.imf.org/en/Publications/GFSR/Issues/2022/04/19/global-financial-stability-report-april-2022)
+1. [DeFi lending: intermediation without information? (BIS Bulletin No 57, 2022)](https://www.bis.org/publ/bisbull57.htm)
+2. [DeFi Protocols for Loanable Funds: Interest Rates, Liquidity and Market Efficiency (Gudgeon et al., 2020)](https://arxiv.org/abs/2006.13922)
+3. [Interest Rate Strategy (Aave Protocol Documentation)](https://aave.com/docs/aave-v3/smart-contracts/interest-rate-strategy)
+4. [Uniswap v3 Core (Adams et al., 2021)](https://uniswap.org/whitepaper-v3.pdf)
+5. [Uniswap v2 Core (Adams et al., 2020)](https://uniswap.org/whitepaper.pdf)
+6. [DeFi risks and the decentralisation illusion (BIS Quarterly Review, December 2021)](https://www.bis.org/publ/qtrpdf/r_qt2112b.htm)
+7. [SoK: Decentralized Finance (DeFi) (Werner et al., 2021)](https://arxiv.org/abs/2101.08778)
+8. [Automated Market Making and Loss-Versus-Rebalancing (Milionis et al., 2022)](https://arxiv.org/abs/2208.06046)
 
-[1]: https://uniswap.org/whitepaper-v3.pdf "Uniswap v3 Core Whitepaper"
-[2]: https://support.uniswap.org/hc/en-us/articles/37113550065549-What-are-the-risks-when-providing-liquidity "What are the risks when providing liquidity?"
-[3]: https://www.bis.org/publ/bisbull58.htm "Miners as intermediaries: extractable value and market manipulation in crypto and DeFi (BIS Bulletin No 58, 2022)"
-[4]: https://www.bis.org/publ/bisbull57.htm "DeFi lending: intermediation without information?"
-[5]: https://arxiv.org/abs/2006.13922 "DeFi Protocols for Loanable Funds (Gudgeon et al., 2020)"
-[6]: https://aave.com/docs "Aave Protocol Documentation"
-[7]: https://www.imf.org/en/Publications/GFSR/Issues/2022/04/19/global-financial-stability-report-april-2022 "Global Financial Stability Report, April 2022 (International Monetary Fund)"
+[1]: https://www.bis.org/publ/bisbull57.htm "DeFi lending: intermediation without information?"
+[2]: https://arxiv.org/abs/2006.13922 "DeFi Protocols for Loanable Funds: Interest Rates, Liquidity and Market Efficiency"
+[3]: https://aave.com/docs/aave-v3/smart-contracts/interest-rate-strategy "Interest Rate Strategy"
+[4]: https://uniswap.org/whitepaper-v3.pdf "Uniswap v3 Core"
+[5]: https://uniswap.org/whitepaper.pdf "Uniswap v2 Core"
+[6]: https://www.bis.org/publ/qtrpdf/r_qt2112b.htm "DeFi risks and the decentralisation illusion"
+[7]: https://arxiv.org/abs/2101.08778 "SoK: Decentralized Finance (DeFi)"
+[8]: https://arxiv.org/abs/2208.06046 "Automated Market Making and Loss-Versus-Rebalancing"

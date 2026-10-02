@@ -135,3 +135,15 @@ test('robots and analytics privacy invariants remain present, and guide rail lan
   assert.match(guide, /Data sources we use/);
   assert.doesNotMatch(guide, /Recommended research tools/);
 });
+
+test('every guide citation renders as a bracketed superscript that lands on an anchored source', () => {
+  for (const entry of readdirSync(new URL('./guides/', dist), { withFileTypes: true }).filter((item) => item.isDirectory())) {
+    const html = htmlFor(`/guides/${entry.name}/`);
+    const cited = [...html.matchAll(/<sup class="cite"><a href="#ref-(\d+)"[^>]*>\[\1\]<\/a><\/sup>/g)].map((match) => match[1]);
+    const anchors = new Set([...html.matchAll(/<li id="ref-(\d+)">/g)].map((match) => match[1]));
+    assert.ok(cited.length > 0, `${entry.name} renders no citations`);
+    assert.ok(anchors.size >= 6, `${entry.name} has ${anchors.size} anchored sources`);
+    for (const n of cited) assert.ok(anchors.has(n), `${entry.name} cites [${n}] with no matching source`);
+    assert.doesNotMatch(html, /\s<sup class="cite">/, `${entry.name} leaves a space before a citation`);
+  }
+});

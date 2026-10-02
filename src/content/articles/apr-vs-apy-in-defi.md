@@ -3,9 +3,9 @@ title: "APR vs APY in DeFi: How to Read a Pool Yield Quote"
 description: "Two pools quoting different numbers can pay exactly the same. How to convert any quote to a comparable figure, and the six costs no headline rate includes."
 category: "Foundations"
 date: 2026-09-10
-lastReviewed: "2026-09-12"
+lastReviewed: "2026-10-02"
 author: "LiquidityPools Editorial Team"
-readTime: "6 min read"
+readTime: "8 min read"
 primaryQuery: "APR vs APY"
 keywords: "APR vs APY, pool APR vs APY, what is the difference between APR and APY in DeFi, real yield liquidity pools, liquidity pool APY calculator, annualised yield"
 featured: false
@@ -22,19 +22,21 @@ faq:
 
 A pool advertising 22% and a pool advertising 20% can pay you exactly the same money. One assumed you would compound daily, the other assumed nothing.
 
-Neither number tells you what you will actually make, because both are yesterday's figures projected forward with no adjustment for what you are taking on.
+Neither number tells you what you will actually make. Both are recent results projected forward, with no adjustment for what you are taking on.
 
-Reading these properly is mechanical and takes a few minutes. It is the cheapest risk control available to anyone supplying a pool.
+Reading these properly is mechanical and takes a few minutes. By the end you can convert any quote to a common basis, strip out what it leaves out, and compare two pools on the same footing.
 
 <figure class="article-figure">
   <img src="/images/guides/apr-vs-apy-in-defi.webp" alt="Comparison of the same twenty percent APR under different compounding frequencies beside a list of costs the headline rate omits." width="1600" height="1067" loading="lazy" decoding="async" />
   <figcaption>The same underlying rate under five compounding conventions, and five of the costs that no headline rate includes. <span class="article-figure__credit">Original editorial illustration by LiquidityPools.app.</span></figcaption>
 </figure>
 
-> **Editor's note:**
-> Start with the denominator and the measurement window, not the yield headline. A 40% figure computed from one busy day is not a forecast, especially when the proposed deposit would double the pool's liquidity and dilute each provider's share of fees.
+> **Key point:**
+> Start with the denominator and the measurement window, not the yield headline. A 40% figure computed from one busy day is not a forecast, especially when your deposit would double the pool's liquidity and halve each provider's share of the fees.
 
 ## Converting between the two
+
+APR, the annual percentage rate, is a simple rate with no compounding. APY, the annual percentage yield, assumes you reinvest the earnings a set number of times a year. The more often you reinvest, the more the two numbers drift apart.
 
 $$
 \text{APY} = \left(1 + \frac{\text{APR}}{n}\right)^n - 1
@@ -57,13 +59,13 @@ For a 20% simple rate:
 | Daily | 22.13% |
 | Continuously | 22.14% |
 
-Two points of difference at this level, and it widens fast. A 100% simple rate becomes 171% if compounded daily. So any comparison between a pool quoting one convention and a pool quoting the other has to convert first.
+That is about two points of difference at this level, and it widens fast. A 100% simple rate becomes 171% if compounded daily. So any comparison between a pool quoting one convention and a pool quoting the other has to convert first.
 
-One thing the maths hides. Compounding in a pool is not automatic. In range-based pools your fees sit as a claim, and turning them back into liquidity costs a transaction. So a quoted compounded rate assumes you will actually do those harvests, which only makes sense above a certain position size.
+Compounding in a pool is not always automatic. In a full-range pool such as Uniswap v2, fees are added to the pool and compound on their own [7]. In range-based pools your fees are stored separately and earn nothing until you collect them and add them back, which costs a transaction [1]. A quoted compounded rate on such a pool assumes you will actually do those harvests.
 
 ## When compounding is worth the gas
 
-Compounding only pays if the extra yield beats what the harvests cost you. The arithmetic is short enough to do before you deposit.
+Compounding only pays if the extra yield beats what the harvests cost you. On Ethereum, every transaction pays gas — the units of work it uses times a price per unit — whether it succeeds or not, and that price rises when the network is busy [2]. The arithmetic is short enough to do before you deposit.
 
 Take \$5,000 at a 20% simple rate.
 
@@ -73,11 +75,13 @@ Take \$5,000 at a 20% simple rate.
 | Weekly | \$105 | 52 | \$2.01 |
 | Daily | \$107 | 365 | \$0.29 |
 
-Read the right-hand column against what a harvest actually costs you on your chain. On a busy mainnet day a single claim-and-redeposit can cost more than the whole year's compounding benefit on a position this size.
+Read the right-hand column against what a harvest costs on your chain. A claim-and-redeposit is two contract actions. On Ethereum mainnet that can easily cost more than \$0.29 even on a quiet day, so daily compounding on this position would lose money. On a low-cost layer-2 network the break-even may be easy to clear.
 
-The pattern holds at any size. The benefit of compounding grows with your position, but the gas per harvest does not. So a small position should harvest rarely or not at all, and a quote that assumes daily compounding on a small deposit describes income you will never collect.
+The pattern holds at any size. The benefit of compounding grows with your position, but the gas per harvest does not [2]. So a small position should harvest rarely, and a quote that assumes daily compounding on a small deposit describes income you will not collect.
 
 ## Where the number comes from
+
+Most pool rates are trailing fees divided by the money that earned them, scaled up to a year.
 
 $$
 \text{APR} = \frac{\text{fees over a window}}{\text{liquidity supplying them}} \times \frac{365}{\text{days in the window}}
@@ -85,104 +89,98 @@ $$
 
 Where:
 
-- **Fees over a window** is what the pool collected in that period.
-- **Liquidity supplying them** is the denominator, and it varies by interface.
+- **Fees over a window** is what providers collected in that period, after any protocol fee. Since a December 2025 governance vote, Uniswap keeps 0.05 points of the 0.30% fee on every v2 pool and a share on selected v3 pools [7].
+- **Liquidity supplying them** is the denominator, which varies by interface.
+- **Days in the window** is the length of the sample, from one day to a month or more.
 
-Three things follow, and all three can flip the answer.
+Three things follow, and all three can change the answer.
 
-- **The window.** A 24-hour window during a busy day produces a number that will not repeat. Thirty days smooths it but lags a change in conditions.
-- **The denominator.** Some interfaces divide by the pool's total, some by the money actually working near the price. On a range-based pool those differ by an order of magnitude, and only the second is honest.
-- **You.** Your deposit joins the denominator. If you are large relative to the band, the rate you actually get is lower than the one you saw.
+- **The window.** A 24-hour window during a busy day produces a number that may not repeat. Thirty days smooths it but lags a change in conditions.
+- **The denominator.** One interface may divide by the pool's total, another by only the money working near the price. In a range-based pool, only liquidity covering the current price earns fees [1], so the two can differ by an order of magnitude. The second tells you what in-range money earned. The first tells you what the average deposit earned.
+- **You.** Your deposit joins the denominator. If you are large relative to the liquidity near the price, the rate you get is lower than the one you saw.
 
 See [Onchain Liquidity Metrics](/guides/onchain-liquidity-metrics/) and [TVL Explained](/guides/tvl-explained/).
 
 ## Six costs no headline rate includes
 
-- **Impermanent loss** — the gap between the pool position and simply holding the two tokens. On a volatile pair this routinely exceeds the fee income over the same window. See [The Impermanent Loss Formula](/guides/impermanent-loss-formula/).
-- **Time out of range.** The income stops while your capital stays committed.
-- **Gas.** Entry, every harvest, every rebalance, exit.
+- **Impermanent loss** — what a pool position gives up against holding the two tokens. On volatile pairs it can exceed the fee income. A study of 17 large Uniswap v3 pools found providers lost \$260.1 million against holding while earning \$199.3 million in fees [5].
+- **Time out of range.** The income stops while your capital stays committed [1].
+- **Gas.** Entry, every harvest, every rebalance, exit [2].
 - **Reward tokens losing value.** If part of the rate is paid in a token being continuously issued, what you realise is lower than what accrued.
 - **Swapping into the right ratio**, especially for single-asset deposits routed through a converter.
 - **Exit conditions** imposed by a vault or, on newer pools, by attached code.
 
-An honest comparison expresses everything as a net result over a stated period, against a stated benchmark. For a two-token position, that benchmark is holding the two tokens.
+An honest comparison expresses everything as a net result over a stated period, against a stated benchmark. For a two-token position, that benchmark is holding the two tokens. Studies of real Uniswap v3 positions show why: outcomes vary widely, and the high returns come with more risk and active management [4].
 
-Two footnotes worth having.
+Two further points are worth having.
 
-**Auto-compounding vaults** make the compounding assumption real rather than notional, because they actually do the harvesting. In exchange you add a contract to the trust chain, a performance fee, and a schedule somebody else chose. Read the realised harvest frequency rather than the advertised one, because gas conditions often push the real cadence far below the schedule used to compute the quote.
+**Auto-compounding vaults** make the compounding assumption real rather than notional, because they do the harvesting for you [3]. In exchange you add a contract to the trust chain, a performance fee, and a schedule somebody else chose [3]. Read the realised harvest frequency rather than the advertised one, because high gas can push the real cadence below the schedule used to compute the quote.
 
-**Do not compare a stablecoin rate with a volatile-pair rate**, even after converting. The first is close to a cash return with a tail risk attached to a peg. The second is a bet on volatility with an income leg. Putting them on the same axis is the most common mistake in pool selection.
+**Do not compare a stablecoin rate with a volatile-pair rate**, even after converting. The first is close to a cash return with a tail risk attached to a peg. The second is a bet on volatility with an income leg. Putting them on the same axis misprices both.
 
 ## Real fees against printed tokens
 
-Two components, behaving completely differently, and they should never be summed without labels.
+Two components behave differently, and they should never be summed without labels.
 
 | | Fee income | Token issuance |
 | :--- | :--- | :--- |
 | Who funds it | Traders paying the pool | New supply, printed |
 | Does it last | As long as people trade | Until the programme ends |
-| What it depends on | The pool's own assets | Whether anyone will buy the token |
+| What it depends on | The pool's own trading | Whether anyone will buy the token |
 | Who it dilutes | Nobody | Everybody already holding |
-| What you actually get | Collect and keep, or sell | Whatever the market absorbs when you sell |
+| What you actually get | Collect and keep, or sell | Whatever the market pays when you sell |
+
+On Curve, for example, some pools pay CRV rewards on top of trading fees, and you only earn them by staking your LP tokens in a separate gauge contract [6]. Yield aggregators treat these reward tokens as a separate source of yield from trading fees, with their own risks [3].
 
 A pool quoting 45% where 40 points come from issuance is a different instrument from one quoting 12% entirely from fees. See [Liquidity Mining Explained](/guides/liquidity-mining-explained/) and [Yield Farming Explained](/guides/yield-farming-explained/).
 
 ## Normalising two competing quotes
 
-Pool A quotes 18%, compounded daily, entirely from fees. Pool B quotes 26% simple, of which 17 points are a token that has fallen about 4% a month.
+Pool A quotes 18%, compounded daily, entirely from fees. Pool B quotes 26% simple, of which 17 points are paid in a token that has fallen about 4% a month.
+
+Two assumptions make the comparison concrete. First, you sell reward tokens as they arrive and the token keeps falling at the same pace, so over a year you realise about 79% of their quoted value. Second, Pool A's pair costs about 2 points a year in divergence against holding. Pool B's pair is twice as volatile, and divergence grows with the square of volatility, so about 8 points.
 
 | Step | Pool A | Pool B |
 | :--- | ---: | ---: |
 | Convert to a common basis | 16.6% simple | 26% simple |
-| Haircut the token portion | unchanged | 17 points becomes about 11 |
-| Compare like with like | 16.6% | about 20% |
-| Subtract divergence for the pair | small | four times larger, if twice as volatile |
-| Subtract the weekly harvest and sale costs | none | material on a small position |
+| Haircut the token portion | unchanged | 17 points becomes about 13.4 |
+| Compare like with like | 16.6% | about 22.4% |
+| Subtract divergence for the pair | about 14.6% | about 14.4% |
+| Subtract harvest and sale costs | none | material on a small position |
 
-The ranking flips somewhere between the first row and the last. That is exactly why the exercise is worth doing.
-
-## What people get wrong reading a quote
-
-| What people assume | What actually happens |
-| :--- | :--- |
-| A bigger number means more money | Two conventions can describe the same income. Convert first |
-| The rate will continue | It is a trailing window, extrapolated. It will not |
-| The rate is mine | Your deposit dilutes it the moment it lands |
-| All yield is the same | Fees continue. Issuance stops, on a schedule everybody else knows |
+Pool B looks six points better after the first three rows. After divergence the two are level, and Pool B's harvest and sale costs put it behind. Change the assumptions and the answer moves, which is the point: the headline alone cannot rank them.
 
 ## The checklist
 
 1. **Is it simple or compounded**, and at what frequency?
 2. **What window produced it**, and was that window representative?
-3. **What is the denominator**, the pool total or the money actually working?
+3. **What is the denominator**, the pool total or the money working near the price?
 4. **Split it** into fees and issuance.
 5. **Estimate the divergence** for this pair over the same window.
 6. **Add your own deposit** to the denominator and recompute.
 7. **Subtract gas** for the harvest cadence the quote assumed.
 8. **Express it net, against holding the basket**, and only then compare.
 
-These numbers are not dishonest by design. They are summaries that happen to discard exactly the information you need. Putting it back takes a few minutes and changes the decision more often than not.
+These numbers are not dishonest by design. They are summaries that happen to discard the information you need, and putting it back takes a few minutes.
 
 ## Where to go next
 
-Rebuild any quoted rate from its inputs with the [liquidity pool fee and APR calculator](/tools/liquidity-pool-calculator/#feeTier=0.3&capital=10000&volume=5000000), then subtract what it leaves out with the [impermanent loss calculator](/tools/impermanent-loss-calculator/#mode=weighted&a0=2000&a1=2500&capital=10000). For the pool mechanics underneath any quoted rate, see [Liquidity Pools for Beginners](/guides/liquidity-pools-for-beginners/).
-
-Related reading: [Liquidity Pool vs Staking](/guides/liquidity-pool-vs-staking/) and [Liquidity Mining vs Yield Farming](/guides/liquidity-mining-vs-yield-farming/).
+Rebuild any quoted rate from its inputs with the [liquidity pool fee and APR calculator](/tools/liquidity-pool-calculator/#feeTier=0.3&capital=10000&volume=5000000), then subtract what it leaves out with the [impermanent loss calculator](/tools/impermanent-loss-calculator/#mode=weighted&a0=2000&a1=2500&capital=10000). If you are weighing a pool against other single-token yields, [Liquidity Pool vs Staking](/guides/liquidity-pool-vs-staking/) and [Liquidity Mining vs Yield Farming](/guides/liquidity-mining-vs-yield-farming/) separate the instruments, and [Liquidity Pools for Beginners](/guides/liquidity-pools-for-beginners/) covers the mechanics underneath any quoted rate.
 
 ## References
 
-1. [Uniswap v3 Core Whitepaper (Adams et al., 2021)](https://uniswap.org/whitepaper-v3.pdf)
-2. [What are the risks when providing liquidity? (Uniswap Labs)](https://support.uniswap.org/hc/en-us/articles/37113550065549-What-are-the-risks-when-providing-liquidity)
-3. [Miners as intermediaries: extractable value and market manipulation in crypto and DeFi (BIS Bulletin No 58, 2022)](https://www.bis.org/publ/bisbull58.htm)
-4. [DeFiLlama Yields methodology](https://defillama.com/yields)
-5. [SoK: Yield Aggregators in DeFi (Cousaert et al., 2021)](https://arxiv.org/abs/2105.13891)
-6. [Global Financial Stability Report, April 2022 (International Monetary Fund)](https://www.imf.org/en/Publications/GFSR/Issues/2022/04/19/global-financial-stability-report-april-2022)
-7. [Risks and Returns of Uniswap V3 Liquidity Providers (Heimbach et al., 2022)](https://arxiv.org/abs/2205.08904)
+1. [Uniswap v3 Core (Adams et al., 2021)](https://uniswap.org/whitepaper-v3.pdf)
+2. [Ethereum gas and fees: technical overview (ethereum.org)](https://ethereum.org/en/developers/docs/gas/)
+3. [SoK: Yield Aggregators in DeFi (Cousaert et al., 2021)](https://arxiv.org/abs/2105.13891)
+4. [Risks and Returns of Uniswap V3 Liquidity Providers (Heimbach et al., 2022)](https://arxiv.org/abs/2205.08904)
+5. [Impermanent Loss in Uniswap v3 (Loesch et al., 2021)](https://arxiv.org/abs/2111.09192)
+6. [Providing Liquidity in Pools (Curve Finance Documentation)](https://docs.curve.finance/user/yield/lp)
+7. [Fees (Uniswap Developers Documentation)](https://developers.uniswap.org/docs/get-started/concepts/fees)
 
-[1]: https://uniswap.org/whitepaper-v3.pdf "Uniswap v3 Core Whitepaper"
-[2]: https://support.uniswap.org/hc/en-us/articles/37113550065549-What-are-the-risks-when-providing-liquidity "What are the risks when providing liquidity?"
-[3]: https://www.bis.org/publ/bisbull58.htm "Miners as intermediaries: extractable value and market manipulation in crypto and DeFi (BIS Bulletin No 58, 2022)"
-[4]: https://defillama.com/yields "DeFiLlama Yields"
-[5]: https://arxiv.org/abs/2105.13891 "SoK: Yield Aggregators in DeFi (Cousaert et al., 2021)"
-[6]: https://www.imf.org/en/Publications/GFSR/Issues/2022/04/19/global-financial-stability-report-april-2022 "Global Financial Stability Report, April 2022 (International Monetary Fund)"
-[7]: https://arxiv.org/abs/2205.08904 "Risks and Returns of Uniswap V3 Liquidity Providers (Heimbach et al., 2022)"
+[1]: https://uniswap.org/whitepaper-v3.pdf "Uniswap v3 Core"
+[2]: https://ethereum.org/en/developers/docs/gas/ "Ethereum gas and fees: technical overview"
+[3]: https://arxiv.org/abs/2105.13891 "SoK: Yield Aggregators in DeFi"
+[4]: https://arxiv.org/abs/2205.08904 "Risks and Returns of Uniswap V3 Liquidity Providers"
+[5]: https://arxiv.org/abs/2111.09192 "Impermanent Loss in Uniswap v3"
+[6]: https://docs.curve.finance/user/yield/lp "Providing Liquidity in Pools"
+[7]: https://developers.uniswap.org/docs/get-started/concepts/fees "Fees"

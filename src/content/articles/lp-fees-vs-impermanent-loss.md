@@ -3,54 +3,48 @@ title: "LP Fees vs Impermanent Loss: Finding the Break-Even"
 description: "One inequality decides whether a pool is worth supplying. Here it is, worked on a real position, plus why the fee side is capped and the loss side is not."
 category: "Risk & Research"
 date: 2026-09-10
-lastReviewed: "2026-09-12"
+lastReviewed: "2026-10-02"
 author: "LiquidityPools Editorial Team"
-readTime: "6 min read"
+readTime: "8 min read"
 primaryQuery: "LP fees vs impermanent loss"
 keywords: "LP fees vs impermanent loss, do liquidity pools make money, is providing liquidity profitable, fee yield break-even, LVR hurdle rate, liquidity provider profitability"
 featured: false
 faq:
   - q: "Do trading fees cancel out impermanent loss?"
-    a: "Sometimes, and only in specific conditions. Fee income scales with trading volume, while divergence scales with the variance of the price path. On pairs where volume is high relative to volatility, fees clear the hurdle; on pairs where a sharp repricing arrives without a matching surge in routed volume, they do not."
+    a: "Sometimes, and only in specific conditions. Fee income scales with trading volume, while the cost of providing liquidity scales with the square of volatility. On pairs where volume is high relative to volatility, fees clear the hurdle; on pairs where a sharp repricing arrives without a matching surge in routed volume, they do not."
   - q: "How do I know if a liquidity position was profitable?"
     a: "Compare the withdrawn value plus collected fees against the value of simply holding the deposited basket over the same window, then subtract gas and any swap costs. A position can be up in dollars and still have underperformed the basket it started from."
   - q: "Is providing liquidity profitable on average?"
-    a: "Studies of tick-based pools consistently find that a large share of positions underperform holding once divergence and gas are included, with results concentrated in a minority of well-managed positions. Profitability depends on the pair, the fee tier, the range and the holding period, not on the pool being popular."
+    a: "Not reliably. A 2021 study of 17 large Uniswap v3 pools found impermanent loss exceeded fee income in aggregate and about half of providers had negative returns, and later work found arbitrage losses exceeding fees in many of the largest pools. Results depend on the pair, the fee tier, the range and the holding period, not on the pool being popular."
   - q: "What volatility level makes a pool unprofitable for LPs?"
-    a: "There is no universal number. The condition is that fee capture per unit of time must exceed the LVR accrual rate, which grows with the square of volatility. For a given fee tier and turnover ratio you can solve for the volatility at which the two lines cross and treat that as the pair's hurdle."
+    a: "There is no universal number. The condition is that daily fee yield must exceed the daily cost of arbitrage against the pool, which grows with the square of volatility. For a given fee tier and turnover you can solve for the volatility at which the two lines cross and treat that as the pair's hurdle."
 ---
 
-Supplying a pool is two things at once. You earn a steady trickle from trading, and you lose money whenever the price moves. Whether you made anything is just a question of which line was steeper.
+Supplying a pool is two things at once. You earn a steady trickle from trading, and you give some value away whenever the price moves. Whether you made anything comes down to which of those two lines was steeper.
 
 Both lines can be measured. Neither one is the number on the pool page.
 
-This guide gives you the single inequality that decides it, works it on a real position, and shows why the earning side has a ceiling while the losing side does not.
+By the end you will have one inequality you can fill in for any pool before depositing, worked on a real position, and you will see why the earning side has a ceiling while the cost side does not.
 
 <figure class="article-figure">
   <img src="/images/guides/lp-fees-vs-impermanent-loss.webp" alt="Chart comparing daily fee capture against divergence loss as realised volatility increases, with the break-even point marked." width="1600" height="1067" loading="lazy" decoding="async" />
-  <figcaption>Fee capture grows roughly linearly with volatility; adverse selection grows with its square. The crossing point is the pair's hurdle. <span class="article-figure__credit">Original editorial illustration by LiquidityPools.app.</span></figcaption>
+  <figcaption>The chart assumes fee capture rises in step with volatility; the arbitrage cost grows with its square regardless. The crossing point is the pair's hurdle. <span class="article-figure__credit">Original editorial illustration by LiquidityPools.app.</span></figcaption>
 </figure>
 
-> **Editor's note:**
+> **Key point:**
 > Evaluate hourly volume beside hourly volatility. Volume from uninformed demand can pay fees without the same selection cost as arbitrage that reprices a stale pool quote. The total volume number alone does not reveal which kind of flow the position served.
 
 ## The two lines
 
-Fee income is simple:
+Fee income is simple: $F = f \times V \times s$.
 
-$$
-F = f \times V \times s
-$$
-
-Where:
-
-- $f$ is the fee rate, so 0.05% means 0.0005.
+- $f$ is the fee rate you actually keep, so 0.05% means 0.0005. On Uniswap pools where the protocol fee is switched on, providers keep three quarters of the 0.01% and 0.05% tiers and five sixths of the 0.30% and 1% tiers [8].
 - $V$ is the volume that actually executed against your liquidity.
 - $s$ is your share of the money working in that band while you were live.
 
-The second term matters more than people think. Aggregators split orders across venues and tiers, and a position out of range gets none of it. Use routed volume, not the pool's headline number.
+The second term matters more than people think. Aggregators split orders across venues and tiers, and a position out of range earns none of it [1]. Use routed volume, not the pool's headline number.
 
-The other line is what leaves when your quote is stale [4]:
+The other line is what leaves when your quote is stale. For a full-range position, it comes to a simple share of value [4]:
 
 $$
 \text{drag} \approx \frac{\sigma^2}{8}
@@ -59,20 +53,26 @@ $$
 Where:
 
 - $\sigma$ is the pair's annual volatility.
+- The drag is the yearly share of the position's value that arbitrage takes. A band multiplies it by how densely it packs your money.
 
-The square is the whole story. Double how much a pair moves and this quadruples, while the volume paying you roughly doubles at best.
+The square is the whole story. Double how much a pair moves and this quadruples, and nothing makes the volume that pays you rise in step.
 
-So the test is:
+This is the frictionless version. With a fee, arbitrageurs only trade when the gap beats the fee, which trims what they take, and faster blocks trim it further [6]. Treat the formula as a conservative planning number, not a forecast.
+
+## The test that decides it
+
+Put the two lines on the same daily footing and the question becomes one inequality:
 
 $$
-f \times \text{turnover} \geq \frac{\sigma^2}{8}
+f \times \text{turnover} \geq \frac{\sigma^2}{8 \times 365}
 $$
 
 Where:
 
 - **Turnover** is daily routed volume divided by the liquidity backing it.
+- $f$ and $\sigma$ are the fee rate and annual volatility from above, and 365 turns the yearly cost into a daily one.
 
-That inequality, not the advertised rate, is the whole question.
+For a band, measure turnover against the money actually in the band and multiply the right side by the band's packing factor. That inequality, not the advertised rate, is the whole question.
 
 ## Working it on a real position
 
@@ -83,29 +83,29 @@ A \$100,000 position at the 0.05% tier on ETH against dollars, in range the whol
 | Fee rate | 0.05% |
 | Daily volume through your band | \$40,000,000 |
 | Your share of the liquidity there | 2.0% |
-| Daily fees | \$400 |
-| Daily yield on your capital | 40 basis points |
+| Daily fees, gross | \$400 |
+| Daily fees if a 25% protocol share is switched on | \$300 |
+| Daily yield on your capital | 30 to 40 basis points |
 | Pair's annual volatility | 60% |
 | Drag on a full-range position | about 1.2 basis points a day |
 | Your band, plus or minus 10%, multiplies that by | about 20 |
-| Daily drag on your band | about 25 basis points |
+| Daily drag on your band, near its middle | about 25 basis points |
 
-At 60% volatility this still clears. Forty basis points coming in, about twenty-five going out. That is a real margin, but a much thinner one than the fee number on its own suggests.
+At 60% volatility this still clears. Thirty to forty basis points coming in, about twenty-five going out. That is a real margin, but a much thinner one than the fee number on its own suggests.
 
 Now change one thing at a time and watch how differently the two sides behave.
 
 | What changes | What happens to fees | What happens to the drag |
 | :--- | :--- | :--- |
-| Competition doubles the liquidity in your band | Halves, to 20 basis points | Unchanged |
-| Volatility jumps to 150% | Rises somewhat, then you exit range | Rises to about 150 basis points a day in this band |
+| Competition doubles the liquidity in your band | Halves, to 15 to 20 basis points | Unchanged |
+| Volatility jumps to 150% | May rise, until the price leaves your band | Rises to about 160 basis points a day in this band |
 | Volume dries up | Falls toward zero | Unchanged |
 
-That is the asymmetry to remember. Your earning is capped by how many other people want to do the same thing. Your losing is capped by nothing at all. The endpoint version of that loss — impermanent loss, the gap between a pool position and simply holding — is derived in [The Impermanent Loss Formula](/guides/impermanent-loss-formula/).
-More positions worked this way, at other tiers and volatilities, are in [Impermanent Loss Examples](/guides/impermanent-loss-examples/).
+That is the asymmetry to remember. Your earning is capped by how many other people want the same trade. Nothing caps the cost side except volatility itself. The endpoint version of that cost — impermanent loss, how far the position trails just holding the tokens — is derived in [The Impermanent Loss Formula](/guides/impermanent-loss-formula/). More positions worked this way are in [Impermanent Loss Examples](/guides/impermanent-loss-examples/).
 
 ## How much trading a pair needs
 
-Turn the inequality around and it tells you the daily turnover a full-range position needs just to stand still, before gas.
+Turn the inequality around and it tells you the daily turnover a full-range position needs just to stand still, before gas, at the gross fee rate.
 
 | Pair volatility | At the 0.05% tier | At the 0.30% tier |
 | :--- | ---: | ---: |
@@ -113,7 +113,7 @@ Turn the inequality around and it tells you the daily turnover a full-range posi
 | 80% a year | 0.44 times | 0.07 times |
 | 120% a year | 0.99 times | 0.16 times |
 
-Read the bottom left cell. A pair moving 120% a year at the cheapest tier needs the whole pool's liquidity to trade every single day to break even. Very few pools manage that for long. That is why volatile pairs drift to higher tiers, and why a low tier on a wild pair is usually a slow loss.
+Read the bottom left cell. A pair moving 120% a year at the 0.05% tier needs the whole pool's liquidity to trade every single day to break even. Very few pools manage that for long. That is why volatile pairs tend to settle in higher tiers, and why a low tier on a volatile pair is usually a slow loss. Where a protocol fee applies, every cell rises by the same proportion.
 
 ## Why the endpoint measure is not enough
 
@@ -121,7 +121,7 @@ Impermanent loss compares where the price started with where it ended. It says n
 
 Take a pair that starts at \$2,000, runs to \$3,000, and comes back to \$2,000 inside a week. The endpoint measure says zero, and against simply holding that is right, plus the fees you earned.
 
-But the fees were meant to pay you for standing in the market, and every leg of that path was traded against a pool quoting the old price. Against somebody running the same exposure at market prices, you are behind by that path cost. Loss-versus-rebalancing — what a pool gives up because its quote is always a block late — measures exactly that, which is why serious desks use it [4].
+But the fees were meant to pay you for standing in the market, and every leg of that path was traded against a pool quoting the old price. Against somebody running the same exposure at market prices, you are behind by that path cost. Loss-versus-rebalancing — the amount a pool gives up because its quote trails the market — measures exactly that [4].
 
 The practical version: judge a pool by whether its fees beat that cost over a full cycle, not by whether the price happened to come back. See [Loss-Versus-Rebalancing](/guides/loss-versus-rebalancing/).
 
@@ -142,42 +142,44 @@ Look at a full cycle, not a fortnight. A quiet two weeks makes any pool look goo
 | Ignoring time out of range | The fees stop. The exposure does not, and neither does the denominator |
 | Valuing reward tokens at the accrual price | They get sold into thin markets. What you actually realise is lower |
 | Comparing against cash | The right benchmark is holding the two tokens, not holding dollars |
-| Ignoring gas | Under a few thousand dollars, rebalancing can exceed every fee you earn |
+| Ignoring gas | On a small position, rebalancing can cost more than every fee you earn |
 | Assuming stable pairs are safe | Small divergence until a peg breaks, then the curve fills you with the broken token |
 
-Uniswap's own risk documentation says the same thing plainly: fee income is not guaranteed, and it does not remove the exposure that supplying two assets creates [3].
+Uniswap's own risk page lists impermanent loss, positions that earn no fees once out of range, and the network cost of managing a range among the ways providers lose money [3]. A BIS review makes the same point from outside: trading fees may not be high enough to offset the loss [2].
+
+Measured outcomes vary widely. A 2021 study of 17 Uniswap v3 pools counted \$260.1 million of impermanent loss against \$199.3 million of fees, with about half of providers showing negative returns [7], and another study found that the more volatile the pool, the more fee income a provider needs to compensate [5].
 
 ## The decision, step by step
 
 1. **Work out turnover.** Daily routed volume divided by the liquidity actually in the active band. Not the pool's total.
-2. **Multiply by the fee rate** to get a daily yield in basis points.
+2. **Multiply by the fee rate you keep** to get a daily yield in basis points.
 3. **Work out the drag** from trailing volatility, then raise it for a concentrated range.
-4. **Compare, and demand a margin.** Within a factor of two and it is a coin flip once gas and competition arrive.
+4. **Compare, and demand a margin.** Gas, competition for your band, and error in your volatility estimate all eat into it, so a thin margin on paper is often negative in practice.
 5. **Set the exit rule now.** A volatility trigger, a floor on time in range, or a drawdown limit against holding.
-6. **Size for the friction.** If one round trip of gas costs more than a few days of fees, this position belongs in a wide passive range instead.
+6. **Size for the friction.** Work out how many days of fees one round trip of gas costs. If that is a large share of how long you plan to stay, the position belongs in a wide passive range instead.
 
 See [How to Evaluate a Liquidity Pool](/guides/how-to-evaluate-a-liquidity-pool/) and [The Liquidity Pool Research Checklist](/guides/liquidity-pool-research-checklist/). For the structural ways to tilt this contest before it starts, see [How to Avoid Impermanent Loss](/guides/how-to-avoid-impermanent-loss/).
 
 ## Where to go next
 
-Model the income with the [liquidity pool fee and APR calculator](/tools/liquidity-pool-calculator/#feeTier=0.05&capital=10000&volume=20000000&liquidity=5000000) and the cost with the [impermanent loss calculator](/tools/impermanent-loss-calculator/#mode=weighted&a0=2000&a1=2500&capital=10000&fees=150). For the tier decision underneath both, see [Uniswap Fee Tiers Explained](/guides/uniswap-fee-tiers-explained/). Both sides resolve into one figure in the [LP profit and return calculator](/tools/lp-profit-calculator/#priceA0=2000&priceA1=2500&capital=10000&fees=150&days=30).
-
-Related reading: [Is Providing Liquidity Profitable?](/guides/is-providing-liquidity-profitable/).
+Model the income with the [liquidity pool fee and APR calculator](/tools/liquidity-pool-calculator/#feeTier=0.05&capital=10000&volume=20000000&liquidity=5000000) and the cost with the [impermanent loss calculator](/tools/impermanent-loss-calculator/#mode=weighted&a0=2000&a1=2500&b0=1&b1=1&capital=10000&fees=150&weight=0.5); the [LP profit and return calculator](/tools/lp-profit-calculator/#priceA0=2000&priceA1=2500&capital=10000&fees=150&days=30) resolves both into one figure. For the tier decision underneath both, see [Uniswap Fee Tiers Explained](/guides/uniswap-fee-tiers-explained/), and for the whole revenue-and-cost ledger on two worked positions, [Is Providing Liquidity Profitable?](/guides/is-providing-liquidity-profitable/).
 
 ## References
 
 1. [Uniswap v3 Core Whitepaper (Adams et al., 2021)](https://uniswap.org/whitepaper-v3.pdf)
-2. [Miners as intermediaries: extractable value and market manipulation in crypto and DeFi (BIS Bulletin No 58, 2022)](https://www.bis.org/publ/bisbull58.htm)
+2. [DeFi risks and the decentralisation illusion (Aramonte, Huang & Schrimpf, BIS Quarterly Review, December 2021)](https://www.bis.org/publ/qtrpdf/r_qt2112b.htm)
 3. [What are the risks when providing liquidity? (Uniswap Labs)](https://support.uniswap.org/hc/en-us/articles/37113550065549-What-are-the-risks-when-providing-liquidity)
 4. [Automated Market Making and Loss-Versus-Rebalancing (Milionis et al., 2022)](https://arxiv.org/abs/2208.06046)
 5. [Risks and Returns of Uniswap V3 Liquidity Providers (Heimbach et al., 2022)](https://arxiv.org/abs/2205.08904)
 6. [Automated Market Making and Arbitrage Profits in the Presence of Fees (Milionis et al., 2023)](https://arxiv.org/abs/2305.14604)
 7. [Impermanent Loss in Uniswap v3 (Loesch et al., 2021)](https://arxiv.org/abs/2111.09192)
+8. [Fees (Uniswap Developer Documentation)](https://developers.uniswap.org/docs/get-started/concepts/fees)
 
 [1]: https://uniswap.org/whitepaper-v3.pdf "Uniswap v3 Core Whitepaper"
-[2]: https://www.bis.org/publ/bisbull58.htm "Miners as intermediaries: extractable value and market manipulation in crypto and DeFi (BIS Bulletin No 58, 2022)"
+[2]: https://www.bis.org/publ/qtrpdf/r_qt2112b.htm "DeFi risks and the decentralisation illusion (BIS Quarterly Review, December 2021)"
 [3]: https://support.uniswap.org/hc/en-us/articles/37113550065549-What-are-the-risks-when-providing-liquidity "What are the risks when providing liquidity?"
 [4]: https://arxiv.org/abs/2208.06046 "Automated Market Making and Loss-Versus-Rebalancing"
 [5]: https://arxiv.org/abs/2205.08904 "Risks and Returns of Uniswap V3 Liquidity Providers (Heimbach et al., 2022)"
 [6]: https://arxiv.org/abs/2305.14604 "Automated Market Making and Arbitrage Profits in the Presence of Fees (Milionis et al., 2023)"
 [7]: https://arxiv.org/abs/2111.09192 "Impermanent Loss in Uniswap v3 (Loesch et al., 2021)"
+[8]: https://developers.uniswap.org/docs/get-started/concepts/fees "Fees (Uniswap Developer Documentation)"

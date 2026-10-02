@@ -331,9 +331,9 @@ def fig_v3_vs_v4(d):
     chrome(d, "protocol architecture", "Uniswap v3 and v4 price liquidity the same way",
            "The invariant is unchanged; settlement, deployment cost and fee logic are not.")
     rows = [
-        ("Pool deployment", "One contract per pool (factory clone)", "One singleton PoolManager, pools are state"),
+        ("Pool deployment", "One contract per pool, deployed by the factory", "One singleton PoolManager, pools are state"),
         ("Multi-hop settlement", "ERC-20 transfer at every hop", "Net deltas in transient storage (EIP-1153)"),
-        ("Fee schedule", "Fixed tier: 1 / 5 / 30 / 100 bps", "Fixed tier or hook-set dynamic fee"),
+        ("Fee schedule", "Tiers 1 / 5 / 30 / 100 bps; protocol keeps 1/4 to 1/6", "Any fee 0–100%, or set by a hook"),
         ("Extensibility", "Periphery contracts only", "beforeSwap / afterSwap / liquidity hooks"),
         ("LP accounting", "ERC-721 position NFT", "Position NFT; ERC-6909 for token balances"),
         ("LP price risk", "Concentrated range, IL and LVR", "Identical: same x·y=k range math"),
@@ -570,13 +570,13 @@ def fig_slippage(d):
     legend(d, 100, 800, [("Shallow pool", AMBER), ("Deep pool (2x depth)", MINT)])
     panel(d, (940, 270, 1500, 760))
     d.text((972, 300), "ONE $50,000 ETH BUY", font=font(22, "mono-bold"), fill=MINT)
-    rows = [("Quoted price", "2,000.00"), ("USDC in range", "$2,500,000"),
-            ("ETH vs quote", "−1.96%"), ("Average paid", "≈ 2,040"),
-            ("Slippage tolerance", "0.50%"), ("Outcome", "Reverts")]
+    rows = [("Mid price", "2,000.00"), ("USDC in range", "$2,500,000"),
+            ("Quoted output", "24.51 ETH"), ("Average paid", "≈ 2,040"),
+            ("0.5% tolerance", "≤ $245 at risk"), ("4% tolerance", "≤ $1,960 at risk")]
     y = 352
     for k, v in rows:
         d.text((972, y), k, font=font(21), fill=MUTED)
-        d.text((1240, y), v, font=font(21, "mono-bold"), fill=AMBER if k == "Outcome" else INK)
+        d.text((1240, y), v, font=font(21, "mono-bold"), fill=AMBER if k.endswith("tolerance") else INK)
         d.line([(972, y + 40), (1468, y + 40)], fill=GRID, width=1)
         y += 62
     paragraph(d, (100, 850),
@@ -777,9 +777,9 @@ def fig_uniswap_pools(d):
                 "What an LP actually chooses differs far more than the mathematics does.",
                 [("v2", MUTED), ("v3", MINT), ("v4", AMBER)],
                 [("Price coverage", "0 to infinity", "Chosen range", "Chosen range"),
-                 ("Fee options", "30 bps fixed", "1 / 5 / 30 / 100 bps", "Tiers or hook-set dynamic fee"),
+                 ("Fee options", "30 bps; LPs keep 25", "1 / 5 / 30 / 100 bps tiers", "Any fee, or set by a hook"),
                  ("LP claim", "Fungible ERC-20", "ERC-721 position NFT", "Position NFT via position manager"),
-                 ("Deployment", "One pair contract", "One contract per tier", "Singleton PoolManager"),
+                 ("Deployment", "One pair contract", "One contract per pair and tier", "Singleton PoolManager"),
                  ("Management", "Passive", "Active range management", "Active, hooks can automate"),
                  ("Capital efficiency", "Low, uniform", "High inside the band", "High inside the band")],
                 "The right version is the one where the pair has routed volume and where you can actually maintain "
@@ -825,15 +825,25 @@ def fig_rug_pulls(d):
 
 
 def fig_gas_costs(d):
+    # The guide's worked example: one cycle is five transactions, about 1,000,000 gas, ETH at $2,700,
+    # against a 25% gross annual fee yield.
+    def cycle(gwei):
+        return 1_000_000 * gwei * 1e-9 * 2_700
+
+    def share(position, gwei):
+        return cycle(gwei) / (position * 0.25)
+
+    rows = []
+    for position, gwei, colour in [(500, 20, ROSE), (2_000, 20, ROSE), (10_000, 20, AMBER), (50_000, 20, MINT), (500, 1, MINT)]:
+        value = share(position, gwei)
+        rows.append((f"${position:,}", f"One cycle at {gwei} gwei (${cycle(gwei):,.2f})", value,
+                     f"{value * 100:.1f}% of a year's fees", colour))
     layout_bars(d, "friction floor", "Gas decides the minimum viable position size",
-                "Round-trip cost as a share of a year of fee income at a 20% gross rate.",
-                [("$500", "Mint, collect, rebalance twice, withdraw", 0.70, "70% of annual fees", ROSE),
-                 ("$2,000", "Same cadence on the same network", 0.18, "18% of annual fees", ROSE),
-                 ("$10,000", "Same cadence", 0.035, "3.5% of annual fees", AMBER),
-                 ("$50,000", "Same cadence", 0.007, "0.7% of annual fees", MINT),
-                 ("$10,000 on an L2", "Same cadence, cheaper execution", 0.001, "0.1% of annual fees", MINT)],
-                "Assumes about $14 per mainnet transaction, about $0.40 on an L2, and five transactions. The conclusion is not that small positions "
-                "are wrong; it is that they belong in wider ranges on cheaper networks.", "share of annual fee income")
+                "Cost of one management cycle as a share of a year of fee income at a 25% gross rate.",
+                rows,
+                "One cycle is five transactions, about 1 million gas, with ETH at $2,700. Mainnet base fees sat near "
+                "0.1 gwei for most of mid-2026 but can reach 20 gwei within minutes. On a rollup the same cycle costs cents.",
+                "share of annual fee income")
 
 
 def fig_single_sided(d):
@@ -917,26 +927,32 @@ def fig_depth(d):
 
 
 def fig_range_strategy(d):
-    def density(w):
-        return 100 * min(1.0, 6.0 / w)
+    # The guide's worked example: $60,000 at the 0.05% tier for 30 days, 52% annual volatility,
+    # $14 gas per transaction, a re-centre (two transactions plus a swap of half the position)
+    # each time price leaves the band, and arbitrage losses of sigma^2/8 a year scaled by the band.
+    sigma, days, capital = 0.52, 30, 60_000
+    daily = sigma / math.sqrt(365)
 
-    def in_range(w):
-        return 100 * (1 - math.exp(-w / 12.0))
+    def net(fee_yield):
+        def at(width_pct):
+            w = width_pct / 100
+            multiple = 1 / (1 - ((1 - w) / (1 + w)) ** 0.25)
+            recentres = days / (w / daily) ** 2
+            edge = multiple * (fee_yield - sigma ** 2 / 8) * capital * days / 365
+            return edge - (2 * 14 + recentres * (2 * 14 + capital / 2 * 0.0005))
+        return at
 
-    def net(w):
-        return max(0.0, (density(w) * in_range(w) / 100.0 - 220.0 / w) / 13.9 * 100.0)
-
-    layout_curve(d, "range width", "Fee density and time in range pull in opposite directions",
-                 "Each series indexed to its own maximum. Net includes the gas a narrow band keeps costing.",
-                 "BAND WIDTH (PLUS OR MINUS PERCENT)", "INDEXED OUTCOME", (3, 40), (0, 105),
-                 [(density, MINT, "Fee density per dollar", False),
-                  (in_range, AMBER, "Expected time in range", False),
-                  (net, ROSE, "Net of rebalancing cost", False)],
-                 "The net curve peaks in the middle and the peak moves with realised volatility: more volatile pairs "
-                 "push it wider, calmer pairs pull it tighter. There is no universally correct width, only one that "
-                 "matches the volatility you face and the rebalancing you will actually pay for.",
+    layout_curve(d, "range width", "Width magnifies whatever edge the pool has",
+                 "Net 30-day result on $60,000 after fees, arbitrage losses and re-centring, by band width.",
+                 "BAND WIDTH (PLUS OR MINUS PERCENT)", "NET RESULT, 30 DAYS", (3, 40), (-4500, 4500),
+                 [(net(0.05), MINT, "Fees 5% a year at full range", False),
+                  (net(0.025), ROSE, "Fees 2.5% a year at full range", False),
+                  (lambda _w: 0.0, MUTED, "Break-even", True)],
+                 "Arbitrage takes about 3.4% a year at 52% volatility. When full-range fees beat that, a tighter "
+                 "band earns more even after the extra re-centres; when they fall short, a tighter band loses faster. "
+                 "Width is a multiplier on the pool's edge, not a source of one.",
                  xticks=["3%", "12%", "21%", "30%", "40%"],
-                 yticks=[(0, "0"), (50, "50"), (100, "100")])
+                 yticks=[(-4000, "−$4k"), (0, "$0"), (4000, "+$4k")])
 
 
 def fig_beginners(d):

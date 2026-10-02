@@ -200,7 +200,7 @@ const breadcrumbSchema = {
 
           <h2>What the model leaves out</h2>
           <ul>
-            <li><strong>Concentrated ranges.</strong> A narrow band amplifies divergence while in range and freezes it on conversion. Use this result as a baseline and read <a href="/guides/out-of-range-liquidity/">Out-of-Range Liquidity</a>.</li>
+            <li><strong>Concentrated ranges.</strong> This calculator models a full-range position. A narrow band amplifies divergence while in range, and once price leaves the band the position holds a single token and keeps falling behind holding as price moves further. For bands, use the <a href="/tools/impermanent-loss-calculator/">impermanent loss calculator</a> in range mode and read <a href="/guides/out-of-range-liquidity/">Out-of-Range Liquidity</a>.</li>
             <li><strong>Path dependency.</strong> Two paths ending at the same price produce the same answer here and different answers in reality, as covered in <a href="/guides/loss-versus-rebalancing/">loss-versus-rebalancing</a>.</li>
             <li><strong>Entry and exit price impact.</strong> Reaching the deposit ratio and unwinding both consume depth. See <a href="/guides/slippage-and-price-impact/">Slippage and Price Impact</a>.</li>
             <li><strong>Partial withdrawals and additions.</strong> Model each tranche separately and sum the results.</li>

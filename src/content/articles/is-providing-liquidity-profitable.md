@@ -3,9 +3,9 @@ title: "Is Providing Liquidity Profitable? The Full Arithmetic"
 description: "It depends on numbers you can get before depositing, and almost nobody gets them. Here is the inequality, every term in it, and two positions worked in full."
 category: "Risk & Research"
 date: 2026-09-11
-lastReviewed: "2026-09-12"
+lastReviewed: "2026-10-02"
 author: "LiquidityPools Editorial Team"
-readTime: "7 min read"
+readTime: "8 min read"
 primaryQuery: "is providing liquidity profitable"
 keywords: "is providing liquidity profitable, are liquidity pools profitable, how do liquidity providers make money, are liquidity pools worth it, liquidity pool returns, how do liquidity pools make money"
 featured: true
@@ -15,9 +15,9 @@ faq:
   - q: "How do liquidity providers make money?"
     a: "From a share of the swap fee charged on every trade routed through the pool, proportional to how much of the liquidity active at the traded price is theirs. Some pools add token incentives on top. Fees are revenue from traders; incentives are dilution of token holders, and only the first persists without a budget."
   - q: "Are liquidity pools worth it for small amounts?"
-    a: "Frequently not on high-fee chains. Entry, exit and each claim cost gas regardless of position size, so a $500 position on a network charging $12 per transaction has spent roughly 7% of capital before earning anything. The same position on a low-fee chain can be viable."
+    a: "Frequently not on high-fee chains. Entry, exit and each claim cost gas regardless of position size, so a $500 position that pays three transactions at $12 each (approve, deposit, withdraw) has spent about 7% of capital before earning anything. The same position on a low-fee chain can be viable."
   - q: "How much do liquidity providers earn on average?"
-    a: "There is no reliable average because the distribution is wide and venue-specific. Academic measurement of concentrated liquidity positions found that a majority underperformed holding the deposited assets over the studied period once divergence was netted against fees. Treat any single quoted average as a marketing figure until you can reproduce it from pool data."
+    a: "There is no reliable average because the distribution is wide and venue-specific. A study of 17 large Uniswap v3 pools in 2021 found impermanent loss exceeded fee income in aggregate, and about half of providers had negative returns. Treat any single quoted average as a marketing figure until you can reproduce it from pool data."
   - q: "What makes a liquidity position unprofitable?"
     a: "Four things, usually in this order: a pair that trended hard in one direction, a range the price left, gas and claim costs on a position too small to absorb them, and reward tokens that lost most of their value between accrual and sale."
 ---
@@ -26,17 +26,19 @@ The honest answer is that it depends on numbers you can get before you deposit, 
 
 This is not a property of liquidity provision as an activity. It is a property of one pool over one period, and it comes down to a single inequality that either holds or does not.
 
-This guide gives you that inequality, takes apart every term in it, and works two real positions end to end. One wins. One does not, and it is not the one you would guess.
+Below is that inequality, every term in it, and two positions worked end to end. One wins. One does not, and it is the one with the bigger fees. By the end you can fill the inequality in for a pool you are considering.
 
 <figure class="article-figure">
   <img src="/images/guides/is-providing-liquidity-profitable.webp" alt="A revenue bar for fee income set against stacked deductions for divergence, gas and emission decay, resolving to a net result." width="1600" height="1067" loading="lazy" decoding="async" />
   <figcaption>Fee revenue against the four deductions that decide whether a position beat holding. <span class="article-figure__credit">Original editorial illustration by LiquidityPools.app.</span></figcaption>
 </figure>
 
-> **Editor's note:**
+> **Key point:**
 > A position can be modelled correctly and still be scoped wrongly. Gas, time spent out of range, and a realistic value for reward tokens belong in the same ledger as fees. Omitting them can turn a positive quoted rate into a negative net result.
 
 ## The inequality
+
+A position beat holding when everything it earned is larger than everything it cost, with the costs measured against keeping the same tokens:
 
 $$
 F + E > |D| + G + O
@@ -48,11 +50,13 @@ Where:
 - $E$ is what you actually got for any reward tokens, after selling them.
 - $D$ is how far you fell behind simply holding the two tokens.
 - $G$ is gas and every other transaction cost.
-- $O$ is what the same money would have done in its next-best use.
+- $O$ is what the same tokens would have earned in their next-best use, such as lending or staking them.
 
 Nothing else belongs in there. The pool's size is not in it. The protocol's reputation is not in it. The advertised rate appears only as an optimistic estimate of the first term.
 
 ## Where the fees actually come from
+
+Your fee income is the volume that reached your pool, times the fee you keep, scaled by your share of the live liquidity and by how long you were in range:
 
 $$
 F = V \times f \times s \times t
@@ -61,32 +65,32 @@ $$
 Where:
 
 - $V$ is the volume that actually routed through your pool.
-- $f$ is the fee rate.
+- $f$ is the fee rate you keep. On Uniswap pools where the protocol fee is switched on, a quarter of the 0.01% and 0.05% tiers, or a sixth of the 0.30% and 1% tiers, goes to the protocol [7].
 - $s$ is your share of the liquidity live at the traded price.
 - $t$ is the fraction of the period your liquidity was active at all.
 
 The last two are where estimates fall apart.
 
-**Your share is measured against live liquidity, not total deposits.** Money parked in distant ranges earns nothing and does not dilute you. Money crowded into your exact band dilutes you heavily. See [Liquidity Depth and Execution](/guides/liquidity-depth-and-execution/) and [Onchain Liquidity Metrics](/guides/onchain-liquidity-metrics/).
+**Your share is measured against live liquidity, not total deposits.** Money parked in distant ranges earns nothing and does not dilute you [5]. Money crowded into your exact band dilutes you heavily. See [Liquidity Depth and Execution](/guides/liquidity-depth-and-execution/) and [Onchain Liquidity Metrics](/guides/onchain-liquidity-metrics/).
 
-**Time in range is a straight multiplier**, and nobody measures it before depositing. A position earning a 60% annual rate while live, in range 40% of the time, earned 24%. See [Out-of-Range Liquidity](/guides/out-of-range-liquidity/).
+**Time in range is a straight multiplier**, because a position out of range earns no fees [6]. Few people estimate it before depositing. A position earning a 60% annual rate while live, in range 40% of the time, earned 24%. See [Out-of-Range Liquidity](/guides/out-of-range-liquidity/).
 
 Here is how the fee rate and turnover interact:
 
-| Fee tier | What lives there | At 1x daily turnover | At 4x |
+| Fee tier | Typical use | Yearly fee yield, gross, at 1x daily turnover | At 4x |
 | :--- | :--- | ---: | ---: |
 | 0.01% | Stablecoin pairs | 3.7% | 14.6% |
-| 0.05% | Correlated majors | 18.3% | 73.0% |
-| 0.30% | Ordinary volatile pairs | 109.5% | 438.0% |
-| 1.00% | Long tail | 365.0% | 1,460.0% |
+| 0.05% | Stable-ish and very liquid major pairs | 18.3% | 73.0% |
+| 0.30% | Most volatile pairs | 109.5% | 438.0% |
+| 1.00% | Highly volatile or rarely traded tokens | 365.0% | 1,460.0% |
 
-Turnover means daily routed volume divided by the liquidity competing for it. The right column looks absurd because it is. Sustained 4x turnover at 0.30% does not last, because that much revenue attracts liquidity until your share collapses.
+The tiers exist because one fee is too high for pairs of stablecoins and too low for highly volatile or rarely traded tokens [5]. Turnover means daily routed volume divided by the liquidity competing for it. The right column looks absurd because it is. Sustained 4x turnover at 0.30% does not last, because that much revenue attracts liquidity until your share collapses.
 
 The table's real use is directional. Fee income is governed by turnover, not by the tier. Turnover is what to research.
 
 ## The deduction dashboards leave out
 
-That shortfall is impermanent loss — the gap between a pool position and simply holding the two tokens — and you can compute it in advance:
+The shortfall against holding is impermanent loss — what the pool's automatic rebalancing costs you compared with keeping the two tokens in a wallet — and you can compute it in advance:
 
 $$
 \text{IL}(k) = \frac{2\sqrt{k}}{1 + k} - 1
@@ -94,13 +98,13 @@ $$
 
 Where:
 
-- $k$ is how far the two tokens moved relative to each other.
+- $k$ is the relative price of the two tokens now, divided by the relative price when you deposited.
 
 A pair that diverges 2x costs 5.72% against holding. 4x costs 20.00%. Those figures are for a full-range position.
 
-A narrow range amplifies it inside the band. Research measuring real Uniswap v3 positions found that most of the sampled positions underperformed holding, once divergence was netted against fees [1].
+A narrow range amplifies it inside the band [1]. In practice it often outweighs fees: a study of 17 Uniswap v3 pools in 2021 counted \$260.1 million of impermanent loss against \$199.3 million of fees, with about half of providers showing negative returns [4].
 
-The forward-looking version is loss-versus-rebalancing — what the pool hands to arbitrage every time its quote goes stale. It builds with volatility along the route the price takes, so you can estimate it before you deposit rather than waiting to see where the price ends [2].
+The forward-looking version is loss-versus-rebalancing — the amount the pool hands to arbitrage every time its quote falls behind the market. It builds with volatility along the route the price takes, so you can estimate it before you deposit rather than waiting to see where the price ends [2].
 
 The practical consequence: the endpoint number tells you what happened on one path. The rebalancing figure tells you what the pair costs on average, and it is highest in exactly the volatile pairs that advertise the highest rates. See [Loss-Versus-Rebalancing](/guides/loss-versus-rebalancing/).
 
@@ -115,47 +119,38 @@ Gas is a fixed cost per transaction, which makes it a variable cost per dollar y
 | \$10,000 | \$72 | 0.7% |
 | \$50,000 | \$72 | 0.1% |
 
-At the bottom of that table it rounds to nothing. At the top it exceeds any plausible fee income. That single table answers the most common version of this question. See [LP Gas Costs](/guides/lp-gas-costs/).
+At the bottom of that table it rounds to nothing. At the top it can exceed a year of fee income. That single table answers the most common version of this question. See [LP Gas Costs](/guides/lp-gas-costs/).
 
-The fourth deduction is reward tokens losing value. They accrue at one price and get realised at whatever survives everybody else selling the same issuance into the same market. Valuing them at the accrual price and calling it yield is the standard error. See [Yield Farming Explained](/guides/yield-farming-explained/) and [Real Yield in Liquidity Pools](/guides/real-yield-liquidity-pools/).
+The fourth deduction is reward tokens losing value. They accrue at one price and get realised at whatever survives everybody else selling the same issuance into the same market. Valuing them at the accrual price and calling it yield is a common error. See [Yield Farming Explained](/guides/yield-farming-explained/) and [Real Yield in Liquidity Pools](/guides/real-yield-liquidity-pools/).
 
 ## Two positions, ninety days, same operator
 
-\$20,000 each.
+\$20,000 each, both in a band. The stable pair sits at the 0.01% tier in a band from \$0.995 to \$1.005, and its price drifts to \$1.003. The volatile major sits at the 0.30% tier in a band from \$1,600 to \$2,400, opened with the token at \$2,000, and the token ends the period at \$2,600, above the band. Fees while live, time in range and reward value are assumed; the divergence is computed from those prices.
 
 | | Stable pair, 0.01% | Volatile major, 0.30% |
 | :--- | ---: | ---: |
-| Fees earned while live | \$412 | \$2,190 |
-| Time in range | 99% | 61% |
+| Fees earned while live, assumed | \$412 | \$2,190 |
+| Time in range, assumed | 99% | 61% |
 | Fees after time in range | \$408 | \$1,336 |
-| Divergence over the period | -\$11 | -\$1,704 |
-| Gas, six transactions | -\$54 | -\$54 |
+| Divergence against holding | -\$9 | -\$1,850 |
+| Gas, six transactions at \$9 | -\$54 | -\$54 |
 | Reward tokens, after selling | \$0 | \$290 |
-| **Net against holding** | **+\$343** | **-\$132** |
-| Annualised | 7.0% | -2.7% |
+| **Net against holding** | **+\$345** | **-\$278** |
+| Annualised | 7.0% | -5.6% |
 
 The volatile pool collected more than three times the fees and still lost to holding.
 
-That is the characteristic shape of this problem. The fee line is on every dashboard. The three lines that reversed the result are not. Build this same table for a specific pool in the [LP profit calculator](/tools/lp-profit-calculator/#priceA0=2000&priceA1=2300&capital=20000&fees=1336&rewards=290&gas=9&txCount=6&days=90) before depositing rather than after.
-
-## What people get wrong about profitability
-
-| What people assume | What actually happens |
-| :--- | :--- |
-| More fees means more profit | The volatile pool above earned triple and still lost |
-| The advertised rate is the return | It estimates one of five terms, optimistically |
-| A bigger pool is better for me | Only money near the price counts, and it dilutes your share |
-| Small positions work the same way | Gas is fixed. Below a threshold nothing works |
+That is the characteristic shape of this problem. The fee line is on every dashboard. The lines that reversed the result are not. Rebuild the volatile column in the [impermanent loss calculator's range mode](/tools/impermanent-loss-calculator/#mode=concentrated&a0=2000&a1=2600&b0=1&b1=1&capital=20000&fees=1626&days=90&lower=1600&upper=2400), entering fees and sold rewards together and subtracting the gas yourself, before depositing rather than after.
 
 ## What the winners have in common
 
-- **High turnover against the liquidity competing for it.** The single strongest predictor, because it drives the only revenue that persists without a budget.
+- **High turnover against the liquidity competing for it.** The input that matters most, because it drives the only revenue that persists without a budget.
 - **Tokens that move together.** Divergence depends on relative movement, so pairs that track each other barely pay it. That is why stablecoin and staked-ETH pairs stay viable at rates that look trivial. See [Stablecoin Liquidity Pools](/guides/stablecoin-liquidity-pools/) for the exception that ends this abruptly.
-- **A range you will actually maintain, or none at all.** A full-range position with modest fees beats a narrow one that sat idle half the time and was re-centred at a loss twice.
+- **A range you will actually maintain, or none at all.** A full-range position with modest fees often beats a narrow one that sat idle half the time and was re-centred at a loss twice.
 - **Enough size that gas is noise.**
 - **Economics that work with rewards at zero.** If it does not, you are trading an incentive schedule, and should size it as one.
 
-Public-sector analysis reaches the same structural conclusion consistently: the economics favour providers in deep, busy, low-volatility pairs and work against them in thin volatile ones [3]. That is the exact inverse of how advertised rates are ordered. The pools paying most are paying you to take the risks they pay you for.
+Research points the same way. A study of Uniswap v3 providers found simple, profitable strategies in pools with negligible volatility, but only modest returns; higher returns came with more risk and active management [1]. A BIS review of DeFi notes that trading fees may not be high enough to offset the loss from divergence at all [3]. Advertised rates tend to run the other way, highest in the volatile pools where the cost of providing is also highest.
 
 ## Seven numbers to write down first
 
@@ -177,14 +172,16 @@ Run the pool through the [liquidity pool fee and APR calculator](/tools/liquidit
 
 1. [Risks and Returns of Uniswap V3 Liquidity Providers (Heimbach et al., 2022)](https://arxiv.org/abs/2205.08904)
 2. [Automated Market Making and Loss-Versus-Rebalancing (Milionis et al., 2022)](https://arxiv.org/abs/2208.06046)
-3. [Miners as intermediaries: extractable value and market manipulation in crypto and DeFi (BIS Bulletin No 58, 2022)](https://www.bis.org/publ/bisbull58.htm)
+3. [DeFi risks and the decentralisation illusion (Aramonte, Huang & Schrimpf, BIS Quarterly Review, December 2021)](https://www.bis.org/publ/qtrpdf/r_qt2112b.htm)
 4. [Impermanent Loss in Uniswap v3 (Loesch et al., 2021)](https://arxiv.org/abs/2111.09192)
 5. [Uniswap v3 Core Whitepaper (Adams et al., 2021)](https://uniswap.org/whitepaper-v3.pdf)
 6. [What are the risks when providing liquidity? (Uniswap Labs)](https://support.uniswap.org/hc/en-us/articles/37113550065549-What-are-the-risks-when-providing-liquidity)
+7. [Fees (Uniswap Developer Documentation)](https://developers.uniswap.org/docs/get-started/concepts/fees)
 
 [1]: https://arxiv.org/abs/2205.08904 "Risks and Returns of Uniswap V3 Liquidity Providers (Heimbach et al., 2022)"
 [2]: https://arxiv.org/abs/2208.06046 "Automated Market Making and Loss-Versus-Rebalancing (Milionis et al., 2022)"
-[3]: https://www.bis.org/publ/bisbull58.htm "Miners as intermediaries: extractable value and market manipulation in crypto and DeFi (BIS Bulletin No 58, 2022)"
+[3]: https://www.bis.org/publ/qtrpdf/r_qt2112b.htm "DeFi risks and the decentralisation illusion (BIS Quarterly Review, December 2021)"
 [4]: https://arxiv.org/abs/2111.09192 "Impermanent Loss in Uniswap v3 (Loesch et al., 2021)"
 [5]: https://uniswap.org/whitepaper-v3.pdf "Uniswap v3 Core Whitepaper"
 [6]: https://support.uniswap.org/hc/en-us/articles/37113550065549-What-are-the-risks-when-providing-liquidity "What are the risks when providing liquidity?"
+[7]: https://developers.uniswap.org/docs/get-started/concepts/fees "Fees (Uniswap Developer Documentation)"

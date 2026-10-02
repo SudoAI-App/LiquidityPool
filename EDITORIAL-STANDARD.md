@@ -161,8 +161,10 @@ A readable guide that is wrong is worse than a dense one that is right. A full r
 6. **No text in AI images.** A figure that contains words, numbers or formulas is drawn by `scripts/generate-guide-figures.py`, where its content can be reviewed as code. Decorative images may stay text-free.
 7. **Metadata tells the truth.** `readTime` is computed from the words before the reference list, at 220 words a minute. Titles stay within 70 characters and descriptions within 160.
 8. **The word floor counts reading, not references.** 1,300 words before `## References`.
+9. **A citation must support the sentence it sits on.** The October 2026 pass found a BIS bulletin on miner extractable value cited in 38 guides, mostly for claims it never discusses (TVL versus depth, the nature of an LP deposit), and 13 guides whose reference list was never cited inline at all. Every listed source backs at least one specific claim in the text, and the standards-body floor is met with a source that is actually relevant — EIP-20 for LP tokens, EIP-721 for position NFTs, EIP-1559 for gas, a BIS/IMF/FSB/OECD report for systemic-risk claims — never with padding.
+10. **Template sections earn their place.** A "What people assume / What actually happens" table, a closing reading list, or a "where to watch the numbers" list appears only when its content is specific to the guide. The October 2026 pass found the misconception table in 50 of 59 guides; a library where every page has the same furniture reads as generated.
 
-`scripts/content-audit.mjs` now enforces rules 7 and 8, internal link targets, citation numbering, duplicate references, and a regression list of the false claims above.
+`scripts/content-audit.mjs` now enforces rules 7 and 8, the inline-citation half of rule 9, internal link targets, citation numbering, duplicate references, and a regression list of the false claims above.
 
 ## 5. Rewriting an existing guide
 
