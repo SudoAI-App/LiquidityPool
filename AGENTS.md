@@ -7,7 +7,7 @@ This document establishes mandatory operational rules, deployment constraints, a
 ## 1. 部署与 CI/CD 核心禁令 (Deployment & CI/CD Directive)
 
 - **严禁本地手动部署**：
-  - **切勿在本地终端运行 `wrangler deploy`、`wrangler pages deploy` 或任何直接上传命令**。
+  - **切勿在本地终端运行 `cf deploy`、`cf previews deploy`、`wrangler deploy`、`wrangler pages deploy` 或任何直接上传命令**。
   - 所有生产部署必须**严格通过 Git 推送至 GitHub `main` 分支**，由 Cloudflare CI（Cloudflare Workers / Pages Builds）自动拉取、构建和发布上线。
 - **原因与约束**：
   1. 确保 Git 仓库分支是生产运行状态的唯一事实来源（Single Source of Truth）。

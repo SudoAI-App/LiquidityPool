@@ -122,4 +122,6 @@ The launch SEO strategy is documented in [`SEO-LAUNCH-PLAN.md`](./SEO-LAUNCH-PLA
 
 ## Deployment
 
-The output is compatible with Cloudflare Workers static assets. Before deploying, create or confirm a Cloudflare Worker and bind the `liquiditypools.app` custom domain to the Worker route. Do not store Cloudflare credentials in this repository.
+The output is served by the `liquiditypool-site` Cloudflare Worker with static assets. Worker configuration lives in `cloudflare.config.ts` (bindings, vars, assets) and `wrangler.config.ts` (assets directory `dist/public`), managed by the Cloudflare `cf` CLI. The `liquiditypools.app` custom domain is attached to the Worker in the Cloudflare dashboard, not in config.
+
+Production deploys only through Cloudflare Workers Builds on push to `main`: build `pnpm run build`, deploy `npx cf deploy` (non-production branches: `npx cf previews deploy`). Never deploy from a local machine. To check the build and bindings locally without uploading, run `pnpm build && pnpm exec cf deploy --dry-run`. Do not store Cloudflare credentials in this repository.

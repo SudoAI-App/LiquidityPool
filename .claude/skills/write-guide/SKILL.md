@@ -129,5 +129,5 @@ arguing with it — the thresholds come from a measured competitor benchmark.
 
 ## Deployment
 
-Never run `wrangler deploy` or any direct upload. Production ships only by pushing
+Never run `cf deploy`, `wrangler deploy` or any direct upload. Production ships only by pushing
 to GitHub `main`; Cloudflare CI builds and releases. After deploy, `pnpm indexnow`.

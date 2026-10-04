@@ -116,4 +116,5 @@ client/public/__manus__/version.json
 .astro/
 .manus/
 .wrangler/
+.cloudflare/
 .dev.vars

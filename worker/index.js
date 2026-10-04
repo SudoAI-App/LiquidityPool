@@ -4,7 +4,7 @@
 //      (http://liquiditypools.app/ used to answer 200, splitting crawl and
 //      analytics across two protocols), and
 //   2. add an HSTS header to HTTPS responses so browsers stop trying HTTP.
-// Local hosts (wrangler dev) are left on HTTP.
+// Local hosts (cf dev) are left on HTTP.
 
 const PRODUCTION_HOSTS = new Set(['liquiditypools.app', 'www.liquiditypools.app']);
 const HSTS = 'max-age=31536000';

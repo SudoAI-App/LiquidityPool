@@ -198,7 +198,7 @@ git commit -m "docs: add guide on <topic-slug>"
 
 > [!CAUTION]
 > **STRICT DEPLOYMENT EMBARGO**:
-> - **NEVER** run `wrangler deploy`, `wrangler pages deploy`, or any command that directly pushes builds to Cloudflare from the local machine.
+> - **NEVER** run `cf deploy`, `wrangler deploy`, `wrangler pages deploy`, or any command that directly pushes builds to Cloudflare from the local machine.
 > - Production deployment is **100% automated via Git push to GitHub `main`**, which triggers Cloudflare CI/CD.
 > - All code and content changes must pass local audit and build checks prior to committing.
 
